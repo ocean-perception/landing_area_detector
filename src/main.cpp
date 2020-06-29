@@ -14,6 +14,15 @@
 #include "../include/options.h"
 #include <ctime>
 #include <regex>
+#include <fstream>
+
+using namespace std;
+
+const string green("\033[1;32m");
+const string yellow("\033[1;33m");
+const string cyan("\033[1;36m");
+const string red("\033[1;31m");
+const string reset("\033[0m");
 
 // #cmakedefine USE_GPU
 
@@ -47,7 +56,7 @@ int main(int argc, char *argv[]) {
     argParser.helpParams.width = 120;
 
     cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
-    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
+//    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;
 
@@ -86,8 +95,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    String inputFileName = args::get(argInput);	//String containing the input file path+name from cvParser function
-    String outputFileName = args::get(argOutput);	//String containing the output file template from cvParser function
+    string inputFileName = args::get(argInput);	//String containing the input file path+name from cvParser function
+    string outputFileName = args::get(argOutput);	//String containing the output file template from cvParser function
 
     /*
      * These were the mandatory arguments. Now we proceed to optional parameters.
