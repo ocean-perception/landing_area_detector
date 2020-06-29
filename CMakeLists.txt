@@ -8,10 +8,11 @@ project(lad_project)
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 # via the command line or GUI
 
-#find_package(OpenCV 4.1 REQUIRED
-#NO_MODULE
-#PATHS /usr/local
-#NO_DEFAULT_PATH)
+# Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release
+find_package(OpenCV 4.2 REQUIRED
+NO_MODULE
+PATHS /usr/local
+NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will
 # be set, you can find the full list with descriptions
@@ -19,26 +20,26 @@ project(lad_project)
 # Print some message showing some of them
 # At this level, it should be useful to check minimum required version or exact version
 # So far, there are still some issues with OpenCV installations included in ROS
-#message(STATUS "OpenCV library status:")
-#message(STATUS "    version: ${OpenCV_VERSION}")
-#message(STATUS "    libraries: ${OpenCV_LIBS}")
-#message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 # Cross your fingers
-#find_package(CUDA)
+find_package(CUDA)
 
-#if(CUDA_FOUND)
-#    INCLUDE(FindCUDA)
+if(CUDA_FOUND)
+    INCLUDE(FindCUDA)
   # If the package has been found, several variables will
   # be set, you can find the full list with descriptions
   # in the CUDAConfig.cmake file.
   # Print some message showing some of them
-#  message(STATUS "CUDA library status:")
-#  message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
-#  message(STATUS "    version: ${CUDA_VERSION}")
-#  message(STATUS "    libraries: ${CUDA_LIBRARIES}")
-#  message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
-#endif(CUDA_FOUND)
+  message(STATUS "CUDA library status:")
+  message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
+  message(STATUS "    version: ${CUDA_VERSION}")
+  message(STATUS "    libraries: ${CUDA_LIBRARIES}")
+  message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
+endif(CUDA_FOUND)
 
 # a bit greedy approach to include all the files
 file(GLOB project-include-files
@@ -59,21 +60,20 @@ exec_program(
 # fwd git commit info via GIT_COMMIT variable
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
 
-
+add_executable(lad_test ${project-include-files})
+target_compile_options(lad_test PUBLIC -std=c++11)
+  
  # Declare the executable target built from your sources
 if(CUDA_FOUND)
   # Add definition to CUDA SUPPORT
   add_definitions(-D USE_GPU)
   message(STATUS "Configuring for GPU version.")
   # Link your application with OpenCV libraries
- target_link_libraries(mp_cpfind ${OpenCV_LIBS} ${CUDA_LIBRARIES})
+ target_link_libraries(lad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES})
 else()
   message(STATUS "Configuring for non-GPU version.")
   message(STATUS "	Expect a slower speed...")
   # Link your application with OpenCV libraries
- # WARNING remove comment from next line
- #target_link_libraries(mp_cpfind ${OpenCV_LIBS})
+  target_link_libraries(lad_test ${OpenCV_LIBS})
 endif(CUDA_FOUND)
 
-add_executable(lad_test ${project-include-files})
-target_compile_options(lad_test PUBLIC -std=c++11)

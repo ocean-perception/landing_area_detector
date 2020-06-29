@@ -12,11 +12,33 @@
 /********************************************************************/
 
 #include "../include/options.h"
-#include <ctime>
-#include <regex>
+
+///Basic C and C++ libraries
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <fstream>
 
+/// OpenCV libraries. May need review for the final release
+#include <opencv2/core.hpp>
+#include "opencv2/core/ocl.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/highgui.hpp"
+#include <opencv2/video.hpp>
+#include <opencv2/features2d.hpp>
+#include "opencv2/calib3d.hpp"
+#include <opencv2/xfeatures2d.hpp>
+
+/// CUDA specific libraries
+#if USE_GPU
+    #include <opencv2/cudafilters.hpp>
+    #include "opencv2/cudafeatures2d.hpp"
+    #include "opencv2/xfeatures2d/cuda.hpp"
+#endif
+
 using namespace std;
+using namespace cv;
+using namespace cv::cuda;     //prefer explicit definitions rather than risking name mangling
 
 const string green("\033[1;32m");
 const string yellow("\033[1;33m");
@@ -56,7 +78,7 @@ int main(int argc, char *argv[]) {
     argParser.helpParams.width = 120;
 
     cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
-//    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
+    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;
 
