@@ -26,7 +26,7 @@ message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 # Cross your fingers
-find_package(CUDA)
+#find_package(CUDA)
 
 if(CUDA_FOUND)
     INCLUDE(FindCUDA)
@@ -62,7 +62,7 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
 
 add_executable(lad_test ${project-include-files})
 target_compile_options(lad_test PUBLIC -std=c++11)
-  
+
  # Declare the executable target built from your sources
 if(CUDA_FOUND)
   # Add definition to CUDA SUPPORT
