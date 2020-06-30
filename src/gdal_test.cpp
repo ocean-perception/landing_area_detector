@@ -30,15 +30,27 @@ int main()
 	cout << "Driver: " << poDataset->GetDriver()->GetDescription() << "/" << poDataset->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) << endl;
 	cout << "Size is X: " << poDataset->GetRasterXSize() << " Y: " << poDataset->GetRasterYSize() << " C: " << poDataset->GetRasterCount() << endl; 
 
-//	#define TIFFTAG_GDAL_NODATA 42113
-	cout << "no-data field: " << poDataset->GetMetadataItem("TIFFTAG_GDAL_NODATA");
+	// For current band retrieve NoData value:
+	GDALRasterBandH const hBand = GDALGetRasterBand( poDataset, 1 ); // 1-indexed band number
 
+	int bGotNodata = FALSE;
+    const double dfNoData = GDALGetRasterNoDataValue (hBand, &bGotNodata);
+
+	if (bGotNodata == FALSE){
+		cout << "Current band does not provide explicit no-data field definition" << endl;
+	}
+	else{
+		if (CPLIsNan(dfNoData)){ //test if provided NoData is NaN
+			cout << "NoData value: NaN --> " << dfNoData << endl;
+		}
+		else{
+			cout << "NoData value: " << dfNoData << endl;
+		}
+	}
+	//*/
 	// GET UNITS NAME
 	// UNIT CONVERSION FACTOR
 	// NAMES AND ORDERING OF THE AXES
-	// NODATA_VALUES 
-	//TIFFTAG_GDAL_NODATA
-
 
 	if( poDataset->GetProjectionRef()  != NULL )
 	    cout << "Projection is " << poDataset->GetProjectionRef() << endl;
@@ -85,8 +97,8 @@ Band 1 Block=2195x1 Type=Float32, ColorInterp=Gray
 */
 
 
-/**
-To cite GDAL/OGR in publications use:
+/* 
+  To cite GDAL/OGR in publications use:
 
   GDAL/OGR contributors (2020). GDAL/OGR Geospatial Data Abstraction
   software Library. Open Source Geospatial Foundation. URL https://gdal.org
@@ -100,4 +112,4 @@ A BibTeX entry for LaTeX users is
     year = {2020},
     url = {https://gdal.org},
   }
- * /
+ */
