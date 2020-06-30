@@ -211,22 +211,24 @@ int main(int argc, char *argv[]) {
 
     // load the image (note that we don't have the projection information.  You will
     // need to load that yourself or use the full GDAL driver.  The values are pre-defined
-    // at the top of this file
-//    cv::Mat image = cv::imread(inputFileName, cv::IMREAD_LOAD_GDAL | cv::IMREAD_COLOR );
+    // at the top of this file)
+ 	cout << "Opening file :" << inputFileName << "...";
     cv::Mat image = cv::imread(inputFileName, cv::IMREAD_LOAD_GDAL | cv::IMREAD_GRAYSCALE );
  
-    //cv::imshow("Input image", image);
-    cout << yellow << "Input image loaded" << endl;
+ 	if (!image.data){	//fail to open input image
+ 		cout << red << "Failed!" << endl;
+ 		return -1;
+ 	}
+    cout << green << "ok!" << endl;
 
     //char key = (char)waitKey(0);
     char key;
 
     cout << "Image depth: " << image.depth() << endl;
-
 	string ty =  type2str( image.type() );
 	cout << "Image data type: " << ty << endl;
-
     cout << "Channels: " << image.channels() << endl;
+
 //    cv::Vec3b min, max, pixel;
     double min = 200000, max , pixel;
     if (image.at<float>(0,0) > 0) min = max = image.at<float>(0,0);
@@ -288,7 +290,12 @@ int main(int argc, char *argv[]) {
 
     normalize(image, new_image,0 , 255, NORM_MINMAX, CV_8UC1);
 
-    imshow("Src Image", new_image);
+    Mat img_color, image_int;
+
+    // Apply the colormap:
+    applyColorMap(new_image, img_color, COLORMAP_TWILIGHT_SHIFTED);
+    // show remapped image
+    imshow("Src Image", img_color);
 	key = (char)waitKey(0);
 
 //	imwrite("salida.jpg", image);
