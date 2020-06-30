@@ -8,11 +8,18 @@ project(lad_project)
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 # via the command line or GUI
 
+# Looking for GDAL
+find_package(GDAL)
+message(STATUS "GDAL library status:")
+#message(STATUS "    version: ${GDAL_VERSION}")
+message(STATUS "    libraries: ${GDAL_LIBRARIES}")
+#message(STATUS "    include path: ${GDAL_includedir}")
+
 # Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release
 find_package(OpenCV 4.2 REQUIRED
-NO_MODULE
-PATHS /usr/local
-NO_DEFAULT_PATH)
+                        NO_MODULE
+                        PATHS /usr/local
+                        NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will
 # be set, you can find the full list with descriptions
@@ -28,28 +35,11 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 # Cross your fingers
 #find_package(CUDA)
 
-if(CUDA_FOUND)
-    INCLUDE(FindCUDA)
-  # If the package has been found, several variables will
-  # be set, you can find the full list with descriptions
-  # in the CUDAConfig.cmake file.
-  # Print some message showing some of them
-  message(STATUS "CUDA library status:")
-  message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
-  message(STATUS "    version: ${CUDA_VERSION}")
-  message(STATUS "    libraries: ${CUDA_LIBRARIES}")
-  message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
-endif(CUDA_FOUND)
+file(GLOB PROJECT_HEADERS include/*.h)
 
-# a bit greedy approach to include all the files
-file(GLOB project-include-files
-    "../common/*.h"
-    "../common/*.hxx"
-    "../common/*.cpp"
-    "include/*.h"
-    "include/*.hpp"
-    "src/*.cpp"
-)
+include_directories(include
+                    ${OpenCV_INCLUDE_DIRS}
+                    ${GDAL_INCLUDE_DIRS})
 
 # Retrieve git commit information that is forwarded at compilation time
 exec_program(
@@ -60,20 +50,19 @@ exec_program(
 # fwd git commit info via GIT_COMMIT variable
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
 
-add_executable(lad_test ${project-include-files})
-target_compile_options(lad_test PUBLIC -std=c++11)
+############################ GDAL_TEST ####################
+add_executable (lad_gdal  src/gdal_test.cpp
+                          #src/geotiff.cpp
+                          ${PROJECT_HEADERS})
 
- # Declare the executable target built from your sources
-if(CUDA_FOUND)
-  # Add definition to CUDA SUPPORT
-  add_definitions(-D USE_GPU)
-  message(STATUS "Configuring for GPU version.")
-  # Link your application with OpenCV libraries
- target_link_libraries(lad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES})
-else()
-  message(STATUS "Configuring for non-GPU version.")
-  message(STATUS "	Expect a slower speed...")
-  # Link your application with OpenCV libraries
-  target_link_libraries(lad_test ${OpenCV_LIBS})
-endif(CUDA_FOUND)
+target_compile_options(lad_gdal PUBLIC -std=c++11)
+target_link_libraries(lad_gdal ${GDAL_LIBRARIES})
+
+############################ LAD_TEST ####################
+add_executable(lad_test   src/lad_test.cpp
+                          #src/geotiff.cpp
+                          ${PROJECT_HEADERS})
+
+target_compile_options(lad_test PUBLIC -std=c++11)
+target_link_libraries(lad_test ${OpenCV_LIBS})
 
