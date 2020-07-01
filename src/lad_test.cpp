@@ -140,13 +140,6 @@ int main(int argc, char *argv[]) {
     else cout << yellow << "Using default value for [argAlphaRadius]: " << alphaShapeRadius << reset << endl;
 
     //**************************************************************************
-    // TODO: How to operate when multiple CUDA devices are detected?
-    // So far, we work with the first detected CUDA device. Maybe, add some CUDA probe mode when called
-
-    time_t now = time(0);
-    char* dt = ctime(&now);
-
-    //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "Summary" << reset << endl;
     cout << "Input file:\t" << inputFileName << endl;
@@ -163,15 +156,11 @@ int main(int argc, char *argv[]) {
     }
 
     //**************************************
-    // Print summary information of the TIFF
-    int *dim;
-    dim = geoContainer.GetDimensions();
- 
+    // Print summary information of the TIFF 
     GDALDataset *poDataset;
     poDataset = geoContainer.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
     geoContainer.ShowInformation();    
-
 
     //**************************************
     // load the image using OpenCV basic GDAL driver. We already have the map description in our own structure
@@ -190,19 +179,14 @@ int main(int argc, char *argv[]) {
 	cout << "(image) data type: " << ty << endl;
 
     // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
-    // WARNING: TODO: we are assuming that NO_DATA is lower than the minimum value of the map (usually -9999)
-    //cv:Mat matNoDataMask = (image > geoContainer.GetNoDataValue()); 
     cv::Mat matNoDataMask;
     cv::compare(image, geoContainer.GetNoDataValue(), matNoDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
-
-//    matNoDataMask.convertTo(matNoDataMask, CV_8UC1);
 
 	ty =  type2str( matNoDataMask.type() );
 	cout << "(mask) data type: " << ty << reset << endl;
 
     imshow ("Binary mask", matNoDataMask);
-
-    unsigned char c = waitKey();
+    key = (char)waitKey(0);
 
     double minValue, maxValue;
 
@@ -218,15 +202,25 @@ int main(int argc, char *argv[]) {
 
     normalize(image, new_image, 0, 255, NORM_MINMAX, CV_8UC1, matNoDataMask);
 
-    Mat img_color, image_int;
+    Mat img_color;
 
-    // Apply the colormap:
-    applyColorMap(new_image, img_color, COLORMAP_TWILIGHT_SHIFTED);
+    // apply colormap for enhanced visualization purposes
+    applyColorMap(new_image, new_image, COLORMAP_TWILIGHT_SHIFTED);
     // show remapped image
-    imshow("Colormap normalized image", img_color);
+    imshow("Colormap normalized image", new_image);
 	key = (char)waitKey(0);
 
-//	imwrite("salida.jpg", image);
-//*/
+
+    vector< vector<Point> > contours;
+    findContours(matNoDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    Mat mask = Mat::zeros(matNoDataMask.rows, matNoDataMask.cols, CV_8UC1);
+
+    drawContours(mask, contours, -1, Scalar(137), FILLED);
+
+    // contours basically contains the minimum bounding polygon down to 1-pixel resolution
+    // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
+    imshow ("Contour", mask);
+	key = (char)waitKey(0);
     return 0;
 }
