@@ -147,8 +147,7 @@ float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
 
     // get the raster data type (ENUM integer 1-12, 
     // see GDAL C/C++ documentation for more details)        
-    GDALDataType bandType = GDALGetRasterDataType(
-      geotiffDataset->GetRasterBand(layerIndex));
+    GDALDataType bandType = GDALGetRasterDataType(geotiffDataset->GetRasterBand(layerIndex));
     
     // get number of bytes per pixel in Geotiff
     int nbytes = GDALGetDataTypeSizeBytes(bandType);
@@ -160,8 +159,7 @@ float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
     for(int row=0; row<nRows; row++) {     // iterate through rows
 
       // read the scanline into the dynamically allocated row-buffer       
-      CPLErr e = geotiffDataset->GetRasterBand(layerIndex)->RasterIO(
-        GF_Read,0,row,nCols,1,rowBuff,nCols,1,bandType,0,0);
+      CPLErr e = geotiffDataset->GetRasterBand(layerIndex)->RasterIO(GF_Read,0,row,nCols,1,rowBuff,nCols,1,bandType,0,0);
       if(!(e == 0)) { 
         cout << "Warning: Unable to read scanline in Geotiff!" << endl;
         exit(1);
@@ -213,7 +211,7 @@ void Geotiff::ShowInformation(){
     adfMinMax[1] = poBand->GetMaximum( &bGotMax );
     if( ! (bGotMin && bGotMax) )
       GDALComputeRasterMinMax((GDALRasterBandH)poBand, TRUE, adfMinMax);
-    printf( "Min=%.3fd, Max=%.3f\n", adfMinMax[0], adfMinMax[1] );
+    printf( "Min=%.3f, Max=%.3f\n", adfMinMax[0], adfMinMax[1] );
     if( poBand->GetOverviewCount() > 0 )
       printf( "Band has %d overviews.\n", poBand->GetOverviewCount() );
     if( poBand->GetColorTable() != NULL )

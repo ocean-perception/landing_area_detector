@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     string outputFileName = DEFAULT_OUTPUT_FILE;
 
     if (!argOutput){
-        cerr << "Using default output filename: " << reset << "output.tif" << endl;
+        cerr << "Using default [output] filename: " << reset << "output.tif" << endl;
         // cerr << "Use -h, --help command to see usage" << endl;
         // return 1;
     }
@@ -136,12 +136,8 @@ int main(int argc, char *argv[]) {
      * These were the mandatory arguments. Now we proceed to optional parameters.
      * When each variable is defined, we assign the default value.
      */
-    /*
-     * Now, start verifying each optional argument from argParser
-     */
-
-    if (argAlphaRadius) cout << "[argAlphaRadius] value provided: " << (alphaShapeRadius = args::get(argAlphaRadius)) << endl;
-        else cout << "[argAlphaRadius] using default value: " << alphaShapeRadius << endl;
+    if (argAlphaRadius) cout << "Using user-defined [argAlphaRadius]: " << (alphaShapeRadius = args::get(argAlphaRadius)) << endl;
+    else cout << yellow << "Using default value for [argAlphaRadius]: " << alphaShapeRadius << reset << endl;
 
     //**************************************************************************
     // TODO: How to operate when multiple CUDA devices are detected?
@@ -151,7 +147,7 @@ int main(int argc, char *argv[]) {
     char* dt = ctime(&now);
 
     //**************************************************************************
-    /* List parameters */
+    /* Summary list parameters */
     cout << yellow << "Summary" << reset << endl;
     cout << "Input file:\t" << inputFileName << endl;
     cout << "Output file:\t" << outputFileName << endl;
@@ -176,97 +172,61 @@ int main(int argc, char *argv[]) {
 
     geoContainer.ShowInformation();    
 
-   	return 0;
 
-    // load the image (note that we don't have the projection information.  You will
-    // need to load that yourself or use the full GDAL driver.  The values are pre-defined
-    // at the top of this file)
- 	cout << "Opening file :" << inputFileName << "...";
+    //**************************************
+    // load the image using OpenCV basic GDAL driver. We already have the map description in our own structure
+    // TODO: correctly feed the GDAL data pointer to the OpenCV constructor when creating the cv::Mat container
+    cout << "Reading image data from [" << inputFileName << "] with OpenCV GDAL driver... ";
     cv::Mat image = cv::imread(inputFileName, cv::IMREAD_LOAD_GDAL | cv::IMREAD_GRAYSCALE );
- 
  	if (!image.data){	//fail to open input image
- 		cout << red << "Failed!" << endl;
+ 		cout << red << "failed!" << endl;
  		return -1;
  	}
     cout << green << "ok!" << endl;
 
-    //char key = (char)waitKey(0);
     char key;
+    string ty;
+	ty =  type2str( image.type() );
+	cout << "(image) data type: " << ty << endl;
 
-    cout << "Image depth: " << image.depth() << endl;
-	string ty =  type2str( image.type() );
-	cout << "Image data type: " << ty << endl;
-    cout << "Channels: " << image.channels() << endl;
+    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
+    // WARNING: TODO: we are assuming that NO_DATA is lower than the minimum value of the map (usually -9999)
+    //cv:Mat matNoDataMask = (image > geoContainer.GetNoDataValue()); 
+    cv::Mat matNoDataMask;
+    cv::compare(image, geoContainer.GetNoDataValue(), matNoDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
 
-//    cv::Vec3b min, max, pixel;
-    double min = 200000, max , pixel;
-    if (image.at<float>(0,0) > 0) min = max = image.at<float>(0,0);
-    double acum = 0;
+//    matNoDataMask.convertTo(matNoDataMask, CV_8UC1);
 
-    for( int y = 0; y < image.rows; y++ ) {
-        for( int x = 0; x < image.cols; x++ ) {
-		    pixel = image.at<float>(y,x);
-//		    if (pixel[0] > 0) cout << pixel << " ";
-			if (pixel < min){
-				if (pixel > 0) min = pixel; //get rid of no-data zero fields
-			}
-			if (pixel > max) max = pixel;
-			acum += pixel;
-/*            for( int c = 0; c < image.channels(); c++ ) {
-			    cout << pixel << " ";
-            }*/
-        }
-    }//*/
+	ty =  type2str( matNoDataMask.type() );
+	cout << "(mask) data type: " << ty << reset << endl;
 
-    cout << "Acc: " << acum << endl;
-    cout << "Mean: " << acum /(image.rows*image.cols) << endl;
-    cout << "Max: " << max << endl;
-    cout << "Min: " << min << endl;
-    float alfa = 255/(max - min);
-    cout << "Alfa: " << alfa << endl;
+    imshow ("Binary mask", matNoDataMask);
 
-    for( int y = 0; y < image.rows; y++ ) {
-        for( int x = 0; x < image.cols; x++ ) {
-//		    image.at<float>(y,x) = 50 + (x+y+1)/100;
-        	pixel = image.at<float>(y,x);
-        	if (pixel <1) image.at<float>(y,x) = min;
-//		    image.at<float>(y,x) = (image.at<float>(y,x) - min)*alfa;
-        }
-    }//*/
+    unsigned char c = waitKey();
 
-    acum = 0;
-    max = 0;
-    min = 99999;
+    double minValue, maxValue;
 
-    for( int y = 0; y < image.rows; y++ ) {
-        for( int x = 0; x < image.cols; x++ ) {
-		    pixel = image.at<float>(y,x);
-//		    if (pixel[0] > 0) cout << pixel << " ";
-			if (pixel < min){
-				if (pixel > 0) min = pixel; //get rid of no-data zero fields
-			}
-			if (pixel > max) max = pixel;
-			acum += pixel;
-        }
-    }//*/
+    cv::minMaxLoc(image, &minValue, &maxValue, NULL, NULL, matNoDataMask);
+    cout << "(image)Min: " << minValue << endl;
+    cout << "(image)Max: " << maxValue << endl;
 
-    cout << "Acc: " << acum << endl;
-    cout << "Mean: " << acum /(image.rows*image.cols) << endl;
-    cout << "Max: " << max << endl;
-    cout << "Min: " << min << endl;
+    cv::minMaxLoc(matNoDataMask, &minValue, &maxValue, NULL, NULL);
+    cout << "(matNoDataMask)Min: " << minValue << endl;
+    cout << "(matNoDataMask)Max: " << maxValue << endl;
 
     Mat new_image = Mat::zeros( image.size(), CV_8UC1 );
 
-    normalize(image, new_image,0 , 255, NORM_MINMAX, CV_8UC1);
+    normalize(image, new_image, 0, 255, NORM_MINMAX, CV_8UC1, matNoDataMask);
 
     Mat img_color, image_int;
 
     // Apply the colormap:
     applyColorMap(new_image, img_color, COLORMAP_TWILIGHT_SHIFTED);
     // show remapped image
-    imshow("Src Image", img_color);
+    imshow("Colormap normalized image", img_color);
 	key = (char)waitKey(0);
 
 //	imwrite("salida.jpg", image);
+//*/
     return 0;
 }
