@@ -19,8 +19,14 @@ class Geotiff {
     GDALDataset *geotiffDataset; // Geotiff GDAL datset object. 
     double geotransform[6];      // 6-element geotranform array.
     int dimensions[3];           // X,Y, and Z dimensions. 
-    int nRows,nCols,nLevels;     // dimensions of data in Geotiff. 
- 
+    int nRows,nCols,nBands;     // dimensions of data in Geotiff. nBands:nChannels
+    double dfNoData;
+    int bValidDataset;
+    int bGotNodata;
+	// TODO: deal with GMF_NODATA & Masks
+	// See: https://gdal.org/development/rfc/rfc15_nodatabitmask.html#rfc-15
+
+
   public: 
      
     // define constructor function to instantiate object
@@ -28,15 +34,24 @@ class Geotiff {
     Geotiff( const char* tiffname ) { 
       filename = tiffname ; 
       GDALAllRegister();
+      bValidDataset = true;
  
       // set pointer to Geotiff dataset as class member.  
       geotiffDataset = (GDALDataset*) GDALOpen(filename, GA_ReadOnly);
- 
+      if (geotiffDataset == NULL){
+        // some problem ocurred reading the file. Flag it
+        cout << "[geotiff] Error reading file: " << filename << endl;
+        cout << "[geotiff] setting geotiffDataset = NULL" << endl;
+        bValidDataset = false;
+        return;
+      }
       // set the dimensions of the Geotiff 
       nRows   = GDALGetRasterYSize( geotiffDataset ); 
       nCols   = GDALGetRasterXSize( geotiffDataset ); 
-      nLevels = GDALGetRasterCount( geotiffDataset );
- 
+      nBands = GDALGetRasterCount( geotiffDataset );
+      // retrieve, if available, no-data definition for the first band
+      // TODO: vector of no-data definitions. We could have 1 per band. How common is that?
+      dfNoData = GDALGetRasterNoDataValue (GDALGetRasterBand( geotiffDataset, 1 ), &bGotNodata);
     }
  
     // define destructor function to close dataset, 
@@ -48,6 +63,24 @@ class Geotiff {
       GDALDestroyDriverManager();
     }
  
+    GDALDataset *GetDataset();
+    /*
+     * function GDALDataset *GetDataset()
+     * Returns pointer to Geotiff GDAL dataset object
+     * 
+     */ 
+ 
+    void ShowInformation();
+    /*
+     * function void ShowInformation()
+     * This function prints out a summary of current dataset variables
+     */
+
+    bool isValid();
+    /*
+     * function bool isValid()
+     * This function returns if a valid geotiffDataset is available (e.g. succesfully read a TIFF file) 
+     */
     const char *GetFileName();
       /* 
        * function GetFileName()

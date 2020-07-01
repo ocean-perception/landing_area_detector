@@ -104,6 +104,11 @@ float** Geotiff::GetRasterBand(int z) {
   return NULL;  
 }
 
+GDALDataset *Geotiff::GetDataset(){
+  return geotiffDataset;  //return pointer to the main GDAL TIFF dataset, if user want to use GDAL C++ API directly
+  // this breaks the abstraction layer, but we do not want to isolate the whole API
+}
+
 int *Geotiff::GetDimensions() {
   /* 
     * int *GetDimensions(): 
@@ -117,10 +122,9 @@ int *Geotiff::GetDimensions() {
     */
   dimensions[0] = nRows; 
   dimensions[1] = nCols;
-  dimensions[2] = nLevels; 
+  dimensions[2] = nBands; 
   return dimensions;  
 } 
- 
  
 template<typename T>
 float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
@@ -170,4 +174,67 @@ float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
     }
     CPLFree( rowBuff );
     return bandLayer;
+}
+
+bool Geotiff::isValid(){
+  return bValidDataset;
+}
+ 
+void Geotiff::ShowInformation(){
+  /*
+  * function void ShowInformation()
+  * This function prints out a summary of current dataset variables
+  */
+	double adfGeoTransform[6];
+	cout << "Driver: " << geotiffDataset->GetDriver()->GetDescription() << "/" << geotiffDataset->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) << endl;
+	cout << "Size is X: " << geotiffDataset->GetRasterXSize() << " Y: " << geotiffDataset->GetRasterYSize() << " C: " << geotiffDataset->GetRasterCount() << endl; 
+	if( geotiffDataset->GetProjectionRef()  != NULL )
+	    cout << "Projection is " << geotiffDataset->GetProjectionRef() << endl;
+	if( geotiffDataset->GetGeoTransform( adfGeoTransform ) == CE_None )
+	{
+	    cout << "Origin = " <<  adfGeoTransform[0] << ", " << adfGeoTransform[3] << endl;
+	    cout << "Pixel Size = " << adfGeoTransform[1] << ", " << adfGeoTransform[5] << endl;
+	}
+
+  // for each available band, we print its information
+	GDALRasterBand  *poBand;
+	int             nBlockXSize, nBlockYSize;
+	int             bGotMin, bGotMax;
+	double          adfMinMax[2];
+
+  for (int i=1; i<=nBands; i++){
+    poBand = geotiffDataset->GetRasterBand(i);  // 1-indexed band number. We retrieve the first (and unique band)
+    poBand->GetBlockSize( &nBlockXSize, &nBlockYSize );
+    printf( "Block=%dx%d Type=%s, ColorInterp=%s\n",
+        nBlockXSize, nBlockYSize,
+        GDALGetDataTypeName(poBand->GetRasterDataType()),
+        GDALGetColorInterpretationName(poBand->GetColorInterpretation()) );
+    adfMinMax[0] = poBand->GetMinimum( &bGotMin );
+    adfMinMax[1] = poBand->GetMaximum( &bGotMax );
+    if( ! (bGotMin && bGotMax) )
+      GDALComputeRasterMinMax((GDALRasterBandH)poBand, TRUE, adfMinMax);
+    printf( "Min=%.3fd, Max=%.3f\n", adfMinMax[0], adfMinMax[1] );
+    if( poBand->GetOverviewCount() > 0 )
+      printf( "Band has %d overviews.\n", poBand->GetOverviewCount() );
+    if( poBand->GetColorTable() != NULL )
+      printf( "Band has a color table with %d entries.\n",
+          poBand->GetColorTable()->GetColorEntryCount() );
+
+    cout << "Units: " << poBand->GetUnitType() << endl;
+
+    // WARNING: TODO: this conditional is valid only for the first band which is retrieved in the construction at creation time
+    if (!bGotNodata){
+      cout << "Current band does not provide explicit no-data field definition" << endl;
+    }
+    else{
+      if (CPLIsNan(dfNoData)){ //test if provided NoData is NaN
+        cout << "NoData value: NaN --> " << dfNoData << endl;
+      }
+      else{
+        cout << "NoData value: " << dfNoData << endl;
+      }
+    }
+  }
+	//*/
+	// NAMES AND ORDERING OF THE AXES
 }

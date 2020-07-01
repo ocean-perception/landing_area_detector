@@ -10,9 +10,6 @@
 /* Created by:                                                      */
 /* Jose Cappelletto - j.cappelletto@soton.ac.uk		                */
 /********************************************************************/
-
-#include "../include/options.h"
-
 ///Basic C and C++ libraries
 #include <iostream>
 #include <iomanip>
@@ -41,13 +38,19 @@
 
 using namespace std;
 using namespace cv;
-using namespace cv::cuda;     //prefer explicit definitions rather than risking name mangling
+//using namespace cv::cuda;     //prefer explicit definitions rather than risking name mangling
+
+#include "../include/options.h"
+#include <geotiff.hpp>      // Geotiff class definitions
+#include "helper.cpp"
 
 const string green("\033[1;32m");
 const string yellow("\033[1;33m");
 const string cyan("\033[1;36m");
 const string red("\033[1;31m");
 const string reset("\033[0m");
+
+#define DEFAULT_OUTPUT_FILE "output.tif"
 
 // #cmakedefine USE_GPU
 
@@ -62,58 +65,6 @@ double t;			// Timing monitor
 //**** 5- Determine the concave alphaShape
 //**** 6- Export binary image as geoTIFF and the alphaShape as ESRI Shapefile
 
-float alphaShapeRadius = 1.0;
-
-cv::Point2d pixel2world( const int&, const int&, const cv::Size& );
-cv::Point2d lerp( const cv::Point2d&, const cv::Point2d&, const double& );
-
-/*
- * Linear Interpolation
- * p1 - Point 1
- * p2 - Point 2
- * t  - Ratio from Point 1 to Point 2
-*/
-cv::Point2d lerp( cv::Point2d const& p1, cv::Point2d const& p2, const double& t ){
-    return cv::Point2d( ((1-t)*p1.x) + (t*p2.x),
-                        ((1-t)*p1.y) + (t*p2.y));
-}
-
-/*
- * Convert a pixel coordinate to world coordinates
-*/
-/*cv::Point2d pixel2world( const int& x, const int& y, const cv::Size& size ){
-    // compute the ratio of the pixel location to its dimension
-    double rx = (double)x / size.width;
-    double ry = (double)y / size.height;
-    // compute LERP of each coordinate
-    cv::Point2d rightSide = lerp(tr, br, ry);
-    cv::Point2d leftSide  = lerp(tl, bl, ry);
-    // compute the actual Lat/Lon coordinate of the interpolated coordinate
-    return lerp( leftSide, rightSide, rx );
-}//*/
-
-string type2str(int type) {
-  string r;
-
-  uchar depth = type & CV_MAT_DEPTH_MASK;
-  uchar chans = 1 + (type >> CV_CN_SHIFT);
-
-  switch ( depth ) {
-    case CV_8U:  r = "8U"; break;
-    case CV_8S:  r = "8S"; break;
-    case CV_16U: r = "16U"; break;
-    case CV_16S: r = "16S"; break;
-    case CV_32S: r = "32S"; break;
-    case CV_32F: r = "32F"; break;
-    case CV_64F: r = "64F"; break;
-    default:     r = "User"; break;
-  }
-
-  r += "C";
-  r += (chans+'0');
-
-  return r;
-}
 
 /*!
 	@fn		int main(int argc, char* argv[])
@@ -155,6 +106,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    float alphaShapeRadius = 1.0;
     int CUDA = 0;                                       //Default option (running with CPU)
     /*
      * Start parsing mandatory arguments
@@ -166,15 +118,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (!argOutput){
-        cerr << "Mandatory <output> file name missing" << endl;
-        cerr << "Use -h, --help command to see usage" << endl;
-        return 1;
-    }
-
     string inputFileName = args::get(argInput);	//String containing the input file path+name from cvParser function
-    string outputFileName = args::get(argOutput);	//String containing the output file template from cvParser function
+    string outputFileName = DEFAULT_OUTPUT_FILE;
 
+    if (!argOutput){
+        cerr << "Using default output filename: " << reset << "output.tif" << endl;
+        // cerr << "Use -h, --help command to see usage" << endl;
+        // return 1;
+    }
+    else
+    {
+        outputFileName = args::get(argOutput);	//String containing the output file template from cvParser function
+        cout << "Output filename: " << outputFileName << endl;
+    }
+    
     /*
      * These were the mandatory arguments. Now we proceed to optional parameters.
      * When each variable is defined, we assign the default value.
@@ -194,20 +151,32 @@ int main(int argc, char *argv[]) {
     char* dt = ctime(&now);
 
     //**************************************************************************
-    /* FILE LIST INPUT */
+    /* List parameters */
     cout << yellow << "Summary" << reset << endl;
     cout << "Input file:\t" << inputFileName << endl;
     cout << "Output file:\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
     cout << "***********************************" << endl;
 
-    //*****************************************************************************
-    //***** Open the input TIFF file
+    // create the container and the open input file
+    Geotiff geoContainer (inputFileName.c_str());
 
-    //Sequence:
-    //  1- Read input file (path/filename must be accepted)
-    //  2- Test/open all the mandatory fields in the input
-    //  3- Extract extent, resolution, no_data and image statistics
+    if (!geoContainer.isValid()){ // check if nothing wrong happened with the constructor
+        cout << red << "Error opening Geotiff file: " << reset << inputFileName << endl;
+        return -1;
+    }
+
+    //**************************************
+    // Print summary information of the TIFF
+    int *dim;
+    dim = geoContainer.GetDimensions();
+ 
+    GDALDataset *poDataset;
+    poDataset = geoContainer.GetDataset(); //pull the pointer to the main GDAL dataset structure
+
+    geoContainer.ShowInformation();    
+
+   	return 0;
 
     // load the image (note that we don't have the projection information.  You will
     // need to load that yourself or use the full GDAL driver.  The values are pre-defined
