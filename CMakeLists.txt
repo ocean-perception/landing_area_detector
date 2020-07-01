@@ -35,10 +35,10 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 #find_package(CUDA) #not required yet
 
 # Greedy include of all headers
-file(GLOB PROJECT_HEADERS include/*.h)
+file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
 include_directories(include
                     ${OpenCV_INCLUDE_DIRS}
-                    ${GDAL_INCLUDE_DIRS})
+                    ${GDAL_INCLUDE_DIR})
 
 # Retrieve git commit information, forward it to compilation time
 exec_program(
@@ -51,16 +51,16 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
 
 ############################ GDAL_TEST ####################
 add_executable (lad_gdal  src/gdal_test.cpp
-                          #src/geotiff.cpp
+                          src/geotiff.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_gdal PUBLIC -std=c++11)
-target_link_libraries(lad_gdal ${GDAL_LIBRARIES})
+target_link_libraries(lad_gdal ${OpenCV_LIBS} ${GDAL_LIBRARY})
 
 ############################ LAD_TEST ####################
 add_executable(lad_test   src/lad_test.cpp
-                          #src/geotiff.cpp
+                          src/geotiff.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_test PUBLIC -std=c++11)
-target_link_libraries(lad_test ${OpenCV_LIBS})
+target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY})
