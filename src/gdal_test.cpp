@@ -36,6 +36,19 @@ int main()
 	int bGotNodata = FALSE;
     const double dfNoData = GDALGetRasterNoDataValue (hBand, &bGotNodata);
 
+	// TODO: deal with GMF_NODATA & Masks
+	// See: https://gdal.org/development/rfc/rfc15_nodatabitmask.html#rfc-15
+/*	The GDALRasterBand class will include a default implementation of GetMaskBand() that returns one of three default implementations.
+
+    If a corresponding .msk file exists it will be used for the mask band.
+
+    If the band has a nodata value set, an instance of the new GDALNodataMaskRasterBand class will be returned. GetMaskFlags() will return GMF_NODATA.
+
+    If there is no nodata value, but the dataset has an alpha band that seems to apply to this band (specific rules yet to be determined) and that is of type GDT_Byte then that alpha band will be returned, and the flags GMF_PER_DATASET and GMF_ALPHA will be returned in the flags.
+
+    If neither of the above apply, an instance of the new GDALAllValidRasterBand class will be returned that has 255 values for all pixels. The null flags will return GMF_ALL_VALID.
+//*/
+
 	if (bGotNodata == FALSE){
 		cout << "Current band does not provide explicit no-data field definition" << endl;
 	}
