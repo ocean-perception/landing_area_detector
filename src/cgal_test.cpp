@@ -9,6 +9,7 @@
 #include <iostream>
 #include <list>
 #include <vector>
+
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  K;
 typedef K::FT                                                FT;
 typedef K::Point_2                                           Point;
@@ -54,10 +55,9 @@ int main()
     points.push_back(Point(10,0));
     points.push_back(Point(6,5));
     points.push_back(Point(4,1));
-
-    
-
- 
+    // force locally defined points, as file format for test points is not-defined in their documentation
+    // TODO: work on this to convert the OpenCV vector of points defining the contour of the binary mask,
+    // to list of CGAL poins
   Alpha_shape_2 A(points.begin(), points.end(),
                   FT(10000),
                   Alpha_shape_2::GENERAL);

@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
-    cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;
+    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;
 
     try{
         argParser.ParseCLI(argc, argv);
@@ -182,9 +182,21 @@ int main(int argc, char *argv[]) {
     cv::Mat matNoDataMask;
     cv::compare(image, geoContainer.GetNoDataValue(), matNoDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
 
+    float **apData;
+    apData = geoContainer.GetRasterBand(1);
+    cout << "Matrix content : _______________________________" << cyan << endl;
+    for (int i=0; i<10; i++){
+        for (int j=0; j<10; j++){
+            cout << apData[i][j] << " ";
+        }
+        cout << reset << endl;
+    }
+    cout << apData << endl;
+
 	ty =  type2str( matNoDataMask.type() );
 	cout << "(mask) data type: " << ty << reset << endl;
 
+    imshow ("Original image", image);
     imshow ("Binary mask", matNoDataMask);
     key = (char)waitKey(0);
 
@@ -222,9 +234,11 @@ int main(int argc, char *argv[]) {
     erode_kernel = erode_kernel * 200;
     // contours basically contains the minimum bounding polygon down to 1-pixel resolution
     // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
-    imshow ("Contour", mask);
-    imshow ("Kernel", erode_kernel);
-    imshow ("Eroded", erode_output);
+    // imshow ("Contour", mask);
+    imshow ("Colourmap", new_image);
+    
+    // imshow ("Kernel", erode_kernel);
+    // imshow ("Eroded", erode_output);
 	key = (char)waitKey(0);
 
     // cout << contours[0] ;
