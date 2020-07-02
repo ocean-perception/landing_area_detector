@@ -34,12 +34,40 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 # Cross your fingers
 #find_package(CUDA) #not required yet
 
+find_package(GDAL 2.2 REQUIRED)
+message(STATUS "GDAL library status:")
+#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
+message(STATUS "    libraries: ${GDAL_LIBRARY}")
+message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
+
+#find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
+find_package( CGAL QUIET COMPONENTS  )
+if ( NOT CGAL_FOUND )
+  message(STATUS "This project requires the CGAL library, and will not be compiled.")
+  return()  
+endif()
+message(STATUS "CGAL library status:")
+#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
+message(STATUS "    libraries: ${CGAL_LIBRARY}")
+message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
+
+# include helper file
+include( ${CGAL_USE_FILE} )
+
+# Boost and its components
+find_package( Boost REQUIRED )
+
+if ( NOT Boost_FOUND )
+  message(STATUS "This project requires the Boost library, and will not be compiled.")
+  return()  
+endif()
+
 # Greedy include of all headers
 file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
-include_directories(include
+include_directories(BEFORE ../include
+                    include
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIR})
-
 # Retrieve git commit information, forward it to compilation time
 exec_program(
     "git"
@@ -56,6 +84,15 @@ add_executable (lad_gdal  src/gdal_test.cpp
 
 target_compile_options(lad_gdal PUBLIC -std=c++11)
 target_link_libraries(lad_gdal ${OpenCV_LIBS} ${GDAL_LIBRARY})
+
+############################ LAD_TEST ####################
+add_executable(cgal_test  src/cgal_test.cpp
+                          ${PROJECT_HEADERS})
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS cgal_test )
+
+target_compile_options(cgal_test PUBLIC -std=c++11)
+target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
+#target_link_libraries(cgal_test CGAL::CGAL CGAL::CGAL_Core)
 
 ############################ LAD_TEST ####################
 add_executable(lad_test   src/lad_test.cpp

@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     }
 
     float alphaShapeRadius = 1.0;
-    int CUDA = 0;                                       //Default option (running with CPU)
+//    int CUDA = 0;                                       //Default option (running with CPU)
     /*
      * Start parsing mandatory arguments
      */
@@ -206,21 +206,27 @@ int main(int argc, char *argv[]) {
 
     // apply colormap for enhanced visualization purposes
     applyColorMap(new_image, new_image, COLORMAP_TWILIGHT_SHIFTED);
-    // show remapped image
-    imshow("Colormap normalized image", new_image);
-	key = (char)waitKey(0);
-
 
     vector< vector<Point> > contours;
     findContours(matNoDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
     Mat mask = Mat::zeros(matNoDataMask.rows, matNoDataMask.cols, CV_8UC1);
 
-    drawContours(mask, contours, -1, Scalar(137), FILLED);
+    drawContours(mask, contours, -1, Scalar(137), 2);
 
+    Mat erode_output = Mat::zeros(matNoDataMask.rows, matNoDataMask.cols, CV_8UC1);
+    Mat erode_kernel = Mat::ones(20, 50, CV_8UC1);
+
+    cv::erode(matNoDataMask, erode_output, erode_kernel);
+
+    erode_kernel = erode_kernel * 200;
     // contours basically contains the minimum bounding polygon down to 1-pixel resolution
     // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
     imshow ("Contour", mask);
+    imshow ("Kernel", erode_kernel);
+    imshow ("Eroded", erode_output);
 	key = (char)waitKey(0);
+
+    // cout << contours[0] ;
     return 0;
 }
