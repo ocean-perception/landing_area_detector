@@ -58,11 +58,25 @@ int processGeotiff(Geotiff *apGeotiff){
     cout << "(matDataMask) Max: " << maxValue << endl;
 
     vector< vector<Point> > contours;   // find contours of the DataMask layer
-    findContours(matDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+    findContours(matDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); // obtaining only 1st level contours, no children
 
+    cout << "# Contours detected: " << contours.size() << endl;
+    if (!contours.size()){
+        cout << red << "No contour line was detected! Exitting" << endl;
+        return -1;
+    }
+
+    // WARNING: contours may provide false shapes when valida data mask reaches any image edge.
+    // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
+    // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
     Mat boundingLayer = Mat::zeros(matDataMask.size(), CV_8UC1);   // empty mask
-
-    drawContours(boundingLayer, contours, -1, Scalar(255), 1); // overlay contours in new mask layer, 1px width line, white
+    int n =0;
+    for (const auto &contour: contours){
+        cout << "Contour["<< n++ <<"] size: " << contour.size() << endl;
+        drawContours(boundingLayer, contours, -1, Scalar(255*n/contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
+    }
+    cv::Mat mask_colormap(boundingLayer.size(), CV_8UC3);
+    cv::applyColorMap(boundingLayer, mask_colormap, COLORMAP_TURBO);
 
     Mat erode_output = Mat::zeros(matDataMask.rows, matDataMask.cols, CV_8UC1);
     Mat erode_kernel = Mat::ones(20, 50, CV_8UC1);
@@ -70,19 +84,11 @@ int processGeotiff(Geotiff *apGeotiff){
 
     // contours basically contains the minimum bounding polygon down to 1-pixel resolution
     // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
-    
-    imshow ("Contour", boundingLayer);
+
+    imshow ("Contour", mask_colormap);
     imshow ("Eroded mask", erode_output * 255);
     waitKey(0);
-    cout << "# Contours detected: " << contours.size() << endl;
-    if (!contours.size()){
-        cout << red << "No contour line was detected! Exitting" << endl;
-        return -1;
-    }
-    int n =0;
-    for (const auto &contour: contours){
-        cout << "Contour["<< n++ <<"] size: " << contour.size() << endl;
-    }
-
+    imwrite("contours.tif",boundingLayer);
+    imwrite("contours_color.tif",mask_colormap);
     return 0;
 }
