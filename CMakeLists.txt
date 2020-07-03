@@ -98,6 +98,7 @@ target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} 
 add_executable(lad_test   src/lad_test.cpp
                           src/lad_analysis.cpp
                           src/geotiff.cpp
+                          src/lad_core.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_test PUBLIC -std=c++11)

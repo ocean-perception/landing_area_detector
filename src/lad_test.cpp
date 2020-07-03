@@ -13,6 +13,8 @@
 #include "options.h"
 #include "headers.h"
 #include "lad_analysis.h"
+#include "lad_core.hpp"
+#include "lad_enum.hpp"
 
 using namespace std;
 using namespace cv;
@@ -55,24 +57,24 @@ int main(int argc, char *argv[]) {
     }
     catch (args::Help){    // if argument asking for help, show this message
         cout << argParser;
-        return 1;
+        return lad::ERROR_MISSING_ARGUMENT;
     }
     catch (args::ParseError e){  //if some error ocurr while parsing, show summary
         std::cerr << e.what() << std::endl;
         std::cerr << "Use -h, --help command to see usage" << std::endl;
-        return 1;
+        return lad::ERROR_WRONG_ARGUMENT;
     }
     catch (args::ValidationError e){ // if some error at argument validation, show
         std::cerr << "Bad input commands" << std::endl;
         std::cerr << "Use -h, --help command to see usage" << std::endl;
-        return 1;
+        return lad::ERROR_WRONG_ARGUMENT;
     }
 
     // Start parsing mandatory arguments
     if (!argInput){
         cerr << "Mandatory <input> file name missing" << endl;
         cerr << "Use -h, --help command to see usage" << endl;
-        return 1;
+        return lad::ERROR_MISSING_ARGUMENT;
     }
 
     string inputFileName = args::get(argInput);	//String containing the input file path+name from cvParser function
@@ -80,8 +82,6 @@ int main(int argc, char *argv[]) {
 
     if (!argOutput){
         cerr << "Using default [output] filename: " << reset << "output.tif" << endl;
-        // cerr << "Use -h, --help command to see usage" << endl;
-        // return 1;
     }
     else
     {
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
     Geotiff geoContainer (inputFileName.c_str());
     if (!geoContainer.isValid()){ // check if nothing wrong happened with the constructor
         cout << red << "Error opening Geotiff file: " << reset << inputFileName << endl;
-        return -1;
+        return lad::ERROR_GDAL_FAILOPEN;
     }
 
     //**************************************
@@ -121,5 +121,5 @@ int main(int argc, char *argv[]) {
 
     processGeotiff(&geoContainer);
     
-    return 0;
+    return lad::NO_ERROR;
 }

@@ -20,12 +20,20 @@
 using namespace std;    // STL
 using namespace cv;     // OpenCV
 
-namespace lad{      //!< landing area detection algorithm namspace
+namespace lad{      //!< landing area detection algorithm namespace
 
-    cv::Mat Layer;
+    class LAD{
+        private:
+            int pipelineStep;
+            int bValidInput;
 
-
+        public:
+            Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
+            vector <cv::Mat> RasterLayers;  //!< Vector of OpenCV raster images containing intermediate and final products
+            // vector <vector> VectorLayers;  // TODO: define proper structure to store vector shapefiles
+            vector <std::string> outputLayerNames;   //!< Vector containing name of each layer
+            std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
+    };
 }
-
 
 #endif // _LAD_CORE_HPP_ 
