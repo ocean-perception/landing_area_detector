@@ -168,4 +168,11 @@ class Geotiff {
  
        // get the raster data type (ENUM integer 1-12, 
        // see GDAL C/C++ documentation for more details)         
+
+// TODO: DOCUMENTATION
+    // template<typename T>
+    float* GetArray1D(int layerIndex,float* bandLayer);
+
+
+
 };

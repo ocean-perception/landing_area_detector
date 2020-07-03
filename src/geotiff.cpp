@@ -125,7 +125,7 @@ int *Geotiff::GetDimensions() {
   dimensions[2] = nBands; 
   return dimensions;  
 } 
- 
+
 template<typename T>
 float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
 
@@ -235,4 +235,31 @@ void Geotiff::ShowInformation(){
   }
 	//*/
 	// NAMES AND ORDERING OF THE AXES
+}
+
+
+// template<typename T>
+float* Geotiff::GetArray1D(int layerIndex,float* bandLayer) {
+    // get the raster data type (ENUM integer 1-12, 
+    // see GDAL C/C++ documentation for more details)        
+    GDALDataType bandType = GDALGetRasterDataType(geotiffDataset->GetRasterBand(layerIndex));
+    
+    // get number of bytes per pixel in Geotiff
+    int nbytes = GDALGetDataTypeSizeBytes(bandType);
+
+    // allocate pointer to memory block for one row (scanline) 
+    // in 2D Geotiff array.  
+    float *dataBuff = (float *) CPLMalloc(nbytes*nCols*nRows);
+
+    CPLErr e = geotiffDataset->GetRasterBand(layerIndex)->RasterIO(GF_Read,0,0,nCols,nRows,dataBuff,nCols,nRows,bandType,0,0);
+    if(!(e == 0)) { 
+      cout << "Warning: Unable to read scanline in Geotiff!" << endl;
+      exit(1);
+    } 
+    bandLayer = new float[nCols*nRows];
+    for( int i=0; i<nCols*nRows; i++ ) { // iterate through columns
+      bandLayer[i] = (float)dataBuff[i];
+    }
+    CPLFree( dataBuff );
+    return bandLayer;
 }
