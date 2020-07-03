@@ -1,3 +1,13 @@
+/**
+ * @file headers.h
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief Single collection of global libraries required in major modules
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #ifndef _HEADERS_H_
 
 #define _HEADERS_H_

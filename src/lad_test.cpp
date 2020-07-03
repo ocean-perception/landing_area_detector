@@ -1,14 +1,13 @@
-/********************************************************************/
-/* Project: Landing Area Detection algorithm						*/
-/* Module: 	lad_test												*/
-/* File: 	lad_test.cpp                                            */
-/* Created:		18/06/2020                                          */
-/* Description
-*/
-/********************************************************************/
-/* Created by:                                                      */
-/* Jose Cappelletto - j.cappelletto@soton.ac.uk		                */
-/********************************************************************/
+/**
+ * @file lad_test.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL & GDAL
+ * @version 0.2
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include <geotiff.hpp>      // Geotiff class definitions 
 #include "options.h"
 #include "headers.h"

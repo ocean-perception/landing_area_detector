@@ -1,3 +1,13 @@
+/**
+ * @file cgal_test.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief CGAL testing sandbox
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>

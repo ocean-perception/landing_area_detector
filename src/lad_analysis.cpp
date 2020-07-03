@@ -1,15 +1,13 @@
-/********************************************************************/
-/* Project: Landing Area Detection algorithm						*/
-/* Module: 	lad_analysis												*/
-/* File: 	lad_analysis.cpp                                            */
-/* Created:		02/07/2020                                          */
-/* Description
-*/
-
-/********************************************************************/
-/* Created by:                                                      */
-/* Jose Cappelletto - j.cappelletto@soton.ac.uk		                */
-/********************************************************************/
+/**
+ * @file lad_analysis.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief Extended processing functions for bathymetry raster maps analysis
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 
 #include "headers.h"
 #include "lad_analysis.h"

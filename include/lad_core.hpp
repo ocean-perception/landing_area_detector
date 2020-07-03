@@ -1,15 +1,14 @@
-/********************************************************************/
-/* Project: Landing Area Detection algorithm						*/
-/* Module: 	lad_core												*/
-/* File: 	lad_core.hpp                                            */
-/* Created:		03/07/2020                                          */
-/* Description
-*/
+/**
+ * @file lad_core.hpp
+ * @author Jose Cappelletto (j.cappelletto@soton.ac.uk)
+ * @brief Core module of Landing Area Detection (lad) algorithm
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 
-/********************************************************************/
-/* Created by:                                                      */
-/* Jose Cappelletto - j.cappelletto@soton.ac.uk		                */
-/********************************************************************/
 // pragma once is not "standard"
 #ifndef _LAD_CORE_HPP_ 
 #define _LAD_CORE_HPP_

@@ -1,3 +1,14 @@
+/**
+ * @file helper.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
 #ifndef _HELPER_CPP_
 #define _HELPER_CPP_
 
@@ -5,7 +16,12 @@
 #include "helper.h"
 using namespace std;
 
-// Convert OpenCV data type to human readable format
+/**
+ * @brief Convert OpenCV data type into human readable format (e.g. CV32FC1)
+ * 
+ * @param type 
+ * @return std::string 
+ */
 std::string type2str(int type) {
   string r;
 

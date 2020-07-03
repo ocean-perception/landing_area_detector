@@ -1,4 +1,13 @@
-// From https://gerasimosmichalitsianos.wordpress.com/2018/11/30/431/
+/**
+ * @file geotiff.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief Provides a simple interface to GDAL API fo reading geoTIFF files
+ * @version 0.1
+ * @date 2020-07-03
+ * @copyright Copyright (c) 2020
+ * @url Based on https://gerasimosmichalitsianos.wordpress.com/2018/11/30/431/
+ * @author Gerasimos Michalitsianos
+ * */
 
 #include <geotiff.hpp>
 // GDAL specific libraries
@@ -12,11 +21,12 @@
 #include <gdalwarper.h>
 #include <stdlib.h>
  
+/**
+ * @brief This function returns the filename of the Geotiff
+ * 
+ * @return const char* 
+ */
 const char *Geotiff::GetFileName() { 
-    /* 
-      * function GetFileName()
-      * This function returns the filename of the Geotiff. 
-      */
     return filename; 
   }
  
@@ -35,25 +45,29 @@ double Geotiff::GetNoDataValue() {
   //  return (double)geotiffDataset->GetRasterBand(1)->GetNoDataValue();
   }
 
+/**
+ * @brief Returns the geotiff file projection as string
+ * @details This function returns a character array (string) 
+ *  for the projection of the geotiff file. Note that
+ *  the "->" notation is used. This is because the 
+ *  "geotiffDataset" class variable is a pointer 
+ *  to an object or structure, and not the object
+ *  itself, so the "." dot notation is not used. 
+ * @return const char* 
+ */
 const char *Geotiff::GetProjection() { 
-    /* function const char* GetProjection(): 
-      *  This function returns a character array (string) 
-      *  for the projection of the geotiff file. Note that
-      *  the "->" notation is used. This is because the 
-      *  "geotiffDataset" class variable is a pointer 
-      *  to an object or structure, and not the object
-      *  itself, so the "." dot notation is not used. 
-      */
     return geotiffDataset->GetProjectionRef(); 
   } 
- 
+
+/**
+ * @brief Returns a pointer to the 6-D geo-transformation of the geotiff file 
+ * @details This function returns a pointer to a double that 
+ *  is the first element of a 6 element array that holds
+ *  the geotransform of the geotiff.  
+ * 
+ * @return double* 
+ */
 double *Geotiff::GetGeoTransform() {
-  /* 
-    * function double *GetGeoTransform() 
-    *  This function returns a pointer to a double that 
-    *  is the first element of a 6 element array that holds
-    *  the geotransform of the geotiff.  
-    */
   geotiffDataset->GetGeoTransform(geotransform);
   return geotransform; 
 } 
