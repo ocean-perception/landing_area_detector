@@ -1,3 +1,6 @@
+#ifndef _GEOTIFF_HPP_
+#define _GEOTIFF_HPP_
+
 #include <iostream>
 #include <string>
 #include <gdal_priv.h>
@@ -176,3 +179,5 @@ class Geotiff {
 
 
 };
+
+#endif

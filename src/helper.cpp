@@ -1,7 +1,12 @@
+#ifndef _HELPER_CPP_
+#define _HELPER_CPP_
 
+#include "headers.h"
+#include "helper.h"
 using namespace std;
 
-string type2str(int type) {
+// Convert OpenCV data type to human readable format
+std::string type2str(int type) {
   string r;
 
   uchar depth = type & CV_MAT_DEPTH_MASK;
@@ -23,3 +28,5 @@ string type2str(int type) {
 
   return r;
 }
+
+#endif

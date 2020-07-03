@@ -96,6 +96,7 @@ target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} 
 
 ############################ LAD_TEST ####################
 add_executable(lad_test   src/lad_test.cpp
+                          src/lad_analysis.cpp
                           src/geotiff.cpp
                           ${PROJECT_HEADERS})
 
