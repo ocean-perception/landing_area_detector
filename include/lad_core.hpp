@@ -20,6 +20,10 @@
 using namespace std;    // STL
 using namespace cv;     // OpenCV
 
+/**
+ * @brief Protoype definition of base namespace lad
+ * 
+ */
 namespace lad{      //!< landing area detection algorithm namespace
 
     class LAD{

@@ -19,6 +19,12 @@
 using namespace std;
 using namespace cv;
 
+/**
+ * @brief Integrated pre-processing pipeline from Geotiff object to boundary mask
+ * 
+ * @param apGeotiff 
+ * @return int 
+ */
 int processGeotiff(Geotiff *apGeotiff){
         
     int *dimensions;
@@ -92,3 +98,25 @@ int processGeotiff(Geotiff *apGeotiff){
     imwrite("contours_color.tif",mask_colormap);
     return 0;
 }
+
+
+/*
+    TODO: FOR MEMCPY OF GDAL GEOTIFF DATA STREAM TO CVMAT
+
+std:vector<std::vector<float> > OrigSamples;
+...
+... // Here OrigSamples is filled with some rows with the same row size
+...
+
+// Create a new, _empty_ cv::Mat with the row size of OrigSamples
+cv::Mat NewSamples(0, OrigSamples[0].size(), cv::DataType<float>::type);
+
+for (unsigned int i = 0; i < OrigSamples.size(); ++i)
+{
+  // Make a temporary cv::Mat row and add to NewSamples _without_ data copy
+  cv::Mat Sample(1, OrigSamples[0].size(), cv::DataType<float>::type, OrigSamples[i].data());
+
+  NewSamples.push_back(Sample);
+}
+
+*/
