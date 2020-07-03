@@ -149,91 +149,71 @@ int main(int argc, char *argv[]) {
 
     // create the container and the open input file
     Geotiff geoContainer (inputFileName.c_str());
-
     if (!geoContainer.isValid()){ // check if nothing wrong happened with the constructor
         cout << red << "Error opening Geotiff file: " << reset << inputFileName << endl;
         return -1;
     }
 
     //**************************************
-    // Print summary information of the TIFF 
+    // Get/print summary information of the TIFF 
     GDALDataset *poDataset;
     poDataset = geoContainer.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
-    geoContainer.ShowInformation();    
+    // geoContainer.ShowInformation();    
     int *dimensions;
     dimensions = geoContainer.GetDimensions();
     //**************************************
-    // load the image using OpenCV basic GDAL driver. We already have the map description in our own structure
-    // TODO: correctly feed the GDAL data pointer to the OpenCV constructor when creating the cv::Mat container
-    cout << "Reading image data from [" << inputFileName << "] with OpenCV GDAL driver... ";
-    cv::Mat image = cv::imread(inputFileName, cv::IMREAD_LOAD_GDAL | cv::IMREAD_GRAYSCALE );
- 	if (!image.data){	//fail to open input image
- 		cout << red << "failed!" << endl;
- 		return -1;
- 	}
-    cout << green << "ok!" << endl;
-
-    char key;
-    string ty;
-	ty =  type2str( image.type() );
-	cout << "(image) data type: " << ty << endl;
-
-    cv::Mat matDataMask;    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
-    cv::compare(image, geoContainer.GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
-
     float **apData; //pull 2D float matrix containing the image data for Band 1
     apData = geoContainer.GetRasterBand(1);
-    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
 
+    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
     for (int i=0; i<dimensions[0]; i++){
         for (int j=0; j<dimensions[1]; j++){
-            tiff.at<float>(cv::Point(j,i)) = (float)apData[i][j];
+            tiff.at<float>(cv::Point(j,i)) = (float)apData[i][j];   // swap row/cols from matrix to OpenCV container
         }
     }
 
-    Mat tiff_colormap = Mat::zeros( tiff.size(), CV_8UC1 );
-    normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, matDataMask);
+    cv::Mat matDataMask;    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
+    cv::compare(tiff, geoContainer.GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
+
+    cv::Mat tiff_colormap = Mat::zeros( tiff.size(), CV_8UC1 ); // colour mapped image for visualization purposes
+    cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, matDataMask); // normalize within the expected range 0-255 for imshow
     // apply colormap for enhanced visualization purposes
-    applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
+    cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
 
     imshow("tiff colormap", tiff_colormap); // this will show nothing, as imshow needs remapped images
     waitKey(0);
 
-	ty =  type2str( matDataMask.type() );
-	cout << "(mask) data type: " << ty << reset << endl;
-
-    // imshow ("Binary mask", matDataMask);
-    // key = (char)waitKey(0);
 
     double minValue, maxValue;
 
     cv::minMaxLoc(tiff, &minValue, &maxValue, NULL, NULL, matDataMask);
+	cout << "(tiff) data type: " << type2str(tiff.type()) << endl;
     cout << "(tiff) Min: " << minValue << endl;
     cout << "(tiff) Max: " << maxValue << endl;
 
     cv::minMaxLoc(matDataMask, &minValue, &maxValue, NULL, NULL);
+	cout << "(mask) data type: " << type2str(matDataMask.type()) << endl;
     cout << "(matDataMask) Min: " << minValue << endl;
     cout << "(matDataMask) Max: " << maxValue << endl;
 
-    vector< vector<Point> > contours;
+    vector< vector<Point> > contours;   // find contours of the DataMask layer
     findContours(matDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
     Mat boundingLayer = Mat::zeros(matDataMask.size(), CV_8UC1);   // empty mask
 
-    drawContours(boundingLayer, contours, -1, Scalar(137), 2); // overlay contours in new mask layer
+    drawContours(boundingLayer, contours, -1, Scalar(255), 1); // overlay contours in new mask layer, 1px width line, white
 
     Mat erode_output = Mat::zeros(matDataMask.rows, matDataMask.cols, CV_8UC1);
     Mat erode_kernel = Mat::ones(20, 50, CV_8UC1);
-
     cv::erode(matDataMask, erode_output, erode_kernel); // erode kernel to valid data mask
 
-    erode_kernel = erode_kernel * 200;
     // contours basically contains the minimum bounding polygon down to 1-pixel resolution
     // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
     
     imshow ("Contour", boundingLayer);
-    key = (char)waitKey(0);
-    cout << contours[0];
+    imshow ("Eroded mask", erode_output * 255);
+    waitKey(0);
+    cout << "Contours[N]: " << contours.size() << endl;
     return 0;
 }
