@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 2.8)  # we could bump to >3.4
 set(CMAKE_COLOR_MAKEFILE ON)
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
+if (${FORCE_COLORED_OUTPUT})
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        target_compile_options (project_options INTERFACE -fcolor-diagnostics)
+    endif ()
+endif ()
+
 # Define project name
 project(lad_project)
 
@@ -56,12 +64,18 @@ if ( NOT Boost_FOUND )
   return()  
 endif()
 
+# Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain
+#add_subdirectory(external/geotiff)
+set (GEOTIFF_MODULE external/geotiff)
+
 # Greedy include of all headers
 file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
 include_directories(BEFORE ../include
                     include
                     ${OpenCV_INCLUDE_DIRS}
-                    ${GDAL_INCLUDE_DIR})
+                    ${GDAL_INCLUDE_DIR}
+                    ${GEOTIFF_MODULE}/include)
+
 # Retrieve git commit information, forward it to compilation time
 exec_program(
     "git"
@@ -73,7 +87,7 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
 
 ############################ GDAL_TEST ####################
 add_executable (lad_gdal  src/gdal_test.cpp
-                          src/geotiff.cpp
+                          ${GEOTIFF_MODULE}/src/geotiff.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_gdal PUBLIC -std=c++11)
@@ -91,9 +105,11 @@ target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} 
 ############################ LAD_TEST ####################
 add_executable(lad_test   src/lad_test.cpp
                           src/lad_analysis.cpp
-                          src/geotiff.cpp
+                          ${GEOTIFF_MODULE}/src/geotiff.cpp
                           src/lad_core.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_test PUBLIC -std=c++11)
 target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY})
+
+install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)
