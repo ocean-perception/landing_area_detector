@@ -15,6 +15,7 @@
 
 #include "geotiff.hpp"
 #include "headers.h"
+#include "lad_enum.hpp"
 
 using namespace std;    // STL
 using namespace cv;     // OpenCV
@@ -70,15 +71,29 @@ namespace lad{      //!< landing area detection algorithm namespace
 
     class classRasterLayer: public Layer{
         public:
+            // this should interface with OpenCV Mat and 2D matrix (vector style)
             cv::Mat rasterData; //OpenCV matrix that will hold the data
     };
 
     class classVectorLayer: public Layer{
         public:
+            // this should interface with both GDAL and CGAL containers
             vector <cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+            /**
+             * @brief Destroy the class Vector Layer object
+             * 
+             */
+            ~classVectorLayer(){
+                // Just in case vector wasn't properly deallocated (it should once we are out of its scope!)
+            }
     };
 
-    class LAD{
+    class classKernelLayer: public virtual classRasterLayer{
+        public:
+            double dRotation; //!< Rotation angle of the given kernel (in radians)
+    };
+
+    class ladPipeline{
         private:
             int pipelineStep;
             int bValidInput;
@@ -95,9 +110,11 @@ namespace lad{      //!< landing area detection algorithm namespace
             std::string GetKernelLayerName (int id); //!< Returns name of KernelLayer with given ID number
             std::string GetVectorLayerName (int id); //!< Returns name of VectorLayer with given ID number
 
+            int GetRasterLayerID (std::string name); //!< Return first raster that matches 'name' as layer name
+            int GetKernelLayerID (std::string name); //!< Return first kernel that matches 'name' as layer name
+            int GetVectorLayerID (std::string name); //!< Return first vector that matches 'name' as layer name
+
     };
-
-
 
 }
 
