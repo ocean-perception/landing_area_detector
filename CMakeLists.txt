@@ -34,12 +34,6 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 # Cross your fingers
 #find_package(CUDA) #not required yet
 
-find_package(GDAL 2.2 REQUIRED)
-message(STATUS "GDAL library status:")
-#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
-message(STATUS "    libraries: ${GDAL_LIBRARY}")
-message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
-
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
 find_package( CGAL QUIET COMPONENTS  )
 if ( NOT CGAL_FOUND )
