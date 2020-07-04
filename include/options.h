@@ -11,7 +11,7 @@
 #define _OPTIONS_H_
 
 #include <iostream>
-#include "../common/args.hxx"
+#include "../external/args.hxx"
 
 args::ArgumentParser 	argParser("","");
 args::HelpFlag 	argHelp(argParser, "help", "Display this help menu", {'h', "help"});

@@ -12,6 +12,8 @@
  * @copyright Copyright (c) 2020
  * 
  */
+
+#ifndef _LAD_ENUM_HPP_
 #define _LAD_ENUM_HPP_
 
 namespace lad{
