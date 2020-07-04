@@ -25,6 +25,59 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
+    class Layer{
+        private:
+
+        protected:
+            bool bValid;    // flag indicating that layer holds non-NULL valid data
+            int layerID;    // Layer identifier
+            int layerType;  // Layer type identifier (from enum)
+
+        public:
+            std::string layerName;  // Layer name
+            std::string layerFileName;  // Suggested output file name
+
+            /**
+             * @brief Construct a new Layer object
+             * 
+             * @param newName Optional layer name. "noname" if none is specified at construction time
+             */
+            Layer(std::string newName = "noname"){
+                bValid = false;
+                layerName = newName;
+                layerID = lad::LAYER_INVALID_ID; 
+            }
+            /**
+             * @brief Virtual destructor of the Layer object. 
+             * @details  Depending on the type of container in the inherited instances, a type specific cleanup may be required
+             */
+            virtual ~Layer(){
+                bValid = false;
+            }
+
+            /**
+             * @brief Gets the layer ID value. If newID param is provided, then it is used to update layer ID value
+             * 
+             * @param newID User provided new layer ID value. It must be positive, otherwise it will be ignored.
+             * @return int  Up-to-date layer ID value
+             */
+            int LayerID(int newID=-1)
+            {
+                if (newID >= 0) layerID = newID; // if valid newID value is provided, update layerID. Ignore if negative
+                return layerID;
+            }
+    };
+
+    class classRasterLayer: public Layer{
+        public:
+            cv::Mat rasterData; //OpenCV matrix that will hold the data
+    };
+
+    class classVectorLayer: public Layer{
+        public:
+            vector <cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+    };
+
     class LAD{
         private:
             int pipelineStep;
@@ -32,11 +85,20 @@ namespace lad{      //!< landing area detection algorithm namespace
 
         public:
             Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
-            vector <cv::Mat> RasterLayers;  //!< Vector of OpenCV raster images containing intermediate and final products
-            // vector <vector> VectorLayers;  // TODO: define proper structure to store vector shapefiles
-            vector <std::string> outputLayerNames;   //!< Vector containing name of each layer
+            vector <classRasterLayer> RasterLayers;  //!< Vector of OpenCV raster images with maps
+            vector <classRasterLayer> KernelLayers;  //!< Vector of OpenCV raster images containing kernels
+            vector <classVectorLayer> VectorLayers;  // TODO: define proper structure to store vector shapefiles
             std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
+
+            int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
+            std::string GetRasterLayerName (int id); //!< Returns name of RasterLayer with given ID number
+            std::string GetKernelLayerName (int id); //!< Returns name of KernelLayer with given ID number
+            std::string GetVectorLayerName (int id); //!< Returns name of VectorLayer with given ID number
+
     };
+
+
+
 }
 
 #endif // _LAD_CORE_HPP_ 

@@ -21,13 +21,20 @@ namespace lad{
         NO_ERROR                = 0,
         ERROR_MISSING_ARGUMENT  = 1,
         ERROR_WRONG_ARGUMENT    = 2,
-        ERROR_GDAL_FAILOPEN     = 3,
+        ERROR_GDAL_FAILOPEN     = 3
     };
 
     enum TiffProcessing{
         TIFF_FILE_INVALID = 1, //!< Invalid TIFF image file
-        TIFF_FILE_EMPTY   = 2, //!< Valid TIFF image metadata, with empty raster band
+        TIFF_FILE_EMPTY   = 2  //!< Valid TIFF image metadata, with empty raster band
     };
-}
+
+    enum LayerTypes{
+        LAYER_INVALID_ID = -1,  //!< Flags this layer as an invalid one (used during construction time)
+        LAYER_RASTER = 1,   //!< Denotes that current layer contains raster data
+        LAYER_VECTOR = 2,   //!< Layer can contain vectorized data (typ std::vector)
+        LAYER_KERNEL = 3    //!< Layer contains raster description of a filter kernel (e.g. vehicle footprint)
+    };
+};
 
 #endif // _LAD_ENUM_HPP_ guard
