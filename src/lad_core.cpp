@@ -19,9 +19,8 @@ namespace lad{
  * @return std::string 
  */
 std::string ladPipeline::GetRasterLayerName (int id){
-    if (RasterLayers.size() <=0){
-        return "EMPTY_ARRAY";
-    }
+    if (RasterLayers.size() <=0) return "EMPTY_VECTOR";
+    if (id < 0) return "INVALID_ID";
     // Check each raster in the array, compare its ID against search index
     for (auto layer:RasterLayers){
         if (layer.LayerID() == id) return layer.layerName;
@@ -36,9 +35,8 @@ std::string ladPipeline::GetRasterLayerName (int id){
  * @return std::string 
  */
 std::string ladPipeline::GetKernelLayerName (int id){
-    if (KernelLayers.size() <=0){
-        return "NO_LAYER";
-    }
+    if (KernelLayers.size() <=0) return "EMPTY_VECTOR";
+    if (id < 0) return "INVALID_ID";
     // Check each raster in the array, compare its ID against search index
     for (auto layer:KernelLayers){
         if (layer.LayerID() == id) return layer.layerName;
@@ -53,9 +51,8 @@ std::string ladPipeline::GetKernelLayerName (int id){
  * @return std::string 
  */
 std::string ladPipeline::GetVectorLayerName (int id){
-    if (VectorLayers.size() <=0){
-        return "NO_LAYER";
-    }
+    if (VectorLayers.size() <=0) return "EMPTY_VECTOR";
+    if (id < 0) return "INVALID_ID";
     // Check each raster in the array, compare its ID against search index
     for (auto layer:VectorLayers){
         if (layer.LayerID() == id) return layer.layerName;

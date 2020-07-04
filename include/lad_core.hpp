@@ -99,6 +99,11 @@ namespace lad{      //!< landing area detection algorithm namespace
             int bValidInput;
 
         public:
+            ladPipeline(){
+                apInputGeotiff = NULL;
+                inputFileTIFF = "";
+            }
+
             Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
             vector <classRasterLayer> RasterLayers;  //!< Vector of OpenCV raster images with maps
             vector <classRasterLayer> KernelLayers;  //!< Vector of OpenCV raster images containing kernels
