@@ -7,10 +7,11 @@
  */
 
 #ifndef _OPTIONS_H_
+
 #define _OPTIONS_H_
 
 #include <iostream>
-#include "../common/args.hxx"
+#include "../external/args.hxx"
 
 args::ArgumentParser 	argParser("","");
 args::HelpFlag 	argHelp(argParser, "help", "Display this help menu", {'h', "help"});
@@ -19,6 +20,7 @@ args::HelpFlag 	argHelp(argParser, "help", "Display this help menu", {'h', "help
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha", "Search radius for alpha Shape concave hull algorithm", {"alpharadius"});
 args::Positional<std::string> 	argInput(argParser, "input", "Input bathymetry map. TIFF file or XYZ point collection");
 args::ValueFlag	<std::string> 	argOutput(argParser, "output", "Output file",{'o',"output"});
+args::ValueFlag	<std::string> 	argVerbose(argParser, "verbose", "Show verbose information",{"verbose"});
 
 #endif
 

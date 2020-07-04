@@ -1,6 +1,16 @@
-// GDAL specific libraries
+/**
+ * @file gdal_test.cpp
+ * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @brief GDAL testing sandbox
+ * @version 0.1
+ * @date 2020-07-03
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include <gdal_priv.h>
 #include <cpl_conv.h> // for CPLMalloc()
+// GDAL specific libraries
 
 ///Basic C and C++ libraries
 #include <iostream>
