@@ -114,7 +114,6 @@ class Geotiff {
        *  This function returns the NoDataValue for the Geotiff dataset. 
        *  Returns the NoData as a double. 
        */
- 
     int *GetDimensions();
       /* 
        * int *GetDimensions(): 

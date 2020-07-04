@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 2.8)  # we could bump to >3.4
-set(CMAKE_COLOR_MAKEFILE ON)
-#set(CMAKE_VERBOSE_MAKEFILE ON)
+cmake_minimum_required(VERSION 2.8)  # For legacy system compatibility.
 
+set(CMAKE_COLOR_MAKEFILE ON)  # For fancy colouring scheme
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
@@ -14,7 +13,7 @@ endif ()
 project(lad_project)
 
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
-find_package(GDAL 2.2 REQUIRED)
+find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
 message(STATUS "GDAL library status:")
 #message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${GDAL_LIBRARY}")
@@ -64,7 +63,7 @@ if ( NOT Boost_FOUND )
   return()  
 endif()
 
-# Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain
+# Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain, so we just set the path
 #add_subdirectory(external/geotiff)
 set (GEOTIFF_MODULE external/geotiff)
 
@@ -82,8 +81,7 @@ exec_program(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ARGS "describe --abbrev=4 --dirty --always --tags"
     OUTPUT_VARIABLE GIT_INFO )
-# fwd git commit info via GIT_COMMIT variable
-add_definitions( -DGIT_COMMIT="${GIT_INFO}" )
+add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
 
 ############################ GDAL_TEST ####################
 add_executable (lad_gdal  src/gdal_test.cpp
@@ -100,7 +98,6 @@ add_to_cached_list( CGAL_EXECUTABLE_TARGETS cgal_test )
 
 target_compile_options(cgal_test PUBLIC -std=c++11)
 target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
-#target_link_libraries(cgal_test CGAL::CGAL CGAL::CGAL_Core)
 
 ############################ LAD_TEST ####################
 add_executable(lad_test   src/lad_test.cpp
@@ -112,4 +109,5 @@ add_executable(lad_test   src/lad_test.cpp
 target_compile_options(lad_test PUBLIC -std=c++11)
 target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY})
 
+# Define install target for main testing module
 install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)

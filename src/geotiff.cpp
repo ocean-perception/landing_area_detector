@@ -9,16 +9,15 @@
  * @author Gerasimos Michalitsianos
  * */
 
-#include <geotiff.hpp>
+#include <geotiff.hpp>  // This could cause issues with a submodular approach for geotiff as external library
+
 // GDAL specific libraries
 #include <gdal_priv.h>
 #include <cpl_conv.h> // for CPLMalloc()
-
+#include <gdalwarper.h>
+// C/C++ libraries 
 #include <iostream>
 #include <string>
-#include <gdal_priv.h>
-#include <cpl_conv.h>
-#include <gdalwarper.h>
 #include <stdlib.h>
  
 /**
@@ -29,13 +28,13 @@
 const char *Geotiff::GetFileName() { 
     return filename; 
   }
- 
+/**
+ * @brief This function returns the NoDataValue for the Geotiff dataset. 
+ *  Returns the NoData field as a double. 
+ * 
+ * @return double 
+ */
 double Geotiff::GetNoDataValue() { 
-  /* 
-      * function GetNoDataValue(): 
-      *  This function returns the NoDataValue for the Geotiff dataset. 
-      *  Returns the NoData as a double. 
-      */
   GDALDataset *dataset; // Geotiff GDAL datset object. 
   dataset = geotiffDataset;
   float f = dataset->GetRasterCount();
@@ -71,22 +70,22 @@ double *Geotiff::GetGeoTransform() {
   geotiffDataset->GetGeoTransform(geotransform);
   return geotransform; 
 } 
-     
+
+/**
+ * @brief This function reads a band from a geotiff at a specified vertical level 
+  * @details (z value, 1..n bands). To this end, the Geotiff's GDAL 
+  * data type is passed to a switch statement, 
+  * and the template function GetArray2D (see below)
+  * is called with the appropriate C++ data type. 
+  * The GetArray2D function uses the passed-in C++ 
+  * data type to properly read the band data from 
+  * the Geotiff, cast the data to float**, and return
+  * it to this function. This function returns that 
+  * float** pointer. 
+ * @param z 
+ * @return float** 
+ */
 float** Geotiff::GetRasterBand(int z) {
-  /*
-      * function float** GetRasterBand(int z): 
-      * This function reads a band from a geotiff at a 
-      * specified vertical level (z value, 1 ... 
-      * n bands). To this end, the Geotiff's GDAL 
-      * data type is passed to a switch statement, 
-      * and the template function GetArray2D (see below)
-      * is called with the appropriate C++ data type. 
-      * The GetArray2D function uses the passed-in C++ 
-      * data type to properly read the band data from 
-      * the Geotiff, cast the data to float**, and return
-      * it to this function. This function returns that 
-      * float** pointer. 
-      */
   float** bandLayer = new float*[nRows];
   switch( GDALGetRasterDataType(geotiffDataset->GetRasterBand(z)) ) {
       case 0:
@@ -118,22 +117,25 @@ float** Geotiff::GetRasterBand(int z) {
   return NULL;  
 }
 
+/**
+ * @brief Returns pointer to the main GDAL dataset object. This is useful if the
+ * user wants to directly interface with the GDAL C++ API
+ * 
+ * @return GDALDataset* 
+ */
 GDALDataset *Geotiff::GetDataset(){
-  return geotiffDataset;  //return pointer to the main GDAL TIFF dataset, if user want to use GDAL C++ API directly
-  // this breaks the abstraction layer, but we do not want to isolate the whole API
+  return geotiffDataset;  
 }
 
+/**
+ * @brief This function returns a pointer to an array of 3 integers holding the dimensions of the Geotiff.
+  *@details The array holds the dimensions in the following order:
+  *   (1) number of columns (x size)
+  *   (2) number of rows (y size)
+  *   (3) number of bands (number of bands, z dimension)
+ * @return int* 
+ */
 int *Geotiff::GetDimensions() {
-  /* 
-    * int *GetDimensions(): 
-    * 
-    *  This function returns a pointer to an array of 3 integers 
-    *  holding the dimensions of the Geotiff. The array holds the 
-    *  dimensions in the following order:
-    *   (1) number of columns (x size)
-    *   (2) number of rows (y size)
-    *   (3) number of bands (number of bands, z dimension)
-    */
   dimensions[0] = nRows; 
   dimensions[1] = nCols;
   dimensions[2] = nBands; 
@@ -188,15 +190,20 @@ float** Geotiff::GetArray2D(int layerIndex,float** bandLayer) {
     return bandLayer;
 }
 
+/**
+ * @brief Returns the current status of the dataset object. Useful to check if last object loaded correctly.
+ * 
+ * @return true Object currently in memory is VALID
+ * @return false Object currently in memory is INVALID or EMPTY
+ */
 bool Geotiff::isValid(){
   return bValidDataset;
 }
- 
+/**
+ * @brief Prints detailed information about the current dataset
+ * @details It includes information about number and size of blocks, X/Y resolution, NoData fields, Geotransformation
+ */
 void Geotiff::ShowInformation(){
-  /*
-  * function void ShowInformation()
-  * This function prints out a summary of current dataset variables
-  */
 	double adfGeoTransform[6];
 	cout << "Driver: " << geotiffDataset->GetDriver()->GetDescription() << "/" << geotiffDataset->GetDriver()->GetMetadataItem( GDAL_DMD_LONGNAME ) << endl;
 	cout << "Size is X: " << geotiffDataset->GetRasterXSize() << " Y: " << geotiffDataset->GetRasterYSize() << " C: " << geotiffDataset->GetRasterCount() << endl; 
@@ -251,7 +258,7 @@ void Geotiff::ShowInformation(){
 	// NAMES AND ORDERING OF THE AXES
 }
 
-
+// WIP: experimental 1D version 
 // template<typename T>
 float* Geotiff::GetArray1D(int layerIndex,float* bandLayer) {
     // get the raster data type (ENUM integer 1-12, 
