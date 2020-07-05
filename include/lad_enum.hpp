@@ -30,10 +30,16 @@ namespace lad{
     };
 
     enum LayerTypes{
-        LAYER_INVALID_ID = -1,  //!< Flags this layer as an invalid one (used during construction time)
-        LAYER_RASTER = 1,   //!< Denotes that current layer contains raster data
+        LAYER_UNDEFINED = 0,//!< Flags this layer type as undefined
+        LAYER_RASTER = 1,   //!< Layer can contain raster data
         LAYER_VECTOR = 2,   //!< Layer can contain vectorized data (typ std::vector)
-        LAYER_KERNEL = 3    //!< Layer contains raster description of a filter kernel (e.g. vehicle footprint)
+        LAYER_KERNEL = 3    //!< Layer can contain raster description of a filter kernel (e.g. vehicle footprint)
+    };
+
+    enum LayerStatus{
+        LAYER_INVALID = -1, //<! Layer is currently flagged as INVALID 
+        LAYER_EMPTY   =  0, //<! Layer content is empty, typically when it has been recently created, or cleared()
+        LAYER_VALID   =  1, //<! Layer contains valid data, regardless its type
     };
 };
 

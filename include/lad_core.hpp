@@ -30,13 +30,14 @@ namespace lad{      //!< landing area detection algorithm namespace
         private:
 
         protected:
-            bool bValid;    // flag indicating that layer holds non-NULL valid data
+            bool bValid;    // flag indicating that layer holds non-NULL valid data. This can be retrieved by checking layerStatus & layerID
             int layerID;    // Layer identifier
-            int layerType;  // Layer type identifier (from enum)
+            int layerStatus; //!< Status identifier: takes a value from enumerated list of possible status
+            int layerType;  //!< Layer type identifier, takes a possibe value from enumerated list of layer types
 
         public:
-            std::string layerName;  // Layer name
-            std::string layerFileName;  // Suggested output file name
+            std::string layerName;  //!<  Layer name
+            std::string layerFileName;  //!< Name of associated output file
 
             /**
              * @brief Construct a new Layer object
@@ -46,7 +47,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             Layer(std::string newName = "noname"){
                 bValid = false;
                 layerName = newName;
-                layerID = lad::LAYER_INVALID_ID; 
+                layerID = lad::LAYER_INVALID; 
+                layerStatus = lad::LAYER_UNDEFINED;
             }
             /**
              * @brief Virtual destructor of the Layer object. 
@@ -105,19 +107,16 @@ namespace lad{      //!< landing area detection algorithm namespace
             }
 
             Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
-            vector <classRasterLayer> RasterLayers;  //!< Vector of OpenCV raster images with maps
-            vector <classRasterLayer> KernelLayers;  //!< Vector of OpenCV raster images containing kernels
-            vector <classVectorLayer> VectorLayers;  // TODO: define proper structure to store vector shapefiles
+
             std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
-            int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
-            std::string GetRasterLayerName (int id); //!< Returns name of RasterLayer with given ID number
-            std::string GetKernelLayerName (int id); //!< Returns name of KernelLayer with given ID number
-            std::string GetVectorLayerName (int id); //!< Returns name of VectorLayer with given ID number
+            vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
 
-            int GetRasterLayerID (std::string name); //!< Return first raster that matches 'name' as layer name
-            int GetKernelLayerID (std::string name); //!< Return first kernel that matches 'name' as layer name
-            int GetVectorLayerID (std::string name); //!< Return first vector that matches 'name' as layer name
+            int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
+
+            std::string GetLayerName (int id); //!< Returns name of Layer with given ID number
+
+            int GetVectorID (std::string name); //!< Return first vector that matches 'name' as layer name
 
     };
 
