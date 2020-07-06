@@ -125,5 +125,7 @@ int main(int argc, char *argv[]) {
     cout << "Test for Vector[2]: " << Pipeline.GetLayerName(2.5) << endl;
     cout << "Test for Kernel[2]: " << Pipeline.GetLayerName(2) << endl;
 
+//    Pipeline.InsertLayer()
+
     return lad::NO_ERROR;
 }

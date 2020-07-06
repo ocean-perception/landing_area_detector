@@ -104,6 +104,7 @@ add_executable(lad_test   src/lad_test.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
                           src/lad_core.cpp
+                          src/lad_layer.cpp
                           ${PROJECT_HEADERS})
 
 target_compile_options(lad_test PUBLIC -std=c++11)

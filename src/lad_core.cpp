@@ -23,9 +23,30 @@ std::string ladPipeline::GetLayerName (int id){
     if (id < 0) return "INVALID_ID";
     // Check each raster in the array, compare its ID against search index
     for (auto layer:Layers){
-        if (layer->LayerID() == id) return layer->layerName;
+        if (layer->GetID() == id) return layer->layerName;
     }
     return "NO_LAYER";
 }
+
+/**
+ * @brief Overwrite the name of a layer (if present) with a unique string. 
+ * @details If provided string 
+ * @param id 
+ * @return std::string 
+ */
+int ladPipeline::SetLayerName (int id, std::string newName){
+    if (Layers.size()<=0) return LAYER_NONE; // Layers vector is empty
+    if (id < 0) return LAYER_INVALID_ID;    // Provided ID is invalid
+    // Check each raster in the array, compare its ID against search index
+    // WARNING: TODO: Check if newName is already taken
+    for (auto layer:Layers){
+        if (layer->GetID() == id){
+             layer->layerName = newName;
+             return LAYER_OK;
+        }
+    }
+    return LAYER_NOT_FOUND; // Layer ID not found
+}
+
 
 }
