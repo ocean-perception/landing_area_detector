@@ -79,6 +79,71 @@ int ladPipeline::isValidID(int checkID){
     return LAYER_OK;
 }
 
+/**
+ * @brief Determine if a given layer ID is valid. It checks both availability and correctness
+ * 
+ * @param checkID ID to be evaluated
+ * @return int Evaluation status. If valid returns LAYER_OK, else return corresponding error code
+ */
+int ladPipeline::isValidName(std::string checkName){
+    if (checkName.empty()) return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
+
+    // Now we must test that the name follows the target convention: alphanumeric with {-_} as special characters
+    // Use regex to determine if any foreing character is present
+    // --> /[a-zA-Z0-9_\-]/g
+    // std::regex rgx("/[a-zA-Z0-9_-]/g"); //!< Regex list: will retrieve invalid characters
+//    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); //!< Regex list: will retrieve invalid characters
+
+    if (Layers.empty()) //!< If Layers vector is empty, then given name is definitelty available
+        return LAYER_OK;
+
+    // TODO complete string based name match against all the other names
+    for (auto layer:Layers){
+        if (checkName.compare(layer->layerName)) //!< The checkID is already taken, return correspoding error code
+            return LAYER_DUPLICATED_NAME;
+    }
+    // If we reach this point, then the checkID is available. Return ok    
+    return LAYER_OK;
+}
+
+int ladPipeline::CreateLayer (std::string name, int type){
+    // Let's check name
+    if (isValidName(name) != LAYER_OK){
+        cout << "[ladPipeline] Invalid name: " << name << endl;
+        return LAYER_INVALID_NAME;
+    }
+    // Type can be any of enumerated types, or any user defined
+    if (type == LAYER_VECTOR){
+//        cout << "[ladPipeline] Creating VECTOR layer" << endl;
+        std::shared_ptr <lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, 0);
+        Layers.push_back(newLayer);
+    }
+    // Type can be any of enumerated types, or any user defined
+    if (type == LAYER_RASTER){
+        cout << "[ladPipeline] Creating RASTER layer" << endl;
+    }
+    // Type can be any of enumerated types, or any user defined
+    if (type == LAYER_KERNEL){
+        cout << "[ladPipeline] Creating KERNEL layer" << endl;
+    }
+}
+
+/**
+ * @brief Show t(if any) the summary information for each layer
+ * 
+ * @return int LAYER_NONE if Layers vector is empty, LAYER_OK otherwise
+ */
+int ladPipeline::showLayers(){
+    if (!Layers.size()){
+        cout << "No layer to show" << endl;
+        return lad::LAYER_NONE;
+    }
+    for (auto it:Layers){
+        // it->showI
+        it->showInformation();
+    }
+        return lad::LAYER_OK;
+} 
 
 
 }

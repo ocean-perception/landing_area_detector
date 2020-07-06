@@ -18,6 +18,8 @@
 #include "lad_layer.hpp"
 #include "lad_enum.hpp"
 
+#include <regex>
+
 using namespace std;    // STL
 using namespace cv;     // OpenCV
 
@@ -49,7 +51,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             std::string getLayerName (int id); //!< Returns name of Layer with given ID number
 
-            int getVectorID (std::string name); //!< Return first vector that matches 'name' as layer name
+            int getLayerID (std::string name); //!< Return layer with given name
 
             int setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
 
@@ -66,6 +68,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             int isValidID(int ID); //!< Verify is ID is a valid layer ID for the current pipeline stack
 
             int getValidID();   //!< Return a valid ID available for the current stack
+
+            int showLayers(); //!< Call showInformation() method for each layer
     };
 
 }

@@ -75,6 +75,12 @@ int Layer::getLayerType(){
 int Layer::setLayerType(int newType){
     layerType = newType;
 }
+/**
+ * @brief Prints summary information of the layer
+ */
+void Layer::showInformation(){
+    cout << "Name: [" << layerName << "]\t ID: [" << layerID << "]\tType: [" << layerType << "]\tStatus: [" << layerStatus << "]" << endl;
+}
 
 }
 #endif //_LAD_LAYER_CPP_

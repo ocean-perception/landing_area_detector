@@ -43,10 +43,11 @@ namespace lad{      //!< landing area detection algorithm namespace
              * 
              * @param newName Optional layer name. "noname" if none is specified at construction time
              */
-            Layer(std::string newName = "noname"){
+            Layer(std::string newName = "noname", int id = lad::LAYER_INVALID_ID, int type = lad::LAYER_UNDEFINED){
                 layerName = newName;
-                layerID = lad::LAYER_INVALID; 
-                layerStatus = lad::LAYER_UNDEFINED;
+                layerID = id; 
+                layerType = type;
+                layerStatus = lad::LAYER_INVALID;
             }
             /**
              * @brief Virtual destructor of the Layer object. 
@@ -61,6 +62,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             int setLayerstatus(int newStatus); //!< Modify the layer status
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
+            void showInformation(); //!<< Dumps relevant information of the layer
     };
 
     class RasterLayer: public Layer{
@@ -73,6 +75,10 @@ namespace lad{      //!< landing area detection algorithm namespace
         public:
             // this should interface with both GDAL and CGAL containers
             vector <cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+
+            VectorLayer(std::string name, int id):Layer(name, id){
+                setLayerType(LAYER_VECTOR); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
+            }
     };
 
     class KernelLayer: public virtual RasterLayer{
