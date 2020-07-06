@@ -1,0 +1,214 @@
+\hypertarget{classlad_1_1_layer}{}\section{lad\+:\+:Layer Class Reference}
+\label{classlad_1_1_layer}\index{lad\+::\+Layer@{lad\+::\+Layer}}
+
+
+$<$ landing area detection algorithm namespace  
+
+
+
+
+{\ttfamily \#include $<$lad\+\_\+layer.\+hpp$>$}
+
+
+
+Inheritance diagram for lad\+:\+:Layer\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=275pt]{classlad_1_1_layer__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classlad_1_1_layer_a1a7d572812da1f17c292a0cfb977d4fe}{Layer} (std\+::string new\+Name=\char`\"{}noname\char`\"{})
+\begin{DoxyCompactList}\small\item\em Construct a new \hyperlink{classlad_1_1_layer}{Layer} object. \end{DoxyCompactList}\item 
+virtual \hyperlink{classlad_1_1_layer_abb04ca2570deb63ee685c3e8f74d872e}{$\sim$\+Layer} ()
+\begin{DoxyCompactList}\small\item\em Virtual destructor of the \hyperlink{classlad_1_1_layer}{Layer} object. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_a10a5e4b4cf9618129d57c960805b7607}{Get\+ID} ()
+\begin{DoxyCompactList}\small\item\em Return the layer ID. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_ae2d1e4d8d656967f9367555f6d960b7d}{Set\+ID} (int new\+ID)
+\begin{DoxyCompactList}\small\item\em Set the new layer ID. It must be a valid ID. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_a8223ec6cf99de0275118e20faa011bc9}{Get\+Layer\+Status} ()
+\begin{DoxyCompactList}\small\item\em Return a copy of the layer status. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_a7572fd2665a35c074b2f341ce8f73030}{Set\+Layerstatus} (int new\+Status)
+\begin{DoxyCompactList}\small\item\em Modify the layer status. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_aedd28090728135c4ae8a445f0d016b2c}{Get\+Layer\+Type} ()
+\begin{DoxyCompactList}\small\item\em Return a copy of the layer type. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1_layer_a178643063c5fb55f4010579731d3025b}{Set\+Layer\+Type} (int new\+Type)
+\begin{DoxyCompactList}\small\item\em Modify the layer type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \hyperlink{classlad_1_1_layer_aadee8f64504428828f92591090f4f27d}{layer\+Name}
+\begin{DoxyCompactList}\small\item\em \hyperlink{classlad_1_1_layer}{Layer} name. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classlad_1_1_layer_a45420738ed98b38b86b863d1330c54f3}{layer\+File\+Name}
+\begin{DoxyCompactList}\small\item\em Name of associated output file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+$<$ landing area detection algorithm namespace 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlad_1_1_layer_a1a7d572812da1f17c292a0cfb977d4fe}\label{classlad_1_1_layer_a1a7d572812da1f17c292a0cfb977d4fe}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Layer@{Layer}}
+\index{Layer@{Layer}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Layer()}{Layer()}}
+{\footnotesize\ttfamily lad\+::\+Layer\+::\+Layer (\begin{DoxyParamCaption}\item[{std\+::string}]{new\+Name = {\ttfamily \char`\"{}noname\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct a new \hyperlink{classlad_1_1_layer}{Layer} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Name} & Optional layer name. \char`\"{}noname\char`\"{} if none is specified at construction time \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classlad_1_1_layer_abb04ca2570deb63ee685c3e8f74d872e}\label{classlad_1_1_layer_abb04ca2570deb63ee685c3e8f74d872e}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!````~Layer@{$\sim$\+Layer}}
+\index{````~Layer@{$\sim$\+Layer}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{$\sim$\+Layer()}{~Layer()}}
+{\footnotesize\ttfamily virtual lad\+::\+Layer\+::$\sim$\+Layer (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Virtual destructor of the \hyperlink{classlad_1_1_layer}{Layer} object. 
+
+Depending on the type of container in the inherited instances, a type specific cleanup may be required 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlad_1_1_layer_a10a5e4b4cf9618129d57c960805b7607}\label{classlad_1_1_layer_a10a5e4b4cf9618129d57c960805b7607}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Get\+ID@{Get\+ID}}
+\index{Get\+ID@{Get\+ID}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Get\+I\+D()}{GetID()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Get\+ID (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Return the layer ID. 
+
+Return the ID of the given layer.
+
+\begin{DoxyReturn}{Returns}
+int ID value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1_layer_a8223ec6cf99de0275118e20faa011bc9}\label{classlad_1_1_layer_a8223ec6cf99de0275118e20faa011bc9}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Get\+Layer\+Status@{Get\+Layer\+Status}}
+\index{Get\+Layer\+Status@{Get\+Layer\+Status}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Get\+Layer\+Status()}{GetLayerStatus()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Get\+Layer\+Status (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Return a copy of the layer status. 
+
+Get the \hyperlink{classlad_1_1_layer}{Layer} Status object.
+
+\begin{DoxyReturn}{Returns}
+int \hyperlink{classlad_1_1_layer}{Layer} status value, from enumerated list 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1_layer_aedd28090728135c4ae8a445f0d016b2c}\label{classlad_1_1_layer_aedd28090728135c4ae8a445f0d016b2c}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Get\+Layer\+Type@{Get\+Layer\+Type}}
+\index{Get\+Layer\+Type@{Get\+Layer\+Type}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Get\+Layer\+Type()}{GetLayerType()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Get\+Layer\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Return a copy of the layer type. 
+
+Get the \hyperlink{classlad_1_1_layer}{Layer} Type object.
+
+\begin{DoxyReturn}{Returns}
+int Return the layer type, from enumerated list (R\+A\+S\+T\+ER, K\+E\+R\+N\+EL, V\+E\+C\+T\+OR, U\+N\+D\+E\+F\+I\+N\+ED) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1_layer_ae2d1e4d8d656967f9367555f6d960b7d}\label{classlad_1_1_layer_ae2d1e4d8d656967f9367555f6d960b7d}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Set\+ID@{Set\+ID}}
+\index{Set\+ID@{Set\+ID}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Set\+I\+D()}{SetID()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Set\+ID (\begin{DoxyParamCaption}\item[{int}]{new\+ID }\end{DoxyParamCaption})}
+
+
+
+Set the new layer ID. It must be a valid ID. 
+
+Update the ID value of the layer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+ID} & New ID value of the value. It must be a valid ID \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int Error code, if any. If the provided ID is valid it will return L\+A\+Y\+E\+R\+\_\+\+OK 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1_layer_a7572fd2665a35c074b2f341ce8f73030}\label{classlad_1_1_layer_a7572fd2665a35c074b2f341ce8f73030}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Set\+Layerstatus@{Set\+Layerstatus}}
+\index{Set\+Layerstatus@{Set\+Layerstatus}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Set\+Layerstatus()}{SetLayerstatus()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Set\+Layerstatus (\begin{DoxyParamCaption}\item[{int}]{new\+Status }\end{DoxyParamCaption})}
+
+
+
+Modify the layer status. 
+
+Update the \hyperlink{classlad_1_1_layer}{Layer} status.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Status} & New value of layer status. It should be any of possible values in the enumerated list. No validation is enforced \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int return a copy of the new status value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1_layer_a178643063c5fb55f4010579731d3025b}\label{classlad_1_1_layer_a178643063c5fb55f4010579731d3025b}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!Set\+Layer\+Type@{Set\+Layer\+Type}}
+\index{Set\+Layer\+Type@{Set\+Layer\+Type}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{Set\+Layer\+Type()}{SetLayerType()}}
+{\footnotesize\ttfamily int lad\+::\+Layer\+::\+Set\+Layer\+Type (\begin{DoxyParamCaption}\item[{int}]{new\+Type }\end{DoxyParamCaption})}
+
+
+
+Modify the layer type. 
+
+Update the \hyperlink{classlad_1_1_layer}{Layer} type.
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Type} & New value of layer type. It is user\textquotesingle{}s responsability to correctly recast (if necessary) the data container accordingly \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int return a copy of the new layer type 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classlad_1_1_layer_a45420738ed98b38b86b863d1330c54f3}\label{classlad_1_1_layer_a45420738ed98b38b86b863d1330c54f3}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!layer\+File\+Name@{layer\+File\+Name}}
+\index{layer\+File\+Name@{layer\+File\+Name}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{layer\+File\+Name}{layerFileName}}
+{\footnotesize\ttfamily std\+::string lad\+::\+Layer\+::layer\+File\+Name}
+
+
+
+Name of associated output file. 
+
+\mbox{\Hypertarget{classlad_1_1_layer_aadee8f64504428828f92591090f4f27d}\label{classlad_1_1_layer_aadee8f64504428828f92591090f4f27d}} 
+\index{lad\+::\+Layer@{lad\+::\+Layer}!layer\+Name@{layer\+Name}}
+\index{layer\+Name@{layer\+Name}!lad\+::\+Layer@{lad\+::\+Layer}}
+\subsubsection{\texorpdfstring{layer\+Name}{layerName}}
+{\footnotesize\ttfamily std\+::string lad\+::\+Layer\+::layer\+Name}
+
+
+
+\hyperlink{classlad_1_1_layer}{Layer} name. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/include/\hyperlink{lad__layer_8hpp}{lad\+\_\+layer.\+hpp}\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/src/\hyperlink{lad__layer_8cpp}{lad\+\_\+layer.\+cpp}\end{DoxyCompactItemize}

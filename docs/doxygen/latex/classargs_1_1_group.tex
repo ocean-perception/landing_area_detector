@@ -1,0 +1,329 @@
+\hypertarget{classargs_1_1_group}{}\section{args\+:\+:Group Class Reference}
+\label{classargs_1_1_group}\index{args\+::\+Group@{args\+::\+Group}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Group\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classargs_1_1_group__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Group\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=148pt]{classargs_1_1_group__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structargs_1_1_group_1_1_validators}{Validators}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_group_a7474f489d5452569131406185951c64f}{Group} (const std\+::string \&help\+\_\+=std\+::string(), const std\+::function$<$ bool(const \hyperlink{classargs_1_1_group}{Group} \&)$>$ \&validator\+\_\+=\hyperlink{structargs_1_1_group_1_1_validators_adf7a904f8fa0d4ea9f1c47ea057a5417}{Validators\+::\+Dont\+Care}, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\begin{DoxyCompactList}\small\item\em If help is empty, this group will not be printed in help output. \end{DoxyCompactList}\item 
+\hyperlink{classargs_1_1_group_a54598c07578eac848838a21e4dd98657}{Group} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&help\+\_\+=std\+::string(), const std\+::function$<$ bool(const \hyperlink{classargs_1_1_group}{Group} \&)$>$ \&validator\+\_\+=\hyperlink{structargs_1_1_group_1_1_validators_adf7a904f8fa0d4ea9f1c47ea057a5417}{Validators\+::\+Dont\+Care}, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\begin{DoxyCompactList}\small\item\em If help is empty, this group will not be printed in help output. \end{DoxyCompactList}\item 
+virtual \hyperlink{classargs_1_1_group_a928331572568f1d3878f870323da8024}{$\sim$\+Group} ()
+\item 
+void \hyperlink{classargs_1_1_group_ae5951da80c2ca072299740021c43bf6b}{Add} (\hyperlink{classargs_1_1_base}{Base} \&child)
+\item 
+const std\+::vector$<$ \hyperlink{classargs_1_1_base}{Base} $\ast$ $>$ \& \hyperlink{classargs_1_1_group_ad78496495550a3b9a9f92468513905ae}{Children} () const
+\item 
+virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base} $\ast$ \hyperlink{classargs_1_1_group_a31872f412d5b32e0afaf962cd2ce5e40}{Match} (const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&flag) override
+\item 
+virtual void \hyperlink{classargs_1_1_group_a9f74bb3d58e5bfe331a6af8a9981ebda}{Validate} (const std\+::string \&short\+Prefix, const std\+::string \&long\+Prefix) const override
+\item 
+virtual \hyperlink{classargs_1_1_positional_base}{Positional\+Base} $\ast$ \hyperlink{classargs_1_1_group_ae0fa8f5ae77fda45086e7815617ddff7}{Get\+Next\+Positional} () override
+\item 
+virtual bool \hyperlink{classargs_1_1_group_a67e35305748038c175dee92ad1f5290f}{Has\+Flag} () const override
+\item 
+virtual bool \hyperlink{classargs_1_1_group_a3d976f35f65ed8e4908eb88ce84accd4}{Has\+Positional} () const override
+\item 
+virtual bool \hyperlink{classargs_1_1_group_a022cbdf1f4bfe4210a56fa8ca9045bf8}{Has\+Command} () const override
+\item 
+std\+::vector$<$ \hyperlink{classargs_1_1_base}{Base} $\ast$ $>$\+::size\+\_\+type \hyperlink{classargs_1_1_group_a63697db6c1a28632775f852afface1ce}{Matched\+Children} () const
+\item 
+virtual bool \hyperlink{classargs_1_1_group_a7794d31edae97254be440b8768db9af0}{Matched} () const noexcept override
+\item 
+bool \hyperlink{classargs_1_1_group_ad95fc2e1615bd75cdffdad82daa67df4}{Get} () const
+\item 
+virtual std\+::vector$<$ std\+::tuple$<$ std\+::string, std\+::string, unsigned $>$ $>$ \hyperlink{classargs_1_1_group_a57068f355d7d62316b41f7a8e2528495}{Get\+Description} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params, const unsigned int indent) const override
+\item 
+virtual std\+::vector$<$ std\+::string $>$ \hyperlink{classargs_1_1_group_abe9ab07499ec19e941df8f38e18089df}{Get\+Program\+Line} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const override
+\item 
+virtual std\+::vector$<$ \hyperlink{classargs_1_1_command}{Command} $\ast$ $>$ \hyperlink{classargs_1_1_group_a83b0a40e16d92c0f387d00a0f35dbf17}{Get\+Commands} () override
+\item 
+virtual bool \hyperlink{classargs_1_1_group_a60de0a1db5be506a8638af0d3ce329bc}{Is\+Group} () const override
+\item 
+virtual void \hyperlink{classargs_1_1_group_a7ccee0f0ea0902b82029b2ab30f3f84b}{Reset} () noexcept override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Class for all kinds of validating groups, including \hyperlink{classargs_1_1_argument_parser}{Argument\+Parser} 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_group_a7474f489d5452569131406185951c64f}\label{classargs_1_1_group_a7474f489d5452569131406185951c64f}} 
+\index{args\+::\+Group@{args\+::\+Group}!Group@{Group}}
+\index{Group@{Group}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Group()}{Group()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily args\+::\+Group\+::\+Group (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{help\+\_\+ = {\ttfamily std\+:\+:string()},  }\item[{const std\+::function$<$ bool(const \hyperlink{classargs_1_1_group}{Group} \&)$>$ \&}]{validator\+\_\+ = {\ttfamily \hyperlink{structargs_1_1_group_1_1_validators_adf7a904f8fa0d4ea9f1c47ea057a5417}{Validators\+::\+Dont\+Care}},  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+If help is empty, this group will not be printed in help output. 
+
+\mbox{\Hypertarget{classargs_1_1_group_a54598c07578eac848838a21e4dd98657}\label{classargs_1_1_group_a54598c07578eac848838a21e4dd98657}} 
+\index{args\+::\+Group@{args\+::\+Group}!Group@{Group}}
+\index{Group@{Group}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Group()}{Group()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily args\+::\+Group\+::\+Group (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+ = {\ttfamily std\+:\+:string()},  }\item[{const std\+::function$<$ bool(const \hyperlink{classargs_1_1_group}{Group} \&)$>$ \&}]{validator\+\_\+ = {\ttfamily \hyperlink{structargs_1_1_group_1_1_validators_adf7a904f8fa0d4ea9f1c47ea057a5417}{Validators\+::\+Dont\+Care}},  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+If help is empty, this group will not be printed in help output. 
+
+\mbox{\Hypertarget{classargs_1_1_group_a928331572568f1d3878f870323da8024}\label{classargs_1_1_group_a928331572568f1d3878f870323da8024}} 
+\index{args\+::\+Group@{args\+::\+Group}!````~Group@{$\sim$\+Group}}
+\index{````~Group@{$\sim$\+Group}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{$\sim$\+Group()}{~Group()}}
+{\footnotesize\ttfamily virtual args\+::\+Group\+::$\sim$\+Group (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_group_ae5951da80c2ca072299740021c43bf6b}\label{classargs_1_1_group_ae5951da80c2ca072299740021c43bf6b}} 
+\index{args\+::\+Group@{args\+::\+Group}!Add@{Add}}
+\index{Add@{Add}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Add()}{Add()}}
+{\footnotesize\ttfamily void args\+::\+Group\+::\+Add (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_base}{Base} \&}]{child }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Append a child to this \hyperlink{classargs_1_1_group}{Group}. \mbox{\Hypertarget{classargs_1_1_group_ad78496495550a3b9a9f92468513905ae}\label{classargs_1_1_group_ad78496495550a3b9a9f92468513905ae}} 
+\index{args\+::\+Group@{args\+::\+Group}!Children@{Children}}
+\index{Children@{Children}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Children()}{Children()}}
+{\footnotesize\ttfamily const std\+::vector$<$\hyperlink{classargs_1_1_base}{Base} $\ast$$>$\& args\+::\+Group\+::\+Children (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Get all this group\textquotesingle{}s children \mbox{\Hypertarget{classargs_1_1_group_ad95fc2e1615bd75cdffdad82daa67df4}\label{classargs_1_1_group_ad95fc2e1615bd75cdffdad82daa67df4}} 
+\index{args\+::\+Group@{args\+::\+Group}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily bool args\+::\+Group\+::\+Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Get validation \mbox{\Hypertarget{classargs_1_1_group_a83b0a40e16d92c0f387d00a0f35dbf17}\label{classargs_1_1_group_a83b0a40e16d92c0f387d00a0f35dbf17}} 
+\index{args\+::\+Group@{args\+::\+Group}!Get\+Commands@{Get\+Commands}}
+\index{Get\+Commands@{Get\+Commands}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Get\+Commands()}{GetCommands()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$\hyperlink{classargs_1_1_command}{Command}$\ast$$>$ args\+::\+Group\+::\+Get\+Commands (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a8b41df1247be5545f95279608d835bf2}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_a59511be164aa3a0cc5fbbfb75ca79fec}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a57068f355d7d62316b41f7a8e2528495}\label{classargs_1_1_group_a57068f355d7d62316b41f7a8e2528495}} 
+\index{args\+::\+Group@{args\+::\+Group}!Get\+Description@{Get\+Description}}
+\index{Get\+Description@{Get\+Description}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Get\+Description()}{GetDescription()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::tuple$<$std\+::string, std\+::string, unsigned$>$ $>$ args\+::\+Group\+::\+Get\+Description (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params,  }\item[{const unsigned int}]{indent }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get all the child descriptions for help generation 
+
+Reimplemented in \hyperlink{classargs_1_1_command_afdd0a3ea344a4a5672565d1f2f0157f1}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_ae0fa8f5ae77fda45086e7815617ddff7}\label{classargs_1_1_group_ae0fa8f5ae77fda45086e7815617ddff7}} 
+\index{args\+::\+Group@{args\+::\+Group}!Get\+Next\+Positional@{Get\+Next\+Positional}}
+\index{Get\+Next\+Positional@{Get\+Next\+Positional}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Get\+Next\+Positional()}{GetNextPositional()}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_positional_base}{Positional\+Base}$\ast$ args\+::\+Group\+::\+Get\+Next\+Positional (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get the next ready positional, or nullptr if there is none
+
+\begin{DoxyReturn}{Returns}
+the first ready \hyperlink{classargs_1_1_positional_base}{Positional\+Base} pointer, or nullptr if there is no match 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a3e5ad8516fd2037496cd39bcb3b10f9d}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_a073266d188b3592f745c64567e566f8a}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_abe9ab07499ec19e941df8f38e18089df}\label{classargs_1_1_group_abe9ab07499ec19e941df8f38e18089df}} 
+\index{args\+::\+Group@{args\+::\+Group}!Get\+Program\+Line@{Get\+Program\+Line}}
+\index{Get\+Program\+Line@{Get\+Program\+Line}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Get\+Program\+Line()}{GetProgramLine()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::string$>$ args\+::\+Group\+::\+Get\+Program\+Line (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get the names of positional parameters 
+
+Reimplemented from \hyperlink{classargs_1_1_base_a88fcbbc4bfe3b7af9fafe6e96a19f337}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_a37fbbde216ce232279e04edce12c1245}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a022cbdf1f4bfe4210a56fa8ca9045bf8}\label{classargs_1_1_group_a022cbdf1f4bfe4210a56fa8ca9045bf8}} 
+\index{args\+::\+Group@{args\+::\+Group}!Has\+Command@{Has\+Command}}
+\index{Has\+Command@{Has\+Command}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Has\+Command()}{HasCommand()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Group\+::\+Has\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_command}{Command} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_command}{Command} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a78322109f31edba4bb467d73e6663422}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_aa7117d38f553f127542434f6cafc2697}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a67e35305748038c175dee92ad1f5290f}\label{classargs_1_1_group_a67e35305748038c175dee92ad1f5290f}} 
+\index{args\+::\+Group@{args\+::\+Group}!Has\+Flag@{Has\+Flag}}
+\index{Has\+Flag@{Has\+Flag}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Has\+Flag()}{HasFlag()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Group\+::\+Has\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_flag_base}{Flag\+Base} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_flag_base}{Flag\+Base} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a81684f399665c0372439c070af5de4a7}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_abcf9fafcb1531d3c0ea8a1b3a31c6ba4}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a3d976f35f65ed8e4908eb88ce84accd4}\label{classargs_1_1_group_a3d976f35f65ed8e4908eb88ce84accd4}} 
+\index{args\+::\+Group@{args\+::\+Group}!Has\+Positional@{Has\+Positional}}
+\index{Has\+Positional@{Has\+Positional}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Has\+Positional()}{HasPositional()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Group\+::\+Has\+Positional (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_positional_base}{Positional\+Base} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_positional_base}{Positional\+Base} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a3825f4afe867335438103a0d45ced9f7}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_a5c430c5f36d678e80420d2f094ac3a4d}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a60de0a1db5be506a8638af0d3ce329bc}\label{classargs_1_1_group_a60de0a1db5be506a8638af0d3ce329bc}} 
+\index{args\+::\+Group@{args\+::\+Group}!Is\+Group@{Is\+Group}}
+\index{Is\+Group@{Is\+Group}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Is\+Group()}{IsGroup()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Group\+::\+Is\+Group (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a72e11d38c82b8dca87b830853676b68c}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_acc75daa42b98b9be35718f072a46f13a}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a31872f412d5b32e0afaf962cd2ce5e40}\label{classargs_1_1_group_a31872f412d5b32e0afaf962cd2ce5e40}} 
+\index{args\+::\+Group@{args\+::\+Group}!Match@{Match}}
+\index{Match@{Match}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Match()}{Match()}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base}$\ast$ args\+::\+Group\+::\+Match (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Return the first \hyperlink{classargs_1_1_flag_base}{Flag\+Base} that matches flag, or nullptr
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag} & The flag with prefixes stripped \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the first matching \hyperlink{classargs_1_1_flag_base}{Flag\+Base} pointer, or nullptr if there is no match 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a6d5a7be35d62f59fee5a52c06af3003e}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_ace018e92977b0e6ec5472cae0166523c}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a7794d31edae97254be440b8768db9af0}\label{classargs_1_1_group_a7794d31edae97254be440b8768db9af0}} 
+\index{args\+::\+Group@{args\+::\+Group}!Matched@{Matched}}
+\index{Matched@{Matched}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Matched()}{Matched()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Group\+::\+Matched (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Whether or not this group matches validation 
+
+Reimplemented from \hyperlink{classargs_1_1_base_ae7ae4ca8ad953be1a353991c1df6ec4d}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_aebb9c512301e7f0c49689ed92568ef6e}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a63697db6c1a28632775f852afface1ce}\label{classargs_1_1_group_a63697db6c1a28632775f852afface1ce}} 
+\index{args\+::\+Group@{args\+::\+Group}!Matched\+Children@{Matched\+Children}}
+\index{Matched\+Children@{Matched\+Children}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Matched\+Children()}{MatchedChildren()}}
+{\footnotesize\ttfamily std\+::vector$<$\hyperlink{classargs_1_1_base}{Base} $\ast$$>$\+::size\+\_\+type args\+::\+Group\+::\+Matched\+Children (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Count the number of matched children this group has \mbox{\Hypertarget{classargs_1_1_group_a7ccee0f0ea0902b82029b2ab30f3f84b}\label{classargs_1_1_group_a7ccee0f0ea0902b82029b2ab30f3f84b}} 
+\index{args\+::\+Group@{args\+::\+Group}!Reset@{Reset}}
+\index{Reset@{Reset}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily virtual void args\+::\+Group\+::\+Reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_ac7cfc851174f71e00173121d3013dab1}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_argument_parser_a73b0dc7bc87c3a44345879f34985237f}{args\+::\+Argument\+Parser}, and \hyperlink{classargs_1_1_command_aa1829501dd4f63ba3551bf85171be83e}{args\+::\+Command}.
+
+\mbox{\Hypertarget{classargs_1_1_group_a9f74bb3d58e5bfe331a6af8a9981ebda}\label{classargs_1_1_group_a9f74bb3d58e5bfe331a6af8a9981ebda}} 
+\index{args\+::\+Group@{args\+::\+Group}!Validate@{Validate}}
+\index{Validate@{Validate}!args\+::\+Group@{args\+::\+Group}}
+\subsubsection{\texorpdfstring{Validate()}{Validate()}}
+{\footnotesize\ttfamily virtual void args\+::\+Group\+::\+Validate (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{short\+Prefix,  }\item[{const std\+::string \&}]{long\+Prefix }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a62ea917978306062785cbfaa4dd51d2f}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_command_ad39b397a91af426f0ecbda9d29d7bbe0}{args\+::\+Command}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

@@ -1,0 +1,139 @@
+\hypertarget{classargs_1_1_map_flag}{}\section{args\+:\+:Map\+Flag$<$ K, T, Reader, Map $>$ Class Template Reference}
+\label{classargs_1_1_map_flag}\index{args\+::\+Map\+Flag$<$ K, T, Reader, Map $>$@{args\+::\+Map\+Flag$<$ K, T, Reader, Map $>$}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Map\+Flag$<$ K, T, Reader, Map $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=190pt]{classargs_1_1_map_flag__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Map\+Flag$<$ K, T, Reader, Map $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{classargs_1_1_map_flag__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_map_flag_a36a375239e115d9923db2908330b4f75}{Map\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&map\+\_\+, const T \&default\+Value\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+\hyperlink{classargs_1_1_map_flag_a9e13951a327b382cfaa5caf8a0ecd9c9}{Map\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&map\+\_\+, const T \&default\+Value\+\_\+=T(), const bool extra\+Error\+\_\+=false)
+\item 
+\hyperlink{classargs_1_1_map_flag_a2da594dc6378fcaeca63e1dcb8b4d816}{Map\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&map\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+virtual \hyperlink{classargs_1_1_map_flag_a67afdb4326dcef52941a230fc188d54b}{$\sim$\+Map\+Flag} ()
+\item 
+virtual void \hyperlink{classargs_1_1_map_flag_a1f21b9227ab9b346b86f8533213a8272}{Parse\+Value} (const std\+::vector$<$ std\+::string $>$ \&values\+\_\+) override
+\item 
+T \& \hyperlink{classargs_1_1_map_flag_ad4f1db59b839e44157c5eba9b482b75c}{Get} () noexcept
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_map_flag_a7fe91b5ef6696b82aa8999884bbf727d}{Get\+Choices\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&) const override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename K, typename T, typename Reader = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$\newline
+class args\+::\+Map\+Flag$<$ K, T, Reader, Map $>$}
+
+A mapping value flag class
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em K} & the type to extract the argument as \\
+\hline
+{\em T} & the type to store the result as \\
+\hline
+{\em Reader} & The functor type used to read the argument, taking the name, value, and destination reference with operator(), and returning a bool (if A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT is defined) \\
+\hline
+{\em Map} & The Map type. Should operate like std\+::map or std\+::unordered\+\_\+map \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_map_flag_a36a375239e115d9923db2908330b4f75}\label{classargs_1_1_map_flag_a36a375239e115d9923db2908330b4f75}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Map\+Flag@{Map\+Flag}}
+\index{Map\+Flag@{Map\+Flag}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Map\+Flag()}{MapFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_flag}{Map\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&}]{map\+\_\+,  }\item[{const T \&}]{default\+Value\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_flag_a9e13951a327b382cfaa5caf8a0ecd9c9}\label{classargs_1_1_map_flag_a9e13951a327b382cfaa5caf8a0ecd9c9}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Map\+Flag@{Map\+Flag}}
+\index{Map\+Flag@{Map\+Flag}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Map\+Flag()}{MapFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_flag}{Map\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&}]{map\+\_\+,  }\item[{const T \&}]{default\+Value\+\_\+ = {\ttfamily T()},  }\item[{const bool}]{extra\+Error\+\_\+ = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_flag_a2da594dc6378fcaeca63e1dcb8b4d816}\label{classargs_1_1_map_flag_a2da594dc6378fcaeca63e1dcb8b4d816}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Map\+Flag@{Map\+Flag}}
+\index{Map\+Flag@{Map\+Flag}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Map\+Flag()}{MapFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_flag}{Map\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&}]{map\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_flag_a67afdb4326dcef52941a230fc188d54b}\label{classargs_1_1_map_flag_a67afdb4326dcef52941a230fc188d54b}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!````~Map\+Flag@{$\sim$\+Map\+Flag}}
+\index{````~Map\+Flag@{$\sim$\+Map\+Flag}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{$\sim$\+Map\+Flag()}{~MapFlag()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual \hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::$\sim$\hyperlink{classargs_1_1_map_flag}{Map\+Flag} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_map_flag_ad4f1db59b839e44157c5eba9b482b75c}\label{classargs_1_1_map_flag_ad4f1db59b839e44157c5eba9b482b75c}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+T\& \hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get the value \mbox{\Hypertarget{classargs_1_1_map_flag_a7fe91b5ef6696b82aa8999884bbf727d}\label{classargs_1_1_map_flag_a7fe91b5ef6696b82aa8999884bbf727d}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Get\+Choices\+String@{Get\+Choices\+String}}
+\index{Get\+Choices\+String@{Get\+Choices\+String}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Get\+Choices\+String()}{GetChoicesString()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual std\+::string \hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::Get\+Choices\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_named_base_aa9104a04001d10c5732a5feb01204cf7}{args\+::\+Named\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_map_flag_a1f21b9227ab9b346b86f8533213a8272}\label{classargs_1_1_map_flag_a1f21b9227ab9b346b86f8533213a8272}} 
+\index{args\+::\+Map\+Flag@{args\+::\+Map\+Flag}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Map\+Flag@{args\+::\+Map\+Flag}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual void \hyperlink{classargs_1_1_map_flag}{args\+::\+Map\+Flag}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, Reader, Map $>$\+::Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Parse values of this option.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Vector of values. It\textquotesingle{}s size must be in \hyperlink{classargs_1_1_value_flag_base_a96a10bfb949ad175dcf2ffba6a6ec3b6}{Number\+Of\+Arguments()} interval. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}{args\+::\+Flag\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

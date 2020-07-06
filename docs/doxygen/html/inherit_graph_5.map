@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classargs_1_1_map_error.html" title="args::MapError" alt="" coords="5,56,113,83"/>
+<area shape="rect" id="node2" href="$classargs_1_1_error.html" title="args::Error" alt="" coords="161,81,244,108"/>
+<area shape="rect" id="node3" href="$classargs_1_1_help.html" title="args::Help" alt="" coords="322,56,405,83"/>
+<area shape="rect" id="node4" href="$classargs_1_1_parse_error.html" title="args::ParseError" alt="" coords="305,5,422,32"/>
+<area shape="rect" id="node6" href="$classargs_1_1_subparser_error.html" title="args::SubparserError" alt="" coords="292,107,435,133"/>
+<area shape="rect" id="node7" href="$classargs_1_1_usage_error.html" title="args::UsageError" alt="" coords="303,157,424,184"/>
+<area shape="rect" id="node8" href="$classargs_1_1_validation_error.html" title="args::ValidationError" alt="" coords="293,208,433,235"/>
+<area shape="rect" id="node5" href="$classargs_1_1_extra_error.html" title="args::ExtraError" alt="" coords="493,5,607,32"/>
+<area shape="rect" id="node9" href="$classargs_1_1_required_error.html" title="args::RequiredError" alt="" coords="483,208,617,235"/>
+</map>

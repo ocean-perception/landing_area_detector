@@ -1,0 +1,40 @@
+\hypertarget{structargs_1_1_value_reader}{}\section{args\+:\+:Value\+Reader Struct Reference}
+\label{structargs_1_1_value_reader}\index{args\+::\+Value\+Reader@{args\+::\+Value\+Reader}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\std\+::enable\+\_\+if$<$!std\+::is\+\_\+assignable$<$ T, std\+::string $>$\+::value, bool $>$\+::type \hyperlink{structargs_1_1_value_reader_a9c1854f3823d9465a909680a6cc7dcca}{operator()} (const std\+::string \&name, const std\+::string \&value, T \&destination)
+\item 
+{\footnotesize template$<$typename T $>$ }\\std\+::enable\+\_\+if$<$ std\+::is\+\_\+assignable$<$ T, std\+::string $>$\+::value, bool $>$\+::type \hyperlink{structargs_1_1_value_reader_a6435ca3f4539456710e990ed5b96d0d1}{operator()} (const std\+::string \&, const std\+::string \&value, T \&destination)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A default Reader class for argument classes
+
+If destination type is assignable to std\+::string it uses an assignment to std\+::string. Otherwise \hyperlink{structargs_1_1_value_reader}{Value\+Reader} simply uses a std\+::istringstream to read into the destination type, and raises a \hyperlink{classargs_1_1_parse_error}{Parse\+Error} if there are any characters left. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{structargs_1_1_value_reader_a9c1854f3823d9465a909680a6cc7dcca}\label{structargs_1_1_value_reader_a9c1854f3823d9465a909680a6cc7dcca}} 
+\index{args\+::\+Value\+Reader@{args\+::\+Value\+Reader}!operator()@{operator()}}
+\index{operator()@{operator()}!args\+::\+Value\+Reader@{args\+::\+Value\+Reader}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::enable\+\_\+if$<$!std\+::is\+\_\+assignable$<$T, std\+::string$>$\+::value, bool$>$\+::type args\+::\+Value\+Reader\+::operator() (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name,  }\item[{const std\+::string \&}]{value,  }\item[{T \&}]{destination }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structargs_1_1_value_reader_a6435ca3f4539456710e990ed5b96d0d1}\label{structargs_1_1_value_reader_a6435ca3f4539456710e990ed5b96d0d1}} 
+\index{args\+::\+Value\+Reader@{args\+::\+Value\+Reader}!operator()@{operator()}}
+\index{operator()@{operator()}!args\+::\+Value\+Reader@{args\+::\+Value\+Reader}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::enable\+\_\+if$<$std\+::is\+\_\+assignable$<$T, std\+::string$>$\+::value, bool$>$\+::type args\+::\+Value\+Reader\+::operator() (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{,  }\item[{const std\+::string \&}]{value,  }\item[{T \&}]{destination }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

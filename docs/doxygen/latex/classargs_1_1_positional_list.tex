@@ -1,0 +1,299 @@
+\hypertarget{classargs_1_1_positional_list}{}\section{args\+:\+:Positional\+List$<$ T, List, Reader $>$ Class Template Reference}
+\label{classargs_1_1_positional_list}\index{args\+::\+Positional\+List$<$ T, List, Reader $>$@{args\+::\+Positional\+List$<$ T, List, Reader $>$}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Positional\+List$<$ T, List, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{classargs_1_1_positional_list__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Positional\+List$<$ T, List, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{classargs_1_1_positional_list__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef T \hyperlink{classargs_1_1_positional_list_a85c1f957ee4466f0668e673a2c5abbcd}{value\+\_\+type}
+\item 
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_positional_list_ab9ce7358b29d2adb65ec2a3f11f62144}{allocator\+\_\+type}
+\item 
+typedef Container\+::pointer \hyperlink{classargs_1_1_positional_list_a547bf6009a6f68292fbf2627d4cd5e72}{pointer}
+\item 
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_positional_list_a69c3560bf0c2722cef3f00c25128bb4e}{const\+\_\+pointer}
+\item 
+typedef T \& \hyperlink{classargs_1_1_positional_list_ada9aac6f988dbee6f3310158c23373a4}{reference}
+\item 
+typedef const T \& \hyperlink{classargs_1_1_positional_list_a121abd55046913651cb63bd6a083a492}{const\+\_\+reference}
+\item 
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_positional_list_a5e44ceec70dbb63870a9ff1002379002}{size\+\_\+type}
+\item 
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_positional_list_a369e886a82dc1a8654e584ad8b7e696f}{difference\+\_\+type}
+\item 
+typedef Container\+::iterator \hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator}
+\item 
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator} $>$ \hyperlink{classargs_1_1_positional_list_ab279be9deebae66a8084ba49d532cace}{reverse\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} $>$ \hyperlink{classargs_1_1_positional_list_a366152cdac874c51818e8cbb8f48feac}{const\+\_\+reverse\+\_\+iterator}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_positional_list_ad9b978ced4f1b73cdebda1be5a20c9ae}{Positional\+List} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, const Container \&default\+Values\+\_\+=Container(), \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+\hyperlink{classargs_1_1_positional_list_a81dff6ac754fd0f55dcc39015ddcd1fb}{Positional\+List} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+virtual \hyperlink{classargs_1_1_positional_list_a5675c4843b00ca95234e5187dfffacda}{$\sim$\+Positional\+List} ()
+\item 
+virtual void \hyperlink{classargs_1_1_positional_list_a532d58c777cabe560dfa02674c591245}{Parse\+Value} (const std\+::string \&value\+\_\+) override
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_positional_list_a5109dbd118c40b6cde570fa37acac950}{Name} () const override
+\item 
+Container \& \hyperlink{classargs_1_1_positional_list_a9f3c9a6e82c270342bbaedda83b7e9bb}{Get} () noexcept
+\item 
+virtual void \hyperlink{classargs_1_1_positional_list_ab322681ccb2b97aa10461aba04bd8aba}{Reset} () noexcept override
+\item 
+\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator} \hyperlink{classargs_1_1_positional_list_a13c58afa1b4313727cc451a7e1d624b8}{begin} () noexcept
+\item 
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list_a1b743c31dfc824d884ca55569802363f}{begin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list_aef5c581f945118e610533e16e139ceeb}{cbegin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator} \hyperlink{classargs_1_1_positional_list_a5b139259c93d9fd2a315398533fab1b3}{end} () noexcept
+\item 
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list_ad35ce0d9da38076ab89726c9e45718c8}{end} () const noexcept
+\item 
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list_a6655c6571a708a936c0b4483dab4210e}{cend} () const noexcept
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T, template$<$ typename... $>$ class List = std\+::vector, typename Reader = Value\+Reader$>$\newline
+class args\+::\+Positional\+List$<$ T, List, Reader $>$}
+
+A positional argument class that pushes the found values into a list
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type to extract the argument as \\
+\hline
+{\em List} & the list type that houses the values \\
+\hline
+{\em Reader} & The functor type used to read the argument, taking the name, value, and destination reference with operator(), and returning a bool (if A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT is defined) \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classargs_1_1_positional_list_ab9ce7358b29d2adb65ec2a3f11f62144}\label{classargs_1_1_positional_list_ab9ce7358b29d2adb65ec2a3f11f62144}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!allocator\+\_\+type@{allocator\+\_\+type}}
+\index{allocator\+\_\+type@{allocator\+\_\+type}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{allocator\+\_\+type}{allocator\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_ab9ce7358b29d2adb65ec2a3f11f62144}{allocator\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}\label{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a69c3560bf0c2722cef3f00c25128bb4e}\label{classargs_1_1_positional_list_a69c3560bf0c2722cef3f00c25128bb4e}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!const\+\_\+pointer@{const\+\_\+pointer}}
+\index{const\+\_\+pointer@{const\+\_\+pointer}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+pointer}{const\_pointer}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a69c3560bf0c2722cef3f00c25128bb4e}{const\+\_\+pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a121abd55046913651cb63bd6a083a492}\label{classargs_1_1_positional_list_a121abd55046913651cb63bd6a083a492}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!const\+\_\+reference@{const\+\_\+reference}}
+\index{const\+\_\+reference@{const\+\_\+reference}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+reference}{const\_reference}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef const T\& \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a121abd55046913651cb63bd6a083a492}{const\+\_\+reference}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a366152cdac874c51818e8cbb8f48feac}\label{classargs_1_1_positional_list_a366152cdac874c51818e8cbb8f48feac}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}}
+\index{const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+reverse\+\_\+iterator}{const\_reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator}$>$ \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a366152cdac874c51818e8cbb8f48feac}{const\+\_\+reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a369e886a82dc1a8654e584ad8b7e696f}\label{classargs_1_1_positional_list_a369e886a82dc1a8654e584ad8b7e696f}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!difference\+\_\+type@{difference\+\_\+type}}
+\index{difference\+\_\+type@{difference\+\_\+type}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{difference\+\_\+type}{difference\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a369e886a82dc1a8654e584ad8b7e696f}{difference\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}\label{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!iterator@{iterator}}
+\index{iterator@{iterator}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::iterator \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a547bf6009a6f68292fbf2627d4cd5e72}\label{classargs_1_1_positional_list_a547bf6009a6f68292fbf2627d4cd5e72}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!pointer@{pointer}}
+\index{pointer@{pointer}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{pointer}{pointer}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::pointer \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a547bf6009a6f68292fbf2627d4cd5e72}{pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_ada9aac6f988dbee6f3310158c23373a4}\label{classargs_1_1_positional_list_ada9aac6f988dbee6f3310158c23373a4}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!reference@{reference}}
+\index{reference@{reference}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{reference}{reference}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef T\& \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_ada9aac6f988dbee6f3310158c23373a4}{reference}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_ab279be9deebae66a8084ba49d532cace}\label{classargs_1_1_positional_list_ab279be9deebae66a8084ba49d532cace}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!reverse\+\_\+iterator@{reverse\+\_\+iterator}}
+\index{reverse\+\_\+iterator@{reverse\+\_\+iterator}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{reverse\+\_\+iterator}{reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator}$>$ \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_ab279be9deebae66a8084ba49d532cace}{reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a5e44ceec70dbb63870a9ff1002379002}\label{classargs_1_1_positional_list_a5e44ceec70dbb63870a9ff1002379002}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!size\+\_\+type@{size\+\_\+type}}
+\index{size\+\_\+type@{size\+\_\+type}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{size\+\_\+type}{size\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a5e44ceec70dbb63870a9ff1002379002}{size\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a85c1f957ee4466f0668e673a2c5abbcd}\label{classargs_1_1_positional_list_a85c1f957ee4466f0668e673a2c5abbcd}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!value\+\_\+type@{value\+\_\+type}}
+\index{value\+\_\+type@{value\+\_\+type}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{value\+\_\+type}{value\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef T \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list_a85c1f957ee4466f0668e673a2c5abbcd}{value\+\_\+type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_positional_list_ad9b978ced4f1b73cdebda1be5a20c9ae}\label{classargs_1_1_positional_list_ad9b978ced4f1b73cdebda1be5a20c9ae}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Positional\+List@{Positional\+List}}
+\index{Positional\+List@{Positional\+List}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Positional\+List()}{PositionalList()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list}{Positional\+List} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{const Container \&}]{default\+Values\+\_\+ = {\ttfamily Container()},  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a81dff6ac754fd0f55dcc39015ddcd1fb}\label{classargs_1_1_positional_list_a81dff6ac754fd0f55dcc39015ddcd1fb}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Positional\+List@{Positional\+List}}
+\index{Positional\+List@{Positional\+List}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Positional\+List()}{PositionalList()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_positional_list}{Positional\+List} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a5675c4843b00ca95234e5187dfffacda}\label{classargs_1_1_positional_list_a5675c4843b00ca95234e5187dfffacda}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!````~Positional\+List@{$\sim$\+Positional\+List}}
+\index{````~Positional\+List@{$\sim$\+Positional\+List}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{$\sim$\+Positional\+List()}{~PositionalList()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::$\sim$\hyperlink{classargs_1_1_positional_list}{Positional\+List} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_positional_list_a13c58afa1b4313727cc451a7e1d624b8}\label{classargs_1_1_positional_list_a13c58afa1b4313727cc451a7e1d624b8}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a1b743c31dfc824d884ca55569802363f}\label{classargs_1_1_positional_list_a1b743c31dfc824d884ca55569802363f}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_aef5c581f945118e610533e16e139ceeb}\label{classargs_1_1_positional_list_aef5c581f945118e610533e16e139ceeb}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!cbegin@{cbegin}}
+\index{cbegin@{cbegin}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{cbegin()}{cbegin()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::cbegin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a6655c6571a708a936c0b4483dab4210e}\label{classargs_1_1_positional_list_a6655c6571a708a936c0b4483dab4210e}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!cend@{cend}}
+\index{cend@{cend}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{cend()}{cend()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::cend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a5b139259c93d9fd2a315398533fab1b3}\label{classargs_1_1_positional_list_a5b139259c93d9fd2a315398533fab1b3}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!end@{end}}
+\index{end@{end}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_ad0833c77245d7bc7678de4896d8443da}{iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_ad35ce0d9da38076ab89726c9e45718c8}\label{classargs_1_1_positional_list_ad35ce0d9da38076ab89726c9e45718c8}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!end@{end}}
+\index{end@{end}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_positional_list_a5675a3e27a2a7fc6a7fbd933bd13f3cf}{const\+\_\+iterator} \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a9f3c9a6e82c270342bbaedda83b7e9bb}\label{classargs_1_1_positional_list_a9f3c9a6e82c270342bbaedda83b7e9bb}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+Container\& \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get the values \mbox{\Hypertarget{classargs_1_1_positional_list_a5109dbd118c40b6cde570fa37acac950}\label{classargs_1_1_positional_list_a5109dbd118c40b6cde570fa37acac950}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Name@{Name}}
+\index{Name@{Name}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Name()}{Name()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual std\+::string \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_named_base_a7e7bab5c0de59e717b87935b14376dfc}{args\+::\+Named\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_a532d58c777cabe560dfa02674c591245}\label{classargs_1_1_positional_list_a532d58c777cabe560dfa02674c591245}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual void \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{value\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \hyperlink{classargs_1_1_positional_base_a10b6b91155f56bc28ca25fa87c6f0985}{args\+::\+Positional\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_positional_list_ab322681ccb2b97aa10461aba04bd8aba}\label{classargs_1_1_positional_list_ab322681ccb2b97aa10461aba04bd8aba}} 
+\index{args\+::\+Positional\+List@{args\+::\+Positional\+List}!Reset@{Reset}}
+\index{Reset@{Reset}!args\+::\+Positional\+List@{args\+::\+Positional\+List}}
+\subsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual void \hyperlink{classargs_1_1_positional_list}{args\+::\+Positional\+List}$<$ T, List, Reader $>$\+::Reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_positional_base_a14edfb214858983cf5116c8d0fec72ea}{args\+::\+Positional\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

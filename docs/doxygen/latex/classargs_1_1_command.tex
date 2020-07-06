@@ -1,0 +1,398 @@
+\hypertarget{classargs_1_1_command}{}\section{args\+:\+:Command Class Reference}
+\label{classargs_1_1_command}\index{args\+::\+Command@{args\+::\+Command}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Command\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=192pt]{classargs_1_1_command__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Command\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=166pt]{classargs_1_1_command__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classargs_1_1_command_1_1_raii_subparser}{Raii\+Subparser}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_command_a181c94ddb38711478ec718ef17d4ad36}{Command} (\hyperlink{classargs_1_1_group}{Group} \&base\+\_\+, std\+::string name\+\_\+, std\+::string help\+\_\+, std\+::function$<$ void(\hyperlink{classargs_1_1_subparser}{Subparser} \&)$>$ coroutine\+\_\+=\{\})
+\item 
+const std\+::string \& \hyperlink{classargs_1_1_command_a19e418cd5e8ad19f168c9e0eb6216775}{Progline\+Postfix} () const
+\item 
+void \hyperlink{classargs_1_1_command_a806f2aa27383139b85880f42c2de56c6}{Progline\+Postfix} (const std\+::string \&progline\+Postfix\+\_\+)
+\item 
+const std\+::string \& \hyperlink{classargs_1_1_command_a01d237dc3c13323c143073dd2a1a2cb4}{Description} () const
+\item 
+void \hyperlink{classargs_1_1_command_a4ee8820d1d6d17b10a01a5cbccce1df8}{Description} (const std\+::string \&description\+\_\+)
+\item 
+const std\+::string \& \hyperlink{classargs_1_1_command_a874b615da38bb03c42a5fdf281ca9e32}{Epilog} () const
+\item 
+void \hyperlink{classargs_1_1_command_a7364bfcd513d8f345e1bab5f3371d02d}{Epilog} (const std\+::string \&epilog\+\_\+)
+\item 
+const std\+::string \& \hyperlink{classargs_1_1_command_a98724f5317b07197721807ab40ca8eae}{Name} () const
+\item 
+const std\+::string \& \hyperlink{classargs_1_1_command_a120a9143ffb5623db08c07564e1529fc}{Help} () const
+\item 
+void \hyperlink{classargs_1_1_command_afbbca5178a6c712f9ad0777b7bef08bd}{Require\+Command} (bool value)
+\item 
+virtual bool \hyperlink{classargs_1_1_command_acc75daa42b98b9be35718f072a46f13a}{Is\+Group} () const override
+\item 
+virtual bool \hyperlink{classargs_1_1_command_aebb9c512301e7f0c49689ed92568ef6e}{Matched} () const noexcept override
+\item 
+\hyperlink{classargs_1_1_command_a31dfb353bcab4047be1dee1d915dbc8f}{operator bool} () const noexcept
+\item 
+void \hyperlink{classargs_1_1_command_a9a7ba5cc30681d7f5316d533637a21ba}{Match} () noexcept
+\item 
+void \hyperlink{classargs_1_1_command_a6c78467ab5b58df69073da9878cc783c}{Select\+Command} (\hyperlink{classargs_1_1_command}{Command} $\ast$c) noexcept
+\item 
+virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base} $\ast$ \hyperlink{classargs_1_1_command_ace018e92977b0e6ec5472cae0166523c}{Match} (const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&flag) override
+\item 
+virtual \hyperlink{classargs_1_1_positional_base}{Positional\+Base} $\ast$ \hyperlink{classargs_1_1_command_a073266d188b3592f745c64567e566f8a}{Get\+Next\+Positional} () override
+\item 
+virtual bool \hyperlink{classargs_1_1_command_abcf9fafcb1531d3c0ea8a1b3a31c6ba4}{Has\+Flag} () const override
+\item 
+virtual bool \hyperlink{classargs_1_1_command_a5c430c5f36d678e80420d2f094ac3a4d}{Has\+Positional} () const override
+\item 
+virtual bool \hyperlink{classargs_1_1_command_aa7117d38f553f127542434f6cafc2697}{Has\+Command} () const override
+\item 
+std\+::vector$<$ std\+::string $>$ \hyperlink{classargs_1_1_command_aafb4485ab3ff22ee4d52339e098647c6}{Get\+Command\+Program\+Line} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const
+\item 
+virtual std\+::vector$<$ std\+::string $>$ \hyperlink{classargs_1_1_command_a37fbbde216ce232279e04edce12c1245}{Get\+Program\+Line} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const override
+\item 
+virtual std\+::vector$<$ \hyperlink{classargs_1_1_command}{Command} $\ast$ $>$ \hyperlink{classargs_1_1_command_a59511be164aa3a0cc5fbbfb75ca79fec}{Get\+Commands} () override
+\item 
+virtual std\+::vector$<$ std\+::tuple$<$ std\+::string, std\+::string, unsigned $>$ $>$ \hyperlink{classargs_1_1_command_afdd0a3ea344a4a5672565d1f2f0157f1}{Get\+Description} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params, const unsigned int indent) const override
+\item 
+virtual void \hyperlink{classargs_1_1_command_ad39b397a91af426f0ecbda9d29d7bbe0}{Validate} (const std\+::string \&shortprefix, const std\+::string \&longprefix) const override
+\item 
+virtual void \hyperlink{classargs_1_1_command_aa1829501dd4f63ba3551bf85171be83e}{Reset} () noexcept override
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_command_a58f55910e9746d4af64512f8e6fc6007}{Command} ()=default
+\item 
+std\+::function$<$ void(\hyperlink{classargs_1_1_subparser}{Subparser} \&)$>$ \& \hyperlink{classargs_1_1_command_ac026b5eeed24051bea59ff41350863d0}{Get\+Coroutine} ()
+\item 
+\hyperlink{classargs_1_1_command}{Command} \& \hyperlink{classargs_1_1_command_a09a64666c38476ee923b0cb7a0f56215}{Selected\+Command} ()
+\item 
+const \hyperlink{classargs_1_1_command}{Command} \& \hyperlink{classargs_1_1_command_af806e6bf21282670984d1ef4680d393b}{Selected\+Command} () const
+\item 
+void \hyperlink{classargs_1_1_command_a93c6c07576c78fabd319d8d0b872c5b1}{Update\+Subparser\+Help} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classargs_1_1_command_aecbd7c0572cb2d7fecb5eff79552c203}{Subparser}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Main class for building subparsers.
+
+/sa \hyperlink{classargs_1_1_subparser}{Subparser} 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_command_a58f55910e9746d4af64512f8e6fc6007}\label{classargs_1_1_command_a58f55910e9746d4af64512f8e6fc6007}} 
+\index{args\+::\+Command@{args\+::\+Command}!Command@{Command}}
+\index{Command@{Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Command()}{Command()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily args\+::\+Command\+::\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [default]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_a181c94ddb38711478ec718ef17d4ad36}\label{classargs_1_1_command_a181c94ddb38711478ec718ef17d4ad36}} 
+\index{args\+::\+Command@{args\+::\+Command}!Command@{Command}}
+\index{Command@{Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Command()}{Command()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily args\+::\+Command\+::\+Command (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{base\+\_\+,  }\item[{std\+::string}]{name\+\_\+,  }\item[{std\+::string}]{help\+\_\+,  }\item[{std\+::function$<$ void(\hyperlink{classargs_1_1_subparser}{Subparser} \&)$>$}]{coroutine\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_command_a01d237dc3c13323c143073dd2a1a2cb4}\label{classargs_1_1_command_a01d237dc3c13323c143073dd2a1a2cb4}} 
+\index{args\+::\+Command@{args\+::\+Command}!Description@{Description}}
+\index{Description@{Description}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Description()}{Description()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const std\+::string\& args\+::\+Command\+::\+Description (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears above options \mbox{\Hypertarget{classargs_1_1_command_a4ee8820d1d6d17b10a01a5cbccce1df8}\label{classargs_1_1_command_a4ee8820d1d6d17b10a01a5cbccce1df8}} 
+\index{args\+::\+Command@{args\+::\+Command}!Description@{Description}}
+\index{Description@{Description}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Description()}{Description()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Description (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{description\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears above options \mbox{\Hypertarget{classargs_1_1_command_a874b615da38bb03c42a5fdf281ca9e32}\label{classargs_1_1_command_a874b615da38bb03c42a5fdf281ca9e32}} 
+\index{args\+::\+Command@{args\+::\+Command}!Epilog@{Epilog}}
+\index{Epilog@{Epilog}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Epilog()}{Epilog()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const std\+::string\& args\+::\+Command\+::\+Epilog (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears below options \mbox{\Hypertarget{classargs_1_1_command_a7364bfcd513d8f345e1bab5f3371d02d}\label{classargs_1_1_command_a7364bfcd513d8f345e1bab5f3371d02d}} 
+\index{args\+::\+Command@{args\+::\+Command}!Epilog@{Epilog}}
+\index{Epilog@{Epilog}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Epilog()}{Epilog()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Epilog (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{epilog\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears below options \mbox{\Hypertarget{classargs_1_1_command_aafb4485ab3ff22ee4d52339e098647c6}\label{classargs_1_1_command_aafb4485ab3ff22ee4d52339e098647c6}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Command\+Program\+Line@{Get\+Command\+Program\+Line}}
+\index{Get\+Command\+Program\+Line@{Get\+Command\+Program\+Line}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Command\+Program\+Line()}{GetCommandProgramLine()}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::string$>$ args\+::\+Command\+::\+Get\+Command\+Program\+Line (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_a59511be164aa3a0cc5fbbfb75ca79fec}\label{classargs_1_1_command_a59511be164aa3a0cc5fbbfb75ca79fec}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Commands@{Get\+Commands}}
+\index{Get\+Commands@{Get\+Commands}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Commands()}{GetCommands()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$\hyperlink{classargs_1_1_command}{Command}$\ast$$>$ args\+::\+Command\+::\+Get\+Commands (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a83b0a40e16d92c0f387d00a0f35dbf17}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_ac026b5eeed24051bea59ff41350863d0}\label{classargs_1_1_command_ac026b5eeed24051bea59ff41350863d0}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Coroutine@{Get\+Coroutine}}
+\index{Get\+Coroutine@{Get\+Coroutine}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Coroutine()}{GetCoroutine()}}
+{\footnotesize\ttfamily std\+::function$<$void(\hyperlink{classargs_1_1_subparser}{Subparser}\&)$>$\& args\+::\+Command\+::\+Get\+Coroutine (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_afdd0a3ea344a4a5672565d1f2f0157f1}\label{classargs_1_1_command_afdd0a3ea344a4a5672565d1f2f0157f1}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Description@{Get\+Description}}
+\index{Get\+Description@{Get\+Description}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Description()}{GetDescription()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::tuple$<$std\+::string, std\+::string, unsigned$>$ $>$ args\+::\+Command\+::\+Get\+Description (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params,  }\item[{const unsigned int}]{indent }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get all the child descriptions for help generation 
+
+Reimplemented from \hyperlink{classargs_1_1_group_a57068f355d7d62316b41f7a8e2528495}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a073266d188b3592f745c64567e566f8a}\label{classargs_1_1_command_a073266d188b3592f745c64567e566f8a}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Next\+Positional@{Get\+Next\+Positional}}
+\index{Get\+Next\+Positional@{Get\+Next\+Positional}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Next\+Positional()}{GetNextPositional()}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_positional_base}{Positional\+Base}$\ast$ args\+::\+Command\+::\+Get\+Next\+Positional (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get the next ready positional, or nullptr if there is none
+
+\begin{DoxyReturn}{Returns}
+the first ready \hyperlink{classargs_1_1_positional_base}{Positional\+Base} pointer, or nullptr if there is no match 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_ae0fa8f5ae77fda45086e7815617ddff7}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a37fbbde216ce232279e04edce12c1245}\label{classargs_1_1_command_a37fbbde216ce232279e04edce12c1245}} 
+\index{args\+::\+Command@{args\+::\+Command}!Get\+Program\+Line@{Get\+Program\+Line}}
+\index{Get\+Program\+Line@{Get\+Program\+Line}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Get\+Program\+Line()}{GetProgramLine()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::string$>$ args\+::\+Command\+::\+Get\+Program\+Line (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get the names of positional parameters 
+
+Reimplemented from \hyperlink{classargs_1_1_group_abe9ab07499ec19e941df8f38e18089df}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_aa7117d38f553f127542434f6cafc2697}\label{classargs_1_1_command_aa7117d38f553f127542434f6cafc2697}} 
+\index{args\+::\+Command@{args\+::\+Command}!Has\+Command@{Has\+Command}}
+\index{Has\+Command@{Has\+Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Has\+Command()}{HasCommand()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Command\+::\+Has\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_command}{Command} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_command}{Command} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a022cbdf1f4bfe4210a56fa8ca9045bf8}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_abcf9fafcb1531d3c0ea8a1b3a31c6ba4}\label{classargs_1_1_command_abcf9fafcb1531d3c0ea8a1b3a31c6ba4}} 
+\index{args\+::\+Command@{args\+::\+Command}!Has\+Flag@{Has\+Flag}}
+\index{Has\+Flag@{Has\+Flag}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Has\+Flag()}{HasFlag()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Command\+::\+Has\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_flag_base}{Flag\+Base} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_flag_base}{Flag\+Base} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a67e35305748038c175dee92ad1f5290f}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a5c430c5f36d678e80420d2f094ac3a4d}\label{classargs_1_1_command_a5c430c5f36d678e80420d2f094ac3a4d}} 
+\index{args\+::\+Command@{args\+::\+Command}!Has\+Positional@{Has\+Positional}}
+\index{Has\+Positional@{Has\+Positional}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Has\+Positional()}{HasPositional()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Command\+::\+Has\+Positional (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Get whether this has any \hyperlink{classargs_1_1_positional_base}{Positional\+Base} children
+
+\begin{DoxyReturn}{Returns}
+Whether or not there are any \hyperlink{classargs_1_1_positional_base}{Positional\+Base} children 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a3d976f35f65ed8e4908eb88ce84accd4}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a120a9143ffb5623db08c07564e1529fc}\label{classargs_1_1_command_a120a9143ffb5623db08c07564e1529fc}} 
+\index{args\+::\+Command@{args\+::\+Command}!Help@{Help}}
+\index{Help@{Help}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Help()}{Help()}}
+{\footnotesize\ttfamily const std\+::string\& args\+::\+Command\+::\+Help (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description of command \mbox{\Hypertarget{classargs_1_1_command_acc75daa42b98b9be35718f072a46f13a}\label{classargs_1_1_command_acc75daa42b98b9be35718f072a46f13a}} 
+\index{args\+::\+Command@{args\+::\+Command}!Is\+Group@{Is\+Group}}
+\index{Is\+Group@{Is\+Group}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Is\+Group()}{IsGroup()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Command\+::\+Is\+Group (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a60de0a1db5be506a8638af0d3ce329bc}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a9a7ba5cc30681d7f5316d533637a21ba}\label{classargs_1_1_command_a9a7ba5cc30681d7f5316d533637a21ba}} 
+\index{args\+::\+Command@{args\+::\+Command}!Match@{Match}}
+\index{Match@{Match}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Match()}{Match()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Match (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_ace018e92977b0e6ec5472cae0166523c}\label{classargs_1_1_command_ace018e92977b0e6ec5472cae0166523c}} 
+\index{args\+::\+Command@{args\+::\+Command}!Match@{Match}}
+\index{Match@{Match}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Match()}{Match()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base}$\ast$ args\+::\+Command\+::\+Match (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Return the first \hyperlink{classargs_1_1_flag_base}{Flag\+Base} that matches flag, or nullptr
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag} & The flag with prefixes stripped \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the first matching \hyperlink{classargs_1_1_flag_base}{Flag\+Base} pointer, or nullptr if there is no match 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a31872f412d5b32e0afaf962cd2ce5e40}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_aebb9c512301e7f0c49689ed92568ef6e}\label{classargs_1_1_command_aebb9c512301e7f0c49689ed92568ef6e}} 
+\index{args\+::\+Command@{args\+::\+Command}!Matched@{Matched}}
+\index{Matched@{Matched}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Matched()}{Matched()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Command\+::\+Matched (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Whether or not this group matches validation 
+
+Reimplemented from \hyperlink{classargs_1_1_group_a7794d31edae97254be440b8768db9af0}{args\+::\+Group}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a98724f5317b07197721807ab40ca8eae}\label{classargs_1_1_command_a98724f5317b07197721807ab40ca8eae}} 
+\index{args\+::\+Command@{args\+::\+Command}!Name@{Name}}
+\index{Name@{Name}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Name()}{Name()}}
+{\footnotesize\ttfamily const std\+::string\& args\+::\+Command\+::\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The name of command \mbox{\Hypertarget{classargs_1_1_command_a31dfb353bcab4047be1dee1d915dbc8f}\label{classargs_1_1_command_a31dfb353bcab4047be1dee1d915dbc8f}} 
+\index{args\+::\+Command@{args\+::\+Command}!operator bool@{operator bool}}
+\index{operator bool@{operator bool}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{operator bool()}{operator bool()}}
+{\footnotesize\ttfamily args\+::\+Command\+::operator bool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_a19e418cd5e8ad19f168c9e0eb6216775}\label{classargs_1_1_command_a19e418cd5e8ad19f168c9e0eb6216775}} 
+\index{args\+::\+Command@{args\+::\+Command}!Progline\+Postfix@{Progline\+Postfix}}
+\index{Progline\+Postfix@{Progline\+Postfix}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Progline\+Postfix()}{ProglinePostfix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const std\+::string\& args\+::\+Command\+::\+Progline\+Postfix (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears on the prog line after options \mbox{\Hypertarget{classargs_1_1_command_a806f2aa27383139b85880f42c2de56c6}\label{classargs_1_1_command_a806f2aa27383139b85880f42c2de56c6}} 
+\index{args\+::\+Command@{args\+::\+Command}!Progline\+Postfix@{Progline\+Postfix}}
+\index{Progline\+Postfix@{Progline\+Postfix}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Progline\+Postfix()}{ProglinePostfix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Progline\+Postfix (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{progline\+Postfix\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+The description that appears on the prog line after options \mbox{\Hypertarget{classargs_1_1_command_afbbca5178a6c712f9ad0777b7bef08bd}\label{classargs_1_1_command_afbbca5178a6c712f9ad0777b7bef08bd}} 
+\index{args\+::\+Command@{args\+::\+Command}!Require\+Command@{Require\+Command}}
+\index{Require\+Command@{Require\+Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Require\+Command()}{RequireCommand()}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Require\+Command (\begin{DoxyParamCaption}\item[{bool}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+If value is true, parser will fail if no command was parsed.
+
+Default\+: true. \mbox{\Hypertarget{classargs_1_1_command_aa1829501dd4f63ba3551bf85171be83e}\label{classargs_1_1_command_aa1829501dd4f63ba3551bf85171be83e}} 
+\index{args\+::\+Command@{args\+::\+Command}!Reset@{Reset}}
+\index{Reset@{Reset}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily virtual void args\+::\+Command\+::\+Reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a7ccee0f0ea0902b82029b2ab30f3f84b}{args\+::\+Group}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_argument_parser_a73b0dc7bc87c3a44345879f34985237f}{args\+::\+Argument\+Parser}.
+
+\mbox{\Hypertarget{classargs_1_1_command_a6c78467ab5b58df69073da9878cc783c}\label{classargs_1_1_command_a6c78467ab5b58df69073da9878cc783c}} 
+\index{args\+::\+Command@{args\+::\+Command}!Select\+Command@{Select\+Command}}
+\index{Select\+Command@{Select\+Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Select\+Command()}{SelectCommand()}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Select\+Command (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_command}{Command} $\ast$}]{c }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_a09a64666c38476ee923b0cb7a0f56215}\label{classargs_1_1_command_a09a64666c38476ee923b0cb7a0f56215}} 
+\index{args\+::\+Command@{args\+::\+Command}!Selected\+Command@{Selected\+Command}}
+\index{Selected\+Command@{Selected\+Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Selected\+Command()}{SelectedCommand()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{classargs_1_1_command}{Command}\& args\+::\+Command\+::\+Selected\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_af806e6bf21282670984d1ef4680d393b}\label{classargs_1_1_command_af806e6bf21282670984d1ef4680d393b}} 
+\index{args\+::\+Command@{args\+::\+Command}!Selected\+Command@{Selected\+Command}}
+\index{Selected\+Command@{Selected\+Command}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Selected\+Command()}{SelectedCommand()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \hyperlink{classargs_1_1_command}{Command}\& args\+::\+Command\+::\+Selected\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_a93c6c07576c78fabd319d8d0b872c5b1}\label{classargs_1_1_command_a93c6c07576c78fabd319d8d0b872c5b1}} 
+\index{args\+::\+Command@{args\+::\+Command}!Update\+Subparser\+Help@{Update\+Subparser\+Help}}
+\index{Update\+Subparser\+Help@{Update\+Subparser\+Help}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Update\+Subparser\+Help()}{UpdateSubparserHelp()}}
+{\footnotesize\ttfamily void args\+::\+Command\+::\+Update\+Subparser\+Help (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_command_ad39b397a91af426f0ecbda9d29d7bbe0}\label{classargs_1_1_command_ad39b397a91af426f0ecbda9d29d7bbe0}} 
+\index{args\+::\+Command@{args\+::\+Command}!Validate@{Validate}}
+\index{Validate@{Validate}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Validate()}{Validate()}}
+{\footnotesize\ttfamily virtual void args\+::\+Command\+::\+Validate (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{shortprefix,  }\item[{const std\+::string \&}]{longprefix }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_group_a9f74bb3d58e5bfe331a6af8a9981ebda}{args\+::\+Group}.
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_command_aecbd7c0572cb2d7fecb5eff79552c203}\label{classargs_1_1_command_aecbd7c0572cb2d7fecb5eff79552c203}} 
+\index{args\+::\+Command@{args\+::\+Command}!Subparser@{Subparser}}
+\index{Subparser@{Subparser}!args\+::\+Command@{args\+::\+Command}}
+\subsubsection{\texorpdfstring{Subparser}{Subparser}}
+{\footnotesize\ttfamily friend class \hyperlink{classargs_1_1_subparser}{Subparser}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

@@ -1,0 +1,145 @@
+\hypertarget{classargs_1_1_subparser}{}\section{args\+:\+:Subparser Class Reference}
+\label{classargs_1_1_subparser}\index{args\+::\+Subparser@{args\+::\+Subparser}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Subparser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=166pt]{classargs_1_1_subparser__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Subparser\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=166pt]{classargs_1_1_subparser__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_subparser_a64ec29a58edf8dc13191d564d44c0e56}{Subparser} (std\+::vector$<$ std\+::string $>$ args\+\_\+, \hyperlink{classargs_1_1_argument_parser}{Argument\+Parser} \&parser\+\_\+, const \hyperlink{classargs_1_1_command}{Command} \&command\+\_\+, const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&help\+Params\+\_\+)
+\item 
+\hyperlink{classargs_1_1_subparser_ac67a2024b78cf51d9e3726fda9b019a9}{Subparser} (const \hyperlink{classargs_1_1_command}{Command} \&command\+\_\+, const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&help\+Params\+\_\+)
+\item 
+\hyperlink{classargs_1_1_subparser_a1de3a334a3e7608253481c5d2016c9e9}{Subparser} (const \hyperlink{classargs_1_1_subparser}{Subparser} \&)=delete
+\item 
+\hyperlink{classargs_1_1_subparser_aeca66a5a106fb30035f0aa8044b60b05}{Subparser} (\hyperlink{classargs_1_1_subparser}{Subparser} \&\&)=delete
+\item 
+\hyperlink{classargs_1_1_subparser}{Subparser} \& \hyperlink{classargs_1_1_subparser_a8eb8bfab0fefbc937d6549bf5e63ea8f}{operator=} (const \hyperlink{classargs_1_1_subparser}{Subparser} \&)=delete
+\item 
+\hyperlink{classargs_1_1_subparser}{Subparser} \& \hyperlink{classargs_1_1_subparser_ac4821d34029cac237edd11ec6c1d0e0f}{operator=} (\hyperlink{classargs_1_1_subparser}{Subparser} \&\&)=delete
+\item 
+const \hyperlink{classargs_1_1_command}{Command} \& \hyperlink{classargs_1_1_subparser_aa905d5a0c53b105a938f620cf5635b5c}{Get\+Command} ()
+\item 
+bool \hyperlink{classargs_1_1_subparser_ae4c7180aca9908df174e657cafe86ce8}{Is\+Parsed} () const
+\item 
+void \hyperlink{classargs_1_1_subparser_a9a21d184d749d4b5d8b6bddd4c5fda33}{Parse} ()
+\item 
+const std\+::vector$<$ std\+::string $>$ \& \hyperlink{classargs_1_1_subparser_add2992dcceeb0f2554f8d099a38e1358}{Kicked\+Out} () const noexcept
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Utility class for building subparsers with coroutines/callbacks.
+
+Brief example\+: 
+\begin{DoxyCode}
+Command command(argumentParser, \textcolor{stringliteral}{"command"}, \textcolor{stringliteral}{"my command"}, [](\hyperlink{classargs_1_1_subparser}{args::Subparser} &s)
+\{
+     \textcolor{comment}{// your command flags/positionals}
+     s.\hyperlink{classargs_1_1_subparser_a9a21d184d749d4b5d8b6bddd4c5fda33}{Parse}(); \textcolor{comment}{//required}
+     \textcolor{comment}{//your command code}
+\});
+\end{DoxyCode}
+
+
+For A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT mode don\textquotesingle{}t forget to check {\ttfamily s.\+Get\+Error()} after {\ttfamily s.\+Parse()} and return if it isn\textquotesingle{}t equals to \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77a6adf97f83acf6453d4a6a4b1070f3754}{args\+::\+Error\+::\+None}.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classargs_1_1_command}{Command} 
+\end{DoxySeeAlso}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_subparser_a64ec29a58edf8dc13191d564d44c0e56}\label{classargs_1_1_subparser_a64ec29a58edf8dc13191d564d44c0e56}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Subparser@{Subparser}}
+\index{Subparser@{Subparser}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Subparser()}{Subparser()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily args\+::\+Subparser\+::\+Subparser (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::string $>$}]{args\+\_\+,  }\item[{\hyperlink{classargs_1_1_argument_parser}{Argument\+Parser} \&}]{parser\+\_\+,  }\item[{const \hyperlink{classargs_1_1_command}{Command} \&}]{command\+\_\+,  }\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{help\+Params\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_ac67a2024b78cf51d9e3726fda9b019a9}\label{classargs_1_1_subparser_ac67a2024b78cf51d9e3726fda9b019a9}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Subparser@{Subparser}}
+\index{Subparser@{Subparser}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Subparser()}{Subparser()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily args\+::\+Subparser\+::\+Subparser (\begin{DoxyParamCaption}\item[{const \hyperlink{classargs_1_1_command}{Command} \&}]{command\+\_\+,  }\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{help\+Params\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_a1de3a334a3e7608253481c5d2016c9e9}\label{classargs_1_1_subparser_a1de3a334a3e7608253481c5d2016c9e9}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Subparser@{Subparser}}
+\index{Subparser@{Subparser}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Subparser()}{Subparser()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily args\+::\+Subparser\+::\+Subparser (\begin{DoxyParamCaption}\item[{const \hyperlink{classargs_1_1_subparser}{Subparser} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_aeca66a5a106fb30035f0aa8044b60b05}\label{classargs_1_1_subparser_aeca66a5a106fb30035f0aa8044b60b05}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Subparser@{Subparser}}
+\index{Subparser@{Subparser}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Subparser()}{Subparser()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily args\+::\+Subparser\+::\+Subparser (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_subparser}{Subparser} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_subparser_aa905d5a0c53b105a938f620cf5635b5c}\label{classargs_1_1_subparser_aa905d5a0c53b105a938f620cf5635b5c}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Get\+Command@{Get\+Command}}
+\index{Get\+Command@{Get\+Command}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Get\+Command()}{GetCommand()}}
+{\footnotesize\ttfamily const \hyperlink{classargs_1_1_command}{Command}\& args\+::\+Subparser\+::\+Get\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_ae4c7180aca9908df174e657cafe86ce8}\label{classargs_1_1_subparser_ae4c7180aca9908df174e657cafe86ce8}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Is\+Parsed@{Is\+Parsed}}
+\index{Is\+Parsed@{Is\+Parsed}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Is\+Parsed()}{IsParsed()}}
+{\footnotesize\ttfamily bool args\+::\+Subparser\+::\+Is\+Parsed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+(I\+N\+T\+E\+R\+N\+AL) Determines whether Parse was called or not. \mbox{\Hypertarget{classargs_1_1_subparser_add2992dcceeb0f2554f8d099a38e1358}\label{classargs_1_1_subparser_add2992dcceeb0f2554f8d099a38e1358}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Kicked\+Out@{Kicked\+Out}}
+\index{Kicked\+Out@{Kicked\+Out}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Kicked\+Out()}{KickedOut()}}
+{\footnotesize\ttfamily const std\+::vector$<$std\+::string$>$\& args\+::\+Subparser\+::\+Kicked\+Out (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Returns a vector of kicked out arguments.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classargs_1_1_base_a2a1d655c5d36c58fd19ca30d927d85b8}{Base\+::\+Kick\+Out} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classargs_1_1_subparser_a8eb8bfab0fefbc937d6549bf5e63ea8f}\label{classargs_1_1_subparser_a8eb8bfab0fefbc937d6549bf5e63ea8f}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!operator=@{operator=}}
+\index{operator=@{operator=}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{classargs_1_1_subparser}{Subparser}\& args\+::\+Subparser\+::operator= (\begin{DoxyParamCaption}\item[{const \hyperlink{classargs_1_1_subparser}{Subparser} \&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_ac4821d34029cac237edd11ec6c1d0e0f}\label{classargs_1_1_subparser_ac4821d34029cac237edd11ec6c1d0e0f}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!operator=@{operator=}}
+\index{operator=@{operator=}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{classargs_1_1_subparser}{Subparser}\& args\+::\+Subparser\+::operator= (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_subparser}{Subparser} \&\&}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\mbox{\Hypertarget{classargs_1_1_subparser_a9a21d184d749d4b5d8b6bddd4c5fda33}\label{classargs_1_1_subparser_a9a21d184d749d4b5d8b6bddd4c5fda33}} 
+\index{args\+::\+Subparser@{args\+::\+Subparser}!Parse@{Parse}}
+\index{Parse@{Parse}!args\+::\+Subparser@{args\+::\+Subparser}}
+\subsubsection{\texorpdfstring{Parse()}{Parse()}}
+{\footnotesize\ttfamily void args\+::\+Subparser\+::\+Parse (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+Continue parsing arguments for new command. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

@@ -1,0 +1,102 @@
+\hypertarget{classargs_1_1_action_flag}{}\section{args\+:\+:Action\+Flag Class Reference}
+\label{classargs_1_1_action_flag}\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Action\+Flag\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=175pt]{classargs_1_1_action_flag__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Action\+Flag\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{classargs_1_1_action_flag__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_action_flag_aa0f44a64b894b5cfe2410c9df7addd9d}{Action\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, \hyperlink{structargs_1_1_nargs}{Nargs} nargs\+\_\+, std\+::function$<$ void(const std\+::vector$<$ std\+::string $>$ \&)$>$ action\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+\hyperlink{classargs_1_1_action_flag_a0f5aa72ff82d751962e764e4b71bdff6}{Action\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, std\+::function$<$ void(const std\+::string \&)$>$ action\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+\hyperlink{classargs_1_1_action_flag_a811e7632dface8147a93ac5d19a1bd34}{Action\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, std\+::function$<$ void()$>$ action\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+virtual \hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_action_flag_aa341976acd895df15fb2bfe7182c48eb}{Number\+Of\+Arguments} () const noexcept override
+\item 
+virtual void \hyperlink{classargs_1_1_action_flag_abffb65449304c0799566c88c90adda0b}{Parse\+Value} (const std\+::vector$<$ std\+::string $>$ \&value) override
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+A flag class that calls a function when it\textquotesingle{}s matched 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_action_flag_aa0f44a64b894b5cfe2410c9df7addd9d}\label{classargs_1_1_action_flag_aa0f44a64b894b5cfe2410c9df7addd9d}} 
+\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}!Action\+Flag@{Action\+Flag}}
+\index{Action\+Flag@{Action\+Flag}!args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+\subsubsection{\texorpdfstring{Action\+Flag()}{ActionFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily args\+::\+Action\+Flag\+::\+Action\+Flag (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{\hyperlink{structargs_1_1_nargs}{Nargs}}]{nargs\+\_\+,  }\item[{std\+::function$<$ void(const std\+::vector$<$ std\+::string $>$ \&)$>$}]{action\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_action_flag_a0f5aa72ff82d751962e764e4b71bdff6}\label{classargs_1_1_action_flag_a0f5aa72ff82d751962e764e4b71bdff6}} 
+\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}!Action\+Flag@{Action\+Flag}}
+\index{Action\+Flag@{Action\+Flag}!args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+\subsubsection{\texorpdfstring{Action\+Flag()}{ActionFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily args\+::\+Action\+Flag\+::\+Action\+Flag (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{std\+::function$<$ void(const std\+::string \&)$>$}]{action\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_action_flag_a811e7632dface8147a93ac5d19a1bd34}\label{classargs_1_1_action_flag_a811e7632dface8147a93ac5d19a1bd34}} 
+\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}!Action\+Flag@{Action\+Flag}}
+\index{Action\+Flag@{Action\+Flag}!args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+\subsubsection{\texorpdfstring{Action\+Flag()}{ActionFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily args\+::\+Action\+Flag\+::\+Action\+Flag (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{std\+::function$<$ void()$>$}]{action\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_action_flag_aa341976acd895df15fb2bfe7182c48eb}\label{classargs_1_1_action_flag_aa341976acd895df15fb2bfe7182c48eb}} 
+\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}!Number\+Of\+Arguments@{Number\+Of\+Arguments}}
+\index{Number\+Of\+Arguments@{Number\+Of\+Arguments}!args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+\subsubsection{\texorpdfstring{Number\+Of\+Arguments()}{NumberOfArguments()}}
+{\footnotesize\ttfamily virtual \hyperlink{structargs_1_1_nargs}{Nargs} args\+::\+Action\+Flag\+::\+Number\+Of\+Arguments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Defines how many values can be consumed by this option.
+
+\begin{DoxyReturn}{Returns}
+closed interval \mbox{[}min, max\mbox{]} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}{args\+::\+Flag\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_action_flag_abffb65449304c0799566c88c90adda0b}\label{classargs_1_1_action_flag_abffb65449304c0799566c88c90adda0b}} 
+\index{args\+::\+Action\+Flag@{args\+::\+Action\+Flag}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Action\+Flag@{args\+::\+Action\+Flag}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily virtual void args\+::\+Action\+Flag\+::\+Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Parse values of this option.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Vector of values. It\textquotesingle{}s size must be in \hyperlink{classargs_1_1_action_flag_aa341976acd895df15fb2bfe7182c48eb}{Number\+Of\+Arguments()} interval. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}{args\+::\+Flag\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

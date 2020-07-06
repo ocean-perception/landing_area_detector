@@ -1,0 +1,184 @@
+\hypertarget{classargs_1_1_value_flag}{}\section{args\+:\+:Value\+Flag$<$ T, Reader $>$ Class Template Reference}
+\label{classargs_1_1_value_flag}\index{args\+::\+Value\+Flag$<$ T, Reader $>$@{args\+::\+Value\+Flag$<$ T, Reader $>$}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Value\+Flag$<$ T, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{classargs_1_1_value_flag__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Value\+Flag$<$ T, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{classargs_1_1_value_flag__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_value_flag_a79508651c81bb6bf648bbad03f0ef2f2}{Value\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const T \&default\+Value\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+\hyperlink{classargs_1_1_value_flag_ae2be9efefe2226c5fc9922e962c0d077}{Value\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const T \&default\+Value\+\_\+=T(), const bool extra\+Error\+\_\+=false)
+\item 
+\hyperlink{classargs_1_1_value_flag_ad3126eb9ac5c936e8ed9c4652796bf1c}{Value\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+virtual \hyperlink{classargs_1_1_value_flag_a17daaa10bc9b93dfc8788a35e1368d24}{$\sim$\+Value\+Flag} ()
+\item 
+virtual void \hyperlink{classargs_1_1_value_flag_af3a872ae8fb0fa34814cbc7e133aa9bf}{Parse\+Value} (const std\+::vector$<$ std\+::string $>$ \&values\+\_\+) override
+\item 
+virtual void \hyperlink{classargs_1_1_value_flag_a4300f5a4d96e46810767348d3758cc78}{Reset} () noexcept override
+\item 
+T \& \hyperlink{classargs_1_1_value_flag_a0a1d7aeb2db89af561f72f6839d152d4}{Get} () noexcept
+\item 
+const T \& \hyperlink{classargs_1_1_value_flag_a80f91693dac484d0e89229bd2bf2ea5d}{Get\+Default} () noexcept
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_value_flag_a47aa01f545a1781583c96af12c8e2062}{Get\+Default\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&) const override
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+T \hyperlink{classargs_1_1_value_flag_a330854b61d30e5c4023bfc24e22a7652}{value}
+\item 
+T \hyperlink{classargs_1_1_value_flag_a12282c45cbb677e08b789e860cd4e0f0}{default\+Value}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T, typename Reader = Value\+Reader$>$\newline
+class args\+::\+Value\+Flag$<$ T, Reader $>$}
+
+An argument-\/accepting flag class
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type to extract the argument as \\
+\hline
+{\em Reader} & The functor type used to read the argument, taking the name, value, and destination reference with operator(), and returning a bool (if A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT is defined) \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_value_flag_a79508651c81bb6bf648bbad03f0ef2f2}\label{classargs_1_1_value_flag_a79508651c81bb6bf648bbad03f0ef2f2}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Value\+Flag@{Value\+Flag}}
+\index{Value\+Flag@{Value\+Flag}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Value\+Flag()}{ValueFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::\hyperlink{classargs_1_1_value_flag}{Value\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const T \&}]{default\+Value\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_ae2be9efefe2226c5fc9922e962c0d077}\label{classargs_1_1_value_flag_ae2be9efefe2226c5fc9922e962c0d077}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Value\+Flag@{Value\+Flag}}
+\index{Value\+Flag@{Value\+Flag}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Value\+Flag()}{ValueFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::\hyperlink{classargs_1_1_value_flag}{Value\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const T \&}]{default\+Value\+\_\+ = {\ttfamily T()},  }\item[{const bool}]{extra\+Error\+\_\+ = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_ad3126eb9ac5c936e8ed9c4652796bf1c}\label{classargs_1_1_value_flag_ad3126eb9ac5c936e8ed9c4652796bf1c}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Value\+Flag@{Value\+Flag}}
+\index{Value\+Flag@{Value\+Flag}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Value\+Flag()}{ValueFlag()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::\hyperlink{classargs_1_1_value_flag}{Value\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_a17daaa10bc9b93dfc8788a35e1368d24}\label{classargs_1_1_value_flag_a17daaa10bc9b93dfc8788a35e1368d24}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!````~Value\+Flag@{$\sim$\+Value\+Flag}}
+\index{````~Value\+Flag@{$\sim$\+Value\+Flag}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{$\sim$\+Value\+Flag()}{~ValueFlag()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+virtual \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::$\sim$\hyperlink{classargs_1_1_value_flag}{Value\+Flag} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_value_flag_a0a1d7aeb2db89af561f72f6839d152d4}\label{classargs_1_1_value_flag_a0a1d7aeb2db89af561f72f6839d152d4}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+T\& \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get the value \mbox{\Hypertarget{classargs_1_1_value_flag_a80f91693dac484d0e89229bd2bf2ea5d}\label{classargs_1_1_value_flag_a80f91693dac484d0e89229bd2bf2ea5d}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Get\+Default@{Get\+Default}}
+\index{Get\+Default@{Get\+Default}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Get\+Default()}{GetDefault()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+const T\& \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::Get\+Default (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get the default value \mbox{\Hypertarget{classargs_1_1_value_flag_a47aa01f545a1781583c96af12c8e2062}\label{classargs_1_1_value_flag_a47aa01f545a1781583c96af12c8e2062}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Get\+Default\+String@{Get\+Default\+String}}
+\index{Get\+Default\+String@{Get\+Default\+String}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Get\+Default\+String()}{GetDefaultString()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+virtual std\+::string \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::Get\+Default\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_named_base_a5866b205907d924423eb8aac9a9e65f8}{args\+::\+Named\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_af3a872ae8fb0fa34814cbc7e133aa9bf}\label{classargs_1_1_value_flag_af3a872ae8fb0fa34814cbc7e133aa9bf}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+virtual void \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Parse values of this option.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Vector of values. It\textquotesingle{}s size must be in \hyperlink{classargs_1_1_value_flag_base_a96a10bfb949ad175dcf2ffba6a6ec3b6}{Number\+Of\+Arguments()} interval. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}{args\+::\+Flag\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_implicit_value_flag_a4c3124a516ca870903c4788dce781292}{args\+::\+Implicit\+Value\+Flag$<$ T, Reader $>$}.
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_a4300f5a4d96e46810767348d3758cc78}\label{classargs_1_1_value_flag_a4300f5a4d96e46810767348d3758cc78}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!Reset@{Reset}}
+\index{Reset@{Reset}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+virtual void \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::Reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_ac7cfc851174f71e00173121d3013dab1}{args\+::\+Base}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classargs_1_1_value_flag_a12282c45cbb677e08b789e860cd4e0f0}\label{classargs_1_1_value_flag_a12282c45cbb677e08b789e860cd4e0f0}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!default\+Value@{default\+Value}}
+\index{default\+Value@{default\+Value}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{default\+Value}{defaultValue}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+T \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::default\+Value\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_value_flag_a330854b61d30e5c4023bfc24e22a7652}\label{classargs_1_1_value_flag_a330854b61d30e5c4023bfc24e22a7652}} 
+\index{args\+::\+Value\+Flag@{args\+::\+Value\+Flag}!value@{value}}
+\index{value@{value}!args\+::\+Value\+Flag@{args\+::\+Value\+Flag}}
+\subsubsection{\texorpdfstring{value}{value}}
+{\footnotesize\ttfamily template$<$typename T , typename Reader  = Value\+Reader$>$ \\
+T \hyperlink{classargs_1_1_value_flag}{args\+::\+Value\+Flag}$<$ T, Reader $>$\+::value\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

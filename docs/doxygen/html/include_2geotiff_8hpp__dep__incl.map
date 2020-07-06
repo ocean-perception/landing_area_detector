@@ -1,0 +1,11 @@
+<map id="/home/cappelletto/github/self/landing_area_detector/include/geotiff.hpp" name="/home/cappelletto/github/self/landing_area_detector/include/geotiff.hpp">
+<area shape="rect" id="node2" href="$external_2geotiff_2src_2geotiff_8cpp.html" title="/home/cappelletto/github\l/self/landing_area_detector\l/external/geotiff/src/geotiff.cpp" alt="" coords="5,117,204,173"/>
+<area shape="rect" id="node3" href="$geotiff__test_8cpp.html" title="Geotiff testing sandbox. " alt="" coords="229,109,407,180"/>
+<area shape="rect" id="node4" href="$lad__analysis_8h.html" title="Header for basic pre&amp;post processing operations on &lt;lad&gt; layers. " alt="" coords="431,117,610,173"/>
+<area shape="rect" id="node6" href="$lad__test_8cpp.html" title="Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL &amp; GDAL. " alt="" coords="519,228,698,284"/>
+<area shape="rect" id="node7" href="$lad__core_8hpp.html" title="Core module of Landing Area Detection (lad) algorithm. " alt="" coords="685,117,863,173"/>
+<area shape="rect" id="node10" href="$src_2geotiff_8cpp.html" title="/home/cappelletto/github\l/self/landing_area_detector\l/src/geotiff.cpp" alt="" coords="887,117,1066,173"/>
+<area shape="rect" id="node5" href="$lad__analysis_8cpp.html" title="Extended processing functions for bathymetry raster maps analysis. " alt="" coords="317,228,495,284"/>
+<area shape="rect" id="node8" href="$lad__core_8cpp.html" title="Landing Area Detection algorithm core header. " alt="" coords="722,228,901,284"/>
+<area shape="rect" id="node9" href="$lad__layer_8cpp.html" title="/home/cappelletto/github\l/self/landing_area_detector\l/src/lad_layer.cpp" alt="" coords="925,228,1103,284"/>
+</map>

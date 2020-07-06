@@ -1,0 +1,156 @@
+\hypertarget{classlad_1_1lad_pipeline}{}\section{lad\+:\+:lad\+Pipeline Class Reference}
+\label{classlad_1_1lad_pipeline}\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+
+
+$<$ landing area detection algorithm namespace  
+
+
+
+
+{\ttfamily \#include $<$lad\+\_\+core.\+hpp$>$}
+
+
+
+Collaboration diagram for lad\+:\+:lad\+Pipeline\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=187pt]{classlad_1_1lad_pipeline__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classlad_1_1lad_pipeline_a47ebdd8f4797a0a7ea562682e2f311c3}{lad\+Pipeline} ()
+\item 
+int \hyperlink{classlad_1_1lad_pipeline_a60959c4c046e112741f87fa37fa08d9b}{Read\+T\+I\+FF} (std\+::string input\+File)
+\begin{DoxyCompactList}\small\item\em Read a given geo\+T\+I\+FF file an loads into current container. \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classlad_1_1lad_pipeline_a10c0af216e3004e054d351b9f517408b}{Get\+Layer\+Name} (int id)
+\begin{DoxyCompactList}\small\item\em Returns name of \hyperlink{classlad_1_1_layer}{Layer} with given ID number. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1lad_pipeline_a6e4748a05ef0346e1912118496931523}{Get\+Vector\+ID} (std\+::string name)
+\begin{DoxyCompactList}\small\item\em Return first vector that matches \textquotesingle{}name\textquotesingle{} as layer name. \end{DoxyCompactList}\item 
+int \hyperlink{classlad_1_1lad_pipeline_a05a4d4197caa86b14bbbfe53237bfab0}{Set\+Layer\+Name} (int id, std\+::string new\+Name)
+\begin{DoxyCompactList}\small\item\em Overwrite Layers name using is ID. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_geotiff}{Geotiff} $\ast$ \hyperlink{classlad_1_1lad_pipeline_a1ecbd2ad5ac586de2876ee2e59cc1b97}{ap\+Input\+Geotiff}
+\begin{DoxyCompactList}\small\item\em landing area detection algorithm namespace \end{DoxyCompactList}\item 
+std\+::string \hyperlink{classlad_1_1lad_pipeline_a2312bba58d0b3b44e72fd6bea4e4b35c}{input\+File\+T\+I\+FF}
+\begin{DoxyCompactList}\small\item\em Input T\+I\+FF filename containing base bathymetry. Base name for output products files. \end{DoxyCompactList}\item 
+vector$<$ std\+::shared\+\_\+ptr$<$ \hyperlink{classlad_1_1_layer}{Layer} $>$ $>$ \hyperlink{classlad_1_1lad_pipeline_a7c0702fe312deebd185bd3a3a5a02a53}{Layers}
+\begin{DoxyCompactList}\small\item\em Collection of layers. Using smart shared pointers for tree-\/like pipeline structures. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+$<$ landing area detection algorithm namespace 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a47ebdd8f4797a0a7ea562682e2f311c3}\label{classlad_1_1lad_pipeline_a47ebdd8f4797a0a7ea562682e2f311c3}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!lad\+Pipeline@{lad\+Pipeline}}
+\index{lad\+Pipeline@{lad\+Pipeline}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{lad\+Pipeline()}{ladPipeline()}}
+{\footnotesize\ttfamily lad\+::lad\+Pipeline\+::lad\+Pipeline (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a10c0af216e3004e054d351b9f517408b}\label{classlad_1_1lad_pipeline_a10c0af216e3004e054d351b9f517408b}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!Get\+Layer\+Name@{Get\+Layer\+Name}}
+\index{Get\+Layer\+Name@{Get\+Layer\+Name}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{Get\+Layer\+Name()}{GetLayerName()}}
+{\footnotesize\ttfamily std\+::string lad\+::lad\+Pipeline\+::\+Get\+Layer\+Name (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Returns name of \hyperlink{classlad_1_1_layer}{Layer} with given ID number. 
+
+Returns (if present) the name of the vector layer that matches provided ID.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & \hyperlink{classlad_1_1_layer}{Layer} ID number to be searched \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a6e4748a05ef0346e1912118496931523}\label{classlad_1_1lad_pipeline_a6e4748a05ef0346e1912118496931523}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!Get\+Vector\+ID@{Get\+Vector\+ID}}
+\index{Get\+Vector\+ID@{Get\+Vector\+ID}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{Get\+Vector\+I\+D()}{GetVectorID()}}
+{\footnotesize\ttfamily int lad\+::lad\+Pipeline\+::\+Get\+Vector\+ID (\begin{DoxyParamCaption}\item[{std\+::string}]{name }\end{DoxyParamCaption})}
+
+
+
+Return first vector that matches \textquotesingle{}name\textquotesingle{} as layer name. 
+
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a60959c4c046e112741f87fa37fa08d9b}\label{classlad_1_1lad_pipeline_a60959c4c046e112741f87fa37fa08d9b}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!Read\+T\+I\+FF@{Read\+T\+I\+FF}}
+\index{Read\+T\+I\+FF@{Read\+T\+I\+FF}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{Read\+T\+I\+F\+F()}{ReadTIFF()}}
+{\footnotesize\ttfamily int lad\+::lad\+Pipeline\+::\+Read\+T\+I\+FF (\begin{DoxyParamCaption}\item[{std\+::string}]{input\+File }\end{DoxyParamCaption})}
+
+
+
+Read a given geo\+T\+I\+FF file an loads into current container. 
+
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a05a4d4197caa86b14bbbfe53237bfab0}\label{classlad_1_1lad_pipeline_a05a4d4197caa86b14bbbfe53237bfab0}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!Set\+Layer\+Name@{Set\+Layer\+Name}}
+\index{Set\+Layer\+Name@{Set\+Layer\+Name}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{Set\+Layer\+Name()}{SetLayerName()}}
+{\footnotesize\ttfamily int lad\+::lad\+Pipeline\+::\+Set\+Layer\+Name (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{std\+::string}]{new\+Name }\end{DoxyParamCaption})}
+
+
+
+Overwrite Layers name using is ID. 
+
+Overwrite the name of a layer (if present) with a unique string.
+
+If provided string 
+\begin{DoxyParams}{Parameters}
+{\em id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a1ecbd2ad5ac586de2876ee2e59cc1b97}\label{classlad_1_1lad_pipeline_a1ecbd2ad5ac586de2876ee2e59cc1b97}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!ap\+Input\+Geotiff@{ap\+Input\+Geotiff}}
+\index{ap\+Input\+Geotiff@{ap\+Input\+Geotiff}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{ap\+Input\+Geotiff}{apInputGeotiff}}
+{\footnotesize\ttfamily \hyperlink{class_geotiff}{Geotiff}$\ast$ lad\+::lad\+Pipeline\+::ap\+Input\+Geotiff}
+
+
+
+landing area detection algorithm namespace 
+
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a2312bba58d0b3b44e72fd6bea4e4b35c}\label{classlad_1_1lad_pipeline_a2312bba58d0b3b44e72fd6bea4e4b35c}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!input\+File\+T\+I\+FF@{input\+File\+T\+I\+FF}}
+\index{input\+File\+T\+I\+FF@{input\+File\+T\+I\+FF}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{input\+File\+T\+I\+FF}{inputFileTIFF}}
+{\footnotesize\ttfamily std\+::string lad\+::lad\+Pipeline\+::input\+File\+T\+I\+FF}
+
+
+
+Input T\+I\+FF filename containing base bathymetry. Base name for output products files. 
+
+\mbox{\Hypertarget{classlad_1_1lad_pipeline_a7c0702fe312deebd185bd3a3a5a02a53}\label{classlad_1_1lad_pipeline_a7c0702fe312deebd185bd3a3a5a02a53}} 
+\index{lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}!Layers@{Layers}}
+\index{Layers@{Layers}!lad\+::lad\+Pipeline@{lad\+::lad\+Pipeline}}
+\subsubsection{\texorpdfstring{Layers}{Layers}}
+{\footnotesize\ttfamily vector$<$std\+::shared\+\_\+ptr $<$\hyperlink{classlad_1_1_layer}{Layer}$>$ $>$ lad\+::lad\+Pipeline\+::\+Layers}
+
+
+
+Collection of layers. Using smart shared pointers for tree-\/like pipeline structures. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/include/\hyperlink{lad__core_8hpp}{lad\+\_\+core.\+hpp}\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/src/\hyperlink{lad__core_8cpp}{lad\+\_\+core.\+cpp}\end{DoxyCompactItemize}

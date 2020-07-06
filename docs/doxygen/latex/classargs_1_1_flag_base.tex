@@ -1,0 +1,182 @@
+\hypertarget{classargs_1_1_flag_base}{}\section{args\+:\+:Flag\+Base Class Reference}
+\label{classargs_1_1_flag_base}\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Flag\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classargs_1_1_flag_base__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Flag\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{classargs_1_1_flag_base__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_flag_base_a9abcf8802dee008411f3b45fff44a3e1}{Flag\+Base} (const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, const bool extra\+Error\+\_\+=false)
+\item 
+\hyperlink{classargs_1_1_flag_base_ad99d8085ea99b778f96bad7872900d49}{Flag\+Base} (const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+)
+\item 
+virtual \hyperlink{classargs_1_1_flag_base_a37e287119643f8eca5eca883c3993a52}{$\sim$\+Flag\+Base} ()
+\item 
+virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base} $\ast$ \hyperlink{classargs_1_1_flag_base_a729ebb681d373f09875abb2e04f820f2}{Match} (const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&flag) override
+\item 
+virtual void \hyperlink{classargs_1_1_flag_base_afd5a2cdea7f46caacc874c7c67ff6444}{Validate} (const std\+::string \&short\+Prefix, const std\+::string \&long\+Prefix) const override
+\item 
+virtual std\+::vector$<$ std\+::string $>$ \hyperlink{classargs_1_1_flag_base_aeb3153e728d38f0f3e0ea5df46fb4acc}{Get\+Program\+Line} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const override
+\item 
+virtual bool \hyperlink{classargs_1_1_flag_base_a67b6fa7bfd7b3ed18caeb2a6381ed1a2}{Has\+Flag} () const override
+\item 
+virtual \hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}{Number\+Of\+Arguments} () const noexcept=0
+\item 
+virtual void \hyperlink{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}{Parse\+Value} (const std\+::vector$<$ std\+::string $>$ \&value)=0
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_flag_base_a61db383104c1987904bcd331d8b3be76}{Get\+Name\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params) const override
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{classargs_1_1_matcher}{Matcher} \hyperlink{classargs_1_1_flag_base_a8035f87d3cbd70a8a57c7a77f2c5d8f1}{matcher}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classargs_1_1_base}{Base} class for all flag options 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_flag_base_a9abcf8802dee008411f3b45fff44a3e1}\label{classargs_1_1_flag_base_a9abcf8802dee008411f3b45fff44a3e1}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Flag\+Base@{Flag\+Base}}
+\index{Flag\+Base@{Flag\+Base}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Flag\+Base()}{FlagBase()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily args\+::\+Flag\+Base\+::\+Flag\+Base (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{const bool}]{extra\+Error\+\_\+ = {\ttfamily false} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_ad99d8085ea99b778f96bad7872900d49}\label{classargs_1_1_flag_base_ad99d8085ea99b778f96bad7872900d49}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Flag\+Base@{Flag\+Base}}
+\index{Flag\+Base@{Flag\+Base}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Flag\+Base()}{FlagBase()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily args\+::\+Flag\+Base\+::\+Flag\+Base (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_a37e287119643f8eca5eca883c3993a52}\label{classargs_1_1_flag_base_a37e287119643f8eca5eca883c3993a52}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!````~Flag\+Base@{$\sim$\+Flag\+Base}}
+\index{````~Flag\+Base@{$\sim$\+Flag\+Base}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{$\sim$\+Flag\+Base()}{~FlagBase()}}
+{\footnotesize\ttfamily virtual args\+::\+Flag\+Base\+::$\sim$\+Flag\+Base (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_flag_base_a61db383104c1987904bcd331d8b3be76}\label{classargs_1_1_flag_base_a61db383104c1987904bcd331d8b3be76}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Get\+Name\+String@{Get\+Name\+String}}
+\index{Get\+Name\+String@{Get\+Name\+String}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Get\+Name\+String()}{GetNameString()}}
+{\footnotesize\ttfamily virtual std\+::string args\+::\+Flag\+Base\+::\+Get\+Name\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_named_base_a3c597a489d3ccc74937682407c08b3f7}{args\+::\+Named\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_aeb3153e728d38f0f3e0ea5df46fb4acc}\label{classargs_1_1_flag_base_aeb3153e728d38f0f3e0ea5df46fb4acc}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Get\+Program\+Line@{Get\+Program\+Line}}
+\index{Get\+Program\+Line@{Get\+Program\+Line}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Get\+Program\+Line()}{GetProgramLine()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::string$>$ args\+::\+Flag\+Base\+::\+Get\+Program\+Line (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a88fcbbc4bfe3b7af9fafe6e96a19f337}{args\+::\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_a67b6fa7bfd7b3ed18caeb2a6381ed1a2}\label{classargs_1_1_flag_base_a67b6fa7bfd7b3ed18caeb2a6381ed1a2}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Has\+Flag@{Has\+Flag}}
+\index{Has\+Flag@{Has\+Flag}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Has\+Flag()}{HasFlag()}}
+{\footnotesize\ttfamily virtual bool args\+::\+Flag\+Base\+::\+Has\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a81684f399665c0372439c070af5de4a7}{args\+::\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_a729ebb681d373f09875abb2e04f820f2}\label{classargs_1_1_flag_base_a729ebb681d373f09875abb2e04f820f2}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Match@{Match}}
+\index{Match@{Match}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Match()}{Match()}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base}$\ast$ args\+::\+Flag\+Base\+::\+Match (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a6d5a7be35d62f59fee5a52c06af3003e}{args\+::\+Base}.
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_counter_flag_ade999a8d89a8fd3db7508dfe7fdf851c}{args\+::\+Counter\+Flag}, and \hyperlink{classargs_1_1_help_flag_a1a555992a7c8350aca0ac1f292d91605}{args\+::\+Help\+Flag}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}\label{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Number\+Of\+Arguments@{Number\+Of\+Arguments}}
+\index{Number\+Of\+Arguments@{Number\+Of\+Arguments}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Number\+Of\+Arguments()}{NumberOfArguments()}}
+{\footnotesize\ttfamily virtual \hyperlink{structargs_1_1_nargs}{Nargs} args\+::\+Flag\+Base\+::\+Number\+Of\+Arguments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+Defines how many values can be consumed by this option.
+
+\begin{DoxyReturn}{Returns}
+closed interval \mbox{[}min, max\mbox{]} 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classargs_1_1_nargs_value_flag_a8db7ce6ec0d27f649dbfb1bba908078a}{args\+::\+Nargs\+Value\+Flag$<$ T, List, Reader $>$}, \hyperlink{classargs_1_1_implicit_value_flag_a7cfc67aca2b32921e722f51d349df2c5}{args\+::\+Implicit\+Value\+Flag$<$ T, Reader $>$}, \hyperlink{classargs_1_1_action_flag_aa341976acd895df15fb2bfe7182c48eb}{args\+::\+Action\+Flag}, \hyperlink{classargs_1_1_flag_a1bd707628d2987d3ccf2dbdb810302e4}{args\+::\+Flag}, and \hyperlink{classargs_1_1_value_flag_base_a96a10bfb949ad175dcf2ffba6a6ec3b6}{args\+::\+Value\+Flag\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}\label{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily virtual void args\+::\+Flag\+Base\+::\+Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+Parse values of this option.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Vector of values. It\textquotesingle{}s size must be in \hyperlink{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}{Number\+Of\+Arguments()} interval. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classargs_1_1_map_flag_list_af37b4d7e420eabf62bd8dacafa86419c}{args\+::\+Map\+Flag\+List$<$ K, T, List, Reader, Map $>$}, \hyperlink{classargs_1_1_map_flag_a1f21b9227ab9b346b86f8533213a8272}{args\+::\+Map\+Flag$<$ K, T, Reader, Map $>$}, \hyperlink{classargs_1_1_value_flag_list_afbd3d460a8cee4c84d0a6210de068f83}{args\+::\+Value\+Flag\+List$<$ T, List, Reader $>$}, \hyperlink{classargs_1_1_nargs_value_flag_aa1ef4abaec468d69c89c02dd8bfdbf38}{args\+::\+Nargs\+Value\+Flag$<$ T, List, Reader $>$}, \hyperlink{classargs_1_1_implicit_value_flag_a4c3124a516ca870903c4788dce781292}{args\+::\+Implicit\+Value\+Flag$<$ T, Reader $>$}, \hyperlink{classargs_1_1_value_flag_af3a872ae8fb0fa34814cbc7e133aa9bf}{args\+::\+Value\+Flag$<$ T, Reader $>$}, \hyperlink{classargs_1_1_action_flag_abffb65449304c0799566c88c90adda0b}{args\+::\+Action\+Flag}, and \hyperlink{classargs_1_1_flag_a48ce8c59b554db36d2869b24b56c94dd}{args\+::\+Flag}.
+
+\mbox{\Hypertarget{classargs_1_1_flag_base_afd5a2cdea7f46caacc874c7c67ff6444}\label{classargs_1_1_flag_base_afd5a2cdea7f46caacc874c7c67ff6444}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!Validate@{Validate}}
+\index{Validate@{Validate}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{Validate()}{Validate()}}
+{\footnotesize\ttfamily virtual void args\+::\+Flag\+Base\+::\+Validate (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{short\+Prefix,  }\item[{const std\+::string \&}]{long\+Prefix }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_a62ea917978306062785cbfaa4dd51d2f}{args\+::\+Base}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classargs_1_1_flag_base_a8035f87d3cbd70a8a57c7a77f2c5d8f1}\label{classargs_1_1_flag_base_a8035f87d3cbd70a8a57c7a77f2c5d8f1}} 
+\index{args\+::\+Flag\+Base@{args\+::\+Flag\+Base}!matcher@{matcher}}
+\index{matcher@{matcher}!args\+::\+Flag\+Base@{args\+::\+Flag\+Base}}
+\subsubsection{\texorpdfstring{matcher}{matcher}}
+{\footnotesize\ttfamily const \hyperlink{classargs_1_1_matcher}{Matcher} args\+::\+Flag\+Base\+::matcher\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

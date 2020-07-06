@@ -1,0 +1,80 @@
+\hypertarget{classargs_1_1_help_flag}{}\section{args\+:\+:Help\+Flag Class Reference}
+\label{classargs_1_1_help_flag}\index{args\+::\+Help\+Flag@{args\+::\+Help\+Flag}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Help\+Flag\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=175pt]{classargs_1_1_help_flag__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Help\+Flag\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=270pt]{classargs_1_1_help_flag__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_help_flag_a6ee9c6725d5ce9d57090e2aab59cb050}{Help\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+virtual \hyperlink{classargs_1_1_help_flag_acd28f5106f158d7da9aace1ea55bea63}{$\sim$\+Help\+Flag} ()
+\item 
+virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base} $\ast$ \hyperlink{classargs_1_1_help_flag_a1a555992a7c8350aca0ac1f292d91605}{Match} (const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&arg) override
+\item 
+bool \hyperlink{classargs_1_1_help_flag_a4a7d60a403961377da9cf9203f7b4203}{Get} () const noexcept
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\hyperlink{classargs_1_1_help}{Help} flag class
+
+Works like a regular flag, but throws an instance of \hyperlink{classargs_1_1_help}{Help} when it is matched 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_help_flag_a6ee9c6725d5ce9d57090e2aab59cb050}\label{classargs_1_1_help_flag_a6ee9c6725d5ce9d57090e2aab59cb050}} 
+\index{args\+::\+Help\+Flag@{args\+::\+Help\+Flag}!Help\+Flag@{Help\+Flag}}
+\index{Help\+Flag@{Help\+Flag}!args\+::\+Help\+Flag@{args\+::\+Help\+Flag}}
+\subsubsection{\texorpdfstring{Help\+Flag()}{HelpFlag()}}
+{\footnotesize\ttfamily args\+::\+Help\+Flag\+::\+Help\+Flag (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_help_flag_acd28f5106f158d7da9aace1ea55bea63}\label{classargs_1_1_help_flag_acd28f5106f158d7da9aace1ea55bea63}} 
+\index{args\+::\+Help\+Flag@{args\+::\+Help\+Flag}!````~Help\+Flag@{$\sim$\+Help\+Flag}}
+\index{````~Help\+Flag@{$\sim$\+Help\+Flag}!args\+::\+Help\+Flag@{args\+::\+Help\+Flag}}
+\subsubsection{\texorpdfstring{$\sim$\+Help\+Flag()}{~HelpFlag()}}
+{\footnotesize\ttfamily virtual args\+::\+Help\+Flag\+::$\sim$\+Help\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_help_flag_a4a7d60a403961377da9cf9203f7b4203}\label{classargs_1_1_help_flag_a4a7d60a403961377da9cf9203f7b4203}} 
+\index{args\+::\+Help\+Flag@{args\+::\+Help\+Flag}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Help\+Flag@{args\+::\+Help\+Flag}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily bool args\+::\+Help\+Flag\+::\+Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get whether this was matched \mbox{\Hypertarget{classargs_1_1_help_flag_a1a555992a7c8350aca0ac1f292d91605}\label{classargs_1_1_help_flag_a1a555992a7c8350aca0ac1f292d91605}} 
+\index{args\+::\+Help\+Flag@{args\+::\+Help\+Flag}!Match@{Match}}
+\index{Match@{Match}!args\+::\+Help\+Flag@{args\+::\+Help\+Flag}}
+\subsubsection{\texorpdfstring{Match()}{Match()}}
+{\footnotesize\ttfamily virtual \hyperlink{classargs_1_1_flag_base}{Flag\+Base}$\ast$ args\+::\+Help\+Flag\+::\+Match (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_either_flag}{Either\+Flag} \&}]{arg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_flag_base_a729ebb681d373f09875abb2e04f820f2}{args\+::\+Flag\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

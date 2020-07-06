@@ -1,0 +1,294 @@
+\hypertarget{classargs_1_1_map_positional_list}{}\section{args\+:\+:Map\+Positional\+List$<$ K, T, List, Reader, Map $>$ Class Template Reference}
+\label{classargs_1_1_map_positional_list}\index{args\+::\+Map\+Positional\+List$<$ K, T, List, Reader, Map $>$@{args\+::\+Map\+Positional\+List$<$ K, T, List, Reader, Map $>$}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Map\+Positional\+List$<$ K, T, List, Reader, Map $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{classargs_1_1_map_positional_list__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Map\+Positional\+List$<$ K, T, List, Reader, Map $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{classargs_1_1_map_positional_list__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef T \hyperlink{classargs_1_1_map_positional_list_aab45440653898824437c3ab443bb4bd7}{value\+\_\+type}
+\item 
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_map_positional_list_aa961fcc8eee61814bd1fb2b75f0235c1}{allocator\+\_\+type}
+\item 
+typedef Container\+::pointer \hyperlink{classargs_1_1_map_positional_list_ac005fb0e2fa99bc6e6b39103cb605d17}{pointer}
+\item 
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_map_positional_list_aa4ce0fca25572ffad42a9b2b9c86c691}{const\+\_\+pointer}
+\item 
+typedef T \& \hyperlink{classargs_1_1_map_positional_list_acabe5d01f2f750a05a8a6549a61a8120}{reference}
+\item 
+typedef const T \& \hyperlink{classargs_1_1_map_positional_list_a49c2fa40c50f8d1c4f3ef6023761972d}{const\+\_\+reference}
+\item 
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_map_positional_list_a217bf984e4c1108f5e4785cef1de1a95}{size\+\_\+type}
+\item 
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_map_positional_list_a60aba0aee19ccedfcfd02074339d0e1c}{difference\+\_\+type}
+\item 
+typedef Container\+::iterator \hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator}
+\item 
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator} $>$ \hyperlink{classargs_1_1_map_positional_list_ad12f9031955b2dc9a3d20304a908bcea}{reverse\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} $>$ \hyperlink{classargs_1_1_map_positional_list_a89cd057f52f097ccd3d3072f62eacd47}{const\+\_\+reverse\+\_\+iterator}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_map_positional_list_ab8dc23a5947d8f10d0e71d907248f52f}{Map\+Positional\+List} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&map\+\_\+, const Container \&default\+Values\+\_\+=Container())
+\item 
+virtual \hyperlink{classargs_1_1_map_positional_list_acd2d9a2a9dafb35ff7d85b2aebe4d94e}{$\sim$\+Map\+Positional\+List} ()
+\item 
+virtual void \hyperlink{classargs_1_1_map_positional_list_ac2d042c42bc771954f340dc0a3b582c7}{Parse\+Value} (const std\+::string \&value\+\_\+) override
+\item 
+Container \& \hyperlink{classargs_1_1_map_positional_list_ad34d106fb81d46943392c74fb987fd27}{Get} () noexcept
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_map_positional_list_a06d9cd19fea86e0027f2ab4a491f19bb}{Name} () const override
+\item 
+virtual void \hyperlink{classargs_1_1_map_positional_list_a69eefecdabf07a4fac7006acb2b144d3}{Reset} () noexcept override
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator} \hyperlink{classargs_1_1_map_positional_list_a5ec966fa9cf2064c32026b817e1a8f25}{begin} () noexcept
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list_a40aecf3ee765506dbf54628d6ba999a5}{begin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list_a5d4eda96b1f2ae63fd36b6f3a3ab80a7}{cbegin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator} \hyperlink{classargs_1_1_map_positional_list_a3605bc6cf2e3b6d263f62938dc397148}{end} () noexcept
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list_a1bbe7a376ba441f6525b73e1ed00d457}{end} () const noexcept
+\item 
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list_a2e84a5f143ad24ad1967c3f7b788dff0}{cend} () const noexcept
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename K, typename T, template$<$ typename... $>$ class List = std\+::vector, typename Reader = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$\newline
+class args\+::\+Map\+Positional\+List$<$ K, T, List, Reader, Map $>$}
+
+A positional argument mapping list class
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em K} & the type to extract the argument as \\
+\hline
+{\em T} & the type to store the result as \\
+\hline
+{\em List} & the list type that houses the values \\
+\hline
+{\em Reader} & The functor type used to read the argument, taking the name, value, and destination reference with operator(), and returning a bool (if A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT is defined) \\
+\hline
+{\em Map} & The Map type. Should operate like std\+::map or std\+::unordered\+\_\+map \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_aa961fcc8eee61814bd1fb2b75f0235c1}\label{classargs_1_1_map_positional_list_aa961fcc8eee61814bd1fb2b75f0235c1}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!allocator\+\_\+type@{allocator\+\_\+type}}
+\index{allocator\+\_\+type@{allocator\+\_\+type}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{allocator\+\_\+type}{allocator\_type}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_aa961fcc8eee61814bd1fb2b75f0235c1}{allocator\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}\label{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_aa4ce0fca25572ffad42a9b2b9c86c691}\label{classargs_1_1_map_positional_list_aa4ce0fca25572ffad42a9b2b9c86c691}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!const\+\_\+pointer@{const\+\_\+pointer}}
+\index{const\+\_\+pointer@{const\+\_\+pointer}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+pointer}{const\_pointer}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_aa4ce0fca25572ffad42a9b2b9c86c691}{const\+\_\+pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a49c2fa40c50f8d1c4f3ef6023761972d}\label{classargs_1_1_map_positional_list_a49c2fa40c50f8d1c4f3ef6023761972d}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!const\+\_\+reference@{const\+\_\+reference}}
+\index{const\+\_\+reference@{const\+\_\+reference}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+reference}{const\_reference}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef const T\& \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a49c2fa40c50f8d1c4f3ef6023761972d}{const\+\_\+reference}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a89cd057f52f097ccd3d3072f62eacd47}\label{classargs_1_1_map_positional_list_a89cd057f52f097ccd3d3072f62eacd47}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}}
+\index{const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{const\+\_\+reverse\+\_\+iterator}{const\_reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator}$>$ \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a89cd057f52f097ccd3d3072f62eacd47}{const\+\_\+reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a60aba0aee19ccedfcfd02074339d0e1c}\label{classargs_1_1_map_positional_list_a60aba0aee19ccedfcfd02074339d0e1c}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!difference\+\_\+type@{difference\+\_\+type}}
+\index{difference\+\_\+type@{difference\+\_\+type}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{difference\+\_\+type}{difference\_type}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a60aba0aee19ccedfcfd02074339d0e1c}{difference\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}\label{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!iterator@{iterator}}
+\index{iterator@{iterator}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::iterator \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_ac005fb0e2fa99bc6e6b39103cb605d17}\label{classargs_1_1_map_positional_list_ac005fb0e2fa99bc6e6b39103cb605d17}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!pointer@{pointer}}
+\index{pointer@{pointer}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{pointer}{pointer}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::pointer \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_ac005fb0e2fa99bc6e6b39103cb605d17}{pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_acabe5d01f2f750a05a8a6549a61a8120}\label{classargs_1_1_map_positional_list_acabe5d01f2f750a05a8a6549a61a8120}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!reference@{reference}}
+\index{reference@{reference}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{reference}{reference}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef T\& \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_acabe5d01f2f750a05a8a6549a61a8120}{reference}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_ad12f9031955b2dc9a3d20304a908bcea}\label{classargs_1_1_map_positional_list_ad12f9031955b2dc9a3d20304a908bcea}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!reverse\+\_\+iterator@{reverse\+\_\+iterator}}
+\index{reverse\+\_\+iterator@{reverse\+\_\+iterator}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{reverse\+\_\+iterator}{reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator}$>$ \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_ad12f9031955b2dc9a3d20304a908bcea}{reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a217bf984e4c1108f5e4785cef1de1a95}\label{classargs_1_1_map_positional_list_a217bf984e4c1108f5e4785cef1de1a95}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!size\+\_\+type@{size\+\_\+type}}
+\index{size\+\_\+type@{size\+\_\+type}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{size\+\_\+type}{size\_type}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_a217bf984e4c1108f5e4785cef1de1a95}{size\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_aab45440653898824437c3ab443bb4bd7}\label{classargs_1_1_map_positional_list_aab45440653898824437c3ab443bb4bd7}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!value\+\_\+type@{value\+\_\+type}}
+\index{value\+\_\+type@{value\+\_\+type}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{value\+\_\+type}{value\_type}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+typedef T \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list_aab45440653898824437c3ab443bb4bd7}{value\+\_\+type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_ab8dc23a5947d8f10d0e71d907248f52f}\label{classargs_1_1_map_positional_list_ab8dc23a5947d8f10d0e71d907248f52f}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!Map\+Positional\+List@{Map\+Positional\+List}}
+\index{Map\+Positional\+List@{Map\+Positional\+List}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{Map\+Positional\+List()}{MapPositionalList()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::\hyperlink{classargs_1_1_map_positional_list}{Map\+Positional\+List} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{const Map$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T $>$ \&}]{map\+\_\+,  }\item[{const Container \&}]{default\+Values\+\_\+ = {\ttfamily Container()} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_acd2d9a2a9dafb35ff7d85b2aebe4d94e}\label{classargs_1_1_map_positional_list_acd2d9a2a9dafb35ff7d85b2aebe4d94e}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!````~Map\+Positional\+List@{$\sim$\+Map\+Positional\+List}}
+\index{````~Map\+Positional\+List@{$\sim$\+Map\+Positional\+List}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{$\sim$\+Map\+Positional\+List()}{~MapPositionalList()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::$\sim$\hyperlink{classargs_1_1_map_positional_list}{Map\+Positional\+List} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a5ec966fa9cf2064c32026b817e1a8f25}\label{classargs_1_1_map_positional_list_a5ec966fa9cf2064c32026b817e1a8f25}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a40aecf3ee765506dbf54628d6ba999a5}\label{classargs_1_1_map_positional_list_a40aecf3ee765506dbf54628d6ba999a5}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a5d4eda96b1f2ae63fd36b6f3a3ab80a7}\label{classargs_1_1_map_positional_list_a5d4eda96b1f2ae63fd36b6f3a3ab80a7}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!cbegin@{cbegin}}
+\index{cbegin@{cbegin}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{cbegin()}{cbegin()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::cbegin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a2e84a5f143ad24ad1967c3f7b788dff0}\label{classargs_1_1_map_positional_list_a2e84a5f143ad24ad1967c3f7b788dff0}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!cend@{cend}}
+\index{cend@{cend}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{cend()}{cend()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::cend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a3605bc6cf2e3b6d263f62938dc397148}\label{classargs_1_1_map_positional_list_a3605bc6cf2e3b6d263f62938dc397148}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!end@{end}}
+\index{end@{end}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a4e3fbeb6f894505ce48d35fe76dc157a}{iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a1bbe7a376ba441f6525b73e1ed00d457}\label{classargs_1_1_map_positional_list_a1bbe7a376ba441f6525b73e1ed00d457}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!end@{end}}
+\index{end@{end}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+\hyperlink{classargs_1_1_map_positional_list_a0700556b0a067e095ee22edbb18206fc}{const\+\_\+iterator} \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_ad34d106fb81d46943392c74fb987fd27}\label{classargs_1_1_map_positional_list_ad34d106fb81d46943392c74fb987fd27}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+Container\& \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+Get the value \mbox{\Hypertarget{classargs_1_1_map_positional_list_a06d9cd19fea86e0027f2ab4a491f19bb}\label{classargs_1_1_map_positional_list_a06d9cd19fea86e0027f2ab4a491f19bb}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!Name@{Name}}
+\index{Name@{Name}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{Name()}{Name()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual std\+::string \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_named_base_a7e7bab5c0de59e717b87935b14376dfc}{args\+::\+Named\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_ac2d042c42bc771954f340dc0a3b582c7}\label{classargs_1_1_map_positional_list_ac2d042c42bc771954f340dc0a3b582c7}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual void \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{value\+\_\+ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \hyperlink{classargs_1_1_positional_base_a10b6b91155f56bc28ca25fa87c6f0985}{args\+::\+Positional\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_map_positional_list_a69eefecdabf07a4fac7006acb2b144d3}\label{classargs_1_1_map_positional_list_a69eefecdabf07a4fac7006acb2b144d3}} 
+\index{args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}!Reset@{Reset}}
+\index{Reset@{Reset}!args\+::\+Map\+Positional\+List@{args\+::\+Map\+Positional\+List}}
+\subsubsection{\texorpdfstring{Reset()}{Reset()}}
+{\footnotesize\ttfamily template$<$typename K , typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader, template$<$ typename... $>$ class Map = std\+::unordered\+\_\+map$>$ \\
+virtual void \hyperlink{classargs_1_1_map_positional_list}{args\+::\+Map\+Positional\+List}$<$ \hyperlink{cgal__test_8cpp_a891e241aa245ae63618f03737efba309}{K}, T, List, Reader, Map $>$\+::Reset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_positional_base_a14edfb214858983cf5116c8d0fec72ea}{args\+::\+Positional\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

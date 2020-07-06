@@ -1,0 +1,198 @@
+\hypertarget{classargs_1_1_named_base}{}\section{args\+:\+:Named\+Base Class Reference}
+\label{classargs_1_1_named_base}\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Named\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classargs_1_1_named_base__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Named\+Base\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=175pt]{classargs_1_1_named_base__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_named_base_a09810fc700d6ab589e04f3414edb4f4f}{Named\+Base} (const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+virtual \hyperlink{classargs_1_1_named_base_af4a12e876c93437cd73633bb8255e8eb}{$\sim$\+Named\+Base} ()
+\item 
+void \hyperlink{classargs_1_1_named_base_a1e94ca498932f60c6e98ba4b88abcc4b}{Help\+Default} (const std\+::string \&str)
+\item 
+void \hyperlink{classargs_1_1_named_base_a084a776592a24153f1f0aaf28d81f495}{Help\+Choices} (const std\+::string \&str)
+\item 
+virtual std\+::vector$<$ std\+::tuple$<$ std\+::string, std\+::string, unsigned $>$ $>$ \hyperlink{classargs_1_1_named_base_ab0b9e1f22abf04b24659fada61a6d665}{Get\+Description} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&params, const unsigned indent\+Level) const override
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_named_base_a7e7bab5c0de59e717b87935b14376dfc}{Name} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_named_base_a5866b205907d924423eb8aac9a9e65f8}{Get\+Default\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&) const
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_named_base_aa9104a04001d10c5732a5feb01204cf7}{Get\+Choices\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&) const
+\item 
+virtual std\+::string \hyperlink{classargs_1_1_named_base_a3c597a489d3ccc74937682407c08b3f7}{Get\+Name\+String} (const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&) const
+\item 
+void \hyperlink{classargs_1_1_named_base_acfaa8c03922fc9b0181a10ca03156e12}{Add\+Description\+Postfix} (std\+::string \&dest, const bool is\+Manual, const std\+::string \&manual, bool is\+Generated, const std\+::string \&generated, const std\+::string \&str) const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const std\+::string \hyperlink{classargs_1_1_named_base_a774cbec5dc864c48e84051c044cefa77}{name}
+\item 
+bool \hyperlink{classargs_1_1_named_base_a034ad347cb530cbf9e0e9ce1b67a66ba}{kickout} = false
+\item 
+std\+::string \hyperlink{classargs_1_1_named_base_a7460bf500a1873039fc741247a959ddc}{default\+String}
+\item 
+bool \hyperlink{classargs_1_1_named_base_a2bfe3539152114a52a4a8089920eea59}{default\+String\+Manual} = false
+\item 
+std\+::string \hyperlink{classargs_1_1_named_base_a2e1624c744d671916b0c943f8fbad962}{choices\+String}
+\item 
+bool \hyperlink{classargs_1_1_named_base_afc180b62e1f2d9c194354b163f3410b6}{choices\+String\+Manual} = false
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{classargs_1_1_base}{Base} class for all match types that have a name 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_named_base_a09810fc700d6ab589e04f3414edb4f4f}\label{classargs_1_1_named_base_a09810fc700d6ab589e04f3414edb4f4f}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Named\+Base@{Named\+Base}}
+\index{Named\+Base@{Named\+Base}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Named\+Base()}{NamedBase()}}
+{\footnotesize\ttfamily args\+::\+Named\+Base\+::\+Named\+Base (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_af4a12e876c93437cd73633bb8255e8eb}\label{classargs_1_1_named_base_af4a12e876c93437cd73633bb8255e8eb}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!````~Named\+Base@{$\sim$\+Named\+Base}}
+\index{````~Named\+Base@{$\sim$\+Named\+Base}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{$\sim$\+Named\+Base()}{~NamedBase()}}
+{\footnotesize\ttfamily virtual args\+::\+Named\+Base\+::$\sim$\+Named\+Base (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_named_base_acfaa8c03922fc9b0181a10ca03156e12}\label{classargs_1_1_named_base_acfaa8c03922fc9b0181a10ca03156e12}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Add\+Description\+Postfix@{Add\+Description\+Postfix}}
+\index{Add\+Description\+Postfix@{Add\+Description\+Postfix}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Add\+Description\+Postfix()}{AddDescriptionPostfix()}}
+{\footnotesize\ttfamily void args\+::\+Named\+Base\+::\+Add\+Description\+Postfix (\begin{DoxyParamCaption}\item[{std\+::string \&}]{dest,  }\item[{const bool}]{is\+Manual,  }\item[{const std\+::string \&}]{manual,  }\item[{bool}]{is\+Generated,  }\item[{const std\+::string \&}]{generated,  }\item[{const std\+::string \&}]{str }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_aa9104a04001d10c5732a5feb01204cf7}\label{classargs_1_1_named_base_aa9104a04001d10c5732a5feb01204cf7}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Get\+Choices\+String@{Get\+Choices\+String}}
+\index{Get\+Choices\+String@{Get\+Choices\+String}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Get\+Choices\+String()}{GetChoicesString()}}
+{\footnotesize\ttfamily virtual std\+::string args\+::\+Named\+Base\+::\+Get\+Choices\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_map_flag_a7fe91b5ef6696b82aa8999884bbf727d}{args\+::\+Map\+Flag$<$ K, T, Reader, Map $>$}.
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a5866b205907d924423eb8aac9a9e65f8}\label{classargs_1_1_named_base_a5866b205907d924423eb8aac9a9e65f8}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Get\+Default\+String@{Get\+Default\+String}}
+\index{Get\+Default\+String@{Get\+Default\+String}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Get\+Default\+String()}{GetDefaultString()}}
+{\footnotesize\ttfamily virtual std\+::string args\+::\+Named\+Base\+::\+Get\+Default\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_value_flag_a47aa01f545a1781583c96af12c8e2062}{args\+::\+Value\+Flag$<$ T, Reader $>$}.
+
+\mbox{\Hypertarget{classargs_1_1_named_base_ab0b9e1f22abf04b24659fada61a6d665}\label{classargs_1_1_named_base_ab0b9e1f22abf04b24659fada61a6d665}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Get\+Description@{Get\+Description}}
+\index{Get\+Description@{Get\+Description}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Get\+Description()}{GetDescription()}}
+{\footnotesize\ttfamily virtual std\+::vector$<$std\+::tuple$<$std\+::string, std\+::string, unsigned$>$ $>$ args\+::\+Named\+Base\+::\+Get\+Description (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{params,  }\item[{const unsigned}]{indent\+Level }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \hyperlink{classargs_1_1_base_afbdf4f1ca1f61182ef0461e02e9e9ed3}{args\+::\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a3c597a489d3ccc74937682407c08b3f7}\label{classargs_1_1_named_base_a3c597a489d3ccc74937682407c08b3f7}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Get\+Name\+String@{Get\+Name\+String}}
+\index{Get\+Name\+String@{Get\+Name\+String}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Get\+Name\+String()}{GetNameString()}}
+{\footnotesize\ttfamily virtual std\+::string args\+::\+Named\+Base\+::\+Get\+Name\+String (\begin{DoxyParamCaption}\item[{const \hyperlink{structargs_1_1_help_params}{Help\+Params} \&}]{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_flag_base_a61db383104c1987904bcd331d8b3be76}{args\+::\+Flag\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a084a776592a24153f1f0aaf28d81f495}\label{classargs_1_1_named_base_a084a776592a24153f1f0aaf28d81f495}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Help\+Choices@{Help\+Choices}}
+\index{Help\+Choices@{Help\+Choices}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Help\+Choices()}{HelpChoices()}}
+{\footnotesize\ttfamily void args\+::\+Named\+Base\+::\+Help\+Choices (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Sets choices string that will be added to argument description. Use empty string to disable it for this argument. \mbox{\Hypertarget{classargs_1_1_named_base_a1e94ca498932f60c6e98ba4b88abcc4b}\label{classargs_1_1_named_base_a1e94ca498932f60c6e98ba4b88abcc4b}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Help\+Default@{Help\+Default}}
+\index{Help\+Default@{Help\+Default}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Help\+Default()}{HelpDefault()}}
+{\footnotesize\ttfamily void args\+::\+Named\+Base\+::\+Help\+Default (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+Sets default value string that will be added to argument description. Use empty string to disable it for this argument. \mbox{\Hypertarget{classargs_1_1_named_base_a7e7bab5c0de59e717b87935b14376dfc}\label{classargs_1_1_named_base_a7e7bab5c0de59e717b87935b14376dfc}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!Name@{Name}}
+\index{Name@{Name}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{Name()}{Name()}}
+{\footnotesize\ttfamily virtual std\+::string args\+::\+Named\+Base\+::\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \hyperlink{classargs_1_1_map_positional_list_a06d9cd19fea86e0027f2ab4a491f19bb}{args\+::\+Map\+Positional\+List$<$ K, T, List, Reader, Map $>$}, \hyperlink{classargs_1_1_positional_list_a5109dbd118c40b6cde570fa37acac950}{args\+::\+Positional\+List$<$ T, List, Reader $>$}, \hyperlink{classargs_1_1_map_flag_list_a1703584ba7b36c5e15aa375eae23903c}{args\+::\+Map\+Flag\+List$<$ K, T, List, Reader, Map $>$}, and \hyperlink{classargs_1_1_value_flag_list_ac0188f5bbc605c02edce2a91675d423c}{args\+::\+Value\+Flag\+List$<$ T, List, Reader $>$}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classargs_1_1_named_base_a2e1624c744d671916b0c943f8fbad962}\label{classargs_1_1_named_base_a2e1624c744d671916b0c943f8fbad962}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!choices\+String@{choices\+String}}
+\index{choices\+String@{choices\+String}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{choices\+String}{choicesString}}
+{\footnotesize\ttfamily std\+::string args\+::\+Named\+Base\+::choices\+String\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_afc180b62e1f2d9c194354b163f3410b6}\label{classargs_1_1_named_base_afc180b62e1f2d9c194354b163f3410b6}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!choices\+String\+Manual@{choices\+String\+Manual}}
+\index{choices\+String\+Manual@{choices\+String\+Manual}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{choices\+String\+Manual}{choicesStringManual}}
+{\footnotesize\ttfamily bool args\+::\+Named\+Base\+::choices\+String\+Manual = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a7460bf500a1873039fc741247a959ddc}\label{classargs_1_1_named_base_a7460bf500a1873039fc741247a959ddc}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!default\+String@{default\+String}}
+\index{default\+String@{default\+String}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{default\+String}{defaultString}}
+{\footnotesize\ttfamily std\+::string args\+::\+Named\+Base\+::default\+String\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a2bfe3539152114a52a4a8089920eea59}\label{classargs_1_1_named_base_a2bfe3539152114a52a4a8089920eea59}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!default\+String\+Manual@{default\+String\+Manual}}
+\index{default\+String\+Manual@{default\+String\+Manual}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{default\+String\+Manual}{defaultStringManual}}
+{\footnotesize\ttfamily bool args\+::\+Named\+Base\+::default\+String\+Manual = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a034ad347cb530cbf9e0e9ce1b67a66ba}\label{classargs_1_1_named_base_a034ad347cb530cbf9e0e9ce1b67a66ba}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!kickout@{kickout}}
+\index{kickout@{kickout}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{kickout}{kickout}}
+{\footnotesize\ttfamily bool args\+::\+Named\+Base\+::kickout = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_named_base_a774cbec5dc864c48e84051c044cefa77}\label{classargs_1_1_named_base_a774cbec5dc864c48e84051c044cefa77}} 
+\index{args\+::\+Named\+Base@{args\+::\+Named\+Base}!name@{name}}
+\index{name@{name}!args\+::\+Named\+Base@{args\+::\+Named\+Base}}
+\subsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily const std\+::string args\+::\+Named\+Base\+::name\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}

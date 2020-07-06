@@ -1,0 +1,331 @@
+\hypertarget{classargs_1_1_nargs_value_flag}{}\section{args\+:\+:Nargs\+Value\+Flag$<$ T, List, Reader $>$ Class Template Reference}
+\label{classargs_1_1_nargs_value_flag}\index{args\+::\+Nargs\+Value\+Flag$<$ T, List, Reader $>$@{args\+::\+Nargs\+Value\+Flag$<$ T, List, Reader $>$}}
+
+
+{\ttfamily \#include $<$args.\+hxx$>$}
+
+
+
+Inheritance diagram for args\+:\+:Nargs\+Value\+Flag$<$ T, List, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=191pt]{classargs_1_1_nargs_value_flag__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for args\+:\+:Nargs\+Value\+Flag$<$ T, List, Reader $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=308pt]{classargs_1_1_nargs_value_flag__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef List$<$ T $>$ \hyperlink{classargs_1_1_nargs_value_flag_a27e748faa4e5ce69baf05a256e351d42}{Container}
+\item 
+typedef T \hyperlink{classargs_1_1_nargs_value_flag_a5d1d4da9eeb02c53489608346310af1b}{value\+\_\+type}
+\item 
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag_a9c828e4bc64b0037e7e50bb98595a47f}{allocator\+\_\+type}
+\item 
+typedef Container\+::pointer \hyperlink{classargs_1_1_nargs_value_flag_a3d6171281cd90e7488401a1f86e4a05a}{pointer}
+\item 
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_nargs_value_flag_a7e7d4871821e63a9db65652fa5dda864}{const\+\_\+pointer}
+\item 
+typedef T \& \hyperlink{classargs_1_1_nargs_value_flag_ab14706e23ffbc72dce81c7eac01e7337}{reference}
+\item 
+typedef const T \& \hyperlink{classargs_1_1_nargs_value_flag_af8e749af247a14c97883ae90294ef970}{const\+\_\+reference}
+\item 
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag_ad6cb71619fcb40524cf558993549a5cd}{size\+\_\+type}
+\item 
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag_a889c8ec1eafd60023e417128cd103b18}{difference\+\_\+type}
+\item 
+typedef Container\+::iterator \hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator}
+\item 
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator} $>$ \hyperlink{classargs_1_1_nargs_value_flag_a6fcba5bdf062ce3cc11e25435ec56eae}{reverse\+\_\+iterator}
+\item 
+typedef std\+::reverse\+\_\+iterator$<$ \hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} $>$ \hyperlink{classargs_1_1_nargs_value_flag_a5c004f10973a047ecd2067454e536d41}{const\+\_\+reverse\+\_\+iterator}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_a49370dd6481756ac2a2177af0068b4bf}{Nargs\+Value\+Flag} (\hyperlink{classargs_1_1_group}{Group} \&group\+\_\+, const std\+::string \&name\+\_\+, const std\+::string \&help\+\_\+, \hyperlink{classargs_1_1_matcher}{Matcher} \&\&matcher\+\_\+, \hyperlink{structargs_1_1_nargs}{Nargs} nargs\+\_\+, const List$<$ T $>$ \&default\+Values\+\_\+=\{\}, \hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options} options\+\_\+=\{\})
+\item 
+virtual \hyperlink{classargs_1_1_nargs_value_flag_af646d06281e7cb6d453cf36533639601}{$\sim$\+Nargs\+Value\+Flag} ()
+\item 
+virtual \hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_nargs_value_flag_a8db7ce6ec0d27f649dbfb1bba908078a}{Number\+Of\+Arguments} () const noexcept override
+\item 
+virtual void \hyperlink{classargs_1_1_nargs_value_flag_aa1ef4abaec468d69c89c02dd8bfdbf38}{Parse\+Value} (const std\+::vector$<$ std\+::string $>$ \&values\+\_\+) override
+\item 
+List$<$ T $>$ \& \hyperlink{classargs_1_1_nargs_value_flag_ad9789e398db1944fc641153c8742e2c6}{Get} () noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator} \hyperlink{classargs_1_1_nargs_value_flag_af41b80e20350b97458e4584136311508}{begin} () noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag_a72e0031c35bacf86616f1516a1be6fa4}{begin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag_a18231a60382d2992a3fe76686557512f}{cbegin} () const noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator} \hyperlink{classargs_1_1_nargs_value_flag_afd4a39d8f62aec0daa30674548a30243}{end} () noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag_acf5a2440b856c875834abbaf88b8782f}{end} () const noexcept
+\item 
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag_a835ee8e007c726d032318c24ac02c0c6}{cend} () const noexcept
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+List$<$ T $>$ \hyperlink{classargs_1_1_nargs_value_flag_ab01fe7ab5b0979e15ce0d2d0896807db}{values}
+\item 
+\hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_nargs_value_flag_aaf60f389b1e4dc014792e4e515129db5}{nargs}
+\item 
+Reader \hyperlink{classargs_1_1_nargs_value_flag_a8308b02f086b773b21e588c0e36b6656}{reader}
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$typename T, template$<$ typename... $>$ class List = std\+::vector, typename Reader = Value\+Reader$>$\newline
+class args\+::\+Nargs\+Value\+Flag$<$ T, List, Reader $>$}
+
+A variadic arguments accepting flag class
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & the type to extract the argument as \\
+\hline
+{\em List} & the list type that houses the values \\
+\hline
+{\em Reader} & The functor type used to read the argument, taking the name, value, and destination reference with operator(), and returning a bool (if A\+R\+G\+S\+\_\+\+N\+O\+E\+X\+C\+E\+PT is defined) \\
+\hline
+\end{DoxyTemplParams}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a9c828e4bc64b0037e7e50bb98595a47f}\label{classargs_1_1_nargs_value_flag_a9c828e4bc64b0037e7e50bb98595a47f}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!allocator\+\_\+type@{allocator\+\_\+type}}
+\index{allocator\+\_\+type@{allocator\+\_\+type}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{allocator\+\_\+type}{allocator\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::allocator\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a9c828e4bc64b0037e7e50bb98595a47f}{allocator\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}\label{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!const\+\_\+iterator@{const\+\_\+iterator}}
+\index{const\+\_\+iterator@{const\+\_\+iterator}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{const\+\_\+iterator}{const\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::const\+\_\+iterator \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a7e7d4871821e63a9db65652fa5dda864}\label{classargs_1_1_nargs_value_flag_a7e7d4871821e63a9db65652fa5dda864}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!const\+\_\+pointer@{const\+\_\+pointer}}
+\index{const\+\_\+pointer@{const\+\_\+pointer}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{const\+\_\+pointer}{const\_pointer}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::const\+\_\+pointer \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a7e7d4871821e63a9db65652fa5dda864}{const\+\_\+pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_af8e749af247a14c97883ae90294ef970}\label{classargs_1_1_nargs_value_flag_af8e749af247a14c97883ae90294ef970}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!const\+\_\+reference@{const\+\_\+reference}}
+\index{const\+\_\+reference@{const\+\_\+reference}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{const\+\_\+reference}{const\_reference}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef const T\& \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_af8e749af247a14c97883ae90294ef970}{const\+\_\+reference}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a5c004f10973a047ecd2067454e536d41}\label{classargs_1_1_nargs_value_flag_a5c004f10973a047ecd2067454e536d41}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}}
+\index{const\+\_\+reverse\+\_\+iterator@{const\+\_\+reverse\+\_\+iterator}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{const\+\_\+reverse\+\_\+iterator}{const\_reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator}$>$ \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a5c004f10973a047ecd2067454e536d41}{const\+\_\+reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a27e748faa4e5ce69baf05a256e351d42}\label{classargs_1_1_nargs_value_flag_a27e748faa4e5ce69baf05a256e351d42}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!Container@{Container}}
+\index{Container@{Container}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Container}{Container}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef List$<$T$>$ \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a27e748faa4e5ce69baf05a256e351d42}{Container}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a889c8ec1eafd60023e417128cd103b18}\label{classargs_1_1_nargs_value_flag_a889c8ec1eafd60023e417128cd103b18}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!difference\+\_\+type@{difference\+\_\+type}}
+\index{difference\+\_\+type@{difference\+\_\+type}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{difference\+\_\+type}{difference\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::difference\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a889c8ec1eafd60023e417128cd103b18}{difference\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}\label{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!iterator@{iterator}}
+\index{iterator@{iterator}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{iterator}{iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::iterator \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a3d6171281cd90e7488401a1f86e4a05a}\label{classargs_1_1_nargs_value_flag_a3d6171281cd90e7488401a1f86e4a05a}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!pointer@{pointer}}
+\index{pointer@{pointer}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{pointer}{pointer}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::pointer \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a3d6171281cd90e7488401a1f86e4a05a}{pointer}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_ab14706e23ffbc72dce81c7eac01e7337}\label{classargs_1_1_nargs_value_flag_ab14706e23ffbc72dce81c7eac01e7337}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!reference@{reference}}
+\index{reference@{reference}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{reference}{reference}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef T\& \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_ab14706e23ffbc72dce81c7eac01e7337}{reference}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a6fcba5bdf062ce3cc11e25435ec56eae}\label{classargs_1_1_nargs_value_flag_a6fcba5bdf062ce3cc11e25435ec56eae}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!reverse\+\_\+iterator@{reverse\+\_\+iterator}}
+\index{reverse\+\_\+iterator@{reverse\+\_\+iterator}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{reverse\+\_\+iterator}{reverse\_iterator}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef std\+::reverse\+\_\+iterator$<$\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator}$>$ \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a6fcba5bdf062ce3cc11e25435ec56eae}{reverse\+\_\+iterator}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_ad6cb71619fcb40524cf558993549a5cd}\label{classargs_1_1_nargs_value_flag_ad6cb71619fcb40524cf558993549a5cd}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!size\+\_\+type@{size\+\_\+type}}
+\index{size\+\_\+type@{size\+\_\+type}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{size\+\_\+type}{size\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef Container\+::size\+\_\+type \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_ad6cb71619fcb40524cf558993549a5cd}{size\+\_\+type}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a5d1d4da9eeb02c53489608346310af1b}\label{classargs_1_1_nargs_value_flag_a5d1d4da9eeb02c53489608346310af1b}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!value\+\_\+type@{value\+\_\+type}}
+\index{value\+\_\+type@{value\+\_\+type}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{value\+\_\+type}{value\_type}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+typedef T \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag_a5d1d4da9eeb02c53489608346310af1b}{value\+\_\+type}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a49370dd6481756ac2a2177af0068b4bf}\label{classargs_1_1_nargs_value_flag_a49370dd6481756ac2a2177af0068b4bf}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!Nargs\+Value\+Flag@{Nargs\+Value\+Flag}}
+\index{Nargs\+Value\+Flag@{Nargs\+Value\+Flag}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Nargs\+Value\+Flag()}{NargsValueFlag()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::\hyperlink{classargs_1_1_nargs_value_flag}{Nargs\+Value\+Flag} (\begin{DoxyParamCaption}\item[{\hyperlink{classargs_1_1_group}{Group} \&}]{group\+\_\+,  }\item[{const std\+::string \&}]{name\+\_\+,  }\item[{const std\+::string \&}]{help\+\_\+,  }\item[{\hyperlink{classargs_1_1_matcher}{Matcher} \&\&}]{matcher\+\_\+,  }\item[{\hyperlink{structargs_1_1_nargs}{Nargs}}]{nargs\+\_\+,  }\item[{const List$<$ T $>$ \&}]{default\+Values\+\_\+ = {\ttfamily \{\}},  }\item[{\hyperlink{namespaceargs_aa530c0f95194aa275f49a5f299ac9e77}{Options}}]{options\+\_\+ = {\ttfamily \{\}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_af646d06281e7cb6d453cf36533639601}\label{classargs_1_1_nargs_value_flag_af646d06281e7cb6d453cf36533639601}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!````~Nargs\+Value\+Flag@{$\sim$\+Nargs\+Value\+Flag}}
+\index{````~Nargs\+Value\+Flag@{$\sim$\+Nargs\+Value\+Flag}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{$\sim$\+Nargs\+Value\+Flag()}{~NargsValueFlag()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::$\sim$\hyperlink{classargs_1_1_nargs_value_flag}{Nargs\+Value\+Flag} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_af41b80e20350b97458e4584136311508}\label{classargs_1_1_nargs_value_flag_af41b80e20350b97458e4584136311508}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a72e0031c35bacf86616f1516a1be6fa4}\label{classargs_1_1_nargs_value_flag_a72e0031c35bacf86616f1516a1be6fa4}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!begin@{begin}}
+\index{begin@{begin}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{begin()}{begin()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::begin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a18231a60382d2992a3fe76686557512f}\label{classargs_1_1_nargs_value_flag_a18231a60382d2992a3fe76686557512f}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!cbegin@{cbegin}}
+\index{cbegin@{cbegin}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{cbegin()}{cbegin()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::cbegin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a835ee8e007c726d032318c24ac02c0c6}\label{classargs_1_1_nargs_value_flag_a835ee8e007c726d032318c24ac02c0c6}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!cend@{cend}}
+\index{cend@{cend}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{cend()}{cend()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::cend (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_afd4a39d8f62aec0daa30674548a30243}\label{classargs_1_1_nargs_value_flag_afd4a39d8f62aec0daa30674548a30243}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!end@{end}}
+\index{end@{end}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_aeaf17e645a109333204dcb7c954a2473}{iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_acf5a2440b856c875834abbaf88b8782f}\label{classargs_1_1_nargs_value_flag_acf5a2440b856c875834abbaf88b8782f}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!end@{end}}
+\index{end@{end}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{end()}{end()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{classargs_1_1_nargs_value_flag_a115760faf263d007148b30c99d8e6bdc}{const\+\_\+iterator} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_ad9789e398db1944fc641153c8742e2c6}\label{classargs_1_1_nargs_value_flag_ad9789e398db1944fc641153c8742e2c6}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!Get@{Get}}
+\index{Get@{Get}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Get()}{Get()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+List$<$T$>$\& \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::Get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a8db7ce6ec0d27f649dbfb1bba908078a}\label{classargs_1_1_nargs_value_flag_a8db7ce6ec0d27f649dbfb1bba908078a}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!Number\+Of\+Arguments@{Number\+Of\+Arguments}}
+\index{Number\+Of\+Arguments@{Number\+Of\+Arguments}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Number\+Of\+Arguments()}{NumberOfArguments()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual \hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::Number\+Of\+Arguments (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+Defines how many values can be consumed by this option.
+
+\begin{DoxyReturn}{Returns}
+closed interval \mbox{[}min, max\mbox{]} 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a6007ffeaa767893cb8eff5333d61673b}{args\+::\+Flag\+Base}.
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_aa1ef4abaec468d69c89c02dd8bfdbf38}\label{classargs_1_1_nargs_value_flag_aa1ef4abaec468d69c89c02dd8bfdbf38}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!Parse\+Value@{Parse\+Value}}
+\index{Parse\+Value@{Parse\+Value}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{Parse\+Value()}{ParseValue()}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+virtual void \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::Parse\+Value (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{value }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+Parse values of this option.
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & Vector of values. It\textquotesingle{}s size must be in \hyperlink{classargs_1_1_nargs_value_flag_a8db7ce6ec0d27f649dbfb1bba908078a}{Number\+Of\+Arguments()} interval. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{classargs_1_1_flag_base_a3421d9a595c9426dc73f62604cdee84f}{args\+::\+Flag\+Base}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_aaf60f389b1e4dc014792e4e515129db5}\label{classargs_1_1_nargs_value_flag_aaf60f389b1e4dc014792e4e515129db5}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!nargs@{nargs}}
+\index{nargs@{nargs}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{nargs}{nargs}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+\hyperlink{structargs_1_1_nargs}{Nargs} \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::nargs\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_a8308b02f086b773b21e588c0e36b6656}\label{classargs_1_1_nargs_value_flag_a8308b02f086b773b21e588c0e36b6656}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!reader@{reader}}
+\index{reader@{reader}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{reader}{reader}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+Reader \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::reader\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classargs_1_1_nargs_value_flag_ab01fe7ab5b0979e15ce0d2d0896807db}\label{classargs_1_1_nargs_value_flag_ab01fe7ab5b0979e15ce0d2d0896807db}} 
+\index{args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}!values@{values}}
+\index{values@{values}!args\+::\+Nargs\+Value\+Flag@{args\+::\+Nargs\+Value\+Flag}}
+\subsubsection{\texorpdfstring{values}{values}}
+{\footnotesize\ttfamily template$<$typename T , template$<$ typename... $>$ class List = std\+::vector, typename Reader  = Value\+Reader$>$ \\
+List$<$T$>$ \hyperlink{classargs_1_1_nargs_value_flag}{args\+::\+Nargs\+Value\+Flag}$<$ T, List, Reader $>$\+::values\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/cappelletto/github/self/landing\+\_\+area\+\_\+detector/external/\hyperlink{args_8hxx}{args.\+hxx}\end{DoxyCompactItemize}
