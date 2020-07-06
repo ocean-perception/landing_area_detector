@@ -30,6 +30,7 @@ namespace lad{
     };
 
     enum LayerTypes{
+        LAYER_ANYTYPE   =-1,//!< Indicate any type off layer (user for layer queries)
         LAYER_UNDEFINED = 0,//!< Flags this layer type as undefined. Default Type when constructing
         LAYER_RASTER = 1,   //!< Layer can contain raster data
         LAYER_VECTOR = 2,   //!< Layer can contain vectorized data (typ std::vector)
@@ -46,9 +47,10 @@ namespace lad{
         LAYER_OK                = 0, //!< Layer operation completed succesfully
         LAYER_NONE              =-1, //!< Layers <vector> is empty
         LAYER_INVALID_ID        =-2, //!< User provided ID is not valid. It must be positive integer
-        LAYER_NOT_FOUND         =-3, //!< Provided Layer ID not found
-        LAYER_NAME_DUPLICATED   =-4, //!< Provided new name for Layer already exists
-        LAYER_INVALID_NAME      =-5, //!< Provided new name for Layer is invalid. It must be a non-NULL std::string
+        LAYER_DUPLICATED_ID     =-3, //!< Provided Layer ID already taken
+        LAYER_NOT_FOUND         =-4, //!< Provided Layer ID not found
+        LAYER_DUPLICATED_NAME   =-5, //!< Provided new name for Layer already exists
+        LAYER_INVALID_NAME      =-6, //!< Provided new name for Layer is invalid. It must be a non-NULL std::string
     };
 };
 

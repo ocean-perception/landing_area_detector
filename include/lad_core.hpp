@@ -47,12 +47,25 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
 
-            std::string GetLayerName (int id); //!< Returns name of Layer with given ID number
+            std::string getLayerName (int id); //!< Returns name of Layer with given ID number
 
-            int GetVectorID (std::string name); //!< Return first vector that matches 'name' as layer name
+            int getVectorID (std::string name); //!< Return first vector that matches 'name' as layer name
 
-            int SetLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
+            int setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
 
+            int CreateLayer (std::string name, int type); //!< Create a new layer "name" of given type and insert it into the pipeline stack.
+
+            int InsertLayer (std::shared_ptr <Layer> layer);  //!< Insert previously created layer into the pipeline stack
+
+            int RemoveLayer (std::string name); //!< Remove layer by its name
+            int RemoveLayer (int ID);           //!< Remove layer by its ID
+
+            int getTotalLayers (int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
+
+            int isValidName(std::string name);  //!< Verify if "name" is a valid layer name for the current pipeline stack
+            int isValidID(int ID); //!< Verify is ID is a valid layer ID for the current pipeline stack
+
+            int getValidID();   //!< Return a valid ID available for the current stack
     };
 
 }

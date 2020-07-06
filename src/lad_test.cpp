@@ -121,9 +121,11 @@ int main(int argc, char *argv[]) {
     // processGeotiff(&geoContainer);
 
     lad::ladPipeline Pipeline;
-    cout << "Test for Raster[2]: " << Pipeline.GetLayerName(-2) << endl;
-    cout << "Test for Vector[2]: " << Pipeline.GetLayerName(2.5) << endl;
-    cout << "Test for Kernel[2]: " << Pipeline.GetLayerName(2) << endl;
+    cout << "Test for Raster[2]: " << Pipeline.getLayerName(-2) << endl;
+    cout << "Test for Vector[2]: " << Pipeline.getLayerName(2.5) << endl;
+    cout << "Test for Kernel[2]: " << Pipeline.getLayerName(2) << endl;
+
+    cout << "Stack size:" << Pipeline.getTotalLayers(lad::LAYER_ANYTYPE) << endl; 
 
 //    Pipeline.InsertLayer()
 

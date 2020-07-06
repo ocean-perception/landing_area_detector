@@ -36,6 +36,7 @@ namespace lad{      //!< landing area detection algorithm namespace
         public:
             std::string layerName;  //!<  Layer name
             std::string layerFileName;  //!< Name of associated output file
+            std::string layerFilePath;  //!< Name of associated output filepath (optional)
 
             /**
              * @brief Construct a new Layer object
@@ -54,12 +55,12 @@ namespace lad{      //!< landing area detection algorithm namespace
             virtual ~Layer(){
             }
 
-            int GetID();    //!< Return the layer ID 
-            int SetID(int newID); //!< Set the new layer ID. It must be a valid ID
-            int GetLayerStatus(); //!< Return a copy of the layer status
-            int SetLayerstatus(int newStatus); //!< Modify the layer status
-            int GetLayerType(); //!< Return a copy of the layer type
-            int SetLayerType(int newType); //!< Modify the layer type
+            int getID();    //!< Return the layer ID 
+            int setID(int newID); //!< set the new layer ID. It must be a valid ID
+            int getLayerStatus(); //!< Return a copy of the layer status
+            int setLayerstatus(int newStatus); //!< Modify the layer status
+            int getLayerType(); //!< Return a copy of the layer type
+            int setLayerType(int newType); //!< Modify the layer type
     };
 
     class RasterLayer: public Layer{
