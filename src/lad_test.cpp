@@ -144,7 +144,15 @@ int main(int argc, char *argv[]) {
     Pipeline.showLayers((int)lad::LAYER_VECTOR);
     cout << "---------------------" << endl;
     Pipeline.showLayers((int)lad::LAYER_RASTER);
+    cout << "---------R3------------" << endl;
+    Pipeline.RemoveLayer(3);
+    Pipeline.showLayers();
+    cout << "----------R4-----------" << endl;
+    Pipeline.RemoveLayer("Vector_layerD3");
+    Pipeline.showLayers();
     cout << "---------------------" << endl;
+
+
 
     return lad::NO_ERROR;
 }

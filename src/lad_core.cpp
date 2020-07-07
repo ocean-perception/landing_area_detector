@@ -106,6 +106,63 @@ int ladPipeline::isValidName(std::string checkName){
 }
 
 /**
+ * @brief Remove a Layer fully identified by its name
+ * 
+ * @param name name of the layer to be removed
+ * @return int returns success if layer was found and removed. Otherwise, it will send the error code
+ */
+int ladPipeline::RemoveLayer (std::string name){
+    // First we verify the stack is not empty
+    if (Layers.empty()) return LAYER_EMPTY;
+
+    int kk=0;
+    //then we go through each layer
+    for (auto const it:Layers){
+        if (!name.compare(it->layerName)){ // found it!
+            LUT_ID.at(it->getID()) = ID_AVAILABLE;
+            Layers.erase(Layers.begin() + kk);
+            // remove(it);
+            break; // if we don't break now we will get a segfault (the vector iterator is broken)
+        }
+        kk++;
+    }
+    // we shouldn't reach this point. unless we found the target
+    return LAYER_OK;
+}
+
+/**
+ * @brief Remove a Layer identified by its name
+ * 
+ * @param name name of the layer to be removed
+ * @return int returns success if layer was found and removed. Otherwise, it will send the error code
+ */
+int ladPipeline::RemoveLayer (int id){
+    // First we verify the ID
+    if (id < 0)
+        return LAYER_INVALID_ID; 
+    
+    if (LUT_ID.at(id) == ID_AVAILABLE) // using the LUT to speed-up the search process from O(n) to 1
+        return LAYER_NOT_FOUND;
+    
+    // Then we check the stack size
+    if (Layers.empty())
+        return LAYER_EMPTY;
+
+    int kk=0;
+    //then we go through each layer
+    for (auto const it:Layers){
+        if (it->getID() == id){ // found it!
+            LUT_ID.at(it->getID()) = ID_AVAILABLE;
+            Layers.erase(Layers.begin() + kk);
+            break; // if we don't break now we will get a segfault (the vector iterator is broken)
+        }
+        kk++;
+    }
+    // we shouldn't reach this point. unless we found the target
+    return LAYER_OK;
+}
+
+/**
  * @brief Create a new Layer (share_ptr) according to the provided type
  * 
  * @param name Valid name of the new layer
