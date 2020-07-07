@@ -133,9 +133,18 @@ int main(int argc, char *argv[]) {
 
     Pipeline.CreateLayer("Vector_layerA3", lad::LAYER_RASTER);
     Pipeline.CreateLayer("Vector_layerB3", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_KERNEL);
+    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_KERNEL);
     Pipeline.CreateLayer("Vector_layerD3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("Vector_layerC4", lad::LAYER_KERNEL);
     Pipeline.showLayers();
+    cout << "---------------------" << endl;
+    Pipeline.showLayers((int)lad::LAYER_KERNEL);
+    cout << "---------------------" << endl;
+    Pipeline.showLayers((int)lad::LAYER_VECTOR);
+    cout << "---------------------" << endl;
+    Pipeline.showLayers((int)lad::LAYER_RASTER);
+    cout << "---------------------" << endl;
 
     return lad::NO_ERROR;
 }

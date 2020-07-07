@@ -94,6 +94,13 @@ namespace lad{      //!< landing area detection algorithm namespace
     class KernelLayer: public virtual RasterLayer{
         public:
             double dRotation; //!< Rotation angle of the given kernel (in radians)
+            void showInformation();
+
+            KernelLayer(std::string name, int id):RasterLayer(name, id){
+                dRotation = 0;
+                setLayerType(LAYER_KERNEL);
+            }
+
     };
 
 }

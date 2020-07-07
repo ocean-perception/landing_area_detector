@@ -138,8 +138,9 @@ int ladPipeline::CreateLayer (std::string name, int type){
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_KERNEL){
         cout << "[ladPipeline] Creating KERNEL layer" << endl;
-        // std::shared_ptr <lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, kk++);
-        // Layers.push_back(newLayer);
+        std::shared_ptr <lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
+        Layers.push_back(newLayer);
+        LUT_ID.at(newid) = ID_TAKEN;
     }
 
     return LAYER_OK;
@@ -163,14 +164,14 @@ int ladPipeline::getValidID()
  * 
  * @return int LAYER_NONE if Layers vector is empty, LAYER_OK otherwise
  */
-int ladPipeline::showLayers(){
+int ladPipeline::showLayers(int layer_type){
     if (!Layers.size()){
         cout << "No layer to show" << endl;
         return lad::LAYER_NONE;
     }
     for (auto it:Layers){
-        // it->showI
-        it->showInformation();
+        if ((it->getLayerType() == layer_type) || (layer_type == LAYER_ANYTYPE))
+            it->showInformation();
     }
         return lad::LAYER_OK;
 } 

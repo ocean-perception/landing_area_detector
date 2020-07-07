@@ -92,5 +92,10 @@ void VectorLayer::showInformation(){
     cout << "\tVector Data container size: " << vectorData.size() << endl;
 }
 
+void KernelLayer::showInformation(){
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "\tKernel data container size: " << rasterData.size() << "\tKernel rotation: " << dRotation << endl;
+}
+
 }
 #endif //_LAD_LAYER_CPP_
