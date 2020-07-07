@@ -39,6 +39,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             ladPipeline(){
                 apInputGeotiff = NULL;
                 inputFileTIFF = "";
+                LUT_ID.resize(DEFAULT_STACK_SIZE);
+                std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
             }
 
             Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
@@ -47,7 +49,11 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
 
+            vector<int> LUT_ID; // look-up table of ID's. True: is taken, False: is not-taken (available)
+
             int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
+
+            // int getValidID(); //!< Return an available and valid ID for consumption (no mutex protection)
 
             std::string getLayerName (int id); //!< Returns name of Layer with given ID number
 

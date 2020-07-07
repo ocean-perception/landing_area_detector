@@ -17,6 +17,12 @@
 #define _LAD_ENUM_HPP_
 
 namespace lad{
+    enum ConstantCodes{
+        DEFAULT_STACK_SIZE  = 100,   //!< Initial Layers vector size (stack)
+        ID_AVAILABLE        = 0,     //!< Flag to indicate ID is available in the LUT
+        ID_TAKEN            = 1      //!< Flag to indicate ID is available in the LUT
+    };
+
     enum ReturnCodes{
         NO_ERROR                = 0,
         ERROR_MISSING_ARGUMENT  =-1,

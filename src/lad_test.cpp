@@ -122,12 +122,19 @@ int main(int argc, char *argv[]) {
 
     lad::ladPipeline Pipeline;
 
-    cout << "Stack size:" << Pipeline.getTotalLayers(lad::LAYER_ANYTYPE) << endl; 
+    cout << "Stack size:" << Pipeline.getTotalLayers() << endl; 
     Pipeline.showLayers();
 
-    Pipeline.CreateLayer("Vector_alyaer%&* strin", lad::LAYER_VECTOR);
-    cout << "Stack size:" << Pipeline.getTotalLayers(lad::LAYER_ANYTYPE) << endl; 
+    Pipeline.CreateLayer("Vector_layer2", lad::LAYER_VECTOR);
 
+    Pipeline.CreateLayer("Vector_layer1", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("Vector_layer3", lad::LAYER_VECTOR);
+    cout << "Stack size:" << Pipeline.getTotalLayers() << endl; 
+
+    Pipeline.CreateLayer("Vector_layerA3", lad::LAYER_RASTER);
+    Pipeline.CreateLayer("Vector_layerB3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("Vector_layerD3", lad::LAYER_VECTOR);
     Pipeline.showLayers();
 
     return lad::NO_ERROR;

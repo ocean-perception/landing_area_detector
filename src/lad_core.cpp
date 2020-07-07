@@ -90,8 +90,6 @@ int ladPipeline::isValidName(std::string checkName){
 
     // Now we must test that the name follows the target convention: alphanumeric with {-_} as special characters
     // Use regex to determine if any foreing character is present
-    // --> /[a-zA-Z0-9_\-]/g
-    // std::regex rgx("/[a-zA-Z0-9_-]/g"); //!< Regex list: will retrieve invalid characters
 //    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); //!< Regex list: will retrieve invalid characters
 
     if (Layers.empty()) //!< If Layers vector is empty, then given name is definitelty available
@@ -99,33 +97,65 @@ int ladPipeline::isValidName(std::string checkName){
 
     // TODO complete string based name match against all the other names
     for (auto layer:Layers){
-        if (checkName.compare(layer->layerName)) //!< The checkID is already taken, return correspoding error code
+        if (!checkName.compare(layer->layerName)){ //!< The checkID is already taken, return correspoding error code
             return LAYER_DUPLICATED_NAME;
+        }
     }
     // If we reach this point, then the checkID is available. Return ok    
     return LAYER_OK;
 }
 
+/**
+ * @brief Create a new Layer (share_ptr) according to the provided type
+ * 
+ * @param name Valid name of the new layer
+ * @param type Type of new layer
+ * @return int Error code if name is invalid (LAYER_INVALID_NAME), if succesful returns LAYER_OK 
+ */
 int ladPipeline::CreateLayer (std::string name, int type){
     // Let's check name
     if (isValidName(name) != LAYER_OK){
-        cout << "[ladPipeline] Invalid name: " << name << endl;
+        cout << "[ladPipeline] Duplicated layer name: " << name << endl;
         return LAYER_INVALID_NAME;
     }
+
+    int newid = getValidID();
+
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_VECTOR){
-//        cout << "[ladPipeline] Creating VECTOR layer" << endl;
-        std::shared_ptr <lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, 0);
+        cout << "[ladPipeline] Creating VECTOR layer: " << name << endl;
+        std::shared_ptr <lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
         Layers.push_back(newLayer);
+        LUT_ID.at(newid) = ID_TAKEN;
     }
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_RASTER){
         cout << "[ladPipeline] Creating RASTER layer" << endl;
+        std::shared_ptr <lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
+        Layers.push_back(newLayer);
+        LUT_ID.at(newid) = ID_TAKEN;
     }
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_KERNEL){
         cout << "[ladPipeline] Creating KERNEL layer" << endl;
+        // std::shared_ptr <lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, kk++);
+        // Layers.push_back(newLayer);
     }
+
+    return LAYER_OK;
+}
+
+int ladPipeline::getValidID()
+{
+    for (int i=0; i<LUT_ID.size(); i++){
+        if (LUT_ID.at(i) == ID_AVAILABLE) //!< we return once we find an available ID
+            return i; 
+    }
+    //!< If we reach this point it means that ALL slots(IDs) are taken, therefore, we expand our vector
+    cout << red << "getValiID: vector expansion triggered" << reset << endl;
+    LUT_ID.push_back(ID_AVAILABLE); // append a new empty slot
+    cout << "new size: " << LUT_ID.size() << endl;
+    return (LUT_ID.size()-1); //Let's return it as a new available one 
 }
 
 /**

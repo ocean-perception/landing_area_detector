@@ -62,13 +62,20 @@ namespace lad{      //!< landing area detection algorithm namespace
             int setLayerstatus(int newStatus); //!< Modify the layer status
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
-            void showInformation(); //!<< Dumps relevant information of the layer
+            virtual void showInformation(); //!<< Dumps relevant information of the layer
     };
 
     class RasterLayer: public Layer{
         public:
             // this should interface with OpenCV Mat and 2D matrix (vector style)
             cv::Mat rasterData; //OpenCV matrix that will hold the data
+
+            RasterLayer(std::string name, int id):Layer(name, id){
+                setLayerType(LAYER_RASTER); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
+                // rasterData = 
+            }
+
+            void showInformation();
     };
 
     class VectorLayer: public Layer{
@@ -79,6 +86,9 @@ namespace lad{      //!< landing area detection algorithm namespace
             VectorLayer(std::string name, int id):Layer(name, id){
                 setLayerType(LAYER_VECTOR); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
             }
+
+            void showInformation();
+
     };
 
     class KernelLayer: public virtual RasterLayer{

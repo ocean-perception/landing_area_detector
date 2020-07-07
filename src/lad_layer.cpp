@@ -82,5 +82,15 @@ void Layer::showInformation(){
     cout << "Name: [" << layerName << "]\t ID: [" << layerID << "]\tType: [" << layerType << "]\tStatus: [" << layerStatus << "]" << endl;
 }
 
+void RasterLayer::showInformation(){
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "\tRaster data container size: " << rasterData.size() << endl;
+}
+
+void VectorLayer::showInformation(){
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "\tVector Data container size: " << vectorData.size() << endl;
+}
+
 }
 #endif //_LAD_LAYER_CPP_
