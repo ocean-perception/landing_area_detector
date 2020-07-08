@@ -59,10 +59,11 @@ namespace lad{      //!< landing area detection algorithm namespace
             int getID();    //!< Return the layer ID 
             int setID(int newID); //!< set the new layer ID. It must be a valid ID
             int getLayerStatus(); //!< Return a copy of the layer status
-            int setLayerstatus(int newStatus); //!< Modify the layer status
+            int setLayerStatus(int newStatus); //!< Modify the layer status
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
             virtual void showInformation(); //!<< Dumps relevant information of the layer
+            virtual int loadData(void *); //!< Virtual declaration of function to upload data into the appropiate container inside of the layer
     };
 
     class RasterLayer: public Layer{
@@ -76,6 +77,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             }
 
             void showInformation();
+            int loadData(cv::Mat *);
     };
 
     class VectorLayer: public Layer{
@@ -89,6 +91,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             void showInformation();
 
+            int loadData(std::vector <cv::Point2d> *); //!< Import data into vectorData container
     };
 
     class KernelLayer: public virtual RasterLayer{

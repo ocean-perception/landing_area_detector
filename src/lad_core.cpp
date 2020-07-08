@@ -233,5 +233,31 @@ int ladPipeline::showLayers(int layer_type){
         return lad::LAYER_OK;
 } 
 
+int ladPipeline::uploadData(int id, void *data){
+    if (id < 0) return LAYER_INVALID_ID;    //!< The provided ID is invalid
+    if (LUT_ID.at(id) == ID_AVAILABLE) return LAYER_NOT_FOUND;  //!< No layer was created with that ID
+
+
+    cout << "Uploading data for layer #" << red << id << reset << endl;
+    for (auto it:Layers){
+        if (it->getID() == id){ //!< Check ID match
+            int type = it->getLayerType();  //!< slight speed improve
+            // WARNING: if we change these 'if' to switch , -fPermissive will trigger error 
+            if (type == LAYER_VECTOR){
+                auto v = std::dynamic_pointer_cast<lad::VectorLayer> (it);
+                v->loadData((std::vector <cv::Point2d> *)data);
+            }
+            else if (type == LAYER_RASTER){
+                auto r = std::dynamic_pointer_cast<lad::RasterLayer> (it);
+                r->loadData((cv::Mat *) data);
+            }
+            else if (type == LAYER_KERNEL){
+                auto r = std::dynamic_pointer_cast<lad::KernelLayer> (it);
+                r->loadData((cv::Mat *) data);
+            }
+        }
+    }
+    return LAYER_OK;
+}
 
 }

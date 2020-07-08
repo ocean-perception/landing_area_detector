@@ -76,6 +76,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             int getValidID();   //!< Return a valid ID available for the current stack
 
             int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
+            int uploadData(int id, void *data);
     };
 
 }

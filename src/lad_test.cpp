@@ -137,21 +137,18 @@ int main(int argc, char *argv[]) {
     Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_KERNEL);
     Pipeline.CreateLayer("Vector_layerD3", lad::LAYER_VECTOR);
     Pipeline.CreateLayer("Vector_layerC4", lad::LAYER_KERNEL);
-    Pipeline.showLayers();
-    cout << "---------------------" << endl;
-    Pipeline.showLayers((int)lad::LAYER_KERNEL);
-    cout << "---------------------" << endl;
-    Pipeline.showLayers((int)lad::LAYER_VECTOR);
-    cout << "---------------------" << endl;
-    Pipeline.showLayers((int)lad::LAYER_RASTER);
-    cout << "---------R3------------" << endl;
-    Pipeline.RemoveLayer(3);
-    Pipeline.showLayers();
-    cout << "----------R4-----------" << endl;
-    Pipeline.RemoveLayer("Vector_layerD3");
-    Pipeline.showLayers();
-    cout << "---------------------" << endl;
 
+    vector <Point2d> points;
+    for (int i=0; i<10; i++){
+        cv::Point2d p;
+        p.x = 1.0 + i;
+        p.y = 20.0 - i*i;
+        points.push_back(p);
+    }
+    cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
+    Pipeline.uploadData(2, (void *)&points);
+    Pipeline.uploadData(3, (void *)& m);
+    Pipeline.showLayers();
 
 
     return lad::NO_ERROR;

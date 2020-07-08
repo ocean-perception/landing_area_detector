@@ -52,7 +52,7 @@ int Layer::getLayerStatus(){
  * @param newStatus New value of layer status. It should be any of possible values in the enumerated list. No validation is enforced
  * @return int return a copy of the new status value
  */
-int Layer::setLayerstatus(int newStatus){
+int Layer::setLayerStatus(int newStatus){
     layerStatus = newStatus;
     return layerStatus;
 }
@@ -82,19 +82,67 @@ void Layer::showInformation(){
     cout << "Name: [" << layerName << "]\t ID: [" << layerID << "]\tType: [" << layerType << "]\tStatus: [" << layerStatus << "]" << endl;
 }
 
+/**
+ * @brief Extended method that prints general and raster specific information
+ * 
+ */
 void RasterLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "\tRaster data container size: " << rasterData.size() << endl;
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "> Raster data container size: " << rasterData.size() << endl;
 }
 
+/**
+ * @brief Extended method that prints general and vector specific information
+ * 
+ */
 void VectorLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "\tVector Data container size: " << vectorData.size() << endl;
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "> Vector Data container size: " << vectorData.size() << endl;
 }
 
+/**
+ * @brief Extended method that prints general and kernel specific information
+ * 
+ */
 void KernelLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [" << getLayerType() << "]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "\tKernel data container size: " << rasterData.size() << "\tKernel rotation: " << dRotation << endl;
+    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << getLayerStatus() << "]" << endl;
+    cout << "> Kernel data container size: " << rasterData.size() << "\tKernel rotation: " << dRotation << endl;
+}
+
+/**
+ * @brief Loads a vector of Point2d points in the layer container. It replaces the existing data.
+ * 
+ * @param inputData New data to be stored in the container
+ * @return int size of the new stored data vector
+ */
+int VectorLayer::loadData(vector <Point2d> *inputData){
+    cout << "v.loadData" << endl;
+    // We can not avoid a deep copy of the input vector. We could iterate through each element and assign it, or just use = operator
+    vectorData = *inputData;
+    setLayerStatus(LAYER_OK);
+    return vectorData.size();
+}
+
+/**
+ * @brief Import and copy the content from an input cvMat to the internal storage rasterData
+ * 
+ * @param input A valid cvMat matrix (yet, no validation is performed)
+ * @return int 
+ */
+int RasterLayer::loadData(cv::Mat *input){
+    input->copyTo(rasterData);   // deep copy of the Mat content and header to avoid original owner to accidentally overwrite the data
+    setLayerStatus(LAYER_OK);
+}
+
+/**
+ * @brief Empty definition of virtual prototype. In theory, there is no need to do anything with the data when using the basic container
+ * 
+ * @param data pointer to data that should be stored in the internal container
+ * @return int return generic error code
+ */
+int Layer::loadData(void *data){
+    // cout << cyan << "Layer::loadData(void *data) called" << reset << endl;
+    return LAYER_UNDEFINED;
 }
 
 }
