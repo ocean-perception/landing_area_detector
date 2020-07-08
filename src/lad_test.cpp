@@ -122,21 +122,14 @@ int main(int argc, char *argv[]) {
 
     lad::ladPipeline Pipeline;
 
-    cout << "Stack size:" << Pipeline.getTotalLayers() << endl; 
     Pipeline.showLayers();
-
-    Pipeline.CreateLayer("Vector_layer2", lad::LAYER_VECTOR);
-
-    Pipeline.CreateLayer("Vector_layer1", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("Vector_layer3", lad::LAYER_VECTOR);
-    cout << "Stack size:" << Pipeline.getTotalLayers() << endl; 
-
-    Pipeline.CreateLayer("Vector_layerA3", lad::LAYER_RASTER);
-    Pipeline.CreateLayer("Vector_layerB3", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_KERNEL);
-    Pipeline.CreateLayer("Vector_layerC3", lad::LAYER_KERNEL);
-    Pipeline.CreateLayer("Vector_layerD3", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("Vector_layerC4", lad::LAYER_KERNEL);
+    Pipeline.CreateLayer("V1", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("V2", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("V3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("R1", lad::LAYER_RASTER);
+    Pipeline.CreateLayer("R2", lad::LAYER_RASTER);
+    Pipeline.CreateLayer("k1", lad::LAYER_KERNEL);
+    Pipeline.CreateLayer("K2", lad::LAYER_KERNEL);
 
     vector <Point2d> points;
     for (int i=0; i<10; i++){
@@ -148,6 +141,7 @@ int main(int argc, char *argv[]) {
     cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
     Pipeline.uploadData(2, (void *)&points);
     Pipeline.uploadData(3, (void *)& m);
+    Pipeline.uploadData(7, (void *)& m);
     Pipeline.showLayers();
 
 

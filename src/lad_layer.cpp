@@ -79,7 +79,7 @@ int Layer::setLayerType(int newType){
  * @brief Prints summary information of the layer
  */
 void Layer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << layerID << "]\tType: [" << layerType << "]\tStatus: [" << layerStatus << "]" << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << layerID << "]\tType: [" << layerType << "]\tStatus: [" << layerStatus << "]" << endl;
 }
 
 /**
@@ -87,8 +87,8 @@ void Layer::showInformation(){
  * 
  */
 void RasterLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "> Raster data container size: " << rasterData.size() << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "> Raster data container size: " << yellow << rasterData.size() << reset << endl;
 }
 
 /**
@@ -96,8 +96,8 @@ void RasterLayer::showInformation(){
  * 
  */
 void VectorLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "> Vector Data container size: " << vectorData.size() << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "> Vector Data container size: " << yellow << vectorData.size() << reset << endl;
 }
 
 /**
@@ -105,8 +105,8 @@ void VectorLayer::showInformation(){
  * 
  */
 void KernelLayer::showInformation(){
-    cout << "Name: [" << layerName << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << getLayerStatus() << "]" << endl;
-    cout << "> Kernel data container size: " << rasterData.size() << "\tKernel rotation: " << dRotation << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "> Kernel data container size: " << yellow << rasterData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
 }
 
 /**
@@ -116,7 +116,6 @@ void KernelLayer::showInformation(){
  * @return int size of the new stored data vector
  */
 int VectorLayer::loadData(vector <Point2d> *inputData){
-    cout << "v.loadData" << endl;
     // We can not avoid a deep copy of the input vector. We could iterate through each element and assign it, or just use = operator
     vectorData = *inputData;
     setLayerStatus(LAYER_OK);

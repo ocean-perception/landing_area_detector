@@ -236,9 +236,7 @@ int ladPipeline::showLayers(int layer_type){
 int ladPipeline::uploadData(int id, void *data){
     if (id < 0) return LAYER_INVALID_ID;    //!< The provided ID is invalid
     if (LUT_ID.at(id) == ID_AVAILABLE) return LAYER_NOT_FOUND;  //!< No layer was created with that ID
-
-
-    cout << "Uploading data for layer #" << red << id << reset << endl;
+    // cout << "Uploading data for layer #" << red << id << reset << endl;
     for (auto it:Layers){
         if (it->getID() == id){ //!< Check ID match
             int type = it->getLayerType();  //!< slight speed improve
