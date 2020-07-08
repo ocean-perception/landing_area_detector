@@ -1,6 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classlad_1_1_layer.html" title="&lt; landing area detection algorithm namespace " alt="" coords="5,31,84,57"/>
-<area shape="rect" id="node2" href="$classlad_1_1_raster_layer.html" title="lad::RasterLayer" alt="" coords="132,5,251,32"/>
-<area shape="rect" id="node4" href="$classlad_1_1_vector_layer.html" title="lad::VectorLayer" alt="" coords="133,56,250,83"/>
-<area shape="rect" id="node3" href="$classlad_1_1_kernel_layer.html" title="lad::KernelLayer" alt="" coords="299,5,415,32"/>
-</map>

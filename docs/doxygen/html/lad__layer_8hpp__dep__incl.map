@@ -1,6 +1,0 @@
-<map id="/home/cappelletto/github/self/landing_area_detector/include/lad_layer.hpp" name="/home/cappelletto/github/self/landing_area_detector/include/lad_layer.hpp">
-<area shape="rect" id="node2" href="$lad__core_8hpp.html" title="Core module of Landing Area Detection (lad) algorithm. " alt="" coords="227,109,405,165"/>
-<area shape="rect" id="node4" href="$lad__layer_8cpp.html" title="/home/cappelletto/github\l/self/landing_area_detector\l/src/lad_layer.cpp" alt="" coords="411,213,589,269"/>
-<area shape="rect" id="node3" href="$lad__core_8cpp.html" title="Landing Area Detection algorithm core header. " alt="" coords="5,213,184,269"/>
-<area shape="rect" id="node5" href="$lad__test_8cpp.html" title="Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL &amp; GDAL. " alt="" coords="208,213,387,269"/>
-</map>
