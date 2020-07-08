@@ -15,6 +15,10 @@
 
 #include "geotiff.hpp"
 #include "headers.h"
+#include "lad_layer.hpp"
+#include "lad_enum.hpp"
+
+#include <regex>
 
 using namespace std;    // STL
 using namespace cv;     // OpenCV
@@ -25,79 +29,55 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
-    class Layer{
-        private:
 
-        protected:
-            bool bValid;    // flag indicating that layer holds non-NULL valid data
-            int layerID;    // Layer identifier
-            int layerType;  // Layer type identifier (from enum)
-
-        public:
-            std::string layerName;  // Layer name
-            std::string layerFileName;  // Suggested output file name
-
-            /**
-             * @brief Construct a new Layer object
-             * 
-             * @param newName Optional layer name. "noname" if none is specified at construction time
-             */
-            Layer(std::string newName = "noname"){
-                bValid = false;
-                layerName = newName;
-                layerID = lad::LAYER_INVALID_ID; 
-            }
-            /**
-             * @brief Virtual destructor of the Layer object. 
-             * @details  Depending on the type of container in the inherited instances, a type specific cleanup may be required
-             */
-            virtual ~Layer(){
-                bValid = false;
-            }
-
-            /**
-             * @brief Gets the layer ID value. If newID param is provided, then it is used to update layer ID value
-             * 
-             * @param newID User provided new layer ID value. It must be positive, otherwise it will be ignored.
-             * @return int  Up-to-date layer ID value
-             */
-            int LayerID(int newID=-1)
-            {
-                if (newID >= 0) layerID = newID; // if valid newID value is provided, update layerID. Ignore if negative
-                return layerID;
-            }
-    };
-
-    class classRasterLayer: public Layer{
-        public:
-            cv::Mat rasterData; //OpenCV matrix that will hold the data
-    };
-
-    class classVectorLayer: public Layer{
-        public:
-            vector <cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
-    };
-
-    class LAD{
+    class ladPipeline{
         private:
             int pipelineStep;
             int bValidInput;
 
         public:
+            ladPipeline(){
+                apInputGeotiff = NULL;
+                inputFileTIFF = "";
+                LUT_ID.resize(DEFAULT_STACK_SIZE);
+                std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
+            }
+
             Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
-            vector <classRasterLayer> RasterLayers;  //!< Vector of OpenCV raster images with maps
-            vector <classRasterLayer> KernelLayers;  //!< Vector of OpenCV raster images containing kernels
-            vector <classVectorLayer> VectorLayers;  // TODO: define proper structure to store vector shapefiles
+
             std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
+            vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
+
+            vector<int> LUT_ID; // look-up table of ID's. True: is taken, False: is not-taken (available)
+
             int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
-            std::string GetRasterLayerName (int id); //!< Returns name of RasterLayer with given ID number
-            std::string GetKernelLayerName (int id); //!< Returns name of KernelLayer with given ID number
-            std::string GetVectorLayerName (int id); //!< Returns name of VectorLayer with given ID number
 
+            // int getValidID(); //!< Return an available and valid ID for consumption (no mutex protection)
+
+            std::string getLayerName (int id); //!< Returns name of Layer with given ID number
+
+            int getLayerID (std::string name); //!< Return layer with given name
+
+            int setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
+
+            int CreateLayer (std::string name, int type); //!< Create a new layer "name" of given type and insert it into the pipeline stack.
+
+            int InsertLayer (std::shared_ptr <Layer> layer);  //!< Insert previously created layer into the pipeline stack
+
+            int RemoveLayer (std::string name); //!< Remove layer by its name
+            int RemoveLayer (int ID);           //!< Remove layer by its ID
+
+            int getTotalLayers (int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
+
+            int isValidName(std::string name);  //!< Verify if "name" is a valid layer name for the current pipeline stack
+            int isValidID(int ID); //!< Verify is ID is a valid layer ID for the current pipeline stack
+
+            int getValidID();   //!< Return a valid ID available for the current stack
+
+            int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
+            int uploadData(int id, void *data);
     };
-
-
 
 }
 

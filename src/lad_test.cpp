@@ -118,7 +118,32 @@ int main(int argc, char *argv[]) {
     poDataset = geoContainer.GetDataset(); //pull the pointer to the main GDAL dataset structure
     if (argVerbose) geoContainer.ShowInformation(); // show detailed info if asked for
 
-    processGeotiff(&geoContainer);
-    
+    // processGeotiff(&geoContainer);
+
+    lad::ladPipeline Pipeline;
+
+    Pipeline.showLayers();
+    Pipeline.CreateLayer("V1", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("V2", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("V3", lad::LAYER_VECTOR);
+    Pipeline.CreateLayer("R1", lad::LAYER_RASTER);
+    Pipeline.CreateLayer("R2", lad::LAYER_RASTER);
+    Pipeline.CreateLayer("k1", lad::LAYER_KERNEL);
+    Pipeline.CreateLayer("K2", lad::LAYER_KERNEL);
+
+    vector <Point2d> points;
+    for (int i=0; i<10; i++){
+        cv::Point2d p;
+        p.x = 1.0 + i;
+        p.y = 20.0 - i*i;
+        points.push_back(p);
+    }
+    cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
+    Pipeline.uploadData(2, (void *)&points);
+    Pipeline.uploadData(3, (void *)& m);
+    Pipeline.uploadData(7, (void *)& m);
+    Pipeline.showLayers();
+
+
     return lad::NO_ERROR;
 }
