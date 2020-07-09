@@ -123,6 +123,8 @@ int main(int argc, char *argv[]) {
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     cout << "----------------------" << endl;
     if (argVerbose) Pipeline.showInfo(); // show detailed information if asked for
+
+    Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     waitKey(0);
 
     return lad::NO_ERROR;

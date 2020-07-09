@@ -64,6 +64,9 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int getLayerID (std::string name); //!< Return layer with given name
 
+            std::shared_ptr<Layer> getLayer(int id); //!< Return shared_ptr to a Layer identified by its ID
+            std::shared_ptr<Layer> getLayer(std::string name); //!< Return shared_ptr to a Layer identified by its name
+
             int setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
 
             int CreateLayer (std::string name, int type); //!< Create a new layer "name" of given type and insert it into the pipeline stack.
@@ -87,7 +90,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
 
             int processGeotiff(std::string dataName, std::string maskName, int showImage=false); //!< Process Geotiff object and generate correspondig data and mask raster layers
-            int findContours(std::string rasterName, std::string contourName)
+            int extractContours(std::string rasterName, std::string contourName, int showImage=false);
 
     };
 
