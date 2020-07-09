@@ -133,16 +133,16 @@ int ladPipeline::RemoveLayer (std::string name){
     // First we verify the stack is not empty
     if (Layers.empty()) return LAYER_EMPTY;
 
-    int kk=0;
+    int i=0;
     //then we go through each layer
     for (auto const it:Layers){
         if (!name.compare(it->layerName)){ // found it!
             LUT_ID.at(it->getID()) = ID_AVAILABLE;
-            Layers.erase(Layers.begin() + kk);
+            Layers.erase(Layers.begin() + i);
             // remove(it);
             break; // if we don't break now we will get a segfault (the vector iterator is broken)
         }
-        kk++;
+        i++;
     }
     // we shouldn't reach this point. unless we found the target
     return LAYER_OK;
@@ -166,15 +166,15 @@ int ladPipeline::RemoveLayer (int id){
     if (Layers.empty())
         return LAYER_EMPTY;
 
-    int kk=0;
+    int i=0;
     //then we go through each layer
     for (auto const it:Layers){
         if (it->getID() == id){ // found it!
             LUT_ID.at(it->getID()) = ID_AVAILABLE;
-            Layers.erase(Layers.begin() + kk);
+            Layers.erase(Layers.begin() + i);
             break; // if we don't break now we will get a segfault (the vector iterator is broken)
         }
-        kk++;
+        i++;
     }
     // we shouldn't reach this point. unless we found the target
     return LAYER_OK;
@@ -321,10 +321,7 @@ int ladPipeline::ReadTIFF (std::string inputFile){
     if (inputFile.empty()){
         cout << red << "[ReadTIFF] input filename is empty!" << reset << endl;
     }
-
-    // Geotiff a;
-//    a.
-
+    cout << red << "NOT IMPLEMENTED YET ***********************************" << endl;
 }   
 
 /**
@@ -418,6 +415,52 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
 
 
 
+}
+
+
+
+int ladPipeline::findContours(std::string rasterName, std::string contourName){
+ 
+/*    vector< vector<Point> > contours;   // find contours of the DataMask layer
+
+    //pull access to rasterMask
+    std::shared_ptr<RasterLayer> apRaster;
+
+    apRaster = make_shared
+
+    vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
+
+std::make_shared<lad::VectorLayer>(name, newid);
+
+    ladPipeline::Layers
+
+    int id = 
+
+    findContours(matDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); // obtaining only 1st level contours, no children
+
+    cout << "# Contours detected: " << contours.size() << endl;
+    if (!contours.size()){
+        cout << red << "No contour line was detected! Exitting" << endl;
+        return -1;
+    }
+
+    // WARNING: contours may provide false shapes when valida data mask reaches any image edge.
+    // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
+    // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
+    Mat boundingLayer = Mat::zeros(matDataMask.size(), CV_8UC1);   // empty mask
+    int n =0;
+    for (const auto &contour: contours){
+        cout << "Contour["<< n++ <<"] size: " << contour.size() << endl;
+        drawContours(boundingLayer, contours, -1, Scalar(255*n/contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
+    }
+    cv::Mat mask_colormap(boundingLayer.size(), CV_8UC3);
+    cv::applyColorMap(boundingLayer, mask_colormap, COLORMAP_TURBO);
+
+    Mat erode_output = Mat::zeros(matDataMask.rows, matDataMask.cols, CV_8UC1);
+    Mat erode_kernel = Mat::ones(20, 50, CV_8UC1);
+    cv::erode(matDataMask, erode_output, erode_kernel); // erode kernel to valid data mask
+*/
+    cout << "WARNING NOT IMPLEMENTED YET"
 }
 
 
