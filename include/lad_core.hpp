@@ -86,6 +86,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             int uploadData(int id, void *data); //!< uploads data into a layer identified by its id
             int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
 
+            int processGeotiff(std::string dataName, std::string maskName, int showImage=false); //!< Process Geotiff object and generate correspondig data and mask raster layers
+
     };
 
 }

@@ -35,9 +35,9 @@ std::string ladPipeline::getLayerName (int id){
  * @return int ID of the layer, if found any. Returns LAYER_NOTFOUN 
  */
 int ladPipeline::getLayerID (std::string name){
-    if (Layers.size() <=0) return LAYER_INVALID_ID;
+    if (Layers.size() <=0) return LAYER_EMPTY;
 
-    if (!name.size())   return LAYER_INVALID_ID;
+    if (!name.size())   return LAYER_INVALID_NAME;
 
     // Check each raster in the array, compare its ID against search index
     for (auto layer:Layers){
@@ -185,7 +185,7 @@ int ladPipeline::RemoveLayer (int id){
  * 
  * @param name Valid name of the new layer
  * @param type Type of new layer
- * @return int Error code if name is invalid (LAYER_INVALID_NAME), if succesful returns LAYER_OK 
+ * @return int new ID if valid, error code otherwise 
  */
 int ladPipeline::CreateLayer (std::string name, int type){
     // Let's check name
@@ -198,27 +198,27 @@ int ladPipeline::CreateLayer (std::string name, int type){
 
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_VECTOR){
-        cout << "[ladPipeline] Creating VECTOR layer: " << name << endl;
+        // cout << "[ladPipeline] Creating VECTOR layer: " << name << endl;
         std::shared_ptr <lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
         Layers.push_back(newLayer);
         LUT_ID.at(newid) = ID_TAKEN;
     }
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_RASTER){
-        cout << "[ladPipeline] Creating RASTER layer" << endl;
+        // cout << "[ladPipeline] Creating RASTER layer" << endl;
         std::shared_ptr <lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
         Layers.push_back(newLayer);
         LUT_ID.at(newid) = ID_TAKEN;
     }
     // Type can be any of enumerated types, or any user defined
     if (type == LAYER_KERNEL){
-        cout << "[ladPipeline] Creating KERNEL layer" << endl;
+        // cout << "[ladPipeline] Creating KERNEL layer" << endl;
         std::shared_ptr <lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
         Layers.push_back(newLayer);
         LUT_ID.at(newid) = ID_TAKEN;
     }
 
-    return LAYER_OK;
+    return newid;
 }
 
 int ladPipeline::getValidID()
@@ -361,5 +361,64 @@ int ladPipeline::showInfo(int level){
     cout << cyan << "************* End of summary *************" << reset << endl;
     return retval;        
 } 
+
+/**
+ * @brief Process Geotiff object & data and generate data raster and valid-data mask raster
+ * 
+ * @return int error code, if any
+ */
+int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, int showImage){
+    //First, check if have any valid Geotiff object loaded in memory
+    int *dimensions;
+    dimensions = apInputGeotiff->GetDimensions();
+    //**************************************
+    float **apData; //pull 2D float matrix containing the image data for Band 1
+    apData = apInputGeotiff->GetRasterBand(1);
+
+    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
+    for (int i=0; i<dimensions[0]; i++){
+        for (int j=0; j<dimensions[1]; j++){
+            tiff.at<float>(cv::Point(j,i)) = (float)apData[i][j];   // swap row/cols from matrix to OpenCV container
+        }
+    }
+
+    // we need check if the raster layer exist
+    int id = -1;
+    id = getLayerID(rasterName);
+    if (id == LAYER_INVALID_NAME){  //!< Provided rasterName is invalid
+        return LAYER_INVALID_NAME;
+    }
+
+    if ((id == LAYER_EMPTY)||(id == LAYER_NOT_FOUND)){ //!< Layer was not found, we have been asked to create it
+        id = CreateLayer(rasterName, LAYER_RASTER);
+        uploadData(id, (void *) &tiff); //upload cvMat tiff for deep-copy into the internal container
+    }
+
+    cv::Mat matDataMask;    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
+    cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
+
+    id = getLayerID(maskName);
+    if (id == LAYER_INVALID_NAME){  //!< Provided rasterName is invalid
+        return LAYER_INVALID_NAME;
+    }
+
+    if ((id == LAYER_EMPTY)||(id == LAYER_NOT_FOUND)){ //!< Layer was not found, we have been asked to create it
+        id = CreateLayer(maskName, LAYER_RASTER);
+        uploadData(id, (void *) &matDataMask); //upload cvMat tiff for deep-copy into the internal container
+    }
+
+    if (showImage){
+        cv::Mat tiff_colormap = Mat::zeros( tiff.size(), CV_8UC1 ); // colour mapped image for visualization purposes
+        cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, matDataMask); // normalize within the expected range 0-255 for imshow
+        // apply colormap for enhanced visualization purposes
+        cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
+        imshow(maskName, matDataMask);
+        imshow(rasterName, tiff_colormap);
+    }
+
+
+
+}
+
 
 }

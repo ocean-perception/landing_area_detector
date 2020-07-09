@@ -106,51 +106,24 @@ int main(int argc, char *argv[]) {
     cout << "***********************************" << endl;
 
     // create the container and the open input file
-    Geotiff geoContainer (inputFileName.c_str());
-    if (!geoContainer.isValid()){ // check if nothing wrong happened with the constructor
+    Geotiff inputGeotiff (inputFileName.c_str());
+    if (!inputGeotiff.isValid()){ // check if nothing wrong happened with the constructor
         cout << red << "Error opening Geotiff file: " << reset << inputFileName << endl;
         return lad::ERROR_GDAL_FAILOPEN;
     }
-
     //**************************************
     // Get/print summary information of the TIFF 
     GDALDataset *poDataset;
-    poDataset = geoContainer.GetDataset(); //pull the pointer to the main GDAL dataset structure
-    if (argVerbose) geoContainer.ShowInformation(); // show detailed info if asked for
-
-    // processGeotiff(&geoContainer);
-
+    poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
+    
     lad::ladPipeline Pipeline;
 
-    Pipeline.showLayers();
-    Pipeline.CreateLayer("V1", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("V2", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("V3", lad::LAYER_VECTOR);
-    Pipeline.CreateLayer("R1", lad::LAYER_RASTER);
-    Pipeline.CreateLayer("R2", lad::LAYER_RASTER);
-    Pipeline.CreateLayer("K1", lad::LAYER_KERNEL);
-    Pipeline.CreateLayer("K2", lad::LAYER_KERNEL);
+    Pipeline.apInputGeotiff = &inputGeotiff;
 
-    vector <Point2d> points;
-    for (int i=0; i<10; i++){
-        cv::Point2d p;
-        p.x = 1.0 + i;
-        p.y = 20.0 - i*i;
-        points.push_back(p);
-    }
-    cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
-    Pipeline.uploadData("V1", (void *)& points);
-    Pipeline.uploadData("V2", (void *)& points);
-    Pipeline.uploadData("V3", (void *)& points);
-    Pipeline.uploadData("R1", (void *)& m);
-    Pipeline.uploadData("K2", (void *)& m);
-
+    Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     cout << "----------------------" << endl;
-
-    Pipeline.apInputGeotiff = new Geotiff(inputFileName.c_str());
-    Pipeline.showInfo();
-
-
+    if (argVerbose) Pipeline.showInfo(); // show detailed information if asked for
+    waitKey(0);
 
     return lad::NO_ERROR;
 }
