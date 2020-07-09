@@ -34,3 +34,7 @@ build/*
 *.exe
 *.out
 *.app
+
+# Doxygen folders
+docs/doxygen/html/*
+docs/doxygen/latex/*

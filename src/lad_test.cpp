@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
     Pipeline.CreateLayer("V3", lad::LAYER_VECTOR);
     Pipeline.CreateLayer("R1", lad::LAYER_RASTER);
     Pipeline.CreateLayer("R2", lad::LAYER_RASTER);
-    Pipeline.CreateLayer("k1", lad::LAYER_KERNEL);
+    Pipeline.CreateLayer("K1", lad::LAYER_KERNEL);
     Pipeline.CreateLayer("K2", lad::LAYER_KERNEL);
 
     vector <Point2d> points;
@@ -139,11 +139,15 @@ int main(int argc, char *argv[]) {
         points.push_back(p);
     }
     cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
-    Pipeline.uploadData(2, (void *)&points);
-    Pipeline.uploadData(3, (void *)& m);
-    Pipeline.uploadData(7, (void *)& m);
     Pipeline.showLayers();
+    Pipeline.uploadData("V1", (void *)& points);
+    Pipeline.uploadData("V2", (void *)& points);
+    Pipeline.uploadData("V3", (void *)& points);
+    Pipeline.uploadData("R1", (void *)& m);
+    Pipeline.uploadData("K2", (void *)& m);
 
+    cout << "----------------------" << endl;
+    Pipeline.showLayers();
 
     return lad::NO_ERROR;
 }

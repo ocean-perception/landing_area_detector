@@ -49,11 +49,9 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
 
-            vector<int> LUT_ID; // look-up table of ID's. True: is taken, False: is not-taken (available)
+            vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
 
             int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
-
-            // int getValidID(); //!< Return an available and valid ID for consumption (no mutex protection)
 
             std::string getLayerName (int id); //!< Returns name of Layer with given ID number
 
@@ -76,7 +74,9 @@ namespace lad{      //!< landing area detection algorithm namespace
             int getValidID();   //!< Return a valid ID available for the current stack
 
             int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
-            int uploadData(int id, void *data);
+            int uploadData(int id, void *data); //!< uploads data into a layer identified by its id
+            int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
+
     };
 
 }

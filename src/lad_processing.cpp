@@ -16,7 +16,14 @@
 #include "lad_processing.hpp"
 #include "lad_layer.hpp"
 
+/**
+ * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by ladPipeline objects 
+ * Valid data is assumed to be present in the layer containers involved
+ */
 namespace lad{
+
+
+
 
 
 }

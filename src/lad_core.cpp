@@ -29,6 +29,24 @@ std::string ladPipeline::getLayerName (int id){
 }
 
 /**
+ * @brief Returns (if present) the ID of the vector layer that matches provided name
+ * 
+ * @param name Layer name to be searched
+ * @return int ID of the layer, if found any. Returns LAYER_NOTFOUN 
+ */
+int ladPipeline::getLayerID (std::string name){
+    if (Layers.size() <=0) return LAYER_INVALID_ID;
+
+    if (!name.size())   return LAYER_INVALID_ID;
+
+    // Check each raster in the array, compare its ID against search index
+    for (auto layer:Layers){
+        if (layer->layerName == name) return layer->getID();
+    }
+    return LAYER_NOT_FOUND;
+}
+
+/**
  * @brief Overwrite the name of a layer (if present) with a unique string. 
  * @details If provided string 
  * @param id 
@@ -80,7 +98,7 @@ int ladPipeline::isValidID(int checkID){
 }
 
 /**
- * @brief Determine if a given layer ID is valid. It checks both availability and correctness
+ * @brief Determine if a given layer name is valid. It checks both availability and correctness
  * 
  * @param checkID ID to be evaluated
  * @return int Evaluation status. If valid returns LAYER_OK, else return corresponding error code
@@ -233,6 +251,14 @@ int ladPipeline::showLayers(int layer_type){
         return lad::LAYER_OK;
 } 
 
+/**
+ * @brief Upload data to the corresponding container in the layer identified by its id. 
+ * Dynamic typecasting of data is performed according to the container data type
+ * 
+ * @param id Identifier of the target layer
+ * @param data Source data to be copied
+ * @return int Error code, if any. LAYER_OK if the process is completed succesfully
+ */
 int ladPipeline::uploadData(int id, void *data){
     if (id < 0) return LAYER_INVALID_ID;    //!< The provided ID is invalid
     if (LUT_ID.at(id) == ID_AVAILABLE) return LAYER_NOT_FOUND;  //!< No layer was created with that ID
@@ -256,6 +282,33 @@ int ladPipeline::uploadData(int id, void *data){
         }
     }
     return LAYER_OK;
+}
+
+/**
+ * @brief Alternative to uploadData(int,data) where the layer is identified by its name
+ * @param id Name of the target layer
+ * @param data Source data to be copied
+ * @return int Error code, if any. LAYER_OK if the process is completed succesfully
+ */
+int ladPipeline::uploadData(std::string name, void *data){
+    // Check if we the name is valid (non-empty)
+    if (name.empty()) return LAYER_INVALID_NAME;
+
+    // Now, we retrieve the ID for that name
+    int id = getLayerID(name);
+    if ((id == LAYER_INVALID_ID) || (id == LAYER_NOT_FOUND)){
+        cout << "*************Layer_INVALID!: [" << id << "]" << endl;
+        return LAYER_INVALID;   // some error ocurred getting the ID of a layer with such name (double validation)
+    }
+    int retval = LAYER_NOT_FOUND;
+    for (auto layer:Layers){
+        if (layer->getID() == id){ /// there should be a match!
+            cout << "*************Layer found: [" << layer->getID() << "]" << endl;
+            retval = uploadData(id,data);
+            break;
+        }
+    }
+    return retval;
 }
 
 }

@@ -63,7 +63,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
             virtual void showInformation(); //!<< Dumps relevant information of the layer
-            virtual int loadData(void *); //!< Virtual declaration of function to upload data into the appropiate container inside of the layer
+            //virtual int loadData(void *); //!< Virtual declaration of function to upload data into the appropiate container inside of the layer
     };
 
     class RasterLayer: public Layer{

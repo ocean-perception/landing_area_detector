@@ -139,10 +139,10 @@ int RasterLayer::loadData(cv::Mat *input){
  * @param data pointer to data that should be stored in the internal container
  * @return int return generic error code
  */
-int Layer::loadData(void *data){
+/*int Layer::loadData(void *data){
     // cout << cyan << "Layer::loadData(void *data) called" << reset << endl;
     return LAYER_UNDEFINED;
-}
+}*/
 
 }
 #endif //_LAD_LAYER_CPP_
