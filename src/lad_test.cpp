@@ -139,7 +139,6 @@ int main(int argc, char *argv[]) {
         points.push_back(p);
     }
     cv::Mat m = cv::Mat::ones(5, 5, CV_8SC1);
-    Pipeline.showLayers();
     Pipeline.uploadData("V1", (void *)& points);
     Pipeline.uploadData("V2", (void *)& points);
     Pipeline.uploadData("V3", (void *)& points);
@@ -147,7 +146,11 @@ int main(int argc, char *argv[]) {
     Pipeline.uploadData("K2", (void *)& m);
 
     cout << "----------------------" << endl;
-    Pipeline.showLayers();
+
+    Pipeline.apInputGeotiff = new Geotiff(inputFileName.c_str());
+    Pipeline.showInfo();
+
+
 
     return lad::NO_ERROR;
 }

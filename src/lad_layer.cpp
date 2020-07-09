@@ -88,7 +88,7 @@ void Layer::showInformation(){
  */
 void RasterLayer::showInformation(){
     cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
-    cout << "> Raster data container size: " << yellow << rasterData.size() << reset << endl;
+    cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << endl;
 }
 
 /**
@@ -97,7 +97,7 @@ void RasterLayer::showInformation(){
  */
 void VectorLayer::showInformation(){
     cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
-    cout << "> Vector Data container size: " << yellow << vectorData.size() << reset << endl;
+    cout << "\t> Vector Data container size: " << yellow << vectorData.size() << reset << endl;
 }
 
 /**
@@ -106,7 +106,7 @@ void VectorLayer::showInformation(){
  */
 void KernelLayer::showInformation(){
     cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
-    cout << "> Kernel data container size: " << yellow << rasterData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
+    cout << "\t> Kernel data container size: " << yellow << rasterData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
 }
 
 /**

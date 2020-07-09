@@ -27,7 +27,9 @@ namespace lad{
         NO_ERROR                = 0,
         ERROR_MISSING_ARGUMENT  =-1,
         ERROR_WRONG_ARGUMENT    =-2,
-        ERROR_GDAL_FAILOPEN     =-3
+        ERROR_GDAL_FAILOPEN     =-3,
+        ERROR_GEOTIFF_EMPTY     =-4,
+        ERROR_LAYERS_EMPTY      =-5
     };
 
     enum TiffProcessing{

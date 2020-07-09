@@ -303,12 +303,63 @@ int ladPipeline::uploadData(std::string name, void *data){
     int retval = LAYER_NOT_FOUND;
     for (auto layer:Layers){
         if (layer->getID() == id){ /// there should be a match!
-            cout << "*************Layer found: [" << layer->getID() << "]" << endl;
+            // cout << "*************Layer found: [" << layer->getID() << "]" << endl;
             retval = uploadData(id,data);
             break;
         }
     }
     return retval;
 }
+
+/**
+ * @brief Reads a geoTIFF file using the GDAL driver and populate the object container
+ * 
+ * @param inputFile Name of the geotTIFF file to be read
+ * @return int Success/error code
+ */
+int ladPipeline::ReadTIFF (std::string inputFile){
+    if (inputFile.empty()){
+        cout << red << "[ReadTIFF] input filename is empty!" << reset << endl;
+    }
+
+    // Geotiff a;
+//    a.
+
+}   
+
+/**
+ * @brief Shows summary/detailed information of the pipeline object
+ * 
+ * @param level Level of verbosity
+ * @return int Returns NO_ERROR if current pipeline is a valid (non-empty) one.
+ */
+int ladPipeline::showInfo(int level){
+    // Geotiff input information
+    int retval = NO_ERROR;
+    cout << cyan << "************* Start of summary ************" << reset << endl;
+    cout << green << "Geotiff:\t" << reset;
+    if (apInputGeotiff == NULL){
+        cout << red << "None" << reset << endl;
+        retval = ERROR_GEOTIFF_EMPTY;
+    }
+    else
+    {
+        cout << yellow << apInputGeotiff->GetFileName() << reset << endl;
+        apInputGeotiff->ShowInformation();
+    }
+
+    cout << "*************" << endl;
+    cout << green << "Layers:\t" << reset;
+    if (Layers.empty()){
+        cout << yellow << "None" << reset << endl;
+        retval = ERROR_LAYERS_EMPTY;
+    }
+    else{
+        cout << reset << endl;
+        showLayers();
+    }
+    cout << cyan << "************* End of summary *************" << reset << endl;
+    return retval;        
+} 
 
 }

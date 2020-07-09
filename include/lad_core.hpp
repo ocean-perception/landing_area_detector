@@ -43,7 +43,14 @@ namespace lad{      //!< landing area detection algorithm namespace
                 std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
             }
 
-            Geotiff *apInputGeotiff;    //!< landing area detection algorithm namespace
+            ~ladPipeline(){
+                // delete apInputGeotiff;
+                Layers.clear();
+                LUT_ID.clear();
+                inputFileTIFF = "";
+            }
+
+            Geotiff *apInputGeotiff;    //!< Pointer to geoTIFF container
 
             std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
@@ -73,7 +80,9 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int getValidID();   //!< Return a valid ID available for the current stack
 
+            int showInfo(int level=0); //!< Show summary information of current pipeline object
             int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
+
             int uploadData(int id, void *data); //!< uploads data into a layer identified by its id
             int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
 
