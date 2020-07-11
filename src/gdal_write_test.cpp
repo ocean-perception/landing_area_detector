@@ -32,26 +32,26 @@ int main()
         exit( 1 );
     }
 
-    OGRFieldDefn oField( "Name", OFTString );
+//    OGRFieldDefn oField( "Name", OFTString );
 
-    oField.SetWidth(32);
+//    oField.SetWidth(32);
 
-    if( poLayer->CreateField( &oField ) != OGRERR_NONE )
-    {
-        printf( "Creating Name field failed.\n" );
-        exit( 1 );
-    }
+    // if( poLayer->CreateField( &oField ) != OGRERR_NONE )
+    // {
+    //     printf( "Creating Name field failed.\n" );
+    //     exit( 1 );
+    // }
 
     double x, y;
-    char szName[33];
+    char szName[33]= "szName";
 
     while( !feof(stdin)
-        && fscanf( stdin, "%lf,%lf,%32s", &x, &y, szName ) == 3 )
+        && fscanf( stdin, "%lf,%lf", &x, &y ) == 2 )
     {
         OGRFeature *poFeature;
 
         poFeature = OGRFeature::CreateFeature( poLayer->GetLayerDefn() );
-        poFeature->SetField( "Name", szName );
+//        poFeature->SetField( "Name", szName );
 
         OGRPoint pt;
 

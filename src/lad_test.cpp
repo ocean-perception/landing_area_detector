@@ -120,10 +120,12 @@ int main(int argc, char *argv[]) {
 
     Pipeline.apInputGeotiff = &inputGeotiff;
 
+    cout << "---------------------- Processing RAW Bathymetry" << endl;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
-    cout << "----------------------" << endl;
+
     if (argVerbose) Pipeline.showInfo(); // show detailed information if asked for
 
+    cout << "---------------------- Extracting contours" << endl;
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     waitKey(0);
 
