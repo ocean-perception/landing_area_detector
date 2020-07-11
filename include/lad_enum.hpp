@@ -24,12 +24,13 @@ namespace lad{
     };
 
     enum ReturnCodes{
-        NO_ERROR                = 0,
-        ERROR_MISSING_ARGUMENT  =-1,
-        ERROR_WRONG_ARGUMENT    =-2,
-        ERROR_GDAL_FAILOPEN     =-3,
-        ERROR_GEOTIFF_EMPTY     =-4,
-        ERROR_LAYERS_EMPTY      =-5
+        NO_ERROR                = 0,    //!< No error code to report
+        ERROR_MISSING_ARGUMENT  =-1,    //!< Missing argument when calling function
+        ERROR_WRONG_ARGUMENT    =-2,    //!< Incorrect type of argument
+        ERROR_GDAL_FAILOPEN     =-3,    //!< GDAL Driver failed to open geoTIFF file
+        ERROR_GEOTIFF_EMPTY     =-4,    //!< Provided geoTIFF file is empty
+        ERROR_LAYERS_EMPTY      =-5,    //!< No layer is present in the current stack
+        ERROR_CONTOURS_NOTFOUND =-6     //!< No contour could de found
     };
 
     enum TiffProcessing{

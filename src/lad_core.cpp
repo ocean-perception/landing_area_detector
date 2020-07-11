@@ -419,48 +419,89 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
 
 
 
-int ladPipeline::findContours(std::string rasterName, std::string contourName){
+int ladPipeline::extractContours(std::string rasterName, std::string contourName, int showImage){
  
-/*    vector< vector<Point> > contours;   // find contours of the DataMask layer
+    vector< vector<Point> > contours;   // find contours of the DataMask layer
 
     //pull access to rasterMask
     std::shared_ptr<RasterLayer> apRaster;
 
-    apRaster = make_shared
+    apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterName));
 
-    vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
+    cv::findContours(apRaster->rasterData, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE); // obtaining only 1st level contours, no children
 
-std::make_shared<lad::VectorLayer>(name, newid);
-
-    ladPipeline::Layers
-
-    int id = 
-
-    findContours(matDataMask, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); // obtaining only 1st level contours, no children
-
-    cout << "# Contours detected: " << contours.size() << endl;
-    if (!contours.size()){
-        cout << red << "No contour line was detected! Exitting" << endl;
-        return -1;
+    cout << "[extractContours] #contours detected: " << contours.size() << endl;
+    if (contours.empty()){
+        cout << red << "No contour line was detected!" << endl;
+        return ERROR_CONTOURS_NOTFOUND;
     }
+
+    // We need to extract the largest polygon, which should provide the main data chunk boundary
+    // Disconected bathymetries are not expected
+    int largest = 0;
+    vector< vector<Point> > good_contours;   // find contours of the DataMask layer
+
+    int k=0;
+    for (auto it:contours){
+        if (it.size() > largest){
+            largest = it.size();
+            if (!good_contours.empty()) good_contours.pop_back();
+            good_contours.push_back(it); // hack to keep it at a single element
+        }
+    }
+    cout << "[extractContours] Largest contour: " << yellow << largest << reset << endl;
 
     // WARNING: contours may provide false shapes when valida data mask reaches any image edge.
     // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
     // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
-    Mat boundingLayer = Mat::zeros(matDataMask.size(), CV_8UC1);   // empty mask
-    int n =0;
-    for (const auto &contour: contours){
-        cout << "Contour["<< n++ <<"] size: " << contour.size() << endl;
-        drawContours(boundingLayer, contours, -1, Scalar(255*n/contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
-    }
-    cv::Mat mask_colormap(boundingLayer.size(), CV_8UC3);
-    cv::applyColorMap(boundingLayer, mask_colormap, COLORMAP_TURBO);
+    if (showImage){
+        Mat boundingLayer = Mat::zeros(apRaster->rasterData.size(), CV_8UC1);   // empty mask
+        int n =1;
 
-    Mat erode_output = Mat::zeros(matDataMask.rows, matDataMask.cols, CV_8UC1);
-    Mat erode_kernel = Mat::ones(20, 50, CV_8UC1);
-    cv::erode(matDataMask, erode_output, erode_kernel); // erode kernel to valid data mask
-*/
-    cout << "WARNING NOT IMPLEMENTED YET"
+        for (const auto &contour: good_contours){
+            drawContours(boundingLayer, contours, -1, Scalar(255*n/good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
+            n++;
+        }
+        imshow (contourName, boundingLayer);
+
+    }
+    return NO_ERROR;
+}
+
+/**
+ * @brief Search a Layer by its ID and return a shared_ptr to it. If the provided ID is invalid or non-existent a NULL pointer is returned
+ * 
+ * @param id ID of the layer to be retrieved
+ * @return std::shared_ptr<Layer> pointer to the Layer with the given id
+ */
+std::shared_ptr<Layer> ladPipeline::getLayer(int id){
+    if ((id < 0) || (id > (LUT_ID.size()-1))) return NULL;
+    if (Layers.empty()) return NULL;
+    if (LUT_ID[id] == ID_AVAILABLE) return NULL;
+
+    // now, it is safe to assume that such ID exists
+    for (auto it:Layers){
+        if (it->getID() == id){
+            return it;
+        }
+    }
+    return NULL; //!< Curious thing, nothing was found!
+}
+
+/**
+ * @brief Search a Layer by its ID and return a shared_ptr to it. If the provided ID is invalid or non-existent a NULL pointer is returned
+ * 
+ * @param name name of the layer to be retrieved
+ * @return std::shared_ptr<Layer> pointer to the Layer with the given id
+ */
+std::shared_ptr<Layer> ladPipeline::getLayer(std::string name){
+    if (name.empty()) return NULL;
+    if (Layers.empty()) return NULL;
+
+    int id = getLayerID(name);
+    if (id <=0 ) return NULL;   //some error ocurred while searching that name in the list of layers
+
+    return (getLayer(id));  //now we search it by ID
 }
 
 

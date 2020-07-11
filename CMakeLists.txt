@@ -111,5 +111,13 @@ add_executable(lad_test   src/lad_test.cpp
 target_compile_options(lad_test PUBLIC -std=c++11)
 target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY})
 
+############################ GDAL_WRITE_TEST ####################
+add_executable (gdal_write  src/gdal_write_test.cpp
+                          ${PROJECT_HEADERS})
+
+target_compile_options(gdal_write PUBLIC -std=c++11)
+target_link_libraries(gdal_write ${GDAL_LIBRARY})
+
+
 # Define install target for main testing module
-install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)
+install (TARGETS lad_test gdal_write DESTINATION $ENV{HOME}/bin)
