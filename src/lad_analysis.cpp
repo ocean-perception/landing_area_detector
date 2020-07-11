@@ -45,7 +45,9 @@ int processGeotiff(Geotiff *apGeotiff){
     // apply colormap for enhanced visualization purposes
     cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
 
+    namedWindow("tiff colormap", WINDOW_NORMAL);
     imshow("tiff colormap", tiff_colormap); // this will show nothing, as imshow needs remapped images
+    resizeWindow("tiff colormap", 800, 800);
     waitKey(0);
 
 
@@ -89,32 +91,14 @@ int processGeotiff(Geotiff *apGeotiff){
     // contours basically contains the minimum bounding polygon down to 1-pixel resolution
     // WARNING: CV_FILLED fills holes inside of the polygon. Contours may return a collection of shapes (list of list of points)
 
+    namedWindow("Contour", WINDOW_NORMAL);
     imshow ("Contour", mask_colormap);
+    resizeWindow("Contour", 800, 800);
+    namedWindow("Eroded mask", WINDOW_NORMAL);
     imshow ("Eroded mask", erode_output * 255);
+    resizeWindow("Eroded mask", 800, 800);
     waitKey(0);
-    imwrite("contours.tif",boundingLayer);
-    imwrite("contours_color.tif",mask_colormap);
+    // imwrite("contours.tif",boundingLayer);
+    // imwrite("contours_color.tif",mask_colormap);
     return 0;
 }
-
-
-/*
-    TODO: FOR MEMCPY OF GDAL GEOTIFF DATA STREAM TO CVMAT
-
-std:vector<std::vector<float> > OrigSamples;
-...
-... // Here OrigSamples is filled with some rows with the same row size
-...
-
-// Create a new, _empty_ cv::Mat with the row size of OrigSamples
-cv::Mat NewSamples(0, OrigSamples[0].size(), cv::DataType<float>::type);
-
-for (unsigned int i = 0; i < OrigSamples.size(); ++i)
-{
-  // Make a temporary cv::Mat row and add to NewSamples _without_ data copy
-  cv::Mat Sample(1, OrigSamples[0].size(), cv::DataType<float>::type, OrigSamples[i].data());
-
-  NewSamples.push_back(Sample);
-}
-
-*/

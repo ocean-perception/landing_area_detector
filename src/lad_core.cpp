@@ -370,8 +370,11 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
     dimensions = apInputGeotiff->GetDimensions();
     //**************************************
     float **apData; //pull 2D float matrix containing the image data for Band 1
+
+    cout << yellow << "\tRetrieving raster data w/GDAL" << endl;
     apData = apInputGeotiff->GetRasterBand(1);
 
+    cout << yellow << "\tConverting to OpenCV container" << endl;
     cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
     for (int i=0; i<dimensions[0]; i++){
         for (int j=0; j<dimensions[1]; j++){
@@ -391,6 +394,8 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
         uploadData(id, (void *) &tiff); //upload cvMat tiff for deep-copy into the internal container
     }
 
+    cout << green << "\tGenerating NO DATA mask" << endl;
+
     cv::Mat matDataMask;    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
     cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
 
@@ -398,6 +403,8 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
     if (id == LAYER_INVALID_NAME){  //!< Provided rasterName is invalid
         return LAYER_INVALID_NAME;
     }
+
+    cout << yellow << "\tStoring NO DATA mask" << reset << endl;
 
     if ((id == LAYER_EMPTY)||(id == LAYER_NOT_FOUND)){ //!< Layer was not found, we have been asked to create it
         id = CreateLayer(maskName, LAYER_RASTER);
@@ -409,8 +416,13 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
         cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, matDataMask); // normalize within the expected range 0-255 for imshow
         // apply colormap for enhanced visualization purposes
         cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
+        namedWindow(maskName, WINDOW_NORMAL);
         imshow(maskName, matDataMask);
+        resizeWindow(maskName, 800, 800);
+
+        namedWindow(rasterName, WINDOW_NORMAL);
         imshow(rasterName, tiff_colormap);
+        resizeWindow(rasterName, 800, 800);
     }
 
 
@@ -462,8 +474,9 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
             drawContours(boundingLayer, contours, -1, Scalar(255*n/good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
             n++;
         }
+        namedWindow(contourName, WINDOW_NORMAL);
         imshow (contourName, boundingLayer);
-
+        resizeWindow(contourName, 800, 800);
     }
     return NO_ERROR;
 }
