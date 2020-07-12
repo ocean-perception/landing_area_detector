@@ -462,9 +462,31 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
             drawContours(boundingLayer, contours, -1, Scalar(255*n/good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
             n++;
         }
+        namedWindow(contourName, WINDOW_NORMAL);
         imshow (contourName, boundingLayer);
-
     }
+
+    // COMPLETE: now we export the data to the target vector layer contourName
+    // if it already exist, overwrite data?
+    //pull access to rasterMask
+    std::shared_ptr<VectorLayer> apVector;
+
+    if (getLayerID(contourName)>=0){
+        // it already exist!
+        apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+    }
+    else{
+        // nope, we must create it
+        int newid = CreateLayer(contourName,LAYER_VECTOR);
+        apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+        cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
+    }
+
+    vector<Point> contour = good_contours.at(0);
+    for (auto it:contour){  //deep copy by iterating through the vector. = operator non-existent por Point to Point2d (blame OpenCV?)
+        apVector->vectorData.push_back(it);
+    }
+    // cout << "Vector data: " << apVector->vectorData.size() << endl;
     return NO_ERROR;
 }
 

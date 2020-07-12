@@ -64,6 +64,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             int setLayerType(int newType); //!< Modify the layer type
             virtual void showInformation(); //!<< Dumps relevant information of the layer
             //virtual int loadData(void *); //!< Virtual declaration of function to upload data into the appropiate container inside of the layer
+            //virtual int writeLayer(std::string newname);    //!< Virtual declaration of export method for base layer class. To be expanded on each derived class
     };
 
     class RasterLayer: public Layer{
@@ -92,6 +93,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             void showInformation();
 
             int loadData(std::vector <cv::Point2d> *); //!< Import data into vectorData container
+            // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the layerFileName as fileFormat (default CSV)
+            int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV); //!< Overloaded method of exporting vectorData to user defined file 
     };
 
     class KernelLayer: public virtual RasterLayer{
