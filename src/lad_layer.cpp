@@ -107,7 +107,7 @@ void VectorLayer::showInformation(){
  * 
  * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
  */
-int VectorLayer::writeLayer(std::string exportName, int fileFmt){
+int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string strWKTSpatialRef){
     //*************************************************************
     if (fileFmt == FMT_TIFF){
         cout << red << "[writeLayer] Error, vector layer cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
@@ -115,7 +115,7 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt){
     }
     //*************************************************************
     if (fileFmt == FMT_SHP){
-        int i = exportShapefile(exportName, layerName, vectorData);
+        int i = exportShapefile(exportName, layerName, vectorData, strWKTSpatialRef);
         if (i!=NO_ERROR){
             cout << "\tSome error ocurred while exporting [" << yellow << layerName << reset << "] to [" << yellow << exportName << "]" << reset << endl; 
             return ERROR_GDAL_FAILOPEN;
@@ -213,7 +213,7 @@ int RasterLayer::loadData(cv::Mat *input){
  * @param data Vector containing the Point2d data (x,y)
  * @return int Error/sucess code.
  */
-int exportShapefile (string filename, string layerName, vector<Point2d> data){
+int exportShapefile (string filename, string layerName, vector<Point2d> data, std::string strWKTSpatialRef){
 
     const char *pszDriverName = "ESRI Shapefile";
     GDALDriver *poDriver;
@@ -235,7 +235,8 @@ int exportShapefile (string filename, string layerName, vector<Point2d> data){
     }
 
     OGRLayer *poLayer;
-    poLayer = poDS->CreateLayer( layerName.c_str(), NULL, wkbPoint, NULL );
+    OGRSpatialReference spatialRef(strWKTSpatialRef.c_str());
+    poLayer = poDS->CreateLayer( layerName.c_str(), &spatialRef, wkbPoint, NULL );
     if( poLayer == NULL )
     {
         cout << yellow << "Error creating layer: [" << layerName << "]" << reset << endl;

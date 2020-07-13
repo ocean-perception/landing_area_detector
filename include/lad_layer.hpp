@@ -94,7 +94,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int loadData(std::vector <cv::Point2d> *); //!< Import data into vectorData container
             // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the layerFileName as fileFormat (default CSV)
-            int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV); //!< Overloaded method of exporting vectorData to user defined file 
+            int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef=""); //!< Overloaded method of exporting vectorData to user defined file 
     };
 
     class KernelLayer: public virtual RasterLayer{
@@ -109,7 +109,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
     };
 
-    int exportShapefile (std::string filename, std::string layerName, std::vector <Point2d> data);
+    int exportShapefile (std::string filename, std::string layerName, std::vector <Point2d> data, std::string strWKTSpatialRef);
 
 }
 

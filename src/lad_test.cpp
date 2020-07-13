@@ -127,11 +127,11 @@ int main(int argc, char *argv[]) {
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     waitKey(0);
 
-    cout << "Exporting CSV" << endl;
+    cout << "Exporting Vector layer" << endl;
     shared_ptr<lad::VectorLayer> apExport;
     apExport = dynamic_pointer_cast <lad::VectorLayer> (Pipeline.getLayer("CONTOUR_Mask"));
     cout << "Number of points to be exported: [" << apExport->vectorData.size() << "]" << endl;
-    apExport->writeLayer("OutputTest.shp", lad::FMT_SHP);
+    apExport->writeLayer("OutputTest.shp", lad::FMT_SHP, Pipeline.apInputGeotiff->GetProjection());
 
     return lad::NO_ERROR;
 }
