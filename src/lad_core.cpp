@@ -36,12 +36,12 @@ std::string ladPipeline::getLayerName (int id){
  */
 int ladPipeline::getLayerID (std::string name){
     if (Layers.size() <=0) return LAYER_EMPTY;
-
-    if (!name.size())   return LAYER_INVALID_NAME;
+    if (isValid(name) == false) return LAYER_INVALID_NAME;
 
     // Check each raster in the array, compare its ID against search index
     for (auto layer:Layers){
-        if (layer->layerName == name) return layer->getID();
+        cout << cyan << "compare names: [" << layer->layerName << "] ["<< name << "]" << endl;
+        if (!name.compare(layer->layerName)) return layer->getID();
     }
     return LAYER_NOT_FOUND;
 }
@@ -54,7 +54,7 @@ int ladPipeline::getLayerID (std::string name){
  */
 int ladPipeline::setLayerName (int id, std::string newName){
     if (Layers.size()<=0) return LAYER_NONE; // Layers vector is empty
-    if (id < 0) return LAYER_INVALID_ID;    // Provided ID is invalid
+    if (isValid(id) ==false) return LAYER_INVALID_ID;    // Provided ID is invalid
     // Check each raster in the array, compare its ID against search index
     // WARNING: TODO: Check if newName is already taken
     for (auto layer:Layers){
@@ -104,7 +104,7 @@ int ladPipeline::isValidID(int checkID){
  * @return int Evaluation status. If valid returns LAYER_OK, else return corresponding error code
  */
 int ladPipeline::isValidName(std::string checkName){
-    if (checkName.empty()) return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
+    if (isValid(checkName) == false) return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
 
     // Now we must test that the name follows the target convention: alphanumeric with {-_} as special characters
     // Use regex to determine if any foreing character is present
@@ -115,7 +115,7 @@ int ladPipeline::isValidName(std::string checkName){
 
     // TODO complete string based name match against all the other names
     for (auto layer:Layers){
-        if (!checkName.compare(layer->layerName)){ //!< The checkID is already taken, return correspoding error code
+        if (checkName == layer->layerName){ //!< The checkID is already taken, return correspoding error code
             return LAYER_DUPLICATED_NAME;
         }
     }
@@ -221,6 +221,11 @@ int ladPipeline::CreateLayer (std::string name, int type){
     return newid;
 }
 
+/**
+ * @brief Retrieve the first valid available ID from the Look-up table
+ * 
+ * @return int valid ID ready to be consumed in a CreateLayer call
+ */
 int ladPipeline::getValidID()
 {
     for (int i=0; i<LUT_ID.size(); i++){
@@ -260,9 +265,28 @@ int ladPipeline::showLayers(int layer_type){
  * @return int Error code, if any. LAYER_OK if the process is completed succesfully
  */
 int ladPipeline::uploadData(int id, void *data){
-    if (id < 0) return LAYER_INVALID_ID;    //!< The provided ID is invalid
-    if (LUT_ID.at(id) == ID_AVAILABLE) return LAYER_NOT_FOUND;  //!< No layer was created with that ID
-    // cout << "Uploading data for layer #" << red << id << reset << endl;
+    if (isValid(id) == false){
+        return LAYER_INVALID_ID; //!< The provided ID is invalid
+    
+    } if (isAvailable(id) == true){
+        return LAYER_NOT_FOUND;  //!< No layer was found with that ID
+    }
+
+    // cout << cyan;
+    // cout << "++++++++++++++++++++++ DATA RECEIVED" << endl;
+    // cv::Mat *pdata = (cv::Mat *)data;
+    // for (int i=0; i<pdata->rows;i++){
+    //     for (int j=0; j<pdata->cols; j++){
+    //         cout << pdata->at<float>(i,j) << " ";
+    //     }
+    //     cout << endl;
+    // }
+    // cout << "++++++++++++++++++++++ DUMPED DATA" << endl;
+    // cout << reset;
+
+
+
+    cout << "Uploading data for layer #" << red << id << reset << endl;
     for (auto it:Layers){
         if (it->getID() == id){ //!< Check ID match
             int type = it->getLayerType();  //!< slight speed improve
@@ -296,7 +320,7 @@ int ladPipeline::uploadData(std::string name, void *data){
 
     // Now, we retrieve the ID for that name
     int id = getLayerID(name);
-    if ((id == LAYER_INVALID_ID) || (id == LAYER_NOT_FOUND)){
+    if ((id == LAYER_INVALID_ID) || (id == LAYER_NOT_FOUND)){ //TODO: Should we create it?
         cout << "*************Layer_INVALID!: [" << id << "]" << endl;
         return LAYER_INVALID;   // some error ocurred getting the ID of a layer with such name (double validation)
     }
@@ -368,13 +392,14 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
     //First, check if have any valid Geotiff object loaded in memory
     int *dimensions;
     dimensions = apInputGeotiff->GetDimensions();
-    //**************************************
     float **apData; //pull 2D float matrix containing the image data for Band 1
 
-    cout << yellow << "\tRetrieving raster data w/GDAL" << endl;
     apData = apInputGeotiff->GetRasterBand(1);
+    if (apData == NULL){
+        cout << red << "[processGeotiff]: Error reading input geoTIFF data: NULL" << reset << endl;
+        return ERROR_GDAL_FAILOPEN;
+    }
 
-    cout << yellow << "\tConverting to OpenCV container" << endl;
     cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
     for (int i=0; i<dimensions[0]; i++){
         for (int j=0; j<dimensions[1]; j++){
@@ -386,25 +411,27 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
     int id = -1;
     id = getLayerID(rasterName);
     if (id == LAYER_INVALID_NAME){  //!< Provided rasterName is invalid
+        cout << "[processGeotiff]" << red << "Invalid raster name: [" << rasterName << "]" << reset << endl;
         return LAYER_INVALID_NAME;
     }
+    // TIFF name is VALID
 
     if ((id == LAYER_EMPTY)||(id == LAYER_NOT_FOUND)){ //!< Layer was not found, we have been asked to create it
         id = CreateLayer(rasterName, LAYER_RASTER);
         uploadData(id, (void *) &tiff); //upload cvMat tiff for deep-copy into the internal container
     }
-
-    cout << green << "\tGenerating NO DATA mask" << endl;
+   //*********************************************************
+    // Check DATA mask layer
+    //*********************************************************
 
     cv::Mat matDataMask;    // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
     cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
 
     id = getLayerID(maskName);
-    if (id == LAYER_INVALID_NAME){  //!< Provided rasterName is invalid
+    if (id == LAYER_INVALID_NAME){  //!< Provided maskName is invalid
+        cout << "[processGeotiff]" << red << "Invalid data mask name: [" << maskName << "]" << reset << endl;
         return LAYER_INVALID_NAME;
     }
-
-    cout << yellow << "\tStoring NO DATA mask" << reset << endl;
 
     if ((id == LAYER_EMPTY)||(id == LAYER_NOT_FOUND)){ //!< Layer was not found, we have been asked to create it
         id = CreateLayer(maskName, LAYER_RASTER);
@@ -424,24 +451,24 @@ int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, in
         imshow(rasterName, tiff_colormap);
         resizeWindow(rasterName, 800, 800);
     }
-
-
-
 }
 
-
-
+/**
+ * @brief Extract contours from rasterName layer and export it as vector to countourName
+ * 
+ * @param rasterName Input binary raster layer to be analized 
+ * @param contourName Output vector layer that will contain the largest found contour
+ * @param showImage flag indicating if we need to show the images
+ * @return int Error code - if any.
+ */
 int ladPipeline::extractContours(std::string rasterName, std::string contourName, int showImage){
  
     vector< vector<Point> > contours;   // find contours of the DataMask layer
-
     //pull access to rasterMask
     std::shared_ptr<RasterLayer> apRaster;
-
     apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterName));
 
     cv::findContours(apRaster->rasterData, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE); // obtaining only 1st level contours, no children
-
     cout << "[extractContours] #contours detected: " << contours.size() << endl;
     if (contours.empty()){
         cout << red << "No contour line was detected!" << endl;
@@ -463,7 +490,7 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
     }
     cout << "[extractContours] Largest contour: " << yellow << largest << reset << endl;
 
-    // WARNING: contours may provide false shapes when valida data mask reaches any image edge.
+    // WARNING: contours may provide false shapes when valid data mask reaches any image edge.
     // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
     // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
     if (showImage){
@@ -478,6 +505,28 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
         imshow (contourName, boundingLayer);
         resizeWindow(contourName, 800, 800);
     }
+
+    // COMPLETE: now we export the data to the target vector layer contourName
+    // if it already exist, overwrite data?
+    //pull access to rasterMask
+    std::shared_ptr<VectorLayer> apVector;
+    if (getLayerID(contourName)>=0){
+        // it already exist!
+        apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+    }
+    else{
+        // nope, we must create it
+        int newid = CreateLayer(contourName,LAYER_VECTOR);
+        apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+        cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
+    }
+
+    vector<Point> contour = good_contours.at(0); //a single element is expected because we force it
+    for (auto it:contour){  //deep copy by iterating through the vector. = operator non-existent por Point to Point2d (blame OpenCV?)
+        apVector->vectorData.push_back(it);
+
+    }
+    // cout << "Vector data: " << apVector->vectorData.size() << endl;
     return NO_ERROR;
 }
 
@@ -488,10 +537,9 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
  * @return std::shared_ptr<Layer> pointer to the Layer with the given id
  */
 std::shared_ptr<Layer> ladPipeline::getLayer(int id){
-    if ((id < 0) || (id > (LUT_ID.size()-1))) return NULL;
+    if (isValid(id) == false) return NULL;
     if (Layers.empty()) return NULL;
     if (LUT_ID[id] == ID_AVAILABLE) return NULL;
-
     // now, it is safe to assume that such ID exists
     for (auto it:Layers){
         if (it->getID() == id){
@@ -508,14 +556,66 @@ std::shared_ptr<Layer> ladPipeline::getLayer(int id){
  * @return std::shared_ptr<Layer> pointer to the Layer with the given id
  */
 std::shared_ptr<Layer> ladPipeline::getLayer(std::string name){
-    if (name.empty()) return NULL;
     if (Layers.empty()) return NULL;
 
+    if (!isValid(name)) return NULL;
+
     int id = getLayerID(name);
-    if (id <=0 ) return NULL;   //some error ocurred while searching that name in the list of layers
+
+    if (!isValid(id)) return NULL;   //some error ocurred while searching that name in the list of layers and returned an invalid ID
 
     return (getLayer(id));  //now we search it by ID
 }
 
+/**
+ * @brief Returs true if the provided ID is valid. It does not check whether it is available in the current stack
+ * 
+ * @param id ID to be tested 
+ * @return int true id ID is valid, false otherwise
+ */
+int ladPipeline::isValid(int id){
+    if ((id < 0) || (id > (LUT_ID.size()-1))) return false;
+    return true;
+}
+
+int ladPipeline::isValid(std::string str){
+    // TODO: Add regexp for alphanumeric +set of special characters as valid set
+    if (str.empty()) return false;
+    return true;
+}  //!< Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
+
+/**
+ * @brief Returns true if the provided ID is available. It also checks validity, for sanity reasons
+ * 
+ * @param id ID to be tested 
+ * @return int true if ID is available, false otherwise
+ */
+int ladPipeline::isAvailable(int id){
+    if (id < 0) return false; // careful, the ID is valid, therefore we prefer to flag it as unavailable too
+    if (id >= LUT_ID.size()) return false; // this is to avoid throwing an out-of-range exception
+    if (LUT_ID[id] == ID_TAKEN) return false; // taken!
+    return true;    // default, it didn't fail therefore is available
+}
+
+/**
+ * @brief Verify if the tested name is already taken by any existing layer in the current stack. This is used to avoid name duplication
+ * 
+ * @return int true if the name is available, false otherwise
+ */
+int ladPipeline::isAvailable(std::string str){
+    //iterate through all the existing layers, and compare against them
+    if (isValid(str) == false){
+        return false;   // sanity check of its validity
+    }
+    if (Layers.empty()){    //nothing stored in the stack, so any valid name is available
+        return true;
+    }
+    for (auto it:Layers){
+        if (str == it->layerName){ //that name is already taken
+            return false;
+        }
+    }
+    return true;
+}
 
 }

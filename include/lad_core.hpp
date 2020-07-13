@@ -81,6 +81,12 @@ namespace lad{      //!< landing area detection algorithm namespace
             int isValidName(std::string name);  //!< Verify if "name" is a valid layer name for the current pipeline stack
             int isValidID(int ID); //!< Verify is ID is a valid layer ID for the current pipeline stack
 
+            int isValid(int); //!< Returs true if the provided ID is valid. It does not check whether it is available in the current stack
+            int isValid(std::string);  //!< Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
+
+            int isAvailable(int); //!< Return true if the provided ID is not taken in the current stack. It's validity is assumed but not verified
+            int isAvailable(std::string); //!< Return true if the provided NAME is not taken in the current stack. It's validity is assumed but not verified
+
             int getValidID();   //!< Return a valid ID available for the current stack
 
             int showInfo(int level=0); //!< Show summary information of current pipeline object

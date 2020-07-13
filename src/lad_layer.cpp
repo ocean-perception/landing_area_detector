@@ -15,6 +15,7 @@
 
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
+#include <iostream>
 
 namespace lad{
 
@@ -101,6 +102,57 @@ void VectorLayer::showInformation(){
 }
 
 /**
+ * @brief Export vectorData to layerFileName file using fileFmt format
+ * 
+ * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
+ */
+int VectorLayer::writeLayer(std::string exportName, int fileFmt){
+    if (fileFmt == FMT_TIFF){
+        cout << red << "[writeLayer] Error, vector layer cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+    if (fileFmt == FMT_SHP){
+        cout << yellow << "[writeLayer] Error, ESRI Shapefile export format not supported yet" << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+    if (fileFmt == FMT_CSV){
+        cout << "[writeLayer] Exporting " << green << layerName << reset << " as CSV file: " << green << layerFileName << reset << endl; 
+        cout << "\tVector layer size: " << vectorData.size() << endl;
+        // check if default filename has been already defined, if not what?
+
+        if (exportName.empty()){
+            if (layerFileName.empty()){
+                cout << "[writeLayer] " << yellow << "Layer filename not defined, will try to use layer name as export file" << reset << endl;
+                if( layerName.empty()){
+                    cout << "[writeLayer] " << red << "ERROR: Layer name not defined. Won't export layer" << reset << endl;
+                    return ERROR_MISSING_ARGUMENT;
+                }
+                exportName = layerName;
+            }
+        }
+
+        ofstream outfile(exportName, ios::out);
+        if (!outfile.good()){
+            cout << "[writeLayer] " << red << "Error creating output file: " << exportName << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        std::string separator = ", ";
+        outfile << "X" << separator << "Y" << endl;
+        // Now we can export the content of the vector data (X,Y)
+        for (auto element:vectorData){
+            outfile << element.x << separator << element.y << endl;
+        }
+        cout << "\tVector layer exported to: " << exportName << endl;
+        outfile.close();
+        return EXPORT_OK;
+    }
+    else{
+        cout << yellow << "[writeLayer] Unknown format: " << fileFmt << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+}
+
+/**
  * @brief Extended method that prints general and kernel specific information
  * 
  */
@@ -129,6 +181,7 @@ int VectorLayer::loadData(vector <Point2d> *inputData){
  * @return int 
  */
 int RasterLayer::loadData(cv::Mat *input){
+    cout << "loadData for RASTER" << endl;
     input->copyTo(rasterData);   // deep copy of the Mat content and header to avoid original owner to accidentally overwrite the data
     setLayerStatus(LAYER_OK);
 }

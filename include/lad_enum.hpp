@@ -52,6 +52,13 @@ namespace lad{
         LAYER_VALID   =  1, //!< Layer contains valid non-empty data, regardless its type
     };
 
+    enum ExportFormat{
+        EXPORT_OK   = 0,    //!< No error exporting file
+        FMT_CSV     = 1,    //!< Export data as CSV file using built-in engine
+        FMT_SHP     = 2,    //!< Export as ESRI Shapefile using GDAL
+        FMT_TIFF    = 3    //!< Export as geoTIFF using GDAL
+    };
+
     enum LayerError{
         LAYER_OK                = 0, //!< Layer operation completed succesfully
         LAYER_NONE              =-1, //!< Layers <vector> is empty

@@ -120,14 +120,17 @@ int main(int argc, char *argv[]) {
 
     Pipeline.apInputGeotiff = &inputGeotiff;
 
-    cout << "---------------------- Processing RAW Bathymetry" << endl;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
 
     if (argVerbose) Pipeline.showInfo(); // show detailed information if asked for
-
-    cout << "---------------------- Extracting contours" << endl;
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     waitKey(0);
+
+    cout << "Exporting CSV" << endl;
+    shared_ptr<lad::VectorLayer> apExport;
+    apExport = dynamic_pointer_cast <lad::VectorLayer> (Pipeline.getLayer("CONTOUR_Mask"));
+    cout << "Number of points to be exported: [" << apExport->vectorData.size() << "]" << endl;
+    apExport->writeLayer("OutputTest.csv");
 
     return lad::NO_ERROR;
 }
