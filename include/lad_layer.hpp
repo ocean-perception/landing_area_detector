@@ -109,6 +109,8 @@ namespace lad{      //!< landing area detection algorithm namespace
 
     };
 
+    int exportShapefile (std::string filename, std::string layerName, std::vector <Point2d> data);
+
 }
 
 #endif // _LAD_LAYER_HPP_ 

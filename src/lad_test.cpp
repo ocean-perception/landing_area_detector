@@ -17,6 +17,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace lad;
 //using namespace cv::cuda;     //prefer explicit definitions rather than risking name mangling
 
 // #cmakedefine USE_GPU
@@ -130,7 +131,7 @@ int main(int argc, char *argv[]) {
     shared_ptr<lad::VectorLayer> apExport;
     apExport = dynamic_pointer_cast <lad::VectorLayer> (Pipeline.getLayer("CONTOUR_Mask"));
     cout << "Number of points to be exported: [" << apExport->vectorData.size() << "]" << endl;
-    apExport->writeLayer("OutputTest.csv");
+    apExport->writeLayer("OutputTest.shp", lad::FMT_SHP);
 
     return lad::NO_ERROR;
 }

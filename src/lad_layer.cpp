@@ -16,6 +16,7 @@
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
 #include <iostream>
+#include "ogrsf_frmts.h"
 
 namespace lad{
 
@@ -107,14 +108,21 @@ void VectorLayer::showInformation(){
  * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
  */
 int VectorLayer::writeLayer(std::string exportName, int fileFmt){
+    //*************************************************************
     if (fileFmt == FMT_TIFF){
         cout << red << "[writeLayer] Error, vector layer cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
         return ERROR_WRONG_ARGUMENT;
     }
+    //*************************************************************
     if (fileFmt == FMT_SHP){
-        cout << red << "[writeLayer] Error, ESRI Shapefile export format not supported yet" << reset << endl;
-        return ERROR_WRONG_ARGUMENT;
+        int i = exportShapefile(exportName, layerName, vectorData);
+        if (i!=NO_ERROR){
+            cout << "\tSome error ocurred while exporting [" << yellow << layerName << reset << "] to [" << yellow << exportName << "]" << reset << endl; 
+            return ERROR_GDAL_FAILOPEN;
+        }
+        return NO_ERROR;;
     }
+    //*************************************************************
     if (fileFmt == FMT_CSV){
         // check if default filename has been already defined, if not what?
 
@@ -146,6 +154,7 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt){
         outfile.close();
         return EXPORT_OK;
     }
+    //*************************************************************
     else{
         cout << yellow << "[writeLayer] Unknown format: " << fileFmt << reset << endl;
         return ERROR_WRONG_ARGUMENT;
@@ -195,6 +204,80 @@ int RasterLayer::loadData(cv::Mat *input){
     // cout << cyan << "Layer::loadData(void *data) called" << reset << endl;
     return LAYER_UNDEFINED;
 }*/
+
+/**
+ * @brief Export Point2d vector as single layer ESRI Shapefile
+ * 
+ * @param filename Name of the output SHP file
+ * @param layerName Layer name inside of the SHP file
+ * @param data Vector containing the Point2d data (x,y)
+ * @return int Error/sucess code.
+ */
+int exportShapefile (string filename, string layerName, vector<Point2d> data){
+
+    const char *pszDriverName = "ESRI Shapefile";
+    GDALDriver *poDriver;
+    GDALAllRegister();
+
+    poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName );
+    if( poDriver == NULL )
+    {
+        cout << red << "Error w/GDAL: " << pszDriverName << " not available" << endl;
+        return ERROR_GDAL_FAILOPEN;
+    }
+
+    GDALDataset *poDS;
+    poDS = poDriver->Create( filename.c_str(), 0, 0, 0, GDT_Unknown, NULL );
+    if( poDS == NULL )
+    {
+        cout << red << "Error creating output file: [" << filename << "]" << reset << endl;
+        return ERROR_GDAL_FAILOPEN;
+    }
+
+    OGRLayer *poLayer;
+    poLayer = poDS->CreateLayer( layerName.c_str(), NULL, wkbPoint, NULL );
+    if( poLayer == NULL )
+    {
+        cout << yellow << "Error creating layer: [" << layerName << "]" << reset << endl;
+        return ERROR_GDAL_FAILOPEN;
+    }
+
+//    OGRFieldDefn oField( "Name", OFTString );
+//    oField.SetWidth(32);
+
+    // if( poLayer->CreateField( &oField ) != OGRERR_NONE )
+    // {
+    //     printf( "Creating Name field failed.\n" );
+    //     exit( 1 );
+    // }
+
+    double x, y;
+    char szName[33]= "szName";
+
+    for (auto it:data){
+        OGRFeature *poFeature;
+        poFeature = OGRFeature::CreateFeature( poLayer->GetLayerDefn() );
+//        poFeature->SetField( "Name", szName );
+
+        OGRPoint pt;
+        pt.setX( it.x );
+        pt.setY( it.y );
+
+        poFeature->SetGeometry( &pt );
+
+        if( poLayer->CreateFeature( poFeature ) != OGRERR_NONE )
+        {
+            cout << yellow << "Error GDAL: Failed to create feature in shapefile." << endl;
+            return ERROR_GDAL_FAILOPEN;
+        }
+
+        OGRFeature::DestroyFeature( poFeature );
+    }
+
+    GDALClose( poDS );
+    return NO_ERROR;
+}
+
 
 }
 #endif //_LAD_LAYER_CPP_
