@@ -112,12 +112,10 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt){
         return ERROR_WRONG_ARGUMENT;
     }
     if (fileFmt == FMT_SHP){
-        cout << yellow << "[writeLayer] Error, ESRI Shapefile export format not supported yet" << reset << endl;
+        cout << red << "[writeLayer] Error, ESRI Shapefile export format not supported yet" << reset << endl;
         return ERROR_WRONG_ARGUMENT;
     }
     if (fileFmt == FMT_CSV){
-        cout << "[writeLayer] Exporting " << green << layerName << reset << " as CSV file: " << green << layerFileName << reset << endl; 
-        cout << "\tVector layer size: " << vectorData.size() << endl;
         // check if default filename has been already defined, if not what?
 
         if (exportName.empty()){
@@ -130,6 +128,8 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt){
                 exportName = layerName;
             }
         }
+        cout << reset << "[writeLayer] Exporting " << yellow << layerName << reset << " as CSV file: " << yellow << exportName << reset << endl; 
+        cout << "\tVector layer size: " << vectorData.size() << endl;
 
         ofstream outfile(exportName, ios::out);
         if (!outfile.good()){
@@ -181,7 +181,6 @@ int VectorLayer::loadData(vector <Point2d> *inputData){
  * @return int 
  */
 int RasterLayer::loadData(cv::Mat *input){
-    cout << "loadData for RASTER" << endl;
     input->copyTo(rasterData);   // deep copy of the Mat content and header to avoid original owner to accidentally overwrite the data
     setLayerStatus(LAYER_OK);
 }

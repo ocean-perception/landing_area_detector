@@ -40,7 +40,6 @@ int ladPipeline::getLayerID (std::string name){
 
     // Check each raster in the array, compare its ID against search index
     for (auto layer:Layers){
-        cout << cyan << "compare names: [" << layer->layerName << "] ["<< name << "]" << endl;
         if (!name.compare(layer->layerName)) return layer->getID();
     }
     return LAYER_NOT_FOUND;
@@ -272,21 +271,6 @@ int ladPipeline::uploadData(int id, void *data){
         return LAYER_NOT_FOUND;  //!< No layer was found with that ID
     }
 
-    // cout << cyan;
-    // cout << "++++++++++++++++++++++ DATA RECEIVED" << endl;
-    // cv::Mat *pdata = (cv::Mat *)data;
-    // for (int i=0; i<pdata->rows;i++){
-    //     for (int j=0; j<pdata->cols; j++){
-    //         cout << pdata->at<float>(i,j) << " ";
-    //     }
-    //     cout << endl;
-    // }
-    // cout << "++++++++++++++++++++++ DUMPED DATA" << endl;
-    // cout << reset;
-
-
-
-    cout << "Uploading data for layer #" << red << id << reset << endl;
     for (auto it:Layers){
         if (it->getID() == id){ //!< Check ID match
             int type = it->getLayerType();  //!< slight speed improve
@@ -518,7 +502,7 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
         // nope, we must create it
         int newid = CreateLayer(contourName,LAYER_VECTOR);
         apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
-        cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
+        // cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
     }
 
     vector<Point> contour = good_contours.at(0); //a single element is expected because we force it
