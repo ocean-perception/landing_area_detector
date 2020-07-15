@@ -25,6 +25,17 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
+// Potential functions:
+
+// CGAL implementations associated to convexHull / alphaShape
+
+// Own implementation for scale independant landability analysis
+
+// Own implementation of rotation invariant landability detector
+
+// Pixel to World coordinates transformation
+
+// World to Pixel coordinates transformation
 
 }
 

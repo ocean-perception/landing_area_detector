@@ -279,6 +279,5 @@ int exportShapefile (string filename, string layerName, vector<Point2d> data, st
     return NO_ERROR;
 }
 
-
 }
 #endif //_LAD_LAYER_CPP_

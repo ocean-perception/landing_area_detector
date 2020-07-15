@@ -18,9 +18,6 @@
 using namespace std;
 using namespace cv;
 using namespace lad;
-//using namespace cv::cuda;     //prefer explicit definitions rather than risking name mangling
-
-// #cmakedefine USE_GPU
 
 // General structure index:
 //**** 1- Parse arguments from CLI
