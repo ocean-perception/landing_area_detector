@@ -341,29 +341,27 @@ int ladPipeline::ReadTIFF (std::string inputFile){
 int ladPipeline::showInfo(int level){
     // Geotiff input information
     int retval = NO_ERROR;
-    cout << cyan << "************* Start of summary ************" << reset << endl;
-    cout << green << "Geotiff:\t" << reset;
+    cout << yellow << "****** Geotiff Summary *****************" << reset <<endl;
+    cout << "Geotiff file:\t\t";
     if (apInputGeotiff == NULL){
         cout << red << "None" << reset << endl;
         retval = ERROR_GEOTIFF_EMPTY;
     }
     else
     {
-        cout << yellow << apInputGeotiff->GetFileName() << reset << endl;
+        cout << apInputGeotiff->GetFileName() << endl;
         apInputGeotiff->ShowInformation();
     }
 
-    cout << "*************" << endl;
-    cout << green << "Layers:\t" << reset;
+    cout << cyan << endl << "++++++ Layers +++++++++++++++++" << reset << endl;
     if (Layers.empty()){
         cout << yellow << "None" << reset << endl;
         retval = ERROR_LAYERS_EMPTY;
     }
     else{
-        cout << reset << endl;
         showLayers();
     }
-    cout << cyan << "************* End of summary *************" << reset << endl;
+    cout << yellow << "****** End of Summary ******************" << reset <<endl;
     return retval;        
 } 
 

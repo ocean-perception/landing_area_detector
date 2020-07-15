@@ -15,12 +15,11 @@
 
 args::ArgumentParser 	argParser("","");
 args::HelpFlag 	argHelp(argParser, "help", "Display this help menu", {'h', "help"});
-//CompletionFlag completion(cliParser, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
-//args::ValueFlag	<int> 		argLinearMatch(argParser, "", "Enable linear matching mode", {"linearmatch"});
+args::CompletionFlag completion(argParser, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
+
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha", "Search radius for alpha Shape concave hull algorithm", {"alpharadius"});
 args::Positional<std::string> 	argInput(argParser, "input", "Input bathymetry map. TIFF file or XYZ point collection");
 args::ValueFlag	<std::string> 	argOutput(argParser, "output", "Output file",{'o',"output"});
-args::ValueFlag	<std::string> 	argVerbose(argParser, "verbose", "Show verbose information",{"verbose"});
+args::ValueFlag	<int> 	        argVerbose(argParser, "verbose", "Show verbose information",{"verbose"});
 
 #endif
-
