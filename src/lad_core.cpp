@@ -243,7 +243,6 @@ int ladPipeline::ExportLayer (std::string name, std::string outfile, int format,
         return ERROR_WRONG_ARGUMENT;
     }
 
-    // now, depending on the type of Layer and target format, we operate
     if (outfile.empty()){
         exportName = apLayer->layerFileName;
     }
@@ -255,18 +254,20 @@ int ladPipeline::ExportLayer (std::string name, std::string outfile, int format,
     shared_ptr<VectorLayer> apVector;
     shared_ptr<RasterLayer> apRaster;
     shared_ptr<KernelLayer> apKernel;
-	double *adfGeoTransform;
-    // Pipeline.apInputGeotiff->geoti
 
+    // 6D matrix geotransformation is assumed to be internally stored in the geotiff object 
+	double *adfGeoTransform;
     adfGeoTransform = apInputGeotiff->GetGeoTransform(); 
     if ( adfGeoTransform == NULL ){
         cout << red << "[ExportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
         return ERROR_WRONG_ARGUMENT;
     }
 
+    // now, depending on the type of Layer and target format, we operate
     switch (type){
         case LAYER_RASTER:
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
+            cout << yellow << "LAYER_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
             break;
 
         case LAYER_VECTOR:
@@ -275,6 +276,7 @@ int ladPipeline::ExportLayer (std::string name, std::string outfile, int format,
             break;
 
         case LAYER_KERNEL:
+            cout << yellow << "KERNEL_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
             apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
             break;
 
@@ -284,7 +286,6 @@ int ladPipeline::ExportLayer (std::string name, std::string outfile, int format,
             break;
 
     }
-
 
     return NO_ERROR;
 }
