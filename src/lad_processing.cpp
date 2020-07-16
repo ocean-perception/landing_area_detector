@@ -43,6 +43,7 @@ int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *output
     double cx = apTransform[0]; //!< Center coordinate (X)
     double cy = apTransform[3]; //!< Center coordinate (Y)
 
+
     cv:Point2d p;
     // NOTE: Pixel coordinates are for the center of the pixel. Hence, the 0.5 adjustment
     switch (outputSpace){

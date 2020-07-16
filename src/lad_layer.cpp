@@ -110,6 +110,32 @@ void VectorLayer::showInformation(){
 }
 
 /**
+ * @brief Convert the vectorData content to the new coordinate space
+ * 
+ * @param newSpace New coordinate space. It can be either PIXEl_COORDINATE or WORLD_COORDINATE
+ * @param apTransform 6x1 double matrix containing the transformation coefficients 
+ * @return int Success code
+ */
+int VectorLayer::convertSpace(int newSpace, double *apTransform){
+    if (newSpace = coordinateSpace){
+        cout << yellow << "[convertSpace] Source and target coordinate space are the same when trying to convert [" << layerName << "]. No operation was performed" << reset << endl;
+        // it is the same space! nothing to change
+        return 0;
+    }
+    if (apTransform==NULL){
+        cout << red << "[convertSpace] Wrong 6D transforation matrix when trying to convert [" << layerName << "]. No operation was performed" << endl;
+        return -1;
+    }
+    // ok we have a valid 6D transformation (somewhat...)
+    int retval;
+    vector<cv::Point2d> newData;
+    retval = convertDataSpace(&vectorData, &newData, coordinateSpace, newSpace, apTransform);
+    vectorData = newData;
+    coordinateSpace = newSpace; //!< Update to the new coordinate space
+    return retval;
+}
+
+/**
  * @brief Export vectorData to layerFileName file using fileFmt format
  * 
  * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
@@ -147,6 +173,20 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string str
     if (fileFmt == FMT_CSV){
         // check if default filename has been already defined, if not what?
 
+        std::vector<cv::Point2d> transformedData;
+
+        //we need to check if the data points need a space transformation
+        if (coordinateSpace != outputCoordinate){
+            cout << "Converting coordinate space of [" << exportName << "] to [";
+            if (outputCoordinate == PIXEL_COORDINATE){
+                cout << yellow << "PIXEL" << reset << "]" << endl;
+            }
+            else{
+                cout << yellow << "WORLD" << reset << "]" << endl;
+            }
+            convertDataSpace (&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
+        }
+
         if (exportName.empty()){
             if (layerFileName.empty()){
                 cout << "[writeLayer] " << yellow << "Layer filename not defined, will try to use layer name as export file" << reset << endl;
@@ -168,7 +208,7 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string str
         std::string separator = ", ";
         outfile << "X" << separator << "Y" << endl;
         // Now we can export the content of the vector data (X,Y)
-        for (auto element:vectorData){
+        for (auto element:transformedData){
             outfile << element.x << separator << element.y << endl;
         }
         cout << "\tVector layer exported to: " << exportName << endl;
