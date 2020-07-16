@@ -134,7 +134,20 @@ int main(int argc, char *argv[]) {
     shared_ptr<lad::VectorLayer> apExport;
     apExport = dynamic_pointer_cast <lad::VectorLayer> (Pipeline.getLayer("CONTOUR_Mask"));
     // cout << "Number of points to be exported: [" << apExport->vectorData.size() << "]" << endl;
-    apExport->writeLayer("OutputTest.shp", lad::FMT_SHP, Pipeline.apInputGeotiff->GetProjection());
+	double *adfGeoTransform;
+    // Pipeline.apInputGeotiff->geoti
+
+    adfGeoTransform = Pipeline.apInputGeotiff->GetGeoTransform(); 
+    if ( adfGeoTransform != NULL )
+	{
+	    cout << "Origin =\t" <<  adfGeoTransform[0] << ", " << adfGeoTransform[3] << endl;
+	    cout << "Pixel Size =\t" << adfGeoTransform[1] << ", " << adfGeoTransform[5] << endl;
+	}
+    else{
+        cout << red << "[main] some error ocurred while calling GetGeoTransform() " << reset << endl;
+    }
+
+    apExport->writeLayer(outputFileName, lad::FMT_SHP, Pipeline.apInputGeotiff->GetProjection(), WORLD_COORDINATE, adfGeoTransform);
 
     return lad::NO_ERROR;
 }

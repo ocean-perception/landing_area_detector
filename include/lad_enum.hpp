@@ -17,6 +17,9 @@
 #define _LAD_ENUM_HPP_
 
 namespace lad{
+
+    const std::string DEFAULT_LAYER_NAME = "default_layer_name";
+
     enum ConstantCodes{
         DEFAULT_STACK_SIZE  = 100,   //!< Initial Layers vector size (stack)
         ID_AVAILABLE        = 0,     //!< Flag to indicate ID is available in the LUT
@@ -39,8 +42,8 @@ namespace lad{
     };
 
     enum LayerTypes{
-        LAYER_ANYTYPE   =-1,//!< Indicate any type off layer (user for layer queries)
-        LAYER_UNDEFINED = 0,//!< Flags this layer type as undefined. Default Type when constructing
+        LAYER_ANYTYPE   = 0,//!< Indicate any type off layer (user for layer queries)
+        LAYER_UNDEFINED =-1,//!< Flags this layer type as undefined. Default Type when constructing
         LAYER_RASTER = 1,   //!< Layer can contain raster data
         LAYER_VECTOR = 2,   //!< Layer can contain vectorized data (typ std::vector)
         LAYER_KERNEL = 3    //!< Layer can contain raster description of a filter kernel (e.g. vehicle footprint)
@@ -50,6 +53,11 @@ namespace lad{
         LAYER_INVALID = -1, //!< Layer is currently flagged as INVALID. Default Status when constructing
         LAYER_EMPTY   =  0, //!< Layer content is empty, typically when it has been recently  cleared()
         LAYER_VALID   =  1, //!< Layer contains valid non-empty data, regardless its type
+    };
+
+    enum CoordinateSpace{
+        PIXEL_COORDINATE = 0, //!< The layer coordinates are in pixel space (OpenCV image equivalent)
+        WORLD_COORDINATE = 1  //!< The layer coordinates are in world space (e.g. LAT/LON)
     };
 
     enum ExportFormat{

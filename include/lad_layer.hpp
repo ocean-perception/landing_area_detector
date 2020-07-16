@@ -9,7 +9,7 @@
  * 
  */
 
-// pragma once is not "standard"
+// pragma once is not "standard", so we use ifndef guards
 #ifndef _LAD_LAYER_HPP_ 
 #define _LAD_LAYER_HPP_
 
@@ -27,23 +27,24 @@ namespace lad{      //!< landing area detection algorithm namespace
 
     class Layer{
         private:
-            int layerID;    // Layer identifier
-            int layerStatus; //!< Status identifier: takes a value from enumerated list of possible status. bValid valid flag deprecated
-            int layerType;  //!< Layer type identifier, takes a possibe value from enumerated list of layer types
+            int layerID;    //!< Layer identifier that can be used as UID in multilayer implementations
+            int layerStatus; //!< Status identifier: takes a value from enumerated list of layer status.
+            int layerType;  //!< Layer type identifier: takes a value from enumerated list of layer types
 
         protected:
 
         public:
-            std::string layerName;  //!<  Layer name
-            std::string layerFileName;  //!< Name of associated output file
+            std::string layerName;  //!<  Layer name (mandatory)
+            std::string layerFileName;  //!< Name of associated output file (optional)
             std::string layerFilePath;  //!< Name of associated output filepath (optional)
 
             /**
              * @brief Construct a new Layer object
              * 
-             * @param newName Optional layer name. "noname" if none is specified at construction time
+             * @param newName Optional layer name. If none is specified at construction time, DEFAULT_LAYER_NAME will be assigned  
              */
-            Layer(std::string newName = "noname", int id = lad::LAYER_INVALID_ID, int type = lad::LAYER_UNDEFINED){
+            Layer(std::string newName = lad::DEFAULT_LAYER_NAME, int id = lad::LAYER_INVALID_ID, int type = lad::LAYER_UNDEFINED){
+                // \todo Create empty constructors were no value is defined
                 layerName = newName;
                 layerID = id; 
                 layerType = type;
@@ -62,14 +63,13 @@ namespace lad{      //!< landing area detection algorithm namespace
             int setLayerStatus(int newStatus); //!< Modify the layer status
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
-            virtual void showInformation(); //!<< Dumps relevant information of the layer
-            //virtual int loadData(void *); //!< Virtual declaration of function to upload data into the appropiate container inside of the layer
-            //virtual int writeLayer(std::string newname);    //!< Virtual declaration of export method for base layer class. To be expanded on each derived class
+            virtual void showInformation(); //!< Dumps relevant information of the layer
     };
 
     class RasterLayer: public Layer{
         public:
             // this should interface with OpenCV Mat and 2D matrix (vector style)
+            // \todo check if size/type must/can be updated at construction time
             cv::Mat rasterData; //OpenCV matrix that will hold the data
 
             RasterLayer(std::string name, int id):Layer(name, id){
@@ -84,9 +84,11 @@ namespace lad{      //!< landing area detection algorithm namespace
     class VectorLayer: public Layer{
         public:
             // this should interface with both GDAL and CGAL containers
-            vector <cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+            vector <cv::Point2d> vectorData; //!<Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+            int coordinateSpace; //!< Defines if the data stored in vectorData is world coordinates or pixel coordinates 
 
             VectorLayer(std::string name, int id):Layer(name, id){
+                coordinateSpace = PIXEL_COORDINATE;
                 setLayerType(LAYER_VECTOR); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
             }
 
@@ -94,7 +96,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int loadData(std::vector <cv::Point2d> *); //!< Import data into vectorData container
             // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the layerFileName as fileFormat (default CSV)
-            int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef=""); //!< Overloaded method of exporting vectorData to user defined file 
+            int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef="", int outputCoordinate = WORLD_COORDINATE, double *apMatrix=NULL); //!< Overloaded method of exporting vectorData to user defined file 
     };
 
     class KernelLayer: public virtual RasterLayer{
@@ -102,8 +104,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             double dRotation; //!< Rotation angle of the given kernel (in radians)
             void showInformation();
 
-            KernelLayer(std::string name, int id):RasterLayer(name, id){
-                dRotation = 0;
+            KernelLayer(std::string name, int id, double rot=0):RasterLayer(name, id){
+                dRotation = rot;
                 setLayerType(LAYER_KERNEL);
             }
 

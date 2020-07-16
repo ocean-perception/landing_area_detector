@@ -25,6 +25,7 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
+int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform=NULL);
 // Potential functions:
 
 // CGAL implementations associated to convexHull / alphaShape

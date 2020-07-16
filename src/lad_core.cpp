@@ -506,8 +506,9 @@ int ladPipeline::extractContours(std::string rasterName, std::string contourName
     vector<Point> contour = good_contours.at(0); //a single element is expected because we force it
     for (auto it:contour){  //deep copy by iterating through the vector. = operator non-existent por Point to Point2d (blame OpenCV?)
         apVector->vectorData.push_back(it);
-
     }
+    // Finally, we set the correct coordinate flag to PIXEL SPACE (we processed everything as an image)
+    apVector->coordinateSpace = PIXEL_COORDINATE;
     // cout << "Vector data: " << apVector->vectorData.size() << endl;
     return NO_ERROR;
 }

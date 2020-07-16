@@ -15,6 +15,7 @@
 
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
+#include "lad_processing.hpp"
 #include <iostream>
 #include "ogrsf_frmts.h"
 
@@ -98,7 +99,13 @@ void RasterLayer::showInformation(){
  * 
  */
 void VectorLayer::showInformation(){
-    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getLayerStatus() << reset << "]\tCoordinates: [";
+    if (coordinateSpace == PIXEL_COORDINATE){
+        cout << yellow << "PIXEL]" << reset << endl; 
+    }
+    else{
+                cout << yellow << "WORLD]" << reset << endl; 
+    }
     cout << "\t> Vector Data container size: " << yellow << vectorData.size() << reset << endl;
 }
 
@@ -107,7 +114,7 @@ void VectorLayer::showInformation(){
  * 
  * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
  */
-int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string strWKTSpatialRef){
+int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string strWKTSpatialRef, int outputCoordinate, double *apGeoTransform){
     //*************************************************************
     if (fileFmt == FMT_TIFF){
         cout << red << "[writeLayer] Error, vector layer cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
@@ -115,7 +122,21 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string str
     }
     //*************************************************************
     if (fileFmt == FMT_SHP){
-        int i = exportShapefile(exportName, layerName, vectorData, strWKTSpatialRef);
+        std::vector<cv::Point2d> transformedData;
+
+        //we need to check if the data points need a space transformation
+        if (coordinateSpace != outputCoordinate){
+            cout << "Converting coordinate space of [" << exportName << "] to [";
+            if (outputCoordinate == PIXEL_COORDINATE){
+                cout << yellow << "PIXEL" << reset << "]" << endl;
+            }
+            else{
+                cout << yellow << "WORLD" << reset << "]" << endl;
+            }
+            convertDataSpace (&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
+        }
+        //vectorData
+        int i = exportShapefile(exportName, layerName, transformedData, strWKTSpatialRef);
         if (i!=NO_ERROR){
             cout << "\tSome error ocurred while exporting [" << yellow << layerName << reset << "] to [" << yellow << exportName << "]" << reset << endl; 
             return ERROR_GDAL_FAILOPEN;
