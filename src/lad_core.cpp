@@ -221,6 +221,75 @@ int ladPipeline::CreateLayer (std::string name, int type){
 }
 
 /**
+ * @brief Export a given layer (by name) to the file 
+ * 
+ * @param name 
+ * @param outfile 
+ * @param coords 
+ * @return int 
+ */
+int ladPipeline::ExportLayer (std::string name, std::string outfile, int format, int coord_sys){ //!< Export a given layer in the stack identified by its name, to 
+    if (name.empty()){
+        cout << red << "[ExportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
+        return ERROR_MISSING_ARGUMENT;
+    }
+    std::string exportName;
+
+    //now, we pull the Layer from the stack
+    shared_ptr<Layer> apLayer = getLayer(name);
+    // getlayer()
+    if (apLayer == NULL){ // failed to retrieve Layer "name" from the stack
+        cout << red << "[ExportLayer] Failed to retrieve Layer [" << name << "] from stack" << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+
+    // now, depending on the type of Layer and target format, we operate
+    if (outfile.empty()){
+        exportName = apLayer->layerFileName;
+    }
+    else{
+        exportName = outfile;
+    }
+
+    int type = apLayer->getLayerType();
+    shared_ptr<VectorLayer> apVector;
+    shared_ptr<RasterLayer> apRaster;
+    shared_ptr<KernelLayer> apKernel;
+	double *adfGeoTransform;
+    // Pipeline.apInputGeotiff->geoti
+
+    adfGeoTransform = apInputGeotiff->GetGeoTransform(); 
+    if ( adfGeoTransform == NULL ){
+        cout << red << "[ExportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+
+    switch (type){
+        case LAYER_RASTER:
+            apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
+            break;
+
+        case LAYER_VECTOR:
+            apVector = dynamic_pointer_cast<VectorLayer>(apLayer);
+            apVector->writeLayer(exportName, format, apInputGeotiff->GetProjection(), coord_sys, adfGeoTransform);
+            break;
+
+        case LAYER_KERNEL:
+            apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
+            break;
+
+        default:
+            cout << yellow << "[ExportLayer] Layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+            break;
+
+    }
+
+
+    return NO_ERROR;
+}
+
+/**
  * @brief Retrieve the first valid available ID from the Look-up table
  * 
  * @return int valid ID ready to be consumed in a CreateLayer call

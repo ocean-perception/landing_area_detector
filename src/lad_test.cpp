@@ -130,24 +130,7 @@ int main(int argc, char *argv[]) {
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     waitKey(0);
 
-
-    // cout << "Exporting Vector layer" << endl;
-    shared_ptr<lad::VectorLayer> apExport;
-    apExport = dynamic_pointer_cast <lad::VectorLayer> (Pipeline.getLayer("CONTOUR_Mask"));
-    // cout << "Number of points to be exported: [" << apExport->vectorData.size() << "]" << endl;
-	double *adfGeoTransform;
-    // Pipeline.apInputGeotiff->geoti
-
-    adfGeoTransform = Pipeline.apInputGeotiff->GetGeoTransform(); 
-    if ( adfGeoTransform != NULL )
-	{
-	    cout << "Origin =\t" <<  adfGeoTransform[0] << ", " << adfGeoTransform[3] << endl;
-	    cout << "Pixel Size =\t" << adfGeoTransform[1] << ", " << adfGeoTransform[5] << endl;
-	}
-    else{
-        cout << red << "[main] some error ocurred while calling GetGeoTransform() " << reset << endl;
-    }
-    apExport->writeLayer(outputFileName, FMT_SHP, Pipeline.apInputGeotiff->GetProjection(), WORLD_COORDINATE, adfGeoTransform);
+    Pipeline.ExportLayer ("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }

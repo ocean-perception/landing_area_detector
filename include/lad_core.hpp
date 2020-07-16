@@ -76,6 +76,8 @@ namespace lad{      //!< landing area detection algorithm namespace
             int RemoveLayer (std::string name); //!< Remove layer by its name
             int RemoveLayer (int ID);           //!< Remove layer by its ID
 
+            int ExportLayer (std::string name, std::string outfile = "", int format=FMT_CSV, int coords = NO_COORDINATE); //!< Export a given layer in the stack identified by its name, to 
+
             int getTotalLayers (int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
 
             int isValidName(std::string name);  //!< Verify if "name" is a valid layer name for the current pipeline stack

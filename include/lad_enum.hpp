@@ -56,6 +56,7 @@ namespace lad{
     };
 
     enum CoordinateSpace{
+        NO_COORDINATE    =-1, //!< Coordinate system has not been specified or it is not required for this layer
         PIXEL_COORDINATE = 0, //!< The layer coordinates are in pixel space (OpenCV image equivalent)
         WORLD_COORDINATE = 1  //!< The layer coordinates are in world space (e.g. LAT/LON)
     };
