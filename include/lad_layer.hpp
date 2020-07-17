@@ -64,6 +64,19 @@ namespace lad{      //!< landing area detection algorithm namespace
             int getLayerType(); //!< Return a copy of the layer type
             int setLayerType(int newType); //!< Modify the layer type
             virtual void showInformation(); //!< Dumps relevant information of the layer
+
+            virtual int clear();    //!< Clear all the layer specific information, and stored data if any.
+            virtual int copy(Layer); //!< Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
+            virtual int copy(*Layer); //!< Overloaded version for pointer to Layer type
+
+        // Check if they need to be virtual
+        /*
+        int clone();
+        int copy();
+        int create();
+        //*/
+
+
     };
 
     class RasterLayer: public Layer{
@@ -113,6 +126,9 @@ namespace lad{      //!< landing area detection algorithm namespace
     };
 
     int exportShapefile (std::string filename, std::string layerName, std::vector <Point2d> data, std::string strWKTSpatialRef);
+
+
+
 
 }
 

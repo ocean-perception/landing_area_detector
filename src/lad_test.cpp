@@ -128,9 +128,8 @@ int main(int argc, char *argv[]) {
     if (argVerbose) Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
-    waitKey(0);
-
     Pipeline.ExportLayer ("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
 
+    waitKey(0);
     return lad::NO_ERROR;
 }

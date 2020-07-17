@@ -22,6 +22,51 @@
 namespace lad{
 
 /**
+ * @brief Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
+ * 
+ * @param layer Input layer to be copied
+ * @return int Error code, if any.
+ */
+int Layer::copy(Layer layer){
+    layerFilePath = layer.layerFilePath;
+    layerFileName = layer.layerFileName;
+    layerName = layer.layerName;
+    layerID = layer.layerID;
+    layerStatus = layer.layerStatus;
+    layerType = layer.layerType;
+    return NO_ERROR;
+}   
+
+/**
+ * @brief Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
+ * @details Overloaded version for pointer to Layer 
+ * @param layer Pointer to layer to be copied
+ * @return int Error code, if any.
+ */
+int Layer::copy(*Layer layer){
+    layerFilePath = layer->layerFilePath;
+    layerFileName = layer->layerFileName;
+    layerName = layer->layerName;
+    layerID = layer->layerID;
+    layerStatus = layer->layerStatus;
+    layerType = layer->layerType;
+    // return NO_ERROR;
+    return NO_ERROR;
+}
+
+/**
+ * @brief Derived classes are expected to release containers and perform class-specific clean-out
+ * 
+ * @return int It should return NO_ERROR unless any exception is triggered
+ */
+int Layer::clear(){
+    layerID = LAYER_INVALID_ID;
+    layerType = LAYER_INVALID;
+    layerName = "";
+    layerFileName = "";
+    return NO_ERROR;
+}
+/**
  * @brief Return the ID of the given layer
  * 
  * @return int ID value

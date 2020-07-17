@@ -29,7 +29,6 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
-
     class ladPipeline{
         private:
             int pipelineStep;
@@ -101,7 +100,5 @@ namespace lad{      //!< landing area detection algorithm namespace
             int extractContours(std::string rasterName, std::string contourName, int showImage=false);
 
     };
-
 }
-
 #endif // _LAD_CORE_HPP_ 

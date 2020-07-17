@@ -25,8 +25,9 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
-int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform=NULL);
 // Potential functions:
+
+int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform=NULL);
 
 // CGAL implementations associated to convexHull / alphaShape
 
@@ -35,8 +36,8 @@ int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *output
 // Own implementation of rotation invariant landability detector
 
 // Pixel to World coordinates transformation
-
 // World to Pixel coordinates transformation
+// Already internally implemented with convertSpace + geoTransform matrix
 
 }
 
