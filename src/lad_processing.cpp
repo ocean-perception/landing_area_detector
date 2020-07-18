@@ -22,6 +22,8 @@
  */
 namespace lad{
 
+
+
 int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform){
     if (inputSpace == outputSpace){ //!< No transformation was required
         // let's just clone the data

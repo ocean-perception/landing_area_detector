@@ -59,15 +59,15 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             int getID();    //!< Return the layer ID 
             int setID(int newID); //!< set the new layer ID. It must be a valid ID
-            int getLayerStatus(); //!< Return a copy of the layer status
-            int setLayerStatus(int newStatus); //!< Modify the layer status
-            int getLayerType(); //!< Return a copy of the layer type
-            int setLayerType(int newType); //!< Modify the layer type
+            int getStatus(); //!< Return a copy of the layer status
+            int setStatus(int newStatus); //!< Modify the layer status
+            int getType(); //!< Return a copy of the layer type
+            int setType(int newType); //!< Modify the layer type
             virtual void showInformation(); //!< Dumps relevant information of the layer
 
             virtual int clear();    //!< Clear all the layer specific information, and stored data if any.
             virtual int copy(Layer); //!< Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
-            virtual int copy(*Layer); //!< Overloaded version for pointer to Layer type
+            virtual int copy(Layer*); //!< Overloaded version for pointer to Layer type
 
         // Check if they need to be virtual
         /*
@@ -86,7 +86,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             cv::Mat rasterData; //OpenCV matrix that will hold the data
 
             RasterLayer(std::string name, int id):Layer(name, id){
-                setLayerType(LAYER_RASTER); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
+                setType(LAYER_RASTER); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
                 // rasterData = 
             }
 
@@ -102,7 +102,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             VectorLayer(std::string name, int id):Layer(name, id){
                 coordinateSpace = PIXEL_COORDINATE;
-                setLayerType(LAYER_VECTOR); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
+                setType(LAYER_VECTOR); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
             }
 
             void showInformation();
@@ -120,7 +120,7 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             KernelLayer(std::string name, int id, double rot=0):RasterLayer(name, id){
                 dRotation = rot;
-                setLayerType(LAYER_KERNEL);
+                setType(LAYER_KERNEL);
             }
 
     };

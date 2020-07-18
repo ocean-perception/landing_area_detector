@@ -250,7 +250,7 @@ int ladPipeline::ExportLayer (std::string name, std::string outfile, int format,
         exportName = outfile;
     }
 
-    int type = apLayer->getLayerType();
+    int type = apLayer->getType();
     shared_ptr<VectorLayer> apVector;
     shared_ptr<RasterLayer> apRaster;
     shared_ptr<KernelLayer> apKernel;
@@ -319,7 +319,7 @@ int ladPipeline::showLayers(int layer_type){
         return lad::LAYER_NONE;
     }
     for (auto it:Layers){
-        if ((it->getLayerType() == layer_type) || (layer_type == LAYER_ANYTYPE))
+        if ((it->getType() == layer_type) || (layer_type == LAYER_ANYTYPE))
             it->showInformation();
     }
         return lad::LAYER_OK;
@@ -343,7 +343,7 @@ int ladPipeline::uploadData(int id, void *data){
 
     for (auto it:Layers){
         if (it->getID() == id){ //!< Check ID match
-            int type = it->getLayerType();  //!< slight speed improve
+            int type = it->getType();  //!< slight speed improve
             // WARNING: if we change these 'if' to switch , -fPermissive will trigger error 
             if (type == LAYER_VECTOR){
                 auto v = std::dynamic_pointer_cast<lad::VectorLayer> (it);

@@ -31,8 +31,8 @@ namespace lad{      //!< landing area detection algorithm namespace
 
     class ladPipeline{
         private:
-            int pipelineStep;
-            int bValidInput;
+            // int pipelineStep;
+            // int bValidInput;
 
         public:
             ladPipeline(){
@@ -43,7 +43,7 @@ namespace lad{      //!< landing area detection algorithm namespace
             }
 
             ~ladPipeline(){
-                // delete apInputGeotiff;
+                // delete apInputGeotiff; //!< Removed because Geotiff object must be destroyed using separate method
                 Layers.clear();
                 LUT_ID.clear();
                 inputFileTIFF = "";
@@ -57,19 +57,21 @@ namespace lad{      //!< landing area detection algorithm namespace
 
             vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
 
+            // Methods **************
+
             int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
 
             std::string getLayerName (int id); //!< Returns name of Layer with given ID number
+            int         setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
 
-            int getLayerID (std::string name); //!< Return layer with given name
+            int getLayerID (std::string name); //!< Return the ID layer identified by its name
+            int setLayerID (std::string name, int newID); //!< Modify the ID of layer identified by its name.
 
             std::shared_ptr<Layer> getLayer(int id); //!< Return shared_ptr to a Layer identified by its ID
             std::shared_ptr<Layer> getLayer(std::string name); //!< Return shared_ptr to a Layer identified by its name
 
-            int setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
 
             int CreateLayer (std::string name, int type); //!< Create a new layer "name" of given type and insert it into the pipeline stack.
-
             int InsertLayer (std::shared_ptr <Layer> layer);  //!< Insert previously created layer into the pipeline stack
 
             int RemoveLayer (std::string name); //!< Remove layer by its name

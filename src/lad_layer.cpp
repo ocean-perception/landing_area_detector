@@ -43,7 +43,7 @@ int Layer::copy(Layer layer){
  * @param layer Pointer to layer to be copied
  * @return int Error code, if any.
  */
-int Layer::copy(*Layer layer){
+int Layer::copy(Layer *layer){
     layerFilePath = layer->layerFilePath;
     layerFileName = layer->layerFileName;
     layerName = layer->layerName;
@@ -90,7 +90,7 @@ int Layer::setID(int newID){
  * 
  * @return int Layer status value, from enumerated list
  */
-int Layer::getLayerStatus(){
+int Layer::getStatus(){
     return layerStatus;
 }
 
@@ -100,7 +100,7 @@ int Layer::getLayerStatus(){
  * @param newStatus New value of layer status. It should be any of possible values in the enumerated list. No validation is enforced
  * @return int return a copy of the new status value
  */
-int Layer::setLayerStatus(int newStatus){
+int Layer::setStatus(int newStatus){
     layerStatus = newStatus;
     return layerStatus;
 }
@@ -110,7 +110,7 @@ int Layer::setLayerStatus(int newStatus){
  * 
  * @return int Return the layer type, from enumerated list (RASTER, KERNEL, VECTOR, UNDEFINED)
  */
-int Layer::getLayerType(){
+int Layer::getType(){
     return layerType;
 } 
 
@@ -120,7 +120,7 @@ int Layer::getLayerType(){
  * @param newType New value of layer type. It is user's responsability to correctly recast (if necessary) the data container accordingly
  * @return int return a copy of the new layer type
  */
-int Layer::setLayerType(int newType){
+int Layer::setType(int newType){
     layerType = newType;
 }
 /**
@@ -135,7 +135,7 @@ void Layer::showInformation(){
  * 
  */
 void RasterLayer::showInformation(){
-    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
     cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << endl;
 }
 
@@ -144,7 +144,7 @@ void RasterLayer::showInformation(){
  * 
  */
 void VectorLayer::showInformation(){
-    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getLayerStatus() << reset << "]\tCoordinates: [";
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [VECTOR]\tStatus: [" << green << getStatus() << reset << "]\tCoordinates: [";
     if (coordinateSpace == PIXEL_COORDINATE){
         cout << yellow << "PIXEL]" << reset << endl; 
     }
@@ -272,7 +272,7 @@ int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string str
  * 
  */
 void KernelLayer::showInformation(){
-    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getLayerStatus() << reset << "]" << endl;
+    cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getStatus() << reset << "]" << endl;
     cout << "\t> Kernel data container size: " << yellow << rasterData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
 }
 
@@ -285,7 +285,7 @@ void KernelLayer::showInformation(){
 int VectorLayer::loadData(vector <Point2d> *inputData){
     // We can not avoid a deep copy of the input vector. We could iterate through each element and assign it, or just use = operator
     vectorData = *inputData;
-    setLayerStatus(LAYER_OK);
+    setStatus(LAYER_OK);
     return vectorData.size();
 }
 
@@ -297,7 +297,7 @@ int VectorLayer::loadData(vector <Point2d> *inputData){
  */
 int RasterLayer::loadData(cv::Mat *input){
     input->copyTo(rasterData);   // deep copy of the Mat content and header to avoid original owner to accidentally overwrite the data
-    setLayerStatus(LAYER_OK);
+    setStatus(LAYER_OK);
 }
 
 /**

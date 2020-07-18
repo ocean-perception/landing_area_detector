@@ -25,6 +25,9 @@ using namespace cv;     // OpenCV
  */
 namespace lad{      //!< landing area detection algorithm namespace
 
+int processGeotiff(std::string dataName, std::string maskName, int showImage=false); //!< Process Geotiff object and generate correspondig data and mask raster layers
+int extractContours(std::string rasterName, std::string contourName, int showImage=false);
+
 // Potential functions:
 
 int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform=NULL);
