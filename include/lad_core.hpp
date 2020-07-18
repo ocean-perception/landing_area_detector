@@ -10,7 +10,7 @@
  */
 
 // pragma once is not "standard"
-#ifndef _LAD_CORE_HPP_ 
+#ifndef _LAD_CORE_HPP_
 #define _LAD_CORE_HPP_
 
 #include "geotiff.hpp"
@@ -20,87 +20,89 @@
 
 #include <regex>
 
-using namespace std;    // STL
-using namespace cv;     // OpenCV
+using namespace std; // STL
+using namespace cv;  // OpenCV
 
 /**
  * @brief Protoype definition of base namespace lad
  * 
  */
-namespace lad{      //!< landing area detection algorithm namespace
+namespace lad
+{ //!< landing area detection algorithm namespace
 
-    class ladPipeline{
-        private:
-            // int pipelineStep;
-            // int bValidInput;
+    class ladPipeline
+    {
+    private:
+        // int pipelineStep;
+        // int bValidInput;
 
-        public:
-            ladPipeline(){
-                apInputGeotiff = NULL;
-                inputFileTIFF = "";
-                LUT_ID.resize(DEFAULT_STACK_SIZE);
-                std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
-            }
+    public:
+        ladPipeline()
+        {
+            apInputGeotiff = NULL;
+            inputFileTIFF = "";
+            LUT_ID.resize(DEFAULT_STACK_SIZE);
+            std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
+        }
 
-            ~ladPipeline(){
-                // delete apInputGeotiff; //!< Removed because Geotiff object must be destroyed using separate method
-                Layers.clear();
-                LUT_ID.clear();
-                inputFileTIFF = "";
-            }
+        ~ladPipeline()
+        {
+            // delete apInputGeotiff; //!< Removed because Geotiff object must be destroyed using separate method
+            Layers.clear();
+            LUT_ID.clear();
+            inputFileTIFF = "";
+        }
 
-            Geotiff *apInputGeotiff;    //!< Pointer to geoTIFF container
+        Geotiff *apInputGeotiff; //!< Pointer to geoTIFF container
 
-            std::string inputFileTIFF;  //!< Input TIFF filename containing base bathymetry. Base name for output products files
+        std::string inputFileTIFF; //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
-            vector <std::shared_ptr <Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures 
+        vector<std::shared_ptr<Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures
 
-            vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
+        vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
 
-            // Methods **************
+        // Methods **************
 
-            int ReadTIFF (std::string inputFile);   //!< Read a given geoTIFF file an loads into current container
+        int ReadTIFF(std::string inputFile); //!< Read a given geoTIFF file an loads into current container
 
-            std::string getLayerName (int id); //!< Returns name of Layer with given ID number
-            int         setLayerName (int id, std::string newName); //!< Overwrite Layers name using is ID
+        std::string getLayerName(int id);              //!< Returns name of Layer with given ID number
+        int setLayerName(int id, std::string newName); //!< Overwrite Layers name using is ID
 
-            int getLayerID (std::string name); //!< Return the ID layer identified by its name
-            int setLayerID (std::string name, int newID); //!< Modify the ID of layer identified by its name.
+        int getLayerID(std::string name);            //!< Return the ID layer identified by its name
+        int setLayerID(std::string name, int newID); //!< Modify the ID of layer identified by its name.
 
-            std::shared_ptr<Layer> getLayer(int id); //!< Return shared_ptr to a Layer identified by its ID
-            std::shared_ptr<Layer> getLayer(std::string name); //!< Return shared_ptr to a Layer identified by its name
+        std::shared_ptr<Layer> getLayer(int id);           //!< Return shared_ptr to a Layer identified by its ID
+        std::shared_ptr<Layer> getLayer(std::string name); //!< Return shared_ptr to a Layer identified by its name
 
+        int CreateLayer(std::string name, int type);   //!< Create a new layer "name" of given type and insert it into the pipeline stack.
+        int InsertLayer(std::shared_ptr<Layer> layer); //!< Insert previously created layer into the pipeline stack
 
-            int CreateLayer (std::string name, int type); //!< Create a new layer "name" of given type and insert it into the pipeline stack.
-            int InsertLayer (std::shared_ptr <Layer> layer);  //!< Insert previously created layer into the pipeline stack
+        int RemoveLayer(std::string name); //!< Remove layer by its name
+        int RemoveLayer(int ID);           //!< Remove layer by its ID
 
-            int RemoveLayer (std::string name); //!< Remove layer by its name
-            int RemoveLayer (int ID);           //!< Remove layer by its ID
+        int ExportLayer(std::string name, std::string outfile = "", int format = FMT_CSV, int coords = NO_COORDINATE); //!< Export a given layer in the stack identified by its name, to
 
-            int ExportLayer (std::string name, std::string outfile = "", int format=FMT_CSV, int coords = NO_COORDINATE); //!< Export a given layer in the stack identified by its name, to 
+        int getTotalLayers(int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
 
-            int getTotalLayers (int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
+        int isValidName(std::string name); //!< Verify if "name" is a valid layer name for the current pipeline stack
+        int isValidID(int ID);             //!< Verify is ID is a valid layer ID for the current pipeline stack
 
-            int isValidName(std::string name);  //!< Verify if "name" is a valid layer name for the current pipeline stack
-            int isValidID(int ID); //!< Verify is ID is a valid layer ID for the current pipeline stack
+        int isValid(int);         //!< Returs true if the provided ID is valid. It does not check whether it is available in the current stack
+        int isValid(std::string); //!< Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
 
-            int isValid(int); //!< Returs true if the provided ID is valid. It does not check whether it is available in the current stack
-            int isValid(std::string);  //!< Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
+        int isAvailable(int);         //!< Return true if the provided ID is not taken in the current stack. It's validity is assumed but not verified
+        int isAvailable(std::string); //!< Return true if the provided NAME is not taken in the current stack. It's validity is assumed but not verified
 
-            int isAvailable(int); //!< Return true if the provided ID is not taken in the current stack. It's validity is assumed but not verified
-            int isAvailable(std::string); //!< Return true if the provided NAME is not taken in the current stack. It's validity is assumed but not verified
+        int getValidID(); //!< Return a valid ID available for the current stack
 
-            int getValidID();   //!< Return a valid ID available for the current stack
+        int showInfo(int level = 0);              //!< Show summary information of current pipeline object
+        int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
 
-            int showInfo(int level=0); //!< Show summary information of current pipeline object
-            int showLayers(int type = LAYER_ANYTYPE); //!< Call showInformation() method for each layer
+        int uploadData(int id, void *data);           //!< uploads data into a layer identified by its id
+        int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
 
-            int uploadData(int id, void *data); //!< uploads data into a layer identified by its id
-            int uploadData(std::string name, void *data); //!< uploads data into a layer identified by its name
-
-            int processGeotiff(std::string dataName, std::string maskName, int showImage=false); //!< Process Geotiff object and generate correspondig data and mask raster layers
-            int extractContours(std::string rasterName, std::string contourName, int showImage=false);
-
+        int processGeotiff(std::string dataName, std::string maskName, int showImage = false); //!< Process Geotiff object and generate correspondig data and mask raster layers
+        int extractContours(std::string rasterName, std::string contourName, int showImage = false);
     };
-}
-#endif // _LAD_CORE_HPP_ 
+} // namespace lad
+#endif // _LAD_CORE_HPP_

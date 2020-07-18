@@ -10,38 +10,39 @@
  */
 
 // pragma once is not "standard"
-#ifndef _LAD_PROCESSING_HPP_ 
+#ifndef _LAD_PROCESSING_HPP_
 #define _LAD_PROCESSING_HPP_
 
 #include "headers.h"
 #include "lad_enum.hpp"
 
-using namespace std;    // STL
-using namespace cv;     // OpenCV
+using namespace std; // STL
+using namespace cv;  // OpenCV
 
 /**
  * @brief Extend <lad> namespace with major processing tools for every type of layer 
  * 
  */
-namespace lad{      //!< landing area detection algorithm namespace
+namespace lad
+{ //!< landing area detection algorithm namespace
 
-int processGeotiff(std::string dataName, std::string maskName, int showImage=false); //!< Process Geotiff object and generate correspondig data and mask raster layers
-int extractContours(std::string rasterName, std::string contourName, int showImage=false);
+    int processGeotiff(std::string dataName, std::string maskName, int showImage = false); //!< Process Geotiff object and generate correspondig data and mask raster layers
+    int extractContours(std::string rasterName, std::string contourName, int showImage = false);
 
-// Potential functions:
+    // Potential functions:
 
-int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform=NULL);
+    int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform = NULL);
 
-// CGAL implementations associated to convexHull / alphaShape
+    // CGAL implementations associated to convexHull / alphaShape
 
-// Own implementation for scale independant landability analysis
+    // Own implementation for scale independant landability analysis
 
-// Own implementation of rotation invariant landability detector
+    // Own implementation of rotation invariant landability detector
 
-// Pixel to World coordinates transformation
-// World to Pixel coordinates transformation
-// Already internally implemented with convertSpace + geoTransform matrix
+    // Pixel to World coordinates transformation
+    // World to Pixel coordinates transformation
+    // Already internally implemented with convertSpace + geoTransform matrix
 
-}
+} // namespace lad
 
-#endif // _LAD_PROCESSING_HPP_ 
+#endif // _LAD_PROCESSING_HPP_
