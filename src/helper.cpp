@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef _HELPER_CPP_
-#define _HELPER_CPP_
+#ifndef _PROJECT_HELPER_CPP_
+#define _PROJECT_HELPER_CPP_
 
 #include "headers.h"
 #include "helper.h"
@@ -45,4 +45,4 @@ std::string type2str(int type) {
   return r;
 }
 
-#endif
+#endif //_PROJECT_HELPER_CPP_

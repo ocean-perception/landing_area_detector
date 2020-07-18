@@ -9,14 +9,12 @@
  * 
  */
 
-// pragma once is not "standard"
-#ifndef _LAD_LAYER_CPP_
-#define _LAD_LAYER_CPP_
-
-#include "lad_core.hpp"
 #include "lad_layer.hpp"
+#include "lad_core.hpp"
 #include "lad_processing.hpp"
+
 #include <iostream>
+
 #include "ogrsf_frmts.h"
 
 namespace lad
@@ -428,4 +426,3 @@ namespace lad
     }
 
 } // namespace lad
-#endif //_LAD_LAYER_CPP_

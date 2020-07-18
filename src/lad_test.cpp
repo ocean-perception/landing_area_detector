@@ -8,11 +8,12 @@
  * @copyright Copyright (c) 2020
  * 
  */
-#include <geotiff.hpp> // Geotiff class definitions
-#include "options.h"
 #include "headers.h"
-#include "lad_analysis.h"
+
+#include "options.h"
+#include "geotiff.hpp" // Geotiff class definitions
 #include "lad_core.hpp"
+#include "lad_analysis.h"
 #include "lad_enum.hpp"
 
 using namespace std;
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
 {
 
     //*********************************************************************************
-    /*	PARSER section */
+    /* PARSER section */
     std::string descriptionString =
         "lad_test - testing module part of [landing-area-detection] pipeline \
     Compatible interface with geoTIFF bathymetry datasets via GDAL + OpenCV";

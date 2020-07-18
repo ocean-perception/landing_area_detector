@@ -1,14 +1,14 @@
 /**
  * @file options.h
  * @brief Argument parser options based on args.hxx
- * @version 1.0
+ * @version 1.1
  * @date 18/06/2020
  * @author Jose Cappelletto
  */
 
-#ifndef _OPTIONS_H_
+#ifndef _PROJECT_OPTIONS_H_
 
-#define _OPTIONS_H_
+#define _PROJECT_OPTIONS_H_
 
 #include <iostream>
 #include "../external/args.hxx"
@@ -22,4 +22,4 @@ args::Positional<std::string> 	argInput(argParser, "input", "Input bathymetry ma
 args::ValueFlag	<std::string> 	argOutput(argParser, "output", "Output file",{'o',"output"});
 args::ValueFlag	<int> 	        argVerbose(argParser, "verbose", "Show verbose information",{"verbose"});
 
-#endif
+#endif //_PROJECT_OPTIONS_H_

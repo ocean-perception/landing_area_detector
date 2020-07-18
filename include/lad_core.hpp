@@ -13,8 +13,8 @@
 #ifndef _LAD_CORE_HPP_
 #define _LAD_CORE_HPP_
 
-#include "geotiff.hpp"
 #include "headers.h"
+#include "geotiff.hpp"
 #include "lad_layer.hpp"
 #include "lad_enum.hpp"
 

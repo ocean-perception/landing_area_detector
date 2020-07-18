@@ -8,11 +8,6 @@
  * @copyright Copyright (c) 2020
  * 
  */
-
-// pragma once is not "standard"
-#ifndef _LAD_PROCESSING_CPP_
-#define _LAD_PROCESSING_CPP_
-
 #include "lad_processing.hpp"
 #include "lad_layer.hpp"
 
@@ -79,4 +74,3 @@ namespace lad
     }
 
 } // namespace lad
-#endif //_LAD_PROCESSING_CPP_

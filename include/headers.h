@@ -2,15 +2,15 @@
  * @file headers.h
  * @author Jose Cappelletto (cappelletto@gmail.com)
  * @brief Single collection of global libraries required in major modules
- * @version 0.1
+ * @version 0.2
  * @date 2020-07-03
  * 
  * @copyright Copyright (c) 2020
  * 
  */
-#ifndef _HEADERS_H_
+#ifndef _PROJECT_HEADERS_H_
 
-#define _HEADERS_H_
+#define _PROJECT_HEADERS_H_
 ///Basic C and C++ libraries
 #include <iostream>
 #include <iomanip>
@@ -45,4 +45,4 @@ const std::string reset("\033[0m");
 
 #define DEFAULT_OUTPUT_FILE "LAD_output.tif"
 
-#endif
+#endif // _PROJECT_HEADERS_H_

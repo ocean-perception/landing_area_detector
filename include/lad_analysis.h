@@ -9,7 +9,12 @@
  * 
  */
 
+#ifndef _LAD_ANALYSIS_H_
+#define _LAD_ANALYSIS_H_
+
 #include "geotiff.hpp"
 
 // Temporal preprocesing function
 int processGeotiff(Geotiff *apGeotiff);
+
+#endif //_LAD_ANALYSIS_H_
