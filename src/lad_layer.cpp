@@ -183,7 +183,7 @@ namespace lad
             // it is the same space! nothing to change
             return 0;
         }
-        if (apTransform == NULL)
+        if (apTransform == nullptr)
         {
             cout << red << "[convertSpace] Wrong 6D transforation matrix when trying to convert [" << layerName << "]. No operation was performed" << endl;
             return -1;

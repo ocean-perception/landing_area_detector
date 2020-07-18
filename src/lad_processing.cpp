@@ -12,7 +12,7 @@
 #include "lad_layer.hpp"
 
 /**
- * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by ladPipeline objects 
+ * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by Pipeline objects 
  * Valid data is assumed to be present in the layer containers involved
  */
 namespace lad
@@ -31,7 +31,7 @@ namespace lad
             return 0;
         }
         //!< Do we have a valid transformation matrix?
-        if (apTransform == NULL)
+        if (apTransform == nullptr)
         {
             cout << red << "[convertDataSpace] invalid transformation matrix received" << reset << endl;
             cout << red << "[convertDataSpace] no transformation performed" << reset << endl;

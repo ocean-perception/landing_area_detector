@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
-    lad::ladPipeline Pipeline;
+    lad::Pipeline Pipeline;
 
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);

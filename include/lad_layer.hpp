@@ -114,7 +114,7 @@ namespace lad
 
         int loadData(std::vector<cv::Point2d> *); //!< Import data into vectorData container
         // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the layerFileName as fileFormat (default CSV)
-        int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = NULL); //!< Overloaded method of exporting vectorData to user defined file
+        int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = nullptr); //!< Overloaded method of exporting vectorData to user defined file
         int convertSpace(int newSpace, double *apTransformMatrix);                                                                                                                        //!< Convert vectorData content to new coordinate space
     };
 

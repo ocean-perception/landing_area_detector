@@ -30,22 +30,22 @@ using namespace cv;  // OpenCV
 namespace lad
 { //!< landing area detection algorithm namespace
 
-    class ladPipeline
+    class Pipeline
     {
     private:
         // int pipelineStep;
         // int bValidInput;
 
     public:
-        ladPipeline()
+        Pipeline()
         {
-            apInputGeotiff = NULL;
+            apInputGeotiff = nullptr;
             inputFileTIFF = "";
             LUT_ID.resize(DEFAULT_STACK_SIZE);
             std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
         }
 
-        ~ladPipeline()
+        ~Pipeline()
         {
             // delete apInputGeotiff; //!< Removed because Geotiff object must be destroyed using separate method
             Layers.clear();

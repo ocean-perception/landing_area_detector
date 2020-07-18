@@ -19,7 +19,7 @@ namespace lad
  * @param id Layer ID number to be searched
  * @return std::string 
  */
-    std::string ladPipeline::getLayerName(int id)
+    std::string Pipeline::getLayerName(int id)
     {
         if (Layers.size() <= 0)
             return "EMPTY_VECTOR";
@@ -40,7 +40,7 @@ namespace lad
  * @param name Layer name to be searched
  * @return int ID of the layer, if found any. Returns LAYER_NOTFOUN 
  */
-    int ladPipeline::getLayerID(std::string name)
+    int Pipeline::getLayerID(std::string name)
     {
         if (Layers.size() <= 0)
             return LAYER_EMPTY;
@@ -62,7 +62,7 @@ namespace lad
  * @param id 
  * @return std::string 
  */
-    int ladPipeline::setLayerName(int id, std::string newName)
+    int Pipeline::setLayerName(int id, std::string newName)
     {
         if (Layers.size() <= 0)
             return LAYER_NONE; // Layers vector is empty
@@ -87,7 +87,7 @@ namespace lad
  * @param type Type of layer to be searched for. If no value is provided it will return the total number of layers in the stack
  * @return int Number of layers of 'type'
  */
-    int ladPipeline::getTotalLayers(int type)
+    int Pipeline::getTotalLayers(int type)
     {
         if (type == LAYER_ANYTYPE)
             return Layers.size();
@@ -100,7 +100,7 @@ namespace lad
  * @param checkID ID to be evaluated
  * @return int Evaluation status. If valid returns LAYER_OK, else return corresponding error code
  */
-    int ladPipeline::isValidID(int checkID)
+    int Pipeline::isValidID(int checkID)
     {
         if (checkID < 0)
             return LAYER_INVALID_ID; //!< First, we check is a positive ID value
@@ -123,7 +123,7 @@ namespace lad
  * @param checkID ID to be evaluated
  * @return int Evaluation status. If valid returns LAYER_OK, else return corresponding error code
  */
-    int ladPipeline::isValidName(std::string checkName)
+    int Pipeline::isValidName(std::string checkName)
     {
         if (isValid(checkName) == false)
             return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
@@ -153,7 +153,7 @@ namespace lad
  * @param name name of the layer to be removed
  * @return int returns success if layer was found and removed. Otherwise, it will send the error code
  */
-    int ladPipeline::RemoveLayer(std::string name)
+    int Pipeline::RemoveLayer(std::string name)
     {
         // First we verify the stack is not empty
         if (Layers.empty())
@@ -182,7 +182,7 @@ namespace lad
  * @param name name of the layer to be removed
  * @return int returns success if layer was found and removed. Otherwise, it will send the error code
  */
-    int ladPipeline::RemoveLayer(int id)
+    int Pipeline::RemoveLayer(int id)
     {
         // First we verify the ID
         if (id < 0)
@@ -218,12 +218,12 @@ namespace lad
  * @param type Type of new layer
  * @return int new ID if valid, error code otherwise 
  */
-    int ladPipeline::CreateLayer(std::string name, int type)
+    int Pipeline::CreateLayer(std::string name, int type)
     {
         // Let's check name
         if (isValidName(name) != LAYER_OK)
         {
-            cout << "[ladPipeline] Duplicated layer name: " << name << endl;
+            cout << "[Pipeline] Duplicated layer name: " << name << endl;
             return LAYER_INVALID_NAME;
         }
 
@@ -232,7 +232,7 @@ namespace lad
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_VECTOR)
         {
-            // cout << "[ladPipeline] Creating VECTOR layer: " << name << endl;
+            // cout << "[Pipeline] Creating VECTOR layer: " << name << endl;
             std::shared_ptr<lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
             Layers.push_back(newLayer);
             LUT_ID.at(newid) = ID_TAKEN;
@@ -240,7 +240,7 @@ namespace lad
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_RASTER)
         {
-            // cout << "[ladPipeline] Creating RASTER layer" << endl;
+            // cout << "[Pipeline] Creating RASTER layer" << endl;
             std::shared_ptr<lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
             Layers.push_back(newLayer);
             LUT_ID.at(newid) = ID_TAKEN;
@@ -248,7 +248,7 @@ namespace lad
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_KERNEL)
         {
-            // cout << "[ladPipeline] Creating KERNEL layer" << endl;
+            // cout << "[Pipeline] Creating KERNEL layer" << endl;
             std::shared_ptr<lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
             Layers.push_back(newLayer);
             LUT_ID.at(newid) = ID_TAKEN;
@@ -265,7 +265,7 @@ namespace lad
  * @param coords 
  * @return int 
  */
-    int ladPipeline::ExportLayer(std::string name, std::string outfile, int format, int coord_sys)
+    int Pipeline::ExportLayer(std::string name, std::string outfile, int format, int coord_sys)
     { //!< Export a given layer in the stack identified by its name, to
         if (name.empty())
         {
@@ -277,7 +277,7 @@ namespace lad
         //now, we pull the Layer from the stack
         shared_ptr<Layer> apLayer = getLayer(name);
         // getlayer()
-        if (apLayer == NULL)
+        if (apLayer == nullptr)
         { // failed to retrieve Layer "name" from the stack
             cout << red << "[ExportLayer] Failed to retrieve Layer [" << name << "] from stack" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
@@ -300,7 +300,7 @@ namespace lad
         // 6D matrix geotransformation is assumed to be internally stored in the geotiff object
         double *adfGeoTransform;
         adfGeoTransform = apInputGeotiff->GetGeoTransform();
-        if (adfGeoTransform == NULL)
+        if (adfGeoTransform == nullptr)
         {
             cout << red << "[ExportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
             return ERROR_WRONG_ARGUMENT;
@@ -338,7 +338,7 @@ namespace lad
  * 
  * @return int valid ID ready to be consumed in a CreateLayer call
  */
-    int ladPipeline::getValidID()
+    int Pipeline::getValidID()
     {
         for (int i = 0; i < LUT_ID.size(); i++)
         {
@@ -357,7 +357,7 @@ namespace lad
  * 
  * @return int LAYER_NONE if Layers vector is empty, LAYER_OK otherwise
  */
-    int ladPipeline::showLayers(int layer_type)
+    int Pipeline::showLayers(int layer_type)
     {
         if (!Layers.size())
         {
@@ -380,7 +380,7 @@ namespace lad
  * @param data Source data to be copied
  * @return int Error code, if any. LAYER_OK if the process is completed succesfully
  */
-    int ladPipeline::uploadData(int id, void *data)
+    int Pipeline::uploadData(int id, void *data)
     {
         if (isValid(id) == false)
         {
@@ -423,7 +423,7 @@ namespace lad
  * @param data Source data to be copied
  * @return int Error code, if any. LAYER_OK if the process is completed succesfully
  */
-    int ladPipeline::uploadData(std::string name, void *data)
+    int Pipeline::uploadData(std::string name, void *data)
     {
         // Check if we the name is valid (non-empty)
         if (name.empty())
@@ -455,7 +455,7 @@ namespace lad
  * @param inputFile Name of the geotTIFF file to be read
  * @return int Success/error code
  */
-    int ladPipeline::ReadTIFF(std::string inputFile)
+    int Pipeline::ReadTIFF(std::string inputFile)
     {
         if (inputFile.empty())
         {
@@ -470,13 +470,13 @@ namespace lad
  * @param level Level of verbosity
  * @return int Returns NO_ERROR if current pipeline is a valid (non-empty) one.
  */
-    int ladPipeline::showInfo(int level)
+    int Pipeline::showInfo(int level)
     {
         // Geotiff input information
         int retval = NO_ERROR;
         cout << yellow << "****** Geotiff Summary *****************" << reset << endl;
         cout << "Geotiff file:\t\t";
-        if (apInputGeotiff == NULL)
+        if (apInputGeotiff == nullptr)
         {
             cout << red << "None" << reset << endl;
             retval = ERROR_GEOTIFF_EMPTY;
@@ -507,7 +507,7 @@ namespace lad
  * 
  * @return int error code, if any
  */
-    int ladPipeline::processGeotiff(std::string rasterName, std::string maskName, int showImage)
+    int Pipeline::processGeotiff(std::string rasterName, std::string maskName, int showImage)
     {
         //First, check if have any valid Geotiff object loaded in memory
         int *dimensions;
@@ -515,7 +515,7 @@ namespace lad
         float **apData; //pull 2D float matrix containing the image data for Band 1
 
         apData = apInputGeotiff->GetRasterBand(1);
-        if (apData == NULL)
+        if (apData == nullptr)
         {
             cout << red << "[processGeotiff]: Error reading input geoTIFF data: NULL" << reset << endl;
             return ERROR_GDAL_FAILOPEN;
@@ -589,7 +589,7 @@ namespace lad
  * @param showImage flag indicating if we need to show the images
  * @return int Error code - if any.
  */
-    int ladPipeline::extractContours(std::string rasterName, std::string contourName, int showImage)
+    int Pipeline::extractContours(std::string rasterName, std::string contourName, int showImage)
     {
 
         vector<vector<Point>> contours; // find contours of the DataMask layer
@@ -675,14 +675,14 @@ namespace lad
  * @param id ID of the layer to be retrieved
  * @return std::shared_ptr<Layer> pointer to the Layer with the given id
  */
-    std::shared_ptr<Layer> ladPipeline::getLayer(int id)
+    std::shared_ptr<Layer> Pipeline::getLayer(int id)
     {
         if (isValid(id) == false)
-            return NULL;
+            return nullptr;
         if (Layers.empty())
-            return NULL;
+            return nullptr;
         if (LUT_ID[id] == ID_AVAILABLE)
-            return NULL;
+            return nullptr;
         // now, it is safe to assume that such ID exists
         for (auto it : Layers)
         {
@@ -691,7 +691,7 @@ namespace lad
                 return it;
             }
         }
-        return NULL; //!< Curious thing, nothing was found!
+        return nullptr; //!< Curious thing, nothing was found!
     }
 
     /**
@@ -700,18 +700,18 @@ namespace lad
  * @param name name of the layer to be retrieved
  * @return std::shared_ptr<Layer> pointer to the Layer with the given id
  */
-    std::shared_ptr<Layer> ladPipeline::getLayer(std::string name)
+    std::shared_ptr<Layer> Pipeline::getLayer(std::string name)
     {
         if (Layers.empty())
-            return NULL;
+            return nullptr;
 
         if (!isValid(name))
-            return NULL;
+            return nullptr;
 
         int id = getLayerID(name);
 
         if (!isValid(id))
-            return NULL; //some error ocurred while searching that name in the list of layers and returned an invalid ID
+            return nullptr; //some error ocurred while searching that name in the list of layers and returned an invalid ID
 
         return (getLayer(id)); //now we search it by ID
     }
@@ -722,14 +722,14 @@ namespace lad
  * @param id ID to be tested 
  * @return int true id ID is valid, false otherwise
  */
-    int ladPipeline::isValid(int id)
+    int Pipeline::isValid(int id)
     {
         if ((id < 0) || (id > (LUT_ID.size() - 1)))
             return false;
         return true;
     }
 
-    int ladPipeline::isValid(std::string str)
+    int Pipeline::isValid(std::string str)
     {
         // TODO: Add regexp for alphanumeric +set of special characters as valid set
         if (str.empty())
@@ -743,7 +743,7 @@ namespace lad
  * @param id ID to be tested 
  * @return int true if ID is available, false otherwise
  */
-    int ladPipeline::isAvailable(int id)
+    int Pipeline::isAvailable(int id)
     {
         if (id < 0)
             return false; // careful, the ID is valid, therefore we prefer to flag it as unavailable too
@@ -759,7 +759,7 @@ namespace lad
  * 
  * @return int true if the name is available, false otherwise
  */
-    int ladPipeline::isAvailable(std::string str)
+    int Pipeline::isAvailable(std::string str)
     {
         //iterate through all the existing layers, and compare against them
         if (isValid(str) == false)

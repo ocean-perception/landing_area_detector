@@ -31,7 +31,7 @@ namespace lad
 
     // Potential functions:
 
-    int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform = NULL);
+    int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform = nullptr);
 
     // CGAL implementations associated to convexHull / alphaShape
 
