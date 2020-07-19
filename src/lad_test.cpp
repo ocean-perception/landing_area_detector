@@ -142,12 +142,20 @@ int main(int argc, char *argv[])
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
 
-    if (argVerbose)
-        Pipeline.showInfo(); // show detailed information if asked for
-
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
     Pipeline.exportLayer("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
 
-    waitKey(0);
+    if (argVerbose)
+        Pipeline.showInfo(); // show detailed information if asked for
+
+    cout << "ID CONTOUR" << Pipeline.getLayerID("CONTOUR_Mask") << endl;
+
+    Pipeline.setLayerName(0,"TEST");
+    Pipeline.removeLayer(0);
+
+    if (argVerbose)
+        Pipeline.showInfo(); // show detailed information if asked for
+
+    // waitKey(0);
     return lad::NO_ERROR;
 }

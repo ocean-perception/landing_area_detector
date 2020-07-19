@@ -35,6 +35,7 @@ namespace lad
     private:
         // int pipelineStep;
         // int bValidInput;
+        std::map <std::string, std::shared_ptr<Layer>> mapLayers;
 
     public:
         Pipeline()
@@ -49,7 +50,7 @@ namespace lad
         ~Pipeline()
         {
             // delete apInputGeotiff; //!< Removed because Geotiff object must be destroyed using separate method
-            Layers.clear();
+            mapLayers.clear();
             LUT_ID.clear();
             inputFileTIFF = "";
         }
@@ -58,7 +59,7 @@ namespace lad
 
         std::string inputFileTIFF; //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
-        vector<std::shared_ptr<Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures
+        // vector<std::shared_ptr<Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures
         vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
         int verbosity;
         // Methods **************

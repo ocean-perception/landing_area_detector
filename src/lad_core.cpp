@@ -21,15 +21,15 @@ namespace lad
  */
     std::string Pipeline::getLayerName(int id)
     {
-        if (Layers.size() <= 0)
+        if (mapLayers.empty())
             return "EMPTY_VECTOR";
         if (id < 0)
             return "INVALID_ID";
         // Check each raster in the array, compare its ID against search index
-        for (auto layer : Layers)
+        for (auto layer : mapLayers)
         {
-            if (layer->getID() == id)
-                return layer->layerName;
+            if (layer.second->getID() == id)
+                return layer.first;
         }
         return "NO_LAYER";
     }
@@ -42,17 +42,17 @@ namespace lad
  */
     int Pipeline::getLayerID(std::string name)
     {
-        if (Layers.size() <= 0)
+        if (mapLayers.empty())
             return LAYER_EMPTY;
         if (isValid(name) == false)
             return LAYER_INVALID_NAME;
 
         // Check each raster in the array, compare its ID against search index
-        for (auto layer : Layers)
-        {
-            if (!name.compare(layer->layerName))
-                return layer->getID();
-        }
+        auto layer = mapLayers.find(name);
+
+        if (layer != mapLayers.end())
+            return layer->second->getID();
+
         return LAYER_NOT_FOUND;
     }
 
@@ -64,17 +64,17 @@ namespace lad
  */
     int Pipeline::setLayerName(int id, std::string newName)
     {
-        if (Layers.size() <= 0)
+        if (mapLayers.empty())
             return LAYER_NONE; // Layers vector is empty
         if (isValid(id) == false)
             return LAYER_INVALID_ID; // Provided ID is invalid
         // Check each raster in the array, compare its ID against search index
         // WARNING: TODO: Check if newName is already taken
-        for (auto layer : Layers)
+        for (auto layer : mapLayers)
         {
-            if (layer->getID() == id)
+            if (layer.second->getID() == id)
             {
-                layer->layerName = newName;
+                layer.second->layerName = newName;
                 return LAYER_OK;
             }
         }
@@ -90,7 +90,7 @@ namespace lad
     int Pipeline::getTotalLayers(int type)
     {
         if (type == LAYER_ANYTYPE)
-            return Layers.size();
+            return mapLayers.size();
         return -1;
     }
 
@@ -105,12 +105,12 @@ namespace lad
         if (checkID < 0)
             return LAYER_INVALID_ID; //!< First, we check is a positive ID value
 
-        if (Layers.empty()) //!< If Layers vector is empty, then chckID is definitelty available
+        if (mapLayers.empty()) //!< If Layers vector is empty, then chckID is definitelty available
             return LAYER_OK;
 
-        for (auto layer : Layers)
+        for (auto layer : mapLayers)
         {
-            if (layer->getID() == checkID) //!< The checkID is already taken, return correspoding error code
+            if (layer.second->getID() == checkID) //!< The checkID is already taken, return correspoding error code
                 return LAYER_DUPLICATED_ID;
         }
         // If we reach this point, then the checkID is available. Return ok
@@ -132,13 +132,13 @@ namespace lad
         // Use regex to determine if any foreing character is present
         //    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); //!< Regex list: will retrieve invalid characters
 
-        if (Layers.empty()) //!< If Layers vector is empty, then given name is definitelty available
+        if (mapLayers.empty()) //!< If Layers vector is empty, then given name is definitelty available
             return LAYER_OK;
 
         // TODO complete string based name match against all the other names
-        for (auto layer : Layers)
+        for (auto layer : mapLayers)
         {
-            if (checkName == layer->layerName)
+            if (checkName == layer.second->layerName)
             { //!< The checkID is already taken, return correspoding error code
                 return LAYER_DUPLICATED_NAME;
             }
@@ -156,24 +156,12 @@ namespace lad
     int Pipeline::removeLayer(std::string name)
     {
         // First we verify the stack is not empty
-        if (Layers.empty())
+        if (mapLayers.empty())
             return LAYER_EMPTY;
-
-        int i = 0;
         //then we go through each layer
-        for (auto const it : Layers)
-        {
-            if (!name.compare(it->layerName))
-            { // found it!
-                LUT_ID.at(it->getID()) = ID_AVAILABLE;
-                Layers.erase(Layers.begin() + i);
-                // remove(it);
-                break; // if we don't break now we will get a segfault (the vector iterator is broken)
-            }
-            i++;
-        }
-        // we shouldn't reach this point. unless we found the target
-        return LAYER_OK;
+        mapLayers.erase(name);
+
+        return NO_ERROR;
     }
 
     /**
@@ -192,20 +180,18 @@ namespace lad
             return LAYER_NOT_FOUND;
 
         // Then we check the stack size
-        if (Layers.empty())
+        if (mapLayers.empty())
             return LAYER_EMPTY;
 
-        int i = 0;
         //then we go through each layer
-        for (auto const it : Layers)
+        for (auto it : mapLayers)
         {
-            if (it->getID() == id)
+            if (it.second->getID() == id)
             { // found it!
-                LUT_ID.at(it->getID()) = ID_AVAILABLE;
-                Layers.erase(Layers.begin() + i);
+                LUT_ID.at(it.second->getID()) = ID_AVAILABLE;
+                mapLayers.erase(it.first);
                 break; // if we don't break now we will get a segfault (the vector iterator is broken)
             }
-            i++;
         }
         // we shouldn't reach this point. unless we found the target
         return LAYER_OK;
@@ -234,7 +220,10 @@ namespace lad
         {
             // cout << "[Pipeline] Creating VECTOR layer: " << name << endl;
             std::shared_ptr<lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
-            Layers.push_back(newLayer);
+            // Layers.push_back(newLayer);
+
+            mapLayers.insert(make_pair(name, newLayer));
+
             LUT_ID.at(newid) = ID_TAKEN;
         }
         // Type can be any of enumerated types, or any user defined
@@ -242,7 +231,10 @@ namespace lad
         {
             // cout << "[Pipeline] Creating RASTER layer" << endl;
             std::shared_ptr<lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
-            Layers.push_back(newLayer);
+            // Layers.push_back(newLayer);
+
+            mapLayers.insert(make_pair(name, newLayer));
+
             LUT_ID.at(newid) = ID_TAKEN;
         }
         // Type can be any of enumerated types, or any user defined
@@ -250,7 +242,10 @@ namespace lad
         {
             // cout << "[Pipeline] Creating KERNEL layer" << endl;
             std::shared_ptr<lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
-            Layers.push_back(newLayer);
+            // Layers.push_back(newLayer);
+
+            mapLayers.insert(make_pair(name, newLayer));
+
             LUT_ID.at(newid) = ID_TAKEN;
         }
 
@@ -359,15 +354,15 @@ namespace lad
  */
     int Pipeline::showLayers(int layer_type)
     {
-        if (!Layers.size())
+        if (!mapLayers.size())
         {
             cout << "No layer to show" << endl;
             return lad::LAYER_NONE;
         }
-        for (auto it : Layers)
+        for (auto it : mapLayers)
         {
-            if ((it->getType() == layer_type) || (layer_type == LAYER_ANYTYPE))
-                it->showInformation();
+            if ((it.second->getType() == layer_type) || (layer_type == LAYER_ANYTYPE))
+                it.second->showInformation();
         }
         return lad::LAYER_OK;
     }
@@ -391,25 +386,25 @@ namespace lad
             return LAYER_NOT_FOUND; //!< No layer was found with that ID
         }
 
-        for (auto it : Layers)
+        for (auto it : mapLayers)
         {
-            if (it->getID() == id)
+            if (it.second->getID() == id)
             {                             //!< Check ID match
-                int type = it->getType(); //!< slight speed improve
+                int type = it.second->getType(); //!< slight speed improve
                 // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
                 if (type == LAYER_VECTOR)
                 {
-                    auto v = std::dynamic_pointer_cast<lad::VectorLayer>(it);
+                    auto v = std::dynamic_pointer_cast<lad::VectorLayer>(it.second);
                     v->loadData((std::vector<cv::Point2d> *)data);
                 }
                 else if (type == LAYER_RASTER)
                 {
-                    auto r = std::dynamic_pointer_cast<lad::RasterLayer>(it);
+                    auto r = std::dynamic_pointer_cast<lad::RasterLayer>(it.second);
                     r->loadData((cv::Mat *)data);
                 }
                 else if (type == LAYER_KERNEL)
                 {
-                    auto r = std::dynamic_pointer_cast<lad::KernelLayer>(it);
+                    auto r = std::dynamic_pointer_cast<lad::KernelLayer>(it.second);
                     r->loadData((cv::Mat *)data);
                 }
             }
@@ -437,9 +432,9 @@ namespace lad
             return LAYER_INVALID; // some error ocurred getting the ID of a layer with such name (double validation)
         }
         int retval = LAYER_NOT_FOUND;
-        for (auto layer : Layers)
+        for (auto layer : mapLayers)
         {
-            if (layer->getID() == id)
+            if (layer.second->getID() == id)
             { /// there should be a match!
                 // cout << "*************Layer found: [" << layer->getID() << "]" << endl;
                 retval = uploadData(id, data);
@@ -489,16 +484,18 @@ namespace lad
 
         cout << cyan << endl
              << "++++++ Layers +++++++++++++++++" << reset << endl;
-        if (Layers.empty())
+        if (mapLayers.empty())
         {
             cout << yellow << "None" << reset << endl;
             retval = ERROR_LAYERS_EMPTY;
         }
         else
         {
+            cout << "Total of Layers: " << mapLayers.size() << endl;
             showLayers();
         }
         cout << yellow << "****** End of Summary ******************" << reset << endl;
+
         return retval;
     }
 
@@ -679,16 +676,16 @@ namespace lad
     {
         if (isValid(id) == false)
             return nullptr;
-        if (Layers.empty())
+        if (mapLayers.empty())
             return nullptr;
         if (LUT_ID[id] == ID_AVAILABLE)
             return nullptr;
         // now, it is safe to assume that such ID exists
-        for (auto it : Layers)
+        for (auto it : mapLayers)
         {
-            if (it->getID() == id)
+            if (it.second->getID() == id)
             {
-                return it;
+                return it.second;
             }
         }
         return nullptr; //!< Curious thing, nothing was found!
@@ -702,7 +699,7 @@ namespace lad
  */
     std::shared_ptr<Layer> Pipeline::getLayer(std::string name)
     {
-        if (Layers.empty())
+        if (mapLayers.empty())
             return nullptr;
 
         if (!isValid(name))
@@ -766,13 +763,13 @@ namespace lad
         {
             return false; // sanity check of its validity
         }
-        if (Layers.empty())
+        if (mapLayers.empty())
         { //nothing stored in the stack, so any valid name is available
             return true;
         }
-        for (auto it : Layers)
+        for (auto it : mapLayers)
         {
-            if (str == it->layerName)
+            if (str == it.second->layerName)
             { //that name is already taken
                 return false;
             }
