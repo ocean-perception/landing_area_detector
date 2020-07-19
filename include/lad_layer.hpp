@@ -121,9 +121,13 @@ namespace lad
 
     class KernelLayer : public virtual RasterLayer
     {
+    private:
+            double dRotation; //!< Rotation angle of the given kernel (in radians)
+
     public:
-        double dRotation; //!< Rotation angle of the given kernel (in radians)
         void showInformation();
+        void setRotation(double);
+        double getRotation();
 
         KernelLayer(std::string name, int id, double rot = 0) : RasterLayer(name, id)
         {

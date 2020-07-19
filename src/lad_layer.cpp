@@ -313,6 +313,24 @@ namespace lad
     }
 
     /**
+     * @brief Update the rotation value of the Kernel layer
+     * 
+     * @param rotation new rotation value (radians)
+     */
+    void KernelLayer::setRotation(double rotation){
+        dRotation = rotation;
+    }
+
+    /**
+     * @brief Returns the rotation value for the Kernel layer
+     * 
+     * @return double Rotation value, in radians.
+     */
+    double KernelLayer::getRotation(){
+        return dRotation;
+    }
+
+    /**
  * @brief Loads a vector of Point2d points in the layer container. It replaces the existing data.
  * 
  * @param inputData New data to be stored in the container
