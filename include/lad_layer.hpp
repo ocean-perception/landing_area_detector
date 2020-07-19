@@ -36,8 +36,8 @@ namespace lad
     protected:
     public:
         std::string layerName;     //!<  Layer name (mandatory)
-        std::string layerFileName; //!< Name of associated output file (optional)
-        std::string layerFilePath; //!< Name of associated output filepath (optional)
+        std::string fileName; //!< Name of associated output file (optional)
+        std::string filePath; //!< Name of associated output filepath (optional)
 
         /**
              * @brief Construct a new Layer object
@@ -113,8 +113,9 @@ namespace lad
         void showInformation();
 
         int loadData(std::vector<cv::Point2d> *); //!< Import data into vectorData container
-        // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the layerFileName as fileFormat (default CSV)
-        int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = nullptr); //!< Overloaded method of exporting vectorData to user defined file
+        // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the fileName as fileFormat (default CSV)
+        int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, 
+                       std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = nullptr); //!< Overloaded method of exporting vectorData to user defined file
         int convertSpace(int newSpace, double *apTransformMatrix);                                                                                                                        //!< Convert vectorData content to new coordinate space
     };
 

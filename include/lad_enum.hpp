@@ -36,6 +36,12 @@ namespace lad{
         ERROR_CONTOURS_NOTFOUND =-6     //!< No contour could de found
     };
 
+    enum VerbosityLevels{
+        NO_VERBOSE      = 0,    //!< No verbose output (default)
+        VERBOSITY_0     = 0,    //!< Minimum verbose level, equivalent to NO_VERBOSE
+        VERBOSITY_1     = 1,    //!< Low verbose level, show summary information.
+        VERBOSITY_2     = 2     //!< High verbose level, show detailed information.
+    };
     enum TiffProcessing{
         TIFF_FILE_INVALID =-1, //!< Invalid TIFF image file
         TIFF_FILE_EMPTY   =-2  //!< Valid TIFF image metadata, with empty raster band

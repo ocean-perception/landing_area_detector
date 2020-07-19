@@ -153,7 +153,7 @@ namespace lad
  * @param name name of the layer to be removed
  * @return int returns success if layer was found and removed. Otherwise, it will send the error code
  */
-    int Pipeline::RemoveLayer(std::string name)
+    int Pipeline::removeLayer(std::string name)
     {
         // First we verify the stack is not empty
         if (Layers.empty())
@@ -182,7 +182,7 @@ namespace lad
  * @param name name of the layer to be removed
  * @return int returns success if layer was found and removed. Otherwise, it will send the error code
  */
-    int Pipeline::RemoveLayer(int id)
+    int Pipeline::removeLayer(int id)
     {
         // First we verify the ID
         if (id < 0)
@@ -218,7 +218,7 @@ namespace lad
  * @param type Type of new layer
  * @return int new ID if valid, error code otherwise 
  */
-    int Pipeline::CreateLayer(std::string name, int type)
+    int Pipeline::createLayer(std::string name, int type)
     {
         // Let's check name
         if (isValidName(name) != LAYER_OK)
@@ -265,11 +265,11 @@ namespace lad
  * @param coords 
  * @return int 
  */
-    int Pipeline::ExportLayer(std::string name, std::string outfile, int format, int coord_sys)
+    int Pipeline::exportLayer(std::string name, std::string outfile, int format, int coord_sys)
     { //!< Export a given layer in the stack identified by its name, to
         if (name.empty())
         {
-            cout << red << "[ExportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
+            cout << red << "[exportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
             return ERROR_MISSING_ARGUMENT;
         }
         std::string exportName;
@@ -279,13 +279,13 @@ namespace lad
         // getlayer()
         if (apLayer == nullptr)
         { // failed to retrieve Layer "name" from the stack
-            cout << red << "[ExportLayer] Failed to retrieve Layer [" << name << "] from stack" << reset << endl;
+            cout << red << "[exportLayer] Failed to retrieve Layer [" << name << "] from stack" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
 
         if (outfile.empty())
         {
-            exportName = apLayer->layerFileName;
+            exportName = apLayer->fileName;
         }
         else
         {
@@ -302,7 +302,7 @@ namespace lad
         adfGeoTransform = apInputGeotiff->GetGeoTransform();
         if (adfGeoTransform == nullptr)
         {
-            cout << red << "[ExportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
+            cout << red << "[exportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
 
@@ -325,7 +325,7 @@ namespace lad
             break;
 
         default:
-            cout << yellow << "[ExportLayer] Layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
+            cout << yellow << "[exportLayer] Layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
             break;
         }
@@ -336,7 +336,7 @@ namespace lad
     /**
  * @brief Retrieve the first valid available ID from the Look-up table
  * 
- * @return int valid ID ready to be consumed in a CreateLayer call
+ * @return int valid ID ready to be consumed in a createLayer call
  */
     int Pipeline::getValidID()
     {
@@ -455,11 +455,11 @@ namespace lad
  * @param inputFile Name of the geotTIFF file to be read
  * @return int Success/error code
  */
-    int Pipeline::ReadTIFF(std::string inputFile)
+    int Pipeline::readTIFF(std::string inputFile)
     {
         if (inputFile.empty())
         {
-            cout << red << "[ReadTIFF] input filename is empty!" << reset << endl;
+            cout << red << "[readTIFF] input filename is empty!" << reset << endl;
         }
         cout << red << "NOT IMPLEMENTED YET ***********************************" << endl;
     }
@@ -542,7 +542,7 @@ namespace lad
 
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
         { //!< Layer was not found, we have been asked to create it
-            id = CreateLayer(rasterName, LAYER_RASTER);
+            id = createLayer(rasterName, LAYER_RASTER);
             uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
         }
         //*********************************************************
@@ -561,7 +561,7 @@ namespace lad
 
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
         { //!< Layer was not found, we have been asked to create it
-            id = CreateLayer(maskName, LAYER_RASTER);
+            id = createLayer(maskName, LAYER_RASTER);
             uploadData(id, (void *)&matDataMask); //upload cvMat tiff for deep-copy into the internal container
         }
 
@@ -653,7 +653,7 @@ namespace lad
         else
         {
             // nope, we must create it
-            int newid = CreateLayer(contourName, LAYER_VECTOR);
+            int newid = createLayer(contourName, LAYER_VECTOR);
             apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
             // cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
         }

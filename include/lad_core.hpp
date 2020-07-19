@@ -41,6 +41,7 @@ namespace lad
         {
             apInputGeotiff = nullptr;
             inputFileTIFF = "";
+            verbosity = NO_VERBOSE;
             LUT_ID.resize(DEFAULT_STACK_SIZE);
             std::fill(LUT_ID.begin(), LUT_ID.end(), ID_AVAILABLE);
         }
@@ -58,12 +59,11 @@ namespace lad
         std::string inputFileTIFF; //!< Input TIFF filename containing base bathymetry. Base name for output products files
 
         vector<std::shared_ptr<Layer>> Layers; //!< Collection of layers. Using smart shared pointers for tree-like pipeline structures
-
         vector<int> LUT_ID; //!< Look-up table of Layer ID's. Intended to speed-up ID validation and retrieval
-
+        int verbosity;
         // Methods **************
 
-        int ReadTIFF(std::string inputFile); //!< Read a given geoTIFF file an loads into current container
+        int readTIFF(std::string inputFile); //!< Read a given geoTIFF file an loads into current container
 
         std::string getLayerName(int id);              //!< Returns name of Layer with given ID number
         int setLayerName(int id, std::string newName); //!< Overwrite Layers name using is ID
@@ -74,13 +74,13 @@ namespace lad
         std::shared_ptr<Layer> getLayer(int id);           //!< Return shared_ptr to a Layer identified by its ID
         std::shared_ptr<Layer> getLayer(std::string name); //!< Return shared_ptr to a Layer identified by its name
 
-        int CreateLayer(std::string name, int type);   //!< Create a new layer "name" of given type and insert it into the pipeline stack.
+        int createLayer(std::string name, int type);   //!< Create a new layer "name" of given type and insert it into the pipeline stack.
         int InsertLayer(std::shared_ptr<Layer> layer); //!< Insert previously created layer into the pipeline stack
 
-        int RemoveLayer(std::string name); //!< Remove layer by its name
-        int RemoveLayer(int ID);           //!< Remove layer by its ID
+        int removeLayer(std::string name); //!< Remove layer by its name
+        int removeLayer(int ID);           //!< Remove layer by its ID
 
-        int ExportLayer(std::string name, std::string outfile = "", int format = FMT_CSV, int coords = NO_COORDINATE); //!< Export a given layer in the stack identified by its name, to
+        int exportLayer(std::string name, std::string outfile = "", int format = FMT_CSV, int coords = NO_COORDINATE); //!< Export a given layer in the stack identified by its name, to
 
         int getTotalLayers(int type = LAYER_ANYTYPE); //!< Return the total number of layer ot a given type in the stack
 

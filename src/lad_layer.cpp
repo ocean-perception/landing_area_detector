@@ -28,8 +28,8 @@ namespace lad
  */
     int Layer::copy(Layer layer)
     {
-        layerFilePath = layer.layerFilePath;
-        layerFileName = layer.layerFileName;
+        filePath = layer.filePath;
+        fileName = layer.fileName;
         layerName = layer.layerName;
         layerID = layer.layerID;
         layerStatus = layer.layerStatus;
@@ -45,8 +45,8 @@ namespace lad
  */
     int Layer::copy(Layer *layer)
     {
-        layerFilePath = layer->layerFilePath;
-        layerFileName = layer->layerFileName;
+        filePath = layer->filePath;
+        fileName = layer->fileName;
         layerName = layer->layerName;
         layerID = layer->layerID;
         layerStatus = layer->layerStatus;
@@ -65,7 +65,7 @@ namespace lad
         layerID = LAYER_INVALID_ID;
         layerType = LAYER_INVALID;
         layerName = "";
-        layerFileName = "";
+        fileName = "";
         return NO_ERROR;
     }
     /**
@@ -198,7 +198,7 @@ namespace lad
     }
 
     /**
- * @brief Export vectorData to layerFileName file using fileFmt format
+ * @brief Export vectorData to fileName file using fileFmt format
  * 
  * @param fileFmt Output file format. It must be a valid value from enum ExportFormat
  */
@@ -263,7 +263,7 @@ namespace lad
 
             if (exportName.empty())
             {
-                if (layerFileName.empty())
+                if (fileName.empty())
                 {
                     cout << "[writeLayer] " << yellow << "Layer filename not defined, will try to use layer name as export file" << reset << endl;
                     if (layerName.empty())

@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
 
     string inputFileName = args::get(argInput); //String containing the input file path+name from cvParser function
     string outputFileName = DEFAULT_OUTPUT_FILE;
-    int verboseLevel = 0;
 
     if (!argOutput)
     {
@@ -116,6 +115,8 @@ int main(int argc, char *argv[])
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
+
+    int verboseLevel = 0;
     if (argVerbose)
     {
         verboseLevel = args::get(argVerbose);
@@ -145,7 +146,7 @@ int main(int argc, char *argv[])
         Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
-    Pipeline.ExportLayer("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
+    Pipeline.exportLayer("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
 
     waitKey(0);
     return lad::NO_ERROR;
