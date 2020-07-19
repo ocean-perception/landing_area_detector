@@ -125,6 +125,8 @@ namespace lad
             double dRotation; //!< Rotation angle of the given kernel (in radians)
 
     public:
+        cv::Mat rotatedData; //OpenCV matrix that will hold the data
+
         void showInformation();
         void setRotation(double);
         double getRotation();

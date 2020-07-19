@@ -153,9 +153,22 @@ int main(int argc, char *argv[])
     Pipeline.setLayerName(0,"TEST");
     Pipeline.removeLayer(0);
 
+    Pipeline.createLayer("kernel",LAYER_KERNEL);
+    shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"));
+    
+    
+
+    apLayer->rasterData = cv::imread("template.png", IMREAD_GRAYSCALE);
+
+    namedWindow("template");
+    imshow("template", apLayer->rasterData);
+
+    apLayer->setRotation(2);
+
+
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    // waitKey(0);
+    waitKey(0);
     return lad::NO_ERROR;
 }

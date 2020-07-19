@@ -319,6 +319,20 @@ namespace lad
      */
     void KernelLayer::setRotation(double rotation){
         dRotation = rotation;
+        if (rasterData.empty()) return; // Empty kernel, nothing to update
+
+        // From: https://stackoverflow.com/questions/22041699/rotate-an-image-without-cropping-in-opencv-in-c
+        // get rotation matrix for rotating the image around its center in pixel coordinates
+        cv::Mat r = cv::getRotationMatrix2D(cv::Point2f((rasterData.cols-1)/2.0, (rasterData.rows-1)/2.0), dRotation, 1.0);
+        // determine bounding rectangle, center not relevant
+        cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), rasterData.size(), dRotation).boundingRect2f();
+        // adjust transformation matrix
+        r.at<double>(0,2) += bbox.width/2.0 - rasterData.cols/2.0;
+        r.at<double>(1,2) += bbox.height/2.0 - rasterData.rows/2.0;
+
+        cv::warpAffine(rasterData, rotatedData, r, bbox.size());
+        namedWindow("test rot");
+        imshow("test rot", rotatedData);
     }
 
     /**

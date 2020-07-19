@@ -699,18 +699,11 @@ namespace lad
  */
     std::shared_ptr<Layer> Pipeline::getLayer(std::string name)
     {
-        if (mapLayers.empty())
+        auto layer = mapLayers.find(name);
+        if (layer == mapLayers.end())
             return nullptr;
 
-        if (!isValid(name))
-            return nullptr;
-
-        int id = getLayerID(name);
-
-        if (!isValid(id))
-            return nullptr; //some error ocurred while searching that name in the list of layers and returned an invalid ID
-
-        return (getLayer(id)); //now we search it by ID
+        return (layer->second); //now we search it by ID
     }
 
     /**
