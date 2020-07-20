@@ -405,7 +405,7 @@ namespace lad
         int ncols = width / sx; // each pixel is of sx horizontal size
         int nrows = length / sy; // each pixel is of sy vertical size
         // create the template 
-        cv::Mat A = cv::Mat::ones(ncols, nrows, CV_8UC1);
+        cv::Mat A = cv::Mat::ones(nrows, ncols, CV_8UC1);
         // create a new KernelLayer
         createLayer(name, LAYER_KERNEL);
         uploadData(name, (void *) &A);
