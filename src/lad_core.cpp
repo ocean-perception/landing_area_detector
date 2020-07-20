@@ -9,6 +9,7 @@
  * 
  */
 #include "lad_core.hpp"
+// #include "headers.h"
 
 namespace lad
 {
@@ -366,6 +367,56 @@ namespace lad
         }
         return lad::LAYER_OK;
     }
+
+    /**
+     * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
+     * 
+     * @param name Name of the new layer to be inserted
+     * @param width width of the pattern in spatial units. It will define the number of columns of the image
+     * @param length length of the pattern in spatial units. It will define the numer of rows of the image
+     * @param sx Horizontal resolution per pixel, in spatial units 
+     * @param sy Vertical resolution per pixel, in spatial units
+     * @return int Error code, if any
+     */
+    int Pipeline::createKernelTemplate (std::string name, double width, double length, double sx, double sy){
+        // first, we verify that the layer name is available
+        if (!isValid(name)){
+            cout << red << "[createKernelTemplate] Error when creating new layer, name [" << name << "] invalid" << reset << endl; 
+            return LAYER_INVALID_NAME;
+        }
+        auto layer = mapLayers.find(name);
+        if (layer != mapLayers.end()){ //we had a match! we exit
+            cout << red << "[createKernelTemplate] Error when creating new layer, name [" << name << "] is already taken" << reset << endl; 
+            return LAYER_DUPLICATED_NAME;
+        }
+        // now, we check that the input arguments are valid (basically, they must be positive)
+        // Pixel resolution can be negative is inherited from the geoTIFF metadata, we can correct that
+        if ((width <= 0) || (length <= 0)){
+            cout << red << "[createKernelTemplate] Invalid dimensions: [" << width << " x " << length << "]. They must positive." << reset << endl; 
+            return ERROR_WRONG_ARGUMENT;
+        }
+        sx = fabs(sx);
+        sy = fabs(sy);
+        if ((sx * sy) == 0){
+            cout << red << "[createKernelTemplate] Invalid pixel resolution: [" << sx << " x " << sy << "]. They must non-zero." << reset << endl; 
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+        int ncols = width / sx; // each pixel is of sx horizontal size
+        int nrows = length / sy; // each pixel is of sy vertical size
+        // create the template 
+        cv::Mat A = cv::Mat::ones(ncols, nrows, CV_8UC1);
+        // create a new KernelLayer
+        createLayer(name, LAYER_KERNEL);
+        uploadData(name, (void *) &A);
+        if (verbosity > 0){
+            shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
+            namedWindow(name);
+            imshow(name, apLayer->rasterData * 255);
+        }
+        return NO_ERROR;
+    }
+
 
     /**
  * @brief Upload data to the corresponding container in the layer identified by its id. 

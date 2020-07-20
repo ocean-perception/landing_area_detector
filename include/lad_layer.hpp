@@ -130,6 +130,7 @@ namespace lad
         void showInformation();
         void setRotation(double);
         double getRotation();
+        
 
         KernelLayer(std::string name, int id, double rot = 0) : RasterLayer(name, id)
         {

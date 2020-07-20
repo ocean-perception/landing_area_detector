@@ -89,18 +89,13 @@ int main(int argc, char *argv[])
 
     string inputFileName = args::get(argInput); //String containing the input file path+name from cvParser function
     string outputFileName = DEFAULT_OUTPUT_FILE;
-
     if (!argOutput)
-    {
         cout << "Using default output filename: " << yellow << outputFileName << reset << endl;
-    }
     else
-    {
         outputFileName = args::get(argOutput); //String containing the output file template from cvParser function
-    }
 
     /*
-     * These were the mandatory arguments. Now we proceed to optional parameters.
+     * Now we proceed to optional parameters.
      * When each variable is defined, we override the default value.
      */
     float alphaShapeRadius = 1.0;
@@ -117,10 +112,12 @@ int main(int argc, char *argv[])
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
 
     int verboseLevel = 0;
+    lad::Pipeline Pipeline;
     if (argVerbose)
     {
         verboseLevel = args::get(argVerbose);
         cout << "Verbose level:\t\t" << verboseLevel << endl;
+        Pipeline.verbosity = verboseLevel;
     }
     cout << "***************************************" << endl
          << endl;
@@ -137,7 +134,6 @@ int main(int argc, char *argv[])
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
-    lad::Pipeline Pipeline;
 
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
@@ -150,20 +146,12 @@ int main(int argc, char *argv[])
 
     cout << "ID CONTOUR" << Pipeline.getLayerID("CONTOUR_Mask") << endl;
 
-    Pipeline.setLayerName(0,"TEST");
-    Pipeline.removeLayer(0);
-
     Pipeline.createLayer("kernel",LAYER_KERNEL);
-    shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"));
-    
-    
 
-    apLayer->rasterData = cv::imread("template.png", IMREAD_GRAYSCALE);
 
-    namedWindow("template");
-    imshow("template", apLayer->rasterData);
+    // apLayer->setRotation(2);
 
-    apLayer->setRotation(2);
+    Pipeline.createKernelTemplate("kernel_test", 0.5, 1.4, 0.01, 0.01);
 
 
     if (argVerbose)
