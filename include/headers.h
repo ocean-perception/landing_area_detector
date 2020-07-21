@@ -36,6 +36,7 @@
 //     #include "opencv2/cudafeatures2d.hpp"
 //     #include "opencv2/xfeatures2d/cuda.hpp"
 // #endif
+#include "geotiff.hpp"
 
 const std::string green("\033[1;32m");
 const std::string yellow("\033[1;33m");

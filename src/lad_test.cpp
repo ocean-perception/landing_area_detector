@@ -134,6 +134,7 @@ int main(int argc, char *argv[])
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
+    // Geotiff outputGeotiff;  // default constructor will create an empty instance
 
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
@@ -151,6 +152,14 @@ int main(int argc, char *argv[])
     apKernel = dynamic_pointer_cast<KernelLayer> (Pipeline.getLayer("kernel_test"));
 
     apKernel->setRotation(0);
+
+    shared_ptr<RasterLayer> apRaster;
+    apRaster = dynamic_pointer_cast<RasterLayer> (Pipeline.getLayer("RAW_Bathymetry"));
+
+    if (outputFileName.empty()){
+        outputFileName = DEFAULT_OUTPUT_FILE;
+    }
+    apRaster->writeLayer("VALID_DataMask.tif", FMT_TIFF, &inputGeotiff, WORLD_COORDINATE, nullptr);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for

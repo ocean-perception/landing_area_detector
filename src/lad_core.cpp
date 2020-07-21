@@ -297,7 +297,7 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
         }
 
-        if (outfile.empty())
+        if (outfile.empty())// if no outfile name was provided, use internally defined fileName
         {
             exportName = apLayer->fileName;
         }
@@ -325,7 +325,9 @@ namespace lad
         {
         case LAYER_RASTER:
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
-            cout << yellow << "LAYER_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
+            apRaster->writeLayer(exportName, format, apInputGeotiff,coord_sys, adfGeoTransform);
+
+            cout << yellow << "LAYER_RASTER export feature still experimental" << reset << endl;
             break;
 
         case LAYER_VECTOR:
@@ -609,8 +611,8 @@ namespace lad
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
         { //!< Layer was not found, we have been asked to create it
             id = createLayer(rasterName, LAYER_RASTER);
-            uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
         }
+        uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
         //*********************************************************
         // Check DATA mask layer
         //*********************************************************
@@ -628,8 +630,8 @@ namespace lad
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
         { //!< Layer was not found, we have been asked to create it
             id = createLayer(maskName, LAYER_RASTER);
-            uploadData(id, (void *)&matDataMask); //upload cvMat tiff for deep-copy into the internal container
         }
+        uploadData(id, (void *)&matDataMask); //upload cvMat tiff for deep-copy into the internal container
 
         if (showImage)
         {

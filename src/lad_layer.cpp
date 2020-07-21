@@ -9,6 +9,8 @@
  * 
  */
 
+#include <geotiff.hpp>
+
 #include "lad_layer.hpp"
 #include "lad_core.hpp"
 #include "lad_processing.hpp"
@@ -301,6 +303,48 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
         }
     }
+
+    int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, Geotiff *geotiff, int outputCoordinate, double *apMatrix){
+        if (fileFmt != FMT_TIFF){
+            cout << red << "[writeLayer] Raster export format not supported. Only FMT_TIFF is currently supported" << reset << endl;
+            return -1;
+        }
+        if (outputFilename.empty()){
+            cout << red <<"[writeLayer] Empty output filename provided" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+        GDALDataset *geotiffDataset;
+        GDALDriver *driverGeotiff;
+        GDALRasterBand *geotiffBand; // also declare pointers for Geotiff
+                               // and raster band object(s)
+        int nrows,ncols;
+        int *dimensions = geotiff->GetDimensions();
+
+        nrows = dimensions[0];
+        ncols = dimensions[1];
+        // noData = geotiff->GetNoDataValue();
+ 
+        driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
+        geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
+        geotiffDataset->SetGeoTransform(geotiff->GetGeoTransform());
+        geotiffDataset->SetProjection(geotiff->GetProjection());
+        
+        int errcode;
+        float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
+        geotiffDataset->GetRasterBand(1)->SetNoDataValue (geotiff->GetNoDataValue());
+        for(int row=0; row<nrows; row++) {
+            for(int col=0; col<ncols; col++) {
+                rowBuff[col] = (float) rasterData.at<float>(cv::Point(col,row));
+            }
+            errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float32, 0, 0);
+        }
+        GDALClose(geotiffDataset) ;
+        return NO_ERROR;
+    }
+
+
+
 
     /**
  * @brief Extended method that prints general and kernel specific information

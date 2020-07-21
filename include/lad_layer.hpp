@@ -93,6 +93,7 @@ namespace lad
             // rasterData =
         }
 
+        int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); //!< Overloaded method of exporting vectorData to user defined file
         void showInformation();
         int loadData(cv::Mat *);
     };
