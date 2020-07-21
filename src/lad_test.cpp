@@ -145,11 +145,12 @@ int main(int argc, char *argv[])
         Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.createLayer("kernel",LAYER_KERNEL);
-
     Pipeline.createKernelTemplate("kernel_test", 0.5, 1.4, 0.01, 0.01);
 
-    //TODO improve retrieval for derived classes type: go for virtual?
-    dynamic_pointer_cast<KernelLayer> (Pipeline.getLayer("kernel_test"))->setRotation(15);
+    shared_ptr<KernelLayer> apKernel;
+    apKernel = dynamic_pointer_cast<KernelLayer> (Pipeline.getLayer("kernel_test"));
+
+    apKernel->setRotation(0);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
