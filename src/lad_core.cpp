@@ -57,6 +57,24 @@ namespace lad
         return LAYER_NOT_FOUND;
     }
 
+    int Pipeline::setLayerID(std::string name, int id)
+    {
+        if (mapLayers.empty())
+            return LAYER_EMPTY;
+        if (isValid(name) == false)
+            return LAYER_INVALID_NAME;
+        if (isAvailable(id) == false)
+            return ID_TAKEN;
+
+        // Check each raster in the array, compare its ID against search index
+        auto layer = mapLayers.find(name);
+        if (layer != mapLayers.end())
+            return layer->second->setID(id);
+
+        return LAYER_NOT_FOUND;
+    }
+
+
     /**
  * @brief Overwrite the name of a layer (if present) with a unique string. 
  * @details If provided string 
@@ -788,11 +806,12 @@ namespace lad
     {
         if (id < 0)
             return false; // careful, the ID is valid, therefore we prefer to flag it as unavailable too
-        if (id >= LUT_ID.size())
-            return false; // this is to avoid throwing an out-of-range exception
-        if (LUT_ID[id] == ID_TAKEN)
-            return false; // taken!
-        return true;      // default, it didn't fail therefore is available
+
+        for (auto it : mapLayers){
+            if (it.second->getID() == id)   // is already taken?
+                return false;           
+        }
+        return true;    // none found, therefore it must be available
     }
 
     /**
@@ -804,21 +823,12 @@ namespace lad
     {
         //iterate through all the existing layers, and compare against them
         if (isValid(str) == false)
-        {
             return false; // sanity check of its validity
-        }
-        if (mapLayers.empty())
-        { //nothing stored in the stack, so any valid name is available
+
+        if (mapLayers.find(str) == mapLayers.end()) // not found? is available
             return true;
-        }
-        for (auto it : mapLayers)
-        {
-            if (str == it.second->layerName)
-            { //that name is already taken
-                return false;
-            }
-        }
-        return true;
+        else
+            return false;
     }
 
 } // namespace lad

@@ -144,15 +144,12 @@ int main(int argc, char *argv[])
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    cout << "ID CONTOUR" << Pipeline.getLayerID("CONTOUR_Mask") << endl;
-
     Pipeline.createLayer("kernel",LAYER_KERNEL);
-
-
-    // apLayer->setRotation(2);
 
     Pipeline.createKernelTemplate("kernel_test", 0.5, 1.4, 0.01, 0.01);
 
+    //TODO improve retrieval for derived classes type: go for virtual?
+    dynamic_pointer_cast<KernelLayer> (Pipeline.getLayer("kernel_test"))->setRotation(15);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for

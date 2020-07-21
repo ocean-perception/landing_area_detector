@@ -331,8 +331,8 @@ namespace lad
         r.at<double>(1,2) += bbox.height/2.0 - rasterData.rows/2.0;
 
         cv::warpAffine(rasterData, rotatedData, r, bbox.size());
-        namedWindow("test rot");
-        imshow("test rot", rotatedData);
+        // namedWindow("test rot");
+        // imshow("test rot", rotatedData*255);
     }
 
     /**
