@@ -209,7 +209,7 @@ namespace lad
         //*************************************************************
         if (fileFmt == FMT_TIFF)
         {
-            cout << red << "[writeLayer] Error, vector layer cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
+            cout << red << "[v.writeLayer] Error, vector layer [" << layerName << "] cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
         //*************************************************************
@@ -305,13 +305,35 @@ namespace lad
     }
 
     int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, Geotiff *geotiff, int outputCoordinate, double *apMatrix){
-        if (fileFmt != FMT_TIFF){
-            cout << red << "[writeLayer] Raster export format not supported. Only FMT_TIFF is currently supported" << reset << endl;
-            return -1;
-        }
         if (outputFilename.empty()){
             cout << red <<"[writeLayer] Empty output filename provided" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
+        }
+        
+        cv::Mat tempData;
+        // before exporting, we need to verify if the data to be exported is already CV_32F
+        if (rasterData.depth() != CV_32F){
+            rasterData.convertTo(tempData, CV_32F);
+            cout << "[r.writeLayer] Converting [" << yellow << layerName << reset << "] to CV_32F" << endl; 
+        }
+        else{
+            rasterData.copyTo(tempData);
+        }
+        // exporting as CSV in the pixel domain
+        if (fileFmt == FMT_CSV){
+
+            cout << "[r.writeLayer] exporting [" << yellow << layerName << reset << "] as CSV" << endl;
+            std::ofstream ofs;
+            ofs.open(outputFilename, std::ofstream::out); //overwrite if exist            
+            for (int row = 0; row < tempData.rows; row++){
+                for (int col = 0; col < tempData.cols; col++){
+                    double value = tempData.at<float>(row,col);
+                    ofs << value << "\t";
+                }
+                ofs << endl;
+            }
+            ofs.close();
+            return NO_ERROR;
         }
 
         GDALDataset *geotiffDataset;
@@ -330,21 +352,20 @@ namespace lad
         geotiffDataset->SetGeoTransform(geotiff->GetGeoTransform());
         geotiffDataset->SetProjection(geotiff->GetProjection());
         
+        // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;
         float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
-        geotiffDataset->GetRasterBand(1)->SetNoDataValue (geotiff->GetNoDataValue());
+        geotiffDataset->GetRasterBand(1)->SetNoDataValue (geotiff->GetNoDataValue());       
         for(int row=0; row<nrows; row++) {
             for(int col=0; col<ncols; col++) {
-                rowBuff[col] = (float) rasterData.at<float>(cv::Point(col,row));
+                rowBuff[col] = (float) tempData.at<float>(cv::Point(col,row)); // tempData should be CV_32F
             }
             errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float32, 0, 0);
         }
         GDALClose(geotiffDataset) ;
+
         return NO_ERROR;
     }
-
-
-
 
     /**
  * @brief Extended method that prints general and kernel specific information

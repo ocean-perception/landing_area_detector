@@ -138,28 +138,11 @@ int main(int argc, char *argv[])
 
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
-
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
-    Pipeline.exportLayer("CONTOUR_Mask", outputFileName, FMT_SHP, WORLD_COORDINATE);
 
-    if (argVerbose)
-        Pipeline.showInfo(); // show detailed information if asked for
-
-    Pipeline.createLayer("kernel",LAYER_KERNEL);
-    Pipeline.createKernelTemplate("kernel_test", 0.5, 1.4, 0.01, 0.01);
-
-    shared_ptr<KernelLayer> apKernel;
-    apKernel = dynamic_pointer_cast<KernelLayer> (Pipeline.getLayer("kernel_test"));
-
-    apKernel->setRotation(0);
-
-    shared_ptr<RasterLayer> apRaster;
-    apRaster = dynamic_pointer_cast<RasterLayer> (Pipeline.getLayer("RAW_Bathymetry"));
-
-    if (outputFileName.empty()){
-        outputFileName = DEFAULT_OUTPUT_FILE;
-    }
-    apRaster->writeLayer("VALID_DataMask.tif", FMT_TIFF, &inputGeotiff, WORLD_COORDINATE, nullptr);
+    Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
+    Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.csv", FMT_CSV, WORLD_COORDINATE);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for

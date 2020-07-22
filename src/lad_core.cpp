@@ -326,8 +326,6 @@ namespace lad
         case LAYER_RASTER:
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
             apRaster->writeLayer(exportName, format, apInputGeotiff,coord_sys, adfGeoTransform);
-
-            cout << yellow << "LAYER_RASTER export feature still experimental" << reset << endl;
             break;
 
         case LAYER_VECTOR:
@@ -619,6 +617,7 @@ namespace lad
 
         cv::Mat matDataMask;                                                      // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
         cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
+        // the dst image from cv::compare function is CV_8U. When exporting to disk, it will require to transform as CV_32F
 
         id = getLayerID(maskName);
         if (id == LAYER_INVALID_NAME)
