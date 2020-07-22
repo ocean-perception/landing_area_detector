@@ -345,7 +345,11 @@ namespace lad
 
         nrows = dimensions[0];
         ncols = dimensions[1];
-        // noData = geotiff->GetNoDataValue();
+        double noData; 
+        noData = geotiff->GetNoDataValue();
+        if (rasterData.depth() == CV_8U){
+            noData = -1.0;
+        }
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
         geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
@@ -355,7 +359,7 @@ namespace lad
         // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;
         float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
-        geotiffDataset->GetRasterBand(1)->SetNoDataValue (geotiff->GetNoDataValue());       
+        geotiffDataset->GetRasterBand(1)->SetNoDataValue (noData);       
         for(int row=0; row<nrows; row++) {
             for(int col=0; col<ncols; col++) {
                 rowBuff[col] = (float) tempData.at<float>(cv::Point(col,row)); // tempData should be CV_32F

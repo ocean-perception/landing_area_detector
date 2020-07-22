@@ -152,9 +152,7 @@ int main(int argc, char *argv[])
 
     Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.csv", FMT_CSV, WORLD_COORDINATE);
-    // Pipeline.exportLayer("kernel", "kernel.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
