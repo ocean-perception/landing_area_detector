@@ -868,7 +868,7 @@ namespace lad
             cout << "[computeExclusionMap] Input raster [" << kernel << "] not found in the stack" << endl;
             return LAYER_NOT_FOUND;
         }
-        if (apKernel->second->getType() != LAYER_RASTER){
+        if (apKernel->second->getType() != LAYER_KERNEL){
             cout << "[computeExclusionMap] Input layer [" << kernel << "] must be of type LAYER_RASTER" << endl;
             return LAYER_NOT_FOUND;
         }
@@ -879,7 +879,8 @@ namespace lad
             cout << red << "[computeExclusionMap] Output raster layer name is empty" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
-        auto apOutput = mapLayers.find(dstLayer);
+        // cout << "Searching [" << dstLayer << "] +++++++++++++++++++++" << endl; 
+        auto apOutput = mapLayers.find(dstLayer); // not found? let's create it
         if (apOutput == mapLayers.end()){
             cout << green << "[computeExclusionMap] Output raster [" << dstLayer << "] not found in the stack. Creating" << reset << endl;
             createLayer(dstLayer, LAYER_RASTER);
@@ -889,12 +890,21 @@ namespace lad
             cout << "[computeExclusionMap] Output layer [" << dstLayer << "] must be of type LAYER_RASTER" << endl;
             return ERROR_WRONG_ARGUMENT;
         }
-
-
+        
+        // *****************************************
         // Applying erode
+        //R.erode(K) -> O
+        shared_ptr<RasterLayer> apLayerR = dynamic_pointer_cast<RasterLayer>(apBase->second);
+        shared_ptr<KernelLayer> apLayerK = dynamic_pointer_cast<KernelLayer>(apKernel->second);
+        shared_ptr<RasterLayer> apLayerO = dynamic_pointer_cast<RasterLayer>(apOutput->second);
 
-        // Storing resulting data into the pipeline stack
+        cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
 
+        if (verbosity > 0){
+            namedWindow (dstLayer);
+            imshow (dstLayer, apLayerO->rasterData);
+        }
+        
         // return no error
         return NO_ERROR;
     }
