@@ -538,7 +538,7 @@ namespace lad
     {
         // Geotiff input information
         int retval = NO_ERROR;
-        cout << yellow << "****** Geotiff Summary *****************" << reset << endl;
+        cout << endl << cyan << "****** Geotiff Summary *****************" << reset << endl;
         cout << "Geotiff file:\t\t";
         if (apInputGeotiff == nullptr)
         {
@@ -548,11 +548,12 @@ namespace lad
         else
         {
             cout << apInputGeotiff->GetFileName() << endl;
-            apInputGeotiff->ShowInformation();
+            if (verbosity > 1)
+                apInputGeotiff->ShowInformation();
         }
 
-        cout << cyan << endl
-             << "++++++ Layers +++++++++++++++++" << reset << endl;
+        cout << cyan
+             << "++++++ Layers ++++++++++++++++++++++++++" << reset << endl;
         if (mapLayers.empty())
         {
             cout << yellow << "None" << reset << endl;
@@ -563,7 +564,7 @@ namespace lad
             cout << "Total of Layers: " << mapLayers.size() << endl;
             showLayers();
         }
-        cout << yellow << "****** End of Summary ******************" << reset << endl;
+        cout << cyan << "****** End of Summary ******************" << reset << endl;
 
         return retval;
     }

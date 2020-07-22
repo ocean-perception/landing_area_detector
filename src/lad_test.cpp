@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
     //**************************************************************************
     /* Summary list parameters */
-    cout << yellow << "****** Summary ************************" << reset << endl;
+    cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
         cout << "Verbose level:\t\t" << verboseLevel << endl;
         Pipeline.verbosity = verboseLevel;
     }
-    cout << "***************************************" << endl
+    cout << "*************************************************" << endl
          << endl;
 
     // create the container and the open input file
@@ -133,8 +133,6 @@ int main(int argc, char *argv[])
     // Get/print summary information of the TIFF
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
-
-    // Geotiff outputGeotiff;  // default constructor will create an empty instance
 
     Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);

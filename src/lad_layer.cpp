@@ -220,7 +220,7 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                cout << "Converting coordinate space of [" << exportName << "] to [";
+                cout << "[v.writeLayer] Converting coordinate space of [" << exportName << "] to [";
                 if (outputCoordinate == PIXEL_COORDINATE)
                 {
                     cout << yellow << "PIXEL" << reset << "]" << endl;
@@ -251,7 +251,7 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                cout << "Converting coordinate space of [" << exportName << "] to [";
+                cout << "[v.writeLayer] Converting coordinate space of [" << exportName << "] to [";
                 if (outputCoordinate == PIXEL_COORDINATE)
                 {
                     cout << yellow << "PIXEL" << reset << "]" << endl;
