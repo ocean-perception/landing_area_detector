@@ -832,4 +832,72 @@ namespace lad
             return false;
     }
 
+    /**
+     * @brief Compute the exclusion map (P3) using morphological operators (erode) from a vehicle footprint kernel against the bathymetry valida data map.
+     * 
+     * @param raster Raster layer indicating available valid bathymetry data (non-zero)
+     * @param kernel Vehicle footprint described as a kernel layer
+     * @param dst Name of the resulting raster layer that will containg the exclusion map. If not present in the stack, it wil be created
+     * @return int 
+     */
+    int Pipeline::computeExclusionMap(std::string raster, std::string kernel, std::string dstLayer){
+        // first we validate the layer names and content
+        // *****************************************
+        // Validating input raster layer
+        if (raster.empty()){
+            cout << red << "[computeExclusionMap] Input raster layer name is empty" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        auto apBase = mapLayers.find(raster);
+        if (apBase == mapLayers.end()){
+            cout << "[computeExclusionMap] Input raster [" << raster << "] not found in the stack" << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (apBase->second->getType() != LAYER_RASTER){
+            cout << "[computeExclusionMap] Input layer [" << raster << "] must be of type LAYER_RASTER" << endl;
+            return LAYER_NOT_FOUND;
+        }
+        // *****************************************
+        // Validating input kernel layer
+        if (kernel.empty()){
+            cout << red << "[computeExclusionMap] Input kernel layer name is empty" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        auto apKernel = mapLayers.find(kernel);
+        if (apKernel == mapLayers.end()){
+            cout << "[computeExclusionMap] Input raster [" << kernel << "] not found in the stack" << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (apKernel->second->getType() != LAYER_RASTER){
+            cout << "[computeExclusionMap] Input layer [" << kernel << "] must be of type LAYER_RASTER" << endl;
+            return LAYER_NOT_FOUND;
+        }
+
+        // *****************************************
+        // Validating output raster (exclusion map) layer
+        if (dstLayer.empty()){
+            cout << red << "[computeExclusionMap] Output raster layer name is empty" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        auto apOutput = mapLayers.find(dstLayer);
+        if (apOutput == mapLayers.end()){
+            cout << green << "[computeExclusionMap] Output raster [" << dstLayer << "] not found in the stack. Creating" << reset << endl;
+            createLayer(dstLayer, LAYER_RASTER);
+            apOutput =  mapLayers.find(dstLayer);    //we get thepointer, it should appear now in the stack!
+        }
+        else if (apOutput->second->getType() != LAYER_RASTER){
+            cout << "[computeExclusionMap] Output layer [" << dstLayer << "] must be of type LAYER_RASTER" << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+
+        // Applying erode
+
+        // Storing resulting data into the pipeline stack
+
+        // return no error
+        return NO_ERROR;
+    }
+
+
 } // namespace lad
