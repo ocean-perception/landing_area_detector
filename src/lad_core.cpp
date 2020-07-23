@@ -47,7 +47,6 @@ namespace lad
             return LAYER_EMPTY;
         if (isValid(name) == false)
             return LAYER_INVALID_NAME;
-
         // Check each raster in the array, compare its ID against search index
         auto layer = mapLayers.find(name);
 
@@ -73,7 +72,6 @@ namespace lad
 
         return LAYER_NOT_FOUND;
     }
-
 
     /**
  * @brief Overwrite the name of a layer (if present) with a unique string. 
@@ -146,14 +144,11 @@ namespace lad
     {
         if (isValid(checkName) == false)
             return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
-
         // Now we must test that the name follows the target convention: alphanumeric with {-_} as special characters
         // Use regex to determine if any foreing character is present
         //    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); //!< Regex list: will retrieve invalid characters
-
         if (mapLayers.empty()) //!< If Layers vector is empty, then given name is definitelty available
             return LAYER_OK;
-
         // TODO complete string based name match against all the other names
         for (auto layer : mapLayers)
         {
@@ -194,20 +189,15 @@ namespace lad
         // First we verify the ID
         if (id < 0)
             return LAYER_INVALID_ID;
-
-        if (LUT_ID.at(id) == ID_AVAILABLE) // using the LUT to speed-up the search process from O(n) to 1
-            return LAYER_NOT_FOUND;
-
         // Then we check the stack size
         if (mapLayers.empty())
             return LAYER_EMPTY;
-
         //then we go through each layer
         for (auto it : mapLayers)
         {
             if (it.second->getID() == id)
             { // found it!
-                LUT_ID.at(it.second->getID()) = ID_AVAILABLE;
+                // LUT_ID.at(it.second->getID()) = ID_AVAILABLE;
                 mapLayers.erase(it.first);
                 break; // if we don't break now we will get a segfault (the vector iterator is broken)
             }
@@ -231,19 +221,14 @@ namespace lad
             cout << "[Pipeline] Duplicated layer name: " << name << endl;
             return LAYER_INVALID_NAME;
         }
-
         int newid = getValidID();
-
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_VECTOR)
         {
             // cout << "[Pipeline] Creating VECTOR layer: " << name << endl;
             std::shared_ptr<lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
             // Layers.push_back(newLayer);
-
             mapLayers.insert(make_pair(name, newLayer));
-
-            LUT_ID.at(newid) = ID_TAKEN;
         }
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_RASTER)
@@ -251,10 +236,7 @@ namespace lad
             // cout << "[Pipeline] Creating RASTER layer" << endl;
             std::shared_ptr<lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
             // Layers.push_back(newLayer);
-
             mapLayers.insert(make_pair(name, newLayer));
-
-            LUT_ID.at(newid) = ID_TAKEN;
         }
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_KERNEL)
@@ -262,12 +244,8 @@ namespace lad
             // cout << "[Pipeline] Creating KERNEL layer" << endl;
             std::shared_ptr<lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
             // Layers.push_back(newLayer);
-
             mapLayers.insert(make_pair(name, newLayer));
-
-            LUT_ID.at(newid) = ID_TAKEN;
         }
-
         return newid;
     }
 
@@ -287,7 +265,6 @@ namespace lad
             return ERROR_MISSING_ARGUMENT;
         }
         std::string exportName;
-
         //now, we pull the Layer from the stack
         shared_ptr<Layer> apLayer = getLayer(name);
         // getlayer()
@@ -298,13 +275,9 @@ namespace lad
         }
 
         if (outfile.empty())// if no outfile name was provided, use internally defined fileName
-        {
             exportName = apLayer->fileName;
-        }
         else
-        {
             exportName = outfile;
-        }
 
         int type = apLayer->getType();
         shared_ptr<VectorLayer> apVector;
@@ -343,7 +316,6 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
             break;
         }
-
         return NO_ERROR;
     }
 
@@ -354,16 +326,8 @@ namespace lad
  */
     int Pipeline::getValidID()
     {
-        for (int i = 0; i < LUT_ID.size(); i++)
-        {
-            if (LUT_ID.at(i) == ID_AVAILABLE) //!< we return once we find an available ID
-                return i;
-        }
-        //!< If we reach this point it means that ALL slots(IDs) are taken, therefore, we expand our vector
-        cout << red << "getValiID: vector expansion triggered" << reset << endl;
-        LUT_ID.push_back(ID_AVAILABLE); // append a new empty slot
-        cout << "new size: " << LUT_ID.size() << endl;
-        return (LUT_ID.size() - 1); //Let's return it as a new available one
+        // use internal counter as valid ID generator
+        return (currentAvailableID++);
     }
 
     /**
@@ -434,7 +398,6 @@ namespace lad
         }
         return NO_ERROR;
     }
-
 
     /**
  * @brief Upload data to the corresponding container in the layer identified by its id. 
@@ -551,7 +514,6 @@ namespace lad
             if (verbosity > 1)
                 apInputGeotiff->ShowInformation();
         }
-
         cout << cyan
              << "++++++ Layers ++++++++++++++++++++++++++" << reset << endl;
         if (mapLayers.empty())
@@ -565,7 +527,6 @@ namespace lad
             showLayers();
         }
         cout << cyan << "****** End of Summary ******************" << reset << endl;
-
         return retval;
     }
 
@@ -596,7 +557,6 @@ namespace lad
                 tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
             }
         }
-
         // we need check if the raster layer exist
         int id = -1;
         id = getLayerID(rasterName);
@@ -606,7 +566,6 @@ namespace lad
             return LAYER_INVALID_NAME;
         }
         // TIFF name is VALID
-
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
         { //!< Layer was not found, we have been asked to create it
             id = createLayer(rasterName, LAYER_RASTER);
@@ -615,7 +574,6 @@ namespace lad
         //*********************************************************
         // Check DATA mask layer
         //*********************************************************
-
         cv::Mat matDataMask;                                                      // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
         cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
         // the dst image from cv::compare function is CV_8U. When exporting to disk, it will require to transform as CV_32F
@@ -642,7 +600,6 @@ namespace lad
             namedWindow(maskName, WINDOW_NORMAL);
             imshow(maskName, matDataMask);
             resizeWindow(maskName, 800, 800);
-
             namedWindow(rasterName, WINDOW_NORMAL);
             imshow(rasterName, tiff_colormap);
             resizeWindow(rasterName, 800, 800);
@@ -698,7 +655,6 @@ namespace lad
         {
             Mat boundingLayer = Mat::zeros(apRaster->rasterData.size(), CV_8UC1); // empty mask
             int n = 1;
-
             for (const auto &contour : good_contours)
             {
                 drawContours(boundingLayer, contours, -1, Scalar(255 * n / good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
@@ -714,13 +670,11 @@ namespace lad
         //pull access to rasterMask
         std::shared_ptr<VectorLayer> apVector;
         if (getLayerID(contourName) >= 0)
-        {
-            // it already exist!
+        {   // it already exist!
             apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
         }
         else
-        {
-            // nope, we must create it
+        {   // nope, we must create it
             int newid = createLayer(contourName, LAYER_VECTOR);
             apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
             // cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
@@ -749,15 +703,11 @@ namespace lad
             return nullptr;
         if (mapLayers.empty())
             return nullptr;
-        if (LUT_ID[id] == ID_AVAILABLE)
-            return nullptr;
         // now, it is safe to assume that such ID exists
         for (auto it : mapLayers)
         {
             if (it.second->getID() == id)
-            {
                 return it.second;
-            }
         }
         return nullptr; //!< Curious thing, nothing was found!
     }
@@ -785,18 +735,24 @@ namespace lad
  */
     int Pipeline::isValid(int id)
     {
-        if ((id < 0) || (id > (LUT_ID.size() - 1)))
+        if (id < 0)
             return false;
         return true;
     }
 
+    /**
+     * @brief Returns true if the provided string is a valid layer name
+     * 
+     * @param str string to be tested as valid layer name
+     * @return int true if valid, else return false
+     */
     int Pipeline::isValid(std::string str)
     {
         // TODO: Add regexp for alphanumeric +set of special characters as valid set
         if (str.empty())
             return false;
         return true;
-    } //!< Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
+    } 
 
     /**
  * @brief Returns true if the provided ID is available. It also checks validity, for sanity reasons
@@ -807,7 +763,7 @@ namespace lad
     int Pipeline::isAvailable(int id)
     {
         if (id < 0)
-            return false; // careful, the ID is valid, therefore we prefer to flag it as unavailable too
+            return false; // ID sanity check, we prefer to flag it as unavailable if invalid
 
         for (auto it : mapLayers){
             if (it.second->getID() == id)   // is already taken?
@@ -842,7 +798,6 @@ namespace lad
      * @return int 
      */
     int Pipeline::computeExclusionMap(std::string raster, std::string kernel, std::string dstLayer){
-        // first we validate the layer names and content
         // *****************************************
         // Validating input raster layer
         if (raster.empty()){
