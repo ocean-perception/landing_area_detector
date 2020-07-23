@@ -18,6 +18,18 @@
 namespace lad
 {
     /**
+     * @brief Compute the smallest angle between normalVector and the best least-square fitting plane for a collection of 3D points 
+     * 
+     * @param inputPoints  3D points to be fitted with the plane
+     * @param normalVector Angle reference vector (typ n={ 0 0 1})
+     * @return double Smallest angle in radians
+     */
+    double computeMeanSlope (std::vector<cv::Point2d> inputPoints, cv::Vec3d normalVector){
+        return 0;
+    }
+
+
+    /**
      * @brief Converts vector of 2D points from one coordinate space to another. The valid spaces are PIXEL and WORLD coordinates 
      * 
      * @param inputData Pointer input vector of cv::Point2d points to be converted

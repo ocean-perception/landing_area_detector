@@ -33,7 +33,8 @@ namespace lad
 
     int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform = nullptr);
 
-    // CGAL implementations associated to convexHull / alphaShape
+    // CGAL implementations associated to convexHull / alphaShape // Terrain slope
+    double computeMeanSlope (std::vector<cv::Point2d> inputPoints, cv::Vec3d normalVector){
 
     // Own implementation for scale independant landability analysis
 
