@@ -24,20 +24,20 @@ using namespace cv;  // OpenCV
  * 
  */
 namespace lad
-{ //!< landing area detection algorithm namespace
+{ // landing area detection algorithm namespace
 
     class Layer
     {
     private:
-        int layerID;     //!< Layer identifier that can be used as UID in multilayer implementations
-        int layerStatus; //!< Status identifier: takes a value from enumerated list of layer status.
-        int layerType;   //!< Layer type identifier: takes a value from enumerated list of layer types
+        int layerID;     // Layer identifier that can be used as UID in multilayer implementations
+        int layerStatus; // Status identifier: takes a value from enumerated list of layer status.
+        int layerType;   // Layer type identifier: takes a value from enumerated list of layer types
 
     protected:
     public:
-        std::string layerName;     //!<  Layer name (mandatory)
-        std::string fileName; //!< Name of associated output file (optional)
-        std::string filePath; //!< Name of associated output filepath (optional)
+        std::string layerName;     //  Layer name (mandatory)
+        std::string fileName; // Name of associated output file (optional)
+        std::string filePath; // Name of associated output filepath (optional)
 
         /**
              * @brief Construct a new Layer object
@@ -60,17 +60,17 @@ namespace lad
         {
         }
 
-        int getID();                    //!< Return the layer ID
-        int setID(int newID);           //!< set the new layer ID. It must be a valid ID
-        int getStatus();                //!< Return a copy of the layer status
-        int setStatus(int newStatus);   //!< Modify the layer status
-        int getType();                  //!< Return a copy of the layer type
-        int setType(int newType);       //!< Modify the layer type
-        virtual void showInformation(); //!< Dumps relevant information of the layer
+        int getID();                    // Return the layer ID
+        int setID(int newID);           // set the new layer ID. It must be a valid ID
+        int getStatus();                // Return a copy of the layer status
+        int setStatus(int newStatus);   // Modify the layer status
+        int getType();                  // Return a copy of the layer type
+        int setType(int newType);       // Modify the layer type
+        virtual void showInformation(); // Dumps relevant information of the layer
 
-        virtual int clear();       //!< Clear all the layer specific information, and stored data if any.
-        virtual int copy(Layer);   //!< Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
-        virtual int copy(Layer *); //!< Overloaded version for pointer to Layer type
+        virtual int clear();       // Clear all the layer specific information, and stored data if any.
+        virtual int copy(Layer);   // Copy the content of a Layer into the current one. Derived classes must perform container specific deep-copy
+        virtual int copy(Layer *); // Overloaded version for pointer to Layer type
 
         // Check if they need to be virtual
         /*
@@ -93,7 +93,7 @@ namespace lad
             // rasterData =
         }
 
-        int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); //!< Overloaded method of exporting vectorData to user defined file
+        int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
         int loadData(cv::Mat *);
     };
@@ -102,8 +102,8 @@ namespace lad
     {
     public:
         // this should interface with both GDAL and CGAL containers
-        vector<cv::Point2d> vectorData; //!<Vector of 2D points defining vectorized layer (e.g. bounding polygon)
-        int coordinateSpace;            //!< Defines if the data stored in vectorData is world coordinates or pixel coordinates
+        vector<cv::Point2d> vectorData; //Vector of 2D points defining vectorized layer (e.g. bounding polygon)
+        int coordinateSpace;            // Defines if the data stored in vectorData is world coordinates or pixel coordinates
 
         VectorLayer(std::string name, int id) : Layer(name, id)
         {
@@ -113,17 +113,17 @@ namespace lad
 
         void showInformation();
 
-        int loadData(std::vector<cv::Point2d> *); //!< Import data into vectorData container
-        // int writeLayer(int fileFormat = FMT_CSV); //!< export vectorData to the fileName as fileFormat (default CSV)
+        int loadData(std::vector<cv::Point2d> *); // Import data into vectorData container
+        // int writeLayer(int fileFormat = FMT_CSV); // export vectorData to the fileName as fileFormat (default CSV)
         int writeLayer(std::string outputFilename = NULL, int fileFormat = FMT_CSV, 
-                       std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = nullptr); //!< Overloaded method of exporting vectorData to user defined file
-        int convertSpace(int newSpace, double *apTransformMatrix);                                                                                                                        //!< Convert vectorData content to new coordinate space
+                       std::string strWKTSpatialRef = "", int outputCoordinate = WORLD_COORDINATE, double *apMatrix = nullptr); // Overloaded method of exporting vectorData to user defined file
+        int convertSpace(int newSpace, double *apTransformMatrix);                                                                                                                        // Convert vectorData content to new coordinate space
     };
 
     class KernelLayer : public virtual RasterLayer
     {
     private:
-            double dRotation; //!< Rotation angle of the given kernel (in radians)
+            double dRotation; // Rotation angle of the given kernel (in radians)
 
     public:
         cv::Mat rotatedData; //OpenCV matrix that will hold the data

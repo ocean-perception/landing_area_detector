@@ -120,14 +120,14 @@ namespace lad
     int Pipeline::isValidID(int checkID)
     {
         if (checkID < 0)
-            return LAYER_INVALID_ID; //!< First, we check is a positive ID value
+            return LAYER_INVALID_ID; // First, we check is a positive ID value
 
-        if (mapLayers.empty()) //!< If Layers vector is empty, then chckID is definitelty available
+        if (mapLayers.empty()) // If Layers vector is empty, then chckID is definitelty available
             return LAYER_OK;
 
         for (auto layer : mapLayers)
         {
-            if (layer.second->getID() == checkID) //!< The checkID is already taken, return correspoding error code
+            if (layer.second->getID() == checkID) // The checkID is already taken, return correspoding error code
                 return LAYER_DUPLICATED_ID;
         }
         // If we reach this point, then the checkID is available. Return ok
@@ -143,17 +143,17 @@ namespace lad
     int Pipeline::isValidName(std::string checkName)
     {
         if (isValid(checkName) == false)
-            return LAYER_INVALID_NAME; //!< First, we check is a positive ID value
+            return LAYER_INVALID_NAME; // First, we check is a positive ID value
         // Now we must test that the name follows the target convention: alphanumeric with {-_} as special characters
         // Use regex to determine if any foreing character is present
-        //    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); //!< Regex list: will retrieve invalid characters
-        if (mapLayers.empty()) //!< If Layers vector is empty, then given name is definitelty available
+        //    std::regex rgx("/^[a-zA-Z0-9]/g",std::regex_constants::egrep); // Regex list: will retrieve invalid characters
+        if (mapLayers.empty()) // If Layers vector is empty, then given name is definitelty available
             return LAYER_OK;
         // TODO complete string based name match against all the other names
         for (auto layer : mapLayers)
         {
             if (checkName == layer.second->layerName)
-            { //!< The checkID is already taken, return correspoding error code
+            { // The checkID is already taken, return correspoding error code
                 return LAYER_DUPLICATED_NAME;
             }
         }
@@ -258,7 +258,7 @@ namespace lad
  * @return int 
  */
     int Pipeline::exportLayer(std::string name, std::string outfile, int format, int coord_sys)
-    { //!< Export a given layer in the stack identified by its name, to
+    { // Export a given layer in the stack identified by its name, to
         if (name.empty())
         {
             cout << red << "[exportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
@@ -411,18 +411,18 @@ namespace lad
     {
         if (isValid(id) == false)
         {
-            return LAYER_INVALID_ID; //!< The provided ID is invalid
+            return LAYER_INVALID_ID; // The provided ID is invalid
         }
         if (isAvailable(id) == true)
         {
-            return LAYER_NOT_FOUND; //!< No layer was found with that ID
+            return LAYER_NOT_FOUND; // No layer was found with that ID
         }
 
         for (auto it : mapLayers)
         {
             if (it.second->getID() == id)
-            {                             //!< Check ID match
-                int type = it.second->getType(); //!< slight speed improve
+            {                             // Check ID match
+                int type = it.second->getType(); // slight speed improve
                 // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
                 if (type == LAYER_VECTOR)
                 {
@@ -561,13 +561,13 @@ namespace lad
         int id = -1;
         id = getLayerID(rasterName);
         if (id == LAYER_INVALID_NAME)
-        { //!< Provided rasterName is invalid
+        { // Provided rasterName is invalid
             cout << "[processGeotiff]" << red << "Invalid raster name: [" << rasterName << "]" << reset << endl;
             return LAYER_INVALID_NAME;
         }
         // TIFF name is VALID
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
-        { //!< Layer was not found, we have been asked to create it
+        { // Layer was not found, we have been asked to create it
             id = createLayer(rasterName, LAYER_RASTER);
         }
         uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
@@ -580,13 +580,13 @@ namespace lad
 
         id = getLayerID(maskName);
         if (id == LAYER_INVALID_NAME)
-        { //!< Provided maskName is invalid
+        { // Provided maskName is invalid
             cout << "[processGeotiff]" << red << "Invalid data mask name: [" << maskName << "]" << reset << endl;
             return LAYER_INVALID_NAME;
         }
 
         if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
-        { //!< Layer was not found, we have been asked to create it
+        { // Layer was not found, we have been asked to create it
             id = createLayer(maskName, LAYER_RASTER);
         }
         uploadData(id, (void *)&matDataMask); //upload cvMat tiff for deep-copy into the internal container
@@ -709,7 +709,7 @@ namespace lad
             if (it.second->getID() == id)
                 return it.second;
         }
-        return nullptr; //!< Curious thing, nothing was found!
+        return nullptr; // Curious thing, nothing was found!
     }
 
     /**

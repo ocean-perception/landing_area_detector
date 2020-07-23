@@ -195,7 +195,7 @@ namespace lad
         vector<cv::Point2d> newData;
         retval = convertDataSpace(&vectorData, &newData, coordinateSpace, newSpace, apTransform);
         vectorData = newData;
-        coordinateSpace = newSpace; //!< Update to the new coordinate space
+        coordinateSpace = newSpace; // Update to the new coordinate space
         return retval;
     }
 

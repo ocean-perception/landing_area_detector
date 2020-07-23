@@ -17,11 +17,20 @@
  */
 namespace lad
 {
-
+    /**
+     * @brief Converts vector of 2D points from one coordinate space to another. The valid spaces are PIXEL and WORLD coordinates 
+     * 
+     * @param inputData Pointer input vector of cv::Point2d points to be converted
+     * @param outputData Pointer to output vector where transformed points will be stored
+     * @param inputSpace Identifier of source coordinate system
+     * @param outputSpace Identifier of target coordinate system
+     * @param apTransform 6D transformation matrix describing the desired transformation (scale and offset)
+     * @return int Error code, if any
+     */
     int convertDataSpace(vector<cv::Point2d> *inputData, vector<cv::Point2d> *outputData, int inputSpace, int outputSpace, double *apTransform)
     {
         if (inputSpace == outputSpace)
-        { //!< No transformation was required
+        { // No transformation was required
             // let's just clone the data
             cout << yellow << "[convertDataSpace] source and target coordinate space are the same. Will copy points without transformation" << reset << endl;
             for (auto it : *inputData)
@@ -30,7 +39,7 @@ namespace lad
             }
             return 0;
         }
-        //!< Do we have a valid transformation matrix?
+        // Do we have a valid transformation matrix?
         if (apTransform == nullptr)
         {
             cout << red << "[convertDataSpace] invalid transformation matrix received" << reset << endl;
@@ -38,21 +47,20 @@ namespace lad
             return -1;
         }
 
-        double sx = apTransform[1]; //!< Pixel size (X)
-        double sy = apTransform[5]; //!< Pixel size (Y)
-        double cx = apTransform[0]; //!< Center coordinate (X)
-        double cy = apTransform[3]; //!< Center coordinate (Y)
+        double sx = apTransform[1]; // Pixel size (X)
+        double sy = apTransform[5]; // Pixel size (Y)
+        double cx = apTransform[0]; // Center coordinate (X)
+        double cy = apTransform[3]; // Center coordinate (Y)
 
-    cv:
-        Point2d p;
+        cv:Point2d p;
         // NOTE: Pixel coordinates are for the center of the pixel. Hence, the 0.5 adjustment
         switch (outputSpace)
         {
         case WORLD_COORDINATE:
             for (auto it : *inputData)
             {
-                p.x = (it.x + 0.5) * sx + cx; //!< Scale & traslation 2D transformation
-                p.y = (it.y + 0.5) * sy + cy; //!< No rotation implemented (yet)
+                p.x = (it.x + 0.5) * sx + cx; // Scale & traslation 2D transformation
+                p.y = (it.y + 0.5) * sy + cy; // No rotation implemented (yet)
                 outputData->push_back(p);
             }
             break;
@@ -60,8 +68,8 @@ namespace lad
         case PIXEL_COORDINATE:
             for (auto it : *inputData)
             {
-                p.x = -0.5 + (it.x - cx) / sx; //!< Scale & traslation 2D transformation
-                p.y = -0.5 + (it.y - cy) / sy; //!< No rotation implemented (yet)
+                p.x = -0.5 + (it.x - cx) / sx; // Scale & traslation 2D transformation
+                p.y = -0.5 + (it.y - cy) / sy; // No rotation implemented (yet)
                 outputData->push_back(p);
             }
             break;
@@ -69,7 +77,6 @@ namespace lad
         default:
             break;
         }
-
         return 0;
     }
 

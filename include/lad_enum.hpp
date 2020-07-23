@@ -18,55 +18,88 @@
 
 namespace lad{
 
-    const std::string DEFAULT_LAYER_NAME = "default_layer_name";
+    const std::string DEFAULT_LAYER_NAME = "default_layer_name"; //!< Employed as fallback name during construction time of a new Layer
 
+    /**
+     * @brief General constant codes
+     * 
+     */
     enum ConstantCodes{
-        DEFAULT_STACK_SIZE  = 100,   //!< Initial Layers vector size (stack)
+        DEFAULT_STACK_SIZE  = 100,   //!< Initial Layer vector size (stack or map). Deprecated
         ID_AVAILABLE        = 0,     //!< Flag to indicate ID is available in the LUT
         ID_TAKEN            = 1      //!< Flag to indicate ID is available in the LUT
     };
 
+    /**
+     * @brief General function return codes
+     * 
+     */
     enum ReturnCodes{
         NO_ERROR                = 0,    //!< No error code to report
         ERROR_MISSING_ARGUMENT  =-1,    //!< Missing argument when calling function
         ERROR_WRONG_ARGUMENT    =-2,    //!< Incorrect type of argument
         ERROR_GDAL_FAILOPEN     =-3,    //!< GDAL Driver failed to open geoTIFF file
         ERROR_GEOTIFF_EMPTY     =-4,    //!< Provided geoTIFF file is empty
-        ERROR_LAYERS_EMPTY      =-5,    //!< No layer is present in the current stack
-        ERROR_CONTOURS_NOTFOUND =-6     //!< No contour could de found
+        ERROR_LAYERS_EMPTY      =-5,    //!< No Layer is present in the current stack
+        ERROR_CONTOURS_NOTFOUND =-6     //!< No contour could be found
     };
 
+    /**
+     * @brief Levels of verbosity used inside of Pipeline object
+     * 
+     */
     enum VerbosityLevels{
         NO_VERBOSE      = 0,    //!< No verbose output (default)
         VERBOSITY_0     = 0,    //!< Minimum verbose level, equivalent to NO_VERBOSE
         VERBOSITY_1     = 1,    //!< Low verbose level, show summary information.
         VERBOSITY_2     = 2     //!< High verbose level, show detailed information.
     };
+
+    /**
+     * @brief Possible return codes for functions processing geoTIFF files
+     * 
+     */
     enum TiffProcessing{
         TIFF_FILE_INVALID =-1, //!< Invalid TIFF image file
         TIFF_FILE_EMPTY   =-2  //!< Valid TIFF image metadata, with empty raster band
     };
 
+    /**
+     * @brief Layer type identifier, used in Layer base and derived classes
+     * 
+     */
     enum LayerTypes{
         LAYER_ANYTYPE   = 0,//!< Indicate any type off layer (user for layer queries)
         LAYER_UNDEFINED =-1,//!< Flags this layer type as undefined. Default Type when constructing
-        LAYER_RASTER = 1,   //!< Layer can contain raster data
+        LAYER_RASTER = 1,   //!< Layer can contain raster data (RasterLayer)
         LAYER_VECTOR = 2,   //!< Layer can contain vectorized data (typ std::vector)
-        LAYER_KERNEL = 3    //!< Layer can contain raster description of a filter kernel (e.g. vehicle footprint)
+        LAYER_KERNEL = 3    //!< Layer can contain raster description of a filter kernel (KernelLayer)
     };
 
+    /**
+     * @brief Possible Layer status flags used in the Pipeline
+     * 
+     */
     enum LayerStatus{
         LAYER_INVALID = -1, //!< Layer is currently flagged as INVALID. Default Status when constructing
         LAYER_EMPTY   =  0, //!< Layer content is empty, typically when it has been recently  cleared()
         LAYER_VALID   =  1, //!< Layer contains valid non-empty data, regardless its type
     };
 
+    /**
+     * @brief Defines if the coordinates of vector or raster layers are dimensionless, in pixel coordinates, or in world coordinates
+     * 
+     */
     enum CoordinateSpace{
         NO_COORDINATE    =-1, //!< Coordinate system has not been specified or it is not required for this layer
-        PIXEL_COORDINATE = 0, //!< The layer coordinates are in pixel space (OpenCV image equivalent)
-        WORLD_COORDINATE = 1  //!< The layer coordinates are in world space (e.g. LAT/LON)
+        PIXEL_COORDINATE = 0, //!< The Layer coordinates are in pixel space (OpenCV image equivalent)
+        WORLD_COORDINATE = 1  //!< The Layer coordinates are in world space (e.g. LAT/LON)
     };
 
+    /**
+     * @brief List of supported file formats for exporting Layer content
+     * 
+     */
     enum ExportFormat{
         EXPORT_OK   = 0,    //!< No error exporting file
         FMT_CSV     = 1,    //!< Export data as CSV file using built-in engine
@@ -74,6 +107,10 @@ namespace lad{
         FMT_TIFF    = 3    //!< Export as geoTIFF using GDAL
     };
 
+    /**
+     * @brief Error return codes for functions processing layers (e.g. Pipeline steps)
+     * 
+     */
     enum LayerError{
         LAYER_OK                = 0, //!< Layer operation completed succesfully
         LAYER_NONE              =-1, //!< Layers <vector> is empty
