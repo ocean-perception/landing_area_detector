@@ -135,17 +135,18 @@ int main(int argc, char *argv[])
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
-/*    Pipeline.apInputGeotiff = &inputGeotiff;
+    Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
 
     // TODO \todo Provide createKernelTeplate method with implicit pixel scale parameters
     // the Sx and Sy values should be retrieved from the implicit geotiff container
     // overloaded version could allow user defined pixel resolutions
+    // Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
     Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
     Pipeline.createLayer("ExclusionMap", LAYER_RASTER);
   
-    dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"))->setRotation(-10);
+    dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"))->setRotation(45);
     
     Pipeline.computeExclusionMap("VALID_DataMask", "kernel", "ExclusionMap");
 
@@ -153,11 +154,11 @@ int main(int argc, char *argv[])
     Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
+    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "kernel", "SlopeMap");
+
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
-*/
 
-    lad::computeMeanSlope();
     waitKey(0);
     return lad::NO_ERROR;
 }

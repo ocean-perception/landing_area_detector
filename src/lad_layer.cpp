@@ -378,7 +378,8 @@ namespace lad
     void KernelLayer::showInformation()
     {
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getStatus() << reset << "]" << endl;
-        cout << "\t> Kernel data container size: " << yellow << rasterData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
+        cout << "\t> Kernel data container size: " << yellow << rasterData.size() << reset << endl;
+        cout << "\t> Rotated container size:     " << yellow << rotatedData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;
     }
 
     /**

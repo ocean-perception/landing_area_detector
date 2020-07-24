@@ -98,6 +98,7 @@ namespace lad
         int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers
         int extractContours(std::string rasterName, std::string contourName, int showImage = false);
         int computeExclusionMap(std::string raster, std::string kernel, std::string dst);
+        int computeMeanSlopeMap(std::string raster, std::string kernel, std::string dst);
     };
 } // namespace lad
 #endif // _LAD_CORE_HPP_

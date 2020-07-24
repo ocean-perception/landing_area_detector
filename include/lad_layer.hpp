@@ -60,6 +60,8 @@ namespace lad
         {
         }
 
+        // operator = (shared_ptr<Layer>);
+
         int getID();                    // Return the layer ID
         int setID(int newID);           // set the new layer ID. It must be a valid ID
         int getStatus();                // Return a copy of the layer status
