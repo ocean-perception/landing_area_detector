@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     // the Sx and Sy values should be retrieved from the implicit geotiff container
     // overloaded version could allow user defined pixel resolutions
     // Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
-    Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
+    Pipeline.createKernelTemplate("kernel",0.6, 0.6, 0.03, 0.03);
     Pipeline.createLayer("ExclusionMap", LAYER_RASTER);
   
     dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"))->setRotation(45);
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
     Pipeline.exportLayer("VALID_DataMask", "VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "kernel", "SlopeMap");
+    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "kernel", "VALID_DataMask", "SlopeMap");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for

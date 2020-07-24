@@ -10,6 +10,7 @@
  */
 #include "lad_core.hpp"
 // #include "headers.h"
+#include "helper.cpp"
 
 namespace lad
 {
@@ -873,11 +874,16 @@ namespace lad
      * @param dst Resulting raster Layer containing the slope field computed for every point defined in the raster Layer
      * @return int Error code, if any
      */
-    int Pipeline::computeMeanSlopeMap(std::string raster, std::string kernel, std::string dst){
+    int Pipeline::computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst){
         // first, we retrieve the raster Layer
         shared_ptr<RasterLayer> apBaseMap = dynamic_pointer_cast<RasterLayer> (getLayer(raster));
         if (apBaseMap == nullptr){
             cout << red << "[computeMeanSlopeMap] Base bathymetry Layer [" << yellow << raster << red << "] not found..." << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        shared_ptr<RasterLayer> apMask = dynamic_pointer_cast<RasterLayer> (getLayer(mask));
+        if (apMask == nullptr){
+            cout << red << "[computeMeanSlopeMap] Base valid mask Layer [" << yellow << mask << red << "] not found..." << reset << endl;
             return LAYER_NOT_FOUND;
         }
         shared_ptr<KernelLayer> apKernel = dynamic_pointer_cast<KernelLayer> (getLayer(kernel));
@@ -902,32 +908,29 @@ namespace lad
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
         // namedWindow("tiff colormap", WINDOW_NORMAL);
         cv::Mat sout;
-        int K=0;
+        cv::Mat kernelMask;
+
+        cv::Mat temp;
+
+        apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
         for (int row=0; row<(nRows-hKernel); row++){
             for (int col=0; col<(nCols-wKernel); col++){
                 cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
-
-                // cout << "Row: \t" << row << "/"<< nRows << "\t\tCol: \t" << col << "/" << nCols << endl;
-                K++;
-                if (K> 400000){
-                    cv::normalize(subImage, sout, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-                    // // apply colormap for enhanced visualization purposes
-                    cv::applyColorMap(sout, sout, COLORMAP_TWILIGHT_SHIFTED);
-                    imshow("tiff colormap", sout); // this will show nothing, as imshow needs remapped images
-                    // resizeWindow("tiff colormap", wKernel, hKernel);
-                    namedWindow("kernel");
-                    cv::normalize(apKernel->rotatedData, sout, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-                    imshow("kernel", sout);
-                    waitKey(0);
-                    K = 0;
-                }
-
+                subImage.convertTo(subImage, CV_32FC1);
+                temp = subImage.mul(kernelMask);
+                double average = cv::mean(temp).val[0];
+                apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = average;
 
             }
         }
 
-
-
+        if (verbosity > VERBOSITY_1){
+            cv::normalize(apSlopeMap->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            cv::applyColorMap(sout, sout, COLORMAP_HOT);
+            namedWindow("apSlopeMap");
+            imshow("apSlopeMap", sout); // this will show nothing, as imshow needs remapped images
+        }
         return NO_ERROR;
     }
 
