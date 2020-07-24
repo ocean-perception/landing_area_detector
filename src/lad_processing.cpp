@@ -11,7 +11,7 @@
 #include "headers.h"
 #include "lad_processing.hpp"
 #include "lad_layer.hpp"
-
+#include <CGAL/Kernel/global_functions.h>
 /**
  * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by Pipeline objects 
  * Valid data is assumed to be present in the layer containers involved
@@ -46,6 +46,64 @@ namespace lad
         cout << "Plane:" << plane << endl;
         return 0;
     }//*/
+
+    /**
+     * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
+     * 
+     * @param matrix Input image containing the height map as a 2.5D representing the height as z = f(x,y) 
+     * @param sx Horizonal pixel scale
+     * @param sy Vertical pixel scale
+     * @return std::vector<KPoint> 
+     */
+    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy){
+        //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
+        int cols = matrix->cols;
+        int rows = matrix->rows;
+        float px, py, pz;
+        std::vector<KPoint> output;
+
+        for (int x=0; x<cols; x++){
+            px = x * sx;
+            for (int y=0; y<rows; y++){
+                py = y * sy;
+                pz = matrix->at<float>(cv::Point(x,y));
+                // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
+                if (pz != 0)    //only non-NULL points are included (those are assumed to be invalida data points)
+                    output.push_back(KPoint(px,py,pz));
+            }
+        }
+        return output;
+    }
+
+    /**
+     * @brief Returns the angle (slope) of a plane by measuring the minimium angle between its normal and a reference vector 
+     * 
+     * @param plane 4D descriptor of the plane to be analized
+     * @return double Minimum angle between the plane a the reference vector ([0 0 1] as default)
+     */
+    double computePlaneSlope(KPlane plane, KVector reference){
+        KVector normal = plane.orthogonal_vector();
+        
+        double p = normal * reference;
+        //  angle(reference, normal);
+        return acos(p/(normal*normal));
+    }
+
+
+    /**
+     * @brief 
+     * 
+     * @param points Vector of 3D points to be fitted in a plane
+     * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
+     */
+    KPlane computeFittingPlane (std::vector<KPoint> points){
+        KPlane plane(0,0,1,0);
+        if (points.empty()) // early exit
+            return plane;
+        // fit plane to whole triangles
+        linear_least_squares_fitting_3(points.begin(), points.end(), plane, CGAL::Dimension_tag<0>());
+        return plane;
+    }
 
 
     /**

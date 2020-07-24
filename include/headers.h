@@ -50,6 +50,7 @@ const std::string reset("\033[0m");
 #include <CGAL/linear_least_squares_fitting_3.h>
 
 typedef CGAL::Simple_cartesian<double>  K;          // redefinition to avoid name clashing with OpenCV
+typedef K::Vector_3                     KVector;
 typedef K::Line_3                       KLine;
 typedef K::Plane_3                      KPlane;
 typedef K::Point_3                      KPoint;

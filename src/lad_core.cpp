@@ -907,10 +907,17 @@ namespace lad
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
         // namedWindow("tiff colormap", WINDOW_NORMAL);
-        cv::Mat sout;
         cv::Mat kernelMask;
+        cv::Mat temp, sout;
+        
+        // float sx = apInputGeotiff
 
-        cv::Mat temp;
+        double *adfGeoTransform;
+        adfGeoTransform = apInputGeotiff->GetGeoTransform();
+        float cx = adfGeoTransform[0];
+        float cy = adfGeoTransform[3];
+        float sx = adfGeoTransform[1];
+        float sy = adfGeoTransform[5];
 
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
         for (int row=0; row<(nRows-hKernel); row++){
@@ -918,8 +925,12 @@ namespace lad
                 cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
                 subImage.convertTo(subImage, CV_32FC1);
                 temp = subImage.mul(kernelMask);
-                double average = cv::mean(temp).val[0];
-                apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = average;
+
+                std::vector<KPoint> pointList; 
+                pointList = convertMatrix2Vector (&temp, sx, sy);
+                KPlane plane = computeFittingPlane(pointList);
+                double slope = computePlaneSlope(plane);
+                apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
 
             }
         }

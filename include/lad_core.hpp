@@ -16,6 +16,7 @@
 #include "headers.h"
 #include "geotiff.hpp"
 #include "lad_layer.hpp"
+#include "lad_processing.hpp"
 #include "lad_enum.hpp"
 
 #include <regex>
