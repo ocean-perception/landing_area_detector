@@ -340,14 +340,14 @@ namespace lad
         if (!mapLayers.size())
         {
             cout << "No layer to show" << endl;
-            return lad::LAYER_NONE;
+            return LAYER_NONE;
         }
         for (auto it : mapLayers)
         {
             if ((it.second->getType() == layer_type) || (layer_type == LAYER_ANYTYPE))
                 it.second->showInformation();
         }
-        return lad::LAYER_OK;
+        return LAYER_OK;
     }
 
     /**

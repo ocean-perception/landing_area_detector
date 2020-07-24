@@ -44,13 +44,13 @@ namespace lad
              * 
              * @param newName Optional layer name. If none is specified at construction time, DEFAULT_LAYER_NAME will be assigned  
              */
-        Layer(std::string newName = lad::DEFAULT_LAYER_NAME, int id = lad::LAYER_INVALID_ID, int type = lad::LAYER_UNDEFINED)
+        Layer(std::string newName = DEFAULT_LAYER_NAME, int id = LAYER_INVALID_ID, int type = LAYER_UNDEFINED)
         {
             // \todo Create empty constructors were no value is defined
             layerName = newName;
             layerID = id;
             layerType = type;
-            layerStatus = lad::LAYER_INVALID;
+            layerStatus = LAYER_INVALID;
         }
         /**
              * @brief Virtual destructor of the Layer object. 

@@ -15,6 +15,7 @@
 #include "lad_core.hpp"
 #include "lad_analysis.h"
 #include "lad_enum.hpp"
+#include "lad_processing.hpp"
 
 using namespace std;
 using namespace cv;
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
 
-    Pipeline.apInputGeotiff = &inputGeotiff;
+/*    Pipeline.apInputGeotiff = &inputGeotiff;
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
 
@@ -154,7 +155,9 @@ int main(int argc, char *argv[])
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
+*/
 
+    lad::computeMeanSlope();
     waitKey(0);
     return lad::NO_ERROR;
 }

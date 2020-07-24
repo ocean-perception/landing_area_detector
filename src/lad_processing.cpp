@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2020
  * 
  */
+#include "headers.h"
 #include "lad_processing.hpp"
 #include "lad_layer.hpp"
 
@@ -17,6 +18,7 @@
  */
 namespace lad
 {
+
     /**
      * @brief Compute the smallest angle between normalVector and the best least-square fitting plane for a collection of 3D points 
      * 
@@ -24,9 +26,26 @@ namespace lad
      * @param normalVector Angle reference vector (typ n={ 0 0 1})
      * @return double Smallest angle in radians
      */
-    double computeMeanSlope (std::vector<cv::Point2d> inputPoints, cv::Vec3d normalVector){
+    // double computeMeanSlope (std::vector<cv::Point2d> inputPoints, cv::Vec3d normalVector){
+    double computeMeanSlope (){
+
+        std::vector<KTriangle> triangles;
+        KPoint a(1.0,2.0,3.0);
+        KPoint b(4.0,0.0,6.0);
+        KPoint c(7.0,8.0,9.0);
+        KPoint d(8.0,7.0,6.0);
+        KPoint e(5.0,3.0,4.0);
+        triangles.push_back(KTriangle(a,b,c));
+        triangles.push_back(KTriangle(a,b,d));
+        triangles.push_back(KTriangle(d,e,c));
+        KLine line;
+        KPlane plane;
+        // fit plane to whole triangles
+        linear_least_squares_fitting_3(triangles.begin(),triangles.end(),plane,CGAL::Dimension_tag<2>());
+
+        cout << "Plane:" << plane << endl;
         return 0;
-    }
+    }//*/
 
 
     /**
