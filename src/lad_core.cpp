@@ -423,27 +423,7 @@ namespace lad
         for (auto it : mapLayers)
         {
             if (it.second->getID() == id)
-            {                             // Check ID match
-                int type = it.second->getType(); // slight speed improve
-                // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
-                if (type == LAYER_VECTOR)
-                {
-                    auto v = std::dynamic_pointer_cast<lad::VectorLayer>(it.second);
-                    v->loadData((std::vector<cv::Point2d> *)data);
-                }
-                else if (type == LAYER_RASTER)
-                {
-                    auto r = std::dynamic_pointer_cast<lad::RasterLayer>(it.second);
-                    r->loadData((cv::Mat *)data);
-                }
-                else if (type == LAYER_KERNEL)
-                {
-                    auto k = std::dynamic_pointer_cast<lad::KernelLayer>(it.second);
-                    k->loadData((cv::Mat *)data);
-                    // now we trigger an update in the rotatedData matrix
-                    k->setRotation(k->getRotation());
-                }
-            }
+                uploadData(it.second->layerName, data);
         }
         return LAYER_OK;
     }
@@ -468,14 +448,30 @@ namespace lad
             return LAYER_INVALID; // some error ocurred getting the ID of a layer with such name (double validation)
         }
         int retval = LAYER_NOT_FOUND;
-        for (auto layer : mapLayers)
+        
+        auto layer = getLayer(name);
+        if (layer == nullptr)
+            return LAYER_NOT_FOUND;
+        
+                                // Check ID match
+        int type = layer->getType(); // slight speed improve
+        // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
+        if (type == LAYER_VECTOR)
         {
-            if (layer.second->getID() == id)
-            { /// there should be a match!
-                // cout << "*************Layer found: [" << layer->getID() << "]" << endl;
-                retval = uploadData(id, data);
-                break;
-            }
+            auto v = std::dynamic_pointer_cast<lad::VectorLayer>(layer);
+            retval = v->loadData((std::vector<cv::Point2d> *)data);
+        }
+        else if (type == LAYER_RASTER)
+        {
+            auto r = std::dynamic_pointer_cast<lad::RasterLayer>(layer);
+            retval = r->loadData((cv::Mat *)data);
+        }
+        else if (type == LAYER_KERNEL)
+        {
+            auto k = std::dynamic_pointer_cast<lad::KernelLayer>(layer);
+            retval = k->loadData((cv::Mat *)data);
+            // now we trigger an update in the rotatedData matrix
+            k->setRotation(k->getRotation());
         }
         return retval;
     }

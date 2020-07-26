@@ -40,6 +40,32 @@ namespace lad
         std::string filePath; // Name of associated output filepath (optional)
 
         /**
+         * @brief Base empty constructor. Other case-specific constructors are available
+         * 
+         */
+        Layer(){
+            layerName = "";
+            layerID = 0;
+            layerType = LAYER_ANYTYPE;
+            layerStatus = LAYER_INVALID;
+        }
+
+        /**
+         * @brief Copy constructor from reference to a source Layer
+         * 
+         * @param src 
+         */
+        Layer(Layer *src){
+            layerName = src->layerName;
+            layerID = src->layerID;
+            layerType = src->layerType;
+            layerStatus = src->layerStatus;
+            layerName = src->layerName;
+            fileName = src->fileName;
+            filePath = src->filePath;
+        }
+
+        /**
              * @brief Construct a new Layer object
              * 
              * @param newName Optional layer name. If none is specified at construction time, DEFAULT_LAYER_NAME will be assigned  
@@ -77,11 +103,11 @@ namespace lad
         // Check if they need to be virtual
         /*
         int clone();
-        int copy();
         int create();
         //*/
     };
 
+// TODO: Create copyContructor for Layer derived classes
     class RasterLayer : public Layer
     {
     public:
