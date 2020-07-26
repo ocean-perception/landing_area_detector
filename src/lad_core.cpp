@@ -392,6 +392,7 @@ namespace lad
         // create a new KernelLayer
         createLayer(name, LAYER_KERNEL);
         uploadData(name, (void *) &A);
+        // apLayer->setRotation(apLayer->getRotation()); // DIRTY HACK TO FORCE RECOMPUTING THE INTERNAL rotatedData rasterLayer;
         if (verbosity > 0){
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
             namedWindow(name);
@@ -437,8 +438,10 @@ namespace lad
                 }
                 else if (type == LAYER_KERNEL)
                 {
-                    auto r = std::dynamic_pointer_cast<lad::KernelLayer>(it.second);
-                    r->loadData((cv::Mat *)data);
+                    auto k = std::dynamic_pointer_cast<lad::KernelLayer>(it.second);
+                    k->loadData((cv::Mat *)data);
+                    // now we trigger an update in the rotatedData matrix
+                    k->setRotation(k->getRotation());
                 }
             }
         }
@@ -600,10 +603,10 @@ namespace lad
             cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
             namedWindow(maskName, WINDOW_NORMAL);
             imshow(maskName, matDataMask);
-            resizeWindow(maskName, 800, 800);
+            resizeWindow(maskName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             namedWindow(rasterName, WINDOW_NORMAL);
             imshow(rasterName, tiff_colormap);
-            resizeWindow(rasterName, 800, 800);
+            resizeWindow(rasterName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
     }
 
@@ -860,6 +863,7 @@ namespace lad
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
+            resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         
         // return no error
@@ -928,12 +932,71 @@ namespace lad
             cv::normalize(apSlopeMap->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
             // // apply colormap for enhanced visualization purposes
             cv::applyColorMap(sout, sout, COLORMAP_HOT);
-            namedWindow("apSlopeMap");
-            imshow("apSlopeMap", sout); // this will show nothing, as imshow needs remapped images
+            namedWindow(apSlopeMap->layerName);
+            imshow(apSlopeMap->layerName, sout); // this will show nothing, as imshow needs remapped images
+            resizeWindow(apSlopeMap->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         return NO_ERROR;
     }
 
+
+    int Pipeline::showImage(std::string layer, int colormap){
+        // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
+        if (getLayer(layer) == nullptr){
+            cout << "[showImage] layer [" << yellow << layer << reset << "] not found..." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
+        if (type == LAYER_VECTOR){
+            cout << "[showImage] layer [" << yellow << layer << reset << "] is of type LAYER_KERNEL. Visualization mode not supported yet." << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
+        // we must check if the container is non-empty
+        // WARNING: As KERNEL is a derived class from RASTER we could downcast to RASTER without risking object slicing, and still be able to retrieve the rasterData
+        if (type == LAYER_RASTER){
+            shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[showImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                return NO_ERROR;                
+            }
+            namedWindow(apLayer->layerName);
+            // correct data range to improve visualization using provided colormap
+            cv::Mat dst(apLayer->rasterData);
+            cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // apply colormap for enhanced visualization purposes
+            cv::applyColorMap(dst, dst, COLORMAP_TWILIGHT_SHIFTED);
+            imshow(apLayer->layerName, dst);
+            resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        }
+
+        if (type == LAYER_KERNEL){
+            shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[showImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                return NO_ERROR;                
+            }
+            namedWindow(apLayer->layerName);
+            imshow(apLayer->layerName, apLayer->rasterData);
+            // resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            namedWindow(apLayer->layerName + "_rotated");
+            imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
+            // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        }
+
+
+        return NO_ERROR;
+    }
 
 
 } // namespace lad

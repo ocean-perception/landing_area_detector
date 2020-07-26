@@ -159,6 +159,10 @@ int main(int argc, char *argv[])
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
+    // Pipeline.showImage("SlopeMap");
+    Pipeline.showImage("RAW_Bathymetry");
+
+
     waitKey(0);
     return lad::NO_ERROR;
 }

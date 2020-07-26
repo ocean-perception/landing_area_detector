@@ -45,6 +45,8 @@ const std::string red("\033[1;31m");
 const std::string reset("\033[0m");
 
 #define DEFAULT_OUTPUT_FILE "LAD_output.tif"
+#define DEFAULT_WINDOW_WIDTH 800
+#define DEFAULT_WINDOW_HEIGHT 600
 
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/linear_least_squares_fitting_3.h>
@@ -54,5 +56,7 @@ typedef K::Line_3                       KLine;
 typedef K::Plane_3                      KPlane;
 typedef K::Point_3                      KPoint;
 typedef K::Triangle_3                   KTriangle;
+
+
 
 #endif // _PROJECT_HEADERS_H_
