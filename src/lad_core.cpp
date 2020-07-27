@@ -927,8 +927,6 @@ namespace lad
         // namedWindow("tiff colormap", WINDOW_NORMAL);
         cv::Mat kernelMask;
         cv::Mat temp, sout;
-        
-        // float sx = apInputGeotiff
 
         double *adfGeoTransform;
         adfGeoTransform = apInputGeotiff->GetGeoTransform();
@@ -947,7 +945,7 @@ namespace lad
                 std::vector<KPoint> pointList; 
                 pointList = convertMatrix2Vector (&temp, sx, sy);
                 KPlane plane = computeFittingPlane(pointList);
-                double slope = computePlaneSlope(plane);
+                double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
                 apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
 
             }
@@ -1068,30 +1066,8 @@ namespace lad
         int type = getLayer(mask)->getType();
         if (type == LAYER_RASTER){
             auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(mask));
-            // namedWindow ("src");
-            // cv::Mat tst;
-            // cv::normalize(apSrc->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-            // // apply colormap for enhanced visualization purposes
-            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
-            // imshow ("src", tst);
-            // // imshow ("src", apSrc->rasterData);
-
-            // namedWindow ("mask");
-            // cv::normalize(apMask->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-            // // apply colormap for enhanced visualization purposes
-            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
-            // imshow ("mask", tst);
-            // // imshow ("mask", apMask->rasterData);
-
             apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData); // dst.rasterData use non-null values as binary mask ones
-            // namedWindow ("dst");
-            // cv::normalize(apDst->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-            // // apply colormap for enhanced visualization purposes
-            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
-
-            // // imshow ("dst", apDst->rasterData);
-            // imshow ("dst", tst);
-        }
+       }
         else if (type == LAYER_KERNEL){
             // we may or may not use rotatedData depending on the input flag
             auto apMask = dynamic_pointer_cast<KernelLayer>(getLayer(mask));

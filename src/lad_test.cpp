@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     Pipeline.useNodataMask = true;
     Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
     Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
-    Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "P3");
+    Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "P3-SlopeMapExcl");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
@@ -165,11 +165,11 @@ int main(int argc, char *argv[])
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
     Pipeline.showImage("SlopeMap", COLORMAP_JET);
     Pipeline.showImage("ExclusionMap", COLORMAP_JET);
-    Pipeline.showImage("P3", COLORMAP_JET);
+    Pipeline.showImage("P3-SlopeMapExcl", COLORMAP_JET);
     waitKey(0);
 
     // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
-    Pipeline.exportLayer("P3", "P3.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P3-SlopeMapExcl", "P3-SlopeMapExcl.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
