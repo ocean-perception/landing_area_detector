@@ -353,6 +353,23 @@ namespace lad
 
     /**
      * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
+     * @details The horizontal and vertical pixel resolutions are retrieved from the Pipeline geotiff container
+     * @param name Name of the new layer to be inserted
+     * @param width width of the pattern in spatial units. It will define the number of columns of the image
+     * @param length length of the pattern in spatial units. It will define the numer of rows of the image
+     * @return int Error code, if any
+     */
+    int Pipeline::createKernelTemplate (std::string name, double width, double length){
+        double sx = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SX);
+        if (sx == 0) sx = 1;
+        double sy = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SY);
+        if (sy == 0) sy = 1;
+        return (createKernelTemplate (name, width,length, sx, sy));
+    }
+
+
+    /**
+     * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
      * 
      * @param name Name of the new layer to be inserted
      * @param width width of the pattern in spatial units. It will define the number of columns of the image
@@ -475,6 +492,7 @@ namespace lad
         }
         return retval;
     }
+
 
     /**
  * @brief Reads a geoTIFF file using the GDAL driver and populate the object container

@@ -143,10 +143,11 @@ int main(int argc, char *argv[])
     // the Sx and Sy values should be retrieved from the implicit geotiff container
     // overloaded version could allow user defined pixel resolutions
     // Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
-    Pipeline.createKernelTemplate("kernel",0.6, 0.6, 0.03, 0.03);
+    Pipeline.createKernelTemplate("kernel",0.6, 1.4);
+    // Pipeline.createKernelTemplate("kernel",0.6, 0.6, 0.03, 0.03);
     Pipeline.createLayer("ExclusionMap", LAYER_RASTER);
   
-    dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"))->setRotation(45);
+    dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("kernel"))->setRotation(0);
     
     Pipeline.computeExclusionMap("VALID_DataMask", "kernel", "ExclusionMap");
 
@@ -159,7 +160,7 @@ int main(int argc, char *argv[])
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    // Pipeline.showImage("SlopeMap");
+    Pipeline.showImage("SlopeMap");
     Pipeline.showImage("RAW_Bathymetry");
 
 
