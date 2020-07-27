@@ -927,7 +927,6 @@ namespace lad
         // namedWindow("tiff colormap", WINDOW_NORMAL);
         cv::Mat sout;
         cv::Mat kernelMask;
-
         cv::Mat temp;
 
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
@@ -936,7 +935,10 @@ namespace lad
                 cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
                 subImage.convertTo(subImage, CV_32FC1);
                 temp = subImage.mul(kernelMask);
+
                 double average = cv::mean(temp).val[0];
+                
+                
                 apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = average;
 
             }
@@ -945,15 +947,21 @@ namespace lad
         if (verbosity > VERBOSITY_1){
             cv::normalize(apSlopeMap->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
             // // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(sout, sout, COLORMAP_HOT);
-            namedWindow(apSlopeMap->layerName);
-            imshow(apSlopeMap->layerName, sout); // this will show nothing, as imshow needs remapped images
-            resizeWindow(apSlopeMap->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            cv::applyColorMap(sout, sout, COLORMAP_JET);
+            namedWindow(apSlopeMap->layerName + "_verbose");
+            imshow(apSlopeMap->layerName + "_verbose", sout); // this will show nothing, as imshow needs remapped images
+            resizeWindow(apSlopeMap->layerName + "_verbose", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         return NO_ERROR;
     }
 
-
+    /**
+     * @brief Show the Layer data container as an image. Use color mapping to improve visibility.
+     * 
+     * @param layer Layer (raster or kernel) to be shown
+     * @param colormap OpenCV valid colormap ID
+     * @return int Error code, if any
+     */
     int Pipeline::showImage(std::string layer, int colormap){
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
         if (getLayer(layer) == nullptr){
@@ -962,7 +970,7 @@ namespace lad
         }
         int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
         if (type == LAYER_VECTOR){
-            cout << "[showImage] layer [" << yellow << layer << reset << "] is of type LAYER_KERNEL. Visualization mode not supported yet." << endl;
+            cout << "[showImage] layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Visualization mode not supported yet." << endl;
             return ERROR_WRONG_ARGUMENT;
         }
         // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
@@ -981,10 +989,20 @@ namespace lad
             }
             namedWindow(apLayer->layerName);
             // correct data range to improve visualization using provided colormap
-            cv::Mat dst(apLayer->rasterData);
-            cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+
+            cout << "Exporting " << apLayer->layerName << endl;
+            cv::Mat dst = apLayer->rasterData.clone();
+
+            if (useNodataMask){
+                cv::Mat mask;
+                cv::compare(dst, apInputGeotiff->GetNoDataValue(), mask, CMP_NE);  // create a no-data mask
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
+            }
+            else{
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            }
             // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(dst, dst, COLORMAP_TWILIGHT_SHIFTED);
+            cv::applyColorMap(dst, dst, colormap);
             imshow(apLayer->layerName, dst);
             resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
@@ -1008,9 +1026,76 @@ namespace lad
             // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
 
-
         return NO_ERROR;
     }
 
+    /**
+     * @brief Apply a raster/kernel mask to a raster input layer and store the result in another layer.
+     * 
+     * @param src Name of an existing raster or kernel layer that will be used as the source
+     * @param mask Name of an existing raster or kernel layer that will be used as mask. If layer is of type kernel, rotatedData can be used as mask
+     * @param dst Name of the destination layer. If it doesn't exist it is created and inserted into the stack
+     * @param useRotated Flag indicating if rotatedData must be used insted of rasterData. Only valid if mask layer is of type kernel
+     * @return int Error code, if any
+     */
+    int Pipeline::maskLayer(std::string src, std::string mask, std::string dst, int useRotated){
+        // check that both src and mask layers exist. If not, return with error
+        if (isAvailable(src)){
+            cout << red << "[maskLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(mask)){
+            cout << red << "[maskLayer] mask layer ["  << mask << "] does not exist" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(dst)){
+            cout << "[maskLayer] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        int type = getLayer(mask)->getType();
+        if (type == LAYER_RASTER){
+            auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(mask));
+            // namedWindow ("src");
+            // cv::Mat tst;
+            // cv::normalize(apSrc->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+            // imshow ("src", tst);
+            // // imshow ("src", apSrc->rasterData);
+
+            // namedWindow ("mask");
+            // cv::normalize(apMask->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+            // imshow ("mask", tst);
+            // // imshow ("mask", apMask->rasterData);
+
+            apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData); // dst.rasterData use non-null values as binary mask ones
+            // namedWindow ("dst");
+            // cv::normalize(apDst->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+
+            // // imshow ("dst", apDst->rasterData);
+            // imshow ("dst", tst);
+        }
+        else if (type == LAYER_KERNEL){
+            // we may or may not use rotatedData depending on the input flag
+            auto apMask = dynamic_pointer_cast<KernelLayer>(getLayer(mask));
+            if (useRotated)
+                apSrc->rasterData.copyTo(apDst->rasterData, apMask->rotatedData);
+            else
+                apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData);
+        }
+        else{
+            cout << red << "[maskLayer] mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        return NO_ERROR;
+    } 
 
 } // namespace lad
