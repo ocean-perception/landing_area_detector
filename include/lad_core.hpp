@@ -43,6 +43,7 @@ namespace lad
             inputFileTIFF = "";
             verbosity = NO_VERBOSE;
             currentAvailableID = 0;
+            useNodataMask = false;
         }
 
         ~Pipeline()
@@ -51,9 +52,10 @@ namespace lad
             inputFileTIFF = "";
         }
 
-        Geotiff *apInputGeotiff; //< Pointer to geoTIFF container
+        Geotiff    *apInputGeotiff; //< Pointer to geoTIFF container
         std::string inputFileTIFF; //< Input TIFF filename containing base bathymetry. It can be used as base name for output products files
-        int verbosity; //!< Verbosity levels (from 0 to 2)
+        int         verbosity; //!< Verbosity levels (from 0 to 2)
+        int         useNodataMask;
 
         // Methods **************
 
@@ -91,10 +93,14 @@ namespace lad
 
         int showInfo(int level = 0);              // Show summary information of current pipeline object
         int showLayers(int type = LAYER_ANYTYPE); // Call showInformation() method for each layer
+        int showImage(std::string layer, int colormap = cv::COLORMAP_HOT); // show, if available, the raster content of the layer as an image
 
         int uploadData(int id, void *data);           // uploads data into a layer identified by its id
         int uploadData(std::string name, void *data); // uploads data into a layer identified by its name
 
+        int maskLayer(std::string src, std::string mask, std::string dst, int useRotated = true); // apply mask to raster layer src and store it in dst layer
+
+        int createKernelTemplate (std::string name, double width, double length); // Create a Kernel layer using a rectangular shape as template. Uses implicit values for pixel scale
         int createKernelTemplate (std::string name, double width, double length, double sx, double sy); // Create a Kernel layer using a rectangular shape as template
         int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers
         int extractContours(std::string rasterName, std::string contourName, int showImage = false);

@@ -353,6 +353,23 @@ namespace lad
 
     /**
      * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
+     * @details The horizontal and vertical pixel resolutions are retrieved from the Pipeline geotiff container
+     * @param name Name of the new layer to be inserted
+     * @param width width of the pattern in spatial units. It will define the number of columns of the image
+     * @param length length of the pattern in spatial units. It will define the numer of rows of the image
+     * @return int Error code, if any
+     */
+    int Pipeline::createKernelTemplate (std::string name, double width, double length){
+        double sx = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SX);
+        if (sx == 0) sx = 1;
+        double sy = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SY);
+        if (sy == 0) sy = 1;
+        return (createKernelTemplate (name, width,length, sx, sy));
+    }
+
+
+    /**
+     * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
      * 
      * @param name Name of the new layer to be inserted
      * @param width width of the pattern in spatial units. It will define the number of columns of the image
@@ -392,6 +409,7 @@ namespace lad
         // create a new KernelLayer
         createLayer(name, LAYER_KERNEL);
         uploadData(name, (void *) &A);
+        // apLayer->setRotation(apLayer->getRotation()); // DIRTY HACK TO FORCE RECOMPUTING THE INTERNAL rotatedData rasterLayer;
         if (verbosity > 0){
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
             namedWindow(name);
@@ -422,25 +440,7 @@ namespace lad
         for (auto it : mapLayers)
         {
             if (it.second->getID() == id)
-            {                             // Check ID match
-                int type = it.second->getType(); // slight speed improve
-                // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
-                if (type == LAYER_VECTOR)
-                {
-                    auto v = std::dynamic_pointer_cast<lad::VectorLayer>(it.second);
-                    v->loadData((std::vector<cv::Point2d> *)data);
-                }
-                else if (type == LAYER_RASTER)
-                {
-                    auto r = std::dynamic_pointer_cast<lad::RasterLayer>(it.second);
-                    r->loadData((cv::Mat *)data);
-                }
-                else if (type == LAYER_KERNEL)
-                {
-                    auto r = std::dynamic_pointer_cast<lad::KernelLayer>(it.second);
-                    r->loadData((cv::Mat *)data);
-                }
-            }
+                uploadData(it.second->layerName, data);
         }
         return LAYER_OK;
     }
@@ -465,17 +465,34 @@ namespace lad
             return LAYER_INVALID; // some error ocurred getting the ID of a layer with such name (double validation)
         }
         int retval = LAYER_NOT_FOUND;
-        for (auto layer : mapLayers)
+        
+        auto layer = getLayer(name);
+        if (layer == nullptr)
+            return LAYER_NOT_FOUND;
+        
+                                // Check ID match
+        int type = layer->getType(); // slight speed improve
+        // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
+        if (type == LAYER_VECTOR)
         {
-            if (layer.second->getID() == id)
-            { /// there should be a match!
-                // cout << "*************Layer found: [" << layer->getID() << "]" << endl;
-                retval = uploadData(id, data);
-                break;
-            }
+            auto v = std::dynamic_pointer_cast<lad::VectorLayer>(layer);
+            retval = v->loadData((std::vector<cv::Point2d> *)data);
+        }
+        else if (type == LAYER_RASTER)
+        {
+            auto r = std::dynamic_pointer_cast<lad::RasterLayer>(layer);
+            retval = r->loadData((cv::Mat *)data);
+        }
+        else if (type == LAYER_KERNEL)
+        {
+            auto k = std::dynamic_pointer_cast<lad::KernelLayer>(layer);
+            retval = k->loadData((cv::Mat *)data);
+            // now we trigger an update in the rotatedData matrix
+            k->setRotation(k->getRotation());
         }
         return retval;
     }
+
 
     /**
  * @brief Reads a geoTIFF file using the GDAL driver and populate the object container
@@ -600,10 +617,10 @@ namespace lad
             cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
             namedWindow(maskName, WINDOW_NORMAL);
             imshow(maskName, matDataMask);
-            resizeWindow(maskName, 800, 800);
+            resizeWindow(maskName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             namedWindow(rasterName, WINDOW_NORMAL);
             imshow(rasterName, tiff_colormap);
-            resizeWindow(rasterName, 800, 800);
+            resizeWindow(rasterName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
     }
 
@@ -860,6 +877,7 @@ namespace lad
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
+            resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         
         // return no error
@@ -938,13 +956,155 @@ namespace lad
         if (verbosity > VERBOSITY_1){
             cv::normalize(apSlopeMap->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
             // // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(sout, sout, COLORMAP_HOT);
-            namedWindow("apSlopeMap");
-            imshow("apSlopeMap", sout); // this will show nothing, as imshow needs remapped images
+            cv::applyColorMap(sout, sout, COLORMAP_JET);
+            namedWindow(apSlopeMap->layerName + "_verbose");
+            imshow(apSlopeMap->layerName + "_verbose", sout); // this will show nothing, as imshow needs remapped images
+            resizeWindow(apSlopeMap->layerName + "_verbose", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         return NO_ERROR;
     }
 
+    /**
+     * @brief Show the Layer data container as an image. Use color mapping to improve visibility.
+     * 
+     * @param layer Layer (raster or kernel) to be shown
+     * @param colormap OpenCV valid colormap ID
+     * @return int Error code, if any
+     */
+    int Pipeline::showImage(std::string layer, int colormap){
+        // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
+        if (getLayer(layer) == nullptr){
+            cout << "[showImage] layer [" << yellow << layer << reset << "] not found..." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
+        if (type == LAYER_VECTOR){
+            cout << "[showImage] layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Visualization mode not supported yet." << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
+        // we must check if the container is non-empty
+        // WARNING: As KERNEL is a derived class from RASTER we could downcast to RASTER without risking object slicing, and still be able to retrieve the rasterData
+        if (type == LAYER_RASTER){
+            shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[showImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                return NO_ERROR;                
+            }
+            namedWindow(apLayer->layerName);
+            // correct data range to improve visualization using provided colormap
 
+            cout << "Exporting " << apLayer->layerName << endl;
+            cv::Mat dst = apLayer->rasterData.clone();
+
+            if (useNodataMask){
+                cv::Mat mask;
+                cv::compare(dst, apInputGeotiff->GetNoDataValue(), mask, CMP_NE);  // create a no-data mask
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
+            }
+            else{
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            }
+            // apply colormap for enhanced visualization purposes
+            cv::applyColorMap(dst, dst, colormap);
+            imshow(apLayer->layerName, dst);
+            resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        }
+
+        if (type == LAYER_KERNEL){
+            shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[showImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                return NO_ERROR;                
+            }
+            namedWindow(apLayer->layerName);
+            imshow(apLayer->layerName, apLayer->rasterData);
+            // resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            namedWindow(apLayer->layerName + "_rotated");
+            imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
+            // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        }
+
+        return NO_ERROR;
+    }
+
+    /**
+     * @brief Apply a raster/kernel mask to a raster input layer and store the result in another layer.
+     * 
+     * @param src Name of an existing raster or kernel layer that will be used as the source
+     * @param mask Name of an existing raster or kernel layer that will be used as mask. If layer is of type kernel, rotatedData can be used as mask
+     * @param dst Name of the destination layer. If it doesn't exist it is created and inserted into the stack
+     * @param useRotated Flag indicating if rotatedData must be used insted of rasterData. Only valid if mask layer is of type kernel
+     * @return int Error code, if any
+     */
+    int Pipeline::maskLayer(std::string src, std::string mask, std::string dst, int useRotated){
+        // check that both src and mask layers exist. If not, return with error
+        if (isAvailable(src)){
+            cout << red << "[maskLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(mask)){
+            cout << red << "[maskLayer] mask layer ["  << mask << "] does not exist" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(dst)){
+            cout << "[maskLayer] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        int type = getLayer(mask)->getType();
+        if (type == LAYER_RASTER){
+            auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(mask));
+            // namedWindow ("src");
+            // cv::Mat tst;
+            // cv::normalize(apSrc->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+            // imshow ("src", tst);
+            // // imshow ("src", apSrc->rasterData);
+
+            // namedWindow ("mask");
+            // cv::normalize(apMask->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+            // imshow ("mask", tst);
+            // // imshow ("mask", apMask->rasterData);
+
+            apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData); // dst.rasterData use non-null values as binary mask ones
+            // namedWindow ("dst");
+            // cv::normalize(apDst->rasterData, tst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            // // apply colormap for enhanced visualization purposes
+            // cv::applyColorMap(tst, tst, COLORMAP_HOT);
+
+            // // imshow ("dst", apDst->rasterData);
+            // imshow ("dst", tst);
+        }
+        else if (type == LAYER_KERNEL){
+            // we may or may not use rotatedData depending on the input flag
+            auto apMask = dynamic_pointer_cast<KernelLayer>(getLayer(mask));
+            if (useRotated)
+                apSrc->rasterData.copyTo(apDst->rasterData, apMask->rotatedData);
+            else
+                apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData);
+        }
+        else{
+            cout << red << "[maskLayer] mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        return NO_ERROR;
+    } 
 
 } // namespace lad

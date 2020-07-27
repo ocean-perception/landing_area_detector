@@ -47,7 +47,7 @@ int processGeotiff(Geotiff *apGeotiff){
 
     namedWindow("tiff colormap", WINDOW_NORMAL);
     imshow("tiff colormap", tiff_colormap); // this will show nothing, as imshow needs remapped images
-    resizeWindow("tiff colormap", 800, 800);
+    resizeWindow("tiff colormap", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     waitKey(0);
 
 
@@ -93,10 +93,10 @@ int processGeotiff(Geotiff *apGeotiff){
 
     namedWindow("Contour", WINDOW_NORMAL);
     imshow ("Contour", mask_colormap);
-    resizeWindow("Contour", 800, 800);
+    resizeWindow("Contour", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     namedWindow("Eroded mask", WINDOW_NORMAL);
     imshow ("Eroded mask", erode_output * 255);
-    resizeWindow("Eroded mask", 800, 800);
+    resizeWindow("Eroded mask", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
     waitKey(0);
     // imwrite("contours.tif",boundingLayer);
     // imwrite("contours_color.tif",mask_colormap);
