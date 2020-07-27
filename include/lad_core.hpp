@@ -106,6 +106,9 @@ namespace lad
         int extractContours(std::string rasterName, std::string contourName, int showImage = false);
         int computeExclusionMap(std::string raster, std::string kernel, std::string dst);
         int computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst);
+
+        int compareLayer(std::string src, std::string dst, int threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
+
     };
 } // namespace lad
 #endif // _LAD_CORE_HPP_

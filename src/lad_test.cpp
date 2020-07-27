@@ -157,19 +157,20 @@ int main(int argc, char *argv[])
     Pipeline.useNodataMask = true;
     Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
     Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
-    Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "P3-SlopeMapExcl");
+    Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "SlopeMap-masked");
+    Pipeline.compareLayer("SlopeMap-masked", "P3-SlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
     Pipeline.showImage("SlopeMap", COLORMAP_JET);
-    Pipeline.showImage("ExclusionMap", COLORMAP_JET);
-    Pipeline.showImage("P3-SlopeMapExcl", COLORMAP_JET);
+    // Pipeline.showImage("ExclusionMap", COLORMAP_JET);
+    // Pipeline.showImage("P3-SlopeExclMap", COLORMAP_JET);
     waitKey(0);
 
     // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
-    Pipeline.exportLayer("P3-SlopeMapExcl", "P3-SlopeMapExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 

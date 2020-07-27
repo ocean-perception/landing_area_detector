@@ -1083,4 +1083,32 @@ namespace lad
         return NO_ERROR;
     } 
 
+    /**
+     * @brief 
+     * 
+     * @param src 
+     * @param dst 
+     * @param angleThreshold 
+     * @return int 
+     */
+    int Pipeline::compareLayer(std::string src, std::string dst, int threshold, int cmp){
+        // check that both src and mask layers exist. If not, return with error
+        if (isAvailable(src)){
+            cout << red << "[thresholdLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(dst)){
+            cout << "[thresholdLayer] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        cv::compare(apSrc->rasterData, threshold, apDst->rasterData, cmp);  // create a no-data mask
+        return NO_ERROR;
+    }
+        
+
+
 } // namespace lad
