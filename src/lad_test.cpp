@@ -139,10 +139,11 @@ int main(int argc, char *argv[])
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
 
-    Pipeline.createKernelTemplate("KernelAUV",0.5, 1.4);
-    Pipeline.createKernelTemplate("KernelAUV",0.5, 1.4);
-
+    Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
+    Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
   
+//    Pipeline.rotateLayer("KernelAUV", -10);
+
     shared_ptr<KernelLayer> apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
     if (apKernel == nullptr){
         cout << red << "Error creating AUV footprint layer " << reset << endl;
@@ -156,19 +157,29 @@ int main(int argc, char *argv[])
     Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "SlopeMap-masked");
     Pipeline.compareLayer("SlopeMap-masked", "P3-SlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
+    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelSlope", "VALID_DataMask", "SlopeMapHIRES");
+//    Pipeline.maskLayer ("SlopeMapHIRES", "ExclusionMap", "SlopeMapHIRES-masked");
+    Pipeline.compareLayer("SlopeMapHIRES", "P1-LoSlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
+
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
     Pipeline.showImage("SlopeMap", COLORMAP_JET);
+    Pipeline.showImage("SlopeMapHIRES", COLORMAP_JET);
+    // Pipeline.showImage("P1-LoSlopeExclMap", COLORMAP_JET);
     // Pipeline.showImage("ExclusionMap", COLORMAP_JET);
     // Pipeline.showImage("P3-SlopeExclMap", COLORMAP_JET);
+
     waitKey(0);
+
 
     // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("SlopeMapHIRES", "SlopeMapHIRES.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P1-LoSlopeExclMap", "P1-LoSlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }

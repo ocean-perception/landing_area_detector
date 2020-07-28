@@ -99,7 +99,8 @@ namespace lad
         int uploadData(std::string name, void *data); // uploads data into a layer identified by its name
 
         int maskLayer(std::string src, std::string mask, std::string dst, int useRotated = true); // apply mask to raster layer src and store it in dst layer
-
+        int rotateLayer(std::string src, double angle); // rotate a kernel layer a given angle
+        
         int createKernelTemplate (std::string name, double width, double length); // Create a Kernel layer using a rectangular shape as template. Uses implicit values for pixel scale
         int createKernelTemplate (std::string name, double width, double length, double sx, double sy); // Create a Kernel layer using a rectangular shape as template
         int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers

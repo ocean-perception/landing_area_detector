@@ -941,13 +941,19 @@ namespace lad
                 cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
                 subImage.convertTo(subImage, CV_32FC1);
                 temp = subImage.mul(kernelMask);
-
-                std::vector<KPoint> pointList; 
+                // WARNING: as we need a minimum set of valid 3D points for the plane fitting
+                // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
+                // is n > K/2, being K = 3x3 = 9 ---> n = 5
+                std::vector<KPoint> pointList;
                 pointList = convertMatrix2Vector (&temp, sx, sy);
-                KPlane plane = computeFittingPlane(pointList);
-                double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
-                apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
-
+                if (pointList.size() > 4){
+                    KPlane plane = computeFittingPlane(pointList);
+                    double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
+                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
+                }
+                else{ // we do not have enough points to compute a valid plane
+                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = 0;
+                }
             }
         }
 
@@ -1108,7 +1114,32 @@ namespace lad
         cv::compare(apSrc->rasterData, threshold, apDst->rasterData, cmp);  // create a no-data mask
         return NO_ERROR;
     }
-        
+
+    /**
+     * @brief Rotates a kernel layer by modifying its rotation parameter and triggering an update in the rotatedData
+     * 
+     * @param src Name of the source KernelLayer
+     * @param angle Angle in degrees
+     * @return int Error code, if any.
+     */
+    int Pipeline::rotateLayer(std::string src, double angle){
+        // first we check if the layer exist in the stack
+        if (isAvailable(src)){
+            cout << red << "[rotateLayer] Error layer [" << src << "] not found" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (getLayer(src)->getType() != LAYER_KERNEL){
+            cout << red << "[rotateLayer] Error layer [" << src << "] is not of type KERNEL" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(src));
+        if (apLayer == nullptr){
+            cout << red << "[rotateLayer] Unknown error retrieving [" << src << "] from the stack. Returned a nullptr" << reset << endl;
+            return LAYER_INVALID;
+        }
+        apLayer->setRotation(angle);
+        return NO_ERROR;
+    } 
 
 
 } // namespace lad
