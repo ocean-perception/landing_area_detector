@@ -139,13 +139,9 @@ int main(int argc, char *argv[])
     Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
 
-    // TODO \todo Provide createKernelTeplate method with implicit pixel scale parameters
-    // the Sx and Sy values should be retrieved from the implicit geotiff container
-    // overloaded version could allow user defined pixel resolutions
-    // Pipeline.createKernelTemplate("kernel",0.5, 1.4, 0.03, 0.03);
     Pipeline.createKernelTemplate("KernelAUV",0.5, 1.4);
-    // Pipeline.createKernelTemplate("kernel",0.6, 0.6, 0.03, 0.03);
-    // Pipeline.createLayer("ExclusionMap", LAYER_RASTER);
+    Pipeline.createKernelTemplate("KernelAUV",0.5, 1.4);
+
   
     shared_ptr<KernelLayer> apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
     if (apKernel == nullptr){
