@@ -109,6 +109,8 @@ namespace lad
         int computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst);
 
         int compareLayer(std::string src, std::string dst, int threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
+        int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
+        int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);
 
     };
 } // namespace lad

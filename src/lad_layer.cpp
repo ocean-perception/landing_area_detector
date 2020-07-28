@@ -372,6 +372,18 @@ namespace lad
     }
 
     /**
+     * @brief Returns the size (pixel) of the diagonal of the structuring element. Currently, is just the diag of the bounding box 
+     * 
+     * @return double 
+     */
+    double RasterLayer::getDiagonalSize(){
+        double x = (double) rasterData.cols;
+        double y = (double) rasterData.rows;
+        return (sqrt(x*x + y*y));
+    }        
+
+
+    /**
  * @brief Extended method that prints general and kernel specific information
  * 
  */

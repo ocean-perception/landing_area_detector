@@ -1141,5 +1141,44 @@ namespace lad
         return NO_ERROR;
     } 
 
+    /**
+     * @brief Apply a low pass filter to the input raster Layer
+     * 
+     * @param src Input raster layer
+     * @param dst Destination raster Layer
+     * @return int 
+     */
+    int Pipeline::lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType){
+        // we ignore filter type for the preliminary implementation. Future dev may include bilateral, box, user-defined, or raster defined kernel for filtering purposes
+        // first we check if the layer exist in the stack
+        if (isAvailable(src)){
+            cout << red << "[lowpassFilter] Error layer [" << src << "] not found" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(dst)){
+            cout << "[lowpassFilter] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        // cv::boxFilter(-apSrc->rasterData, apDst->rasterData, -1, filterSize);
+    //    cv::GaussianBlur(-apSrc->rasterData, apDst->rasterData, filterSize, 4);
+       cv::GaussianBlur(-apSrc->rasterData, apDst->rasterData, filterSize, 2.8);
+        return NO_ERROR;
+    }
+
+    int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
+        int retval = lowpassFilter(src, dst, filterSize);
+        if (retval != NO_ERROR){
+            cout << red << "[computeHeight] some error ocurred while calling lowpassFilter" << reset << endl;
+        }
+
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+        apDst->rasterData = -apSrc->rasterData - apDst->rasterData;
+        return NO_ERROR;
+    }
 
 } // namespace lad

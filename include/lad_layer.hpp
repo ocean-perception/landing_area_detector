@@ -121,6 +121,7 @@ namespace lad
             // rasterData =
         }
 
+        double getDiagonalSize();        
         int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
         int loadData(cv::Mat *);
@@ -159,7 +160,6 @@ namespace lad
         void showInformation();
         void setRotation(double);
         double getRotation();
-        
 
         KernelLayer(std::string name, int id, double rot = 0) : RasterLayer(name, id)
         {

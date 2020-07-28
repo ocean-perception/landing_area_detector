@@ -105,12 +105,20 @@ int main(int argc, char *argv[])
     else
         cout << "Using default value for [argAlphaRadius]: " << yellow << alphaShapeRadius << reset << endl;
 
+    float   fParam = 1.0;
+    if (argFloatParam)
+        fParam = args::get(argFloatParam);
+    int     iParam = 1;
+    if (argIntParam)
+        iParam = args::get(argIntParam);
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
+    cout << "fParam:\t" << fParam << endl;
+    cout << "iParam:\t" << iParam << endl;
 
     int verboseLevel = 0;
     lad::Pipeline Pipeline;
@@ -161,24 +169,33 @@ int main(int argc, char *argv[])
 //    Pipeline.maskLayer ("SlopeMapHIRES", "ExclusionMap", "SlopeMapHIRES-masked");
     Pipeline.compareLayer("SlopeMapHIRES", "P1-LoSlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
+    int k = iParam;
+    Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
+    Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
+
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
-    Pipeline.showImage("SlopeMap", COLORMAP_JET);
-    Pipeline.showImage("SlopeMapHIRES", COLORMAP_JET);
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
+
+    // Pipeline.showImage("SlopeMap", COLORMAP_JET);
+    // Pipeline.showImage("SlopeMapHIRES", COLORMAP_JET);
     // Pipeline.showImage("P1-LoSlopeExclMap", COLORMAP_JET);
     // Pipeline.showImage("ExclusionMap", COLORMAP_JET);
     // Pipeline.showImage("P3-SlopeExclMap", COLORMAP_JET);
 
     waitKey(0);
 
+    Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
 
     // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
-    Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("SlopeMapHIRES", "SlopeMapHIRES.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("P1-LoSlopeExclMap", "P1-LoSlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("SlopeMapHIRES", "SlopeMapHIRES.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("P1-LoSlopeExclMap", "P1-LoSlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
