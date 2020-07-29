@@ -815,6 +815,7 @@ namespace lad
      * @param dst Name of the resulting raster layer that will containg the exclusion map. If not present in the stack, it wil be created
      * @return int 
      */
+
     int Pipeline::computeExclusionMap(std::string raster, std::string kernel, std::string dstLayer){
         // *****************************************
         // Validating input raster layer
@@ -867,7 +868,6 @@ namespace lad
         
         // *****************************************
         // Applying erode
-        //R.erode(K) -> O
         shared_ptr<RasterLayer> apLayerR = dynamic_pointer_cast<RasterLayer>(apBase->second);
         shared_ptr<KernelLayer> apLayerK = dynamic_pointer_cast<KernelLayer>(apKernel->second);
         shared_ptr<RasterLayer> apLayerO = dynamic_pointer_cast<RasterLayer>(apOutput->second);
@@ -1148,7 +1148,7 @@ namespace lad
      * @param dst Destination raster Layer
      * @return int 
      */
-    int Pipeline::lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType){
+    int Pipeline::lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType, double nodata){
         // we ignore filter type for the preliminary implementation. Future dev may include bilateral, box, user-defined, or raster defined kernel for filtering purposes
         // first we check if the layer exist in the stack
         if (isAvailable(src)){
@@ -1159,10 +1159,6 @@ namespace lad
             cout << "[lowpassFilter] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
             createLayer(dst, LAYER_RASTER);
         }
-
-        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
-        // cv::Mat filter_mask = cv::Mat(filterSize, CV_8UC1); //binary mask to remove non-valid data
-        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
@@ -1176,14 +1172,39 @@ namespace lad
             return -1;
         }
 
-        cv::Mat dest;
-        cv::filter2D(apSrc->rasterData, apDst->rasterData, CV_32FC1, filter_kernel);
-        apDst->rasterData = (apDst->rasterData * -1.0);
+        cv::Mat src_patch;
+        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
+        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
+
+        int cols = apSrc->rasterData.cols;
+        int rows = apSrc->rasterData.rows;
+
+        apDst->rasterData = cv::Mat::zeros(apSrc->rasterData.size(), CV_32FC1); //copy
+
+        cout << "src Size: " << apSrc->rasterData.size() << endl; 
+        cout << "filter Size: " << filterSize.width << " x " << filterSize. height << endl; 
+
+        for (int row=0; row<(rows-filterSize.height); row++){
+            for (int col=0; col<(cols-filterSize.width); col++){
+                cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
+                cv::Mat roi_patch;
+                cv::compare(subImage, nodata, roi_patch, CMP_NE); // true is 255
+
+                float acum = cv::sum(subImage)[0];
+                float den  = cv::sum(roi_patch)[0] / 255;
+                
+                apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
+
+            }
+        }
+
+        // cv::Mat dest;
+        // cv::filter2D(apSrc->rasterData, apDst->rasterData, CV_32FC1, filter_kernel,cv::Point(-1,-1), 0.0, BORDER_ISOLATED);
         return NO_ERROR;
     }
 
     int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
-        int retval = lowpassFilter(src, dst, filterSize, 1);
+        int retval = lowpassFilter(src, dst, filterSize, filterType);
         if (retval != NO_ERROR){
             cout << red << "[computeHeight] error when calling lowpassFilter" << reset << endl;
             return retval;
@@ -1203,9 +1224,9 @@ namespace lad
             return -1;
         }
 
-        cv::Mat dest;
+        cv::Mat dest(apSrc->rasterData.size(), CV_32FC1);
 
-        dest = apSrc->rasterData + apDst->rasterData;
+        dest = apSrc->rasterData - apDst->rasterData;
         apDst->rasterData = dest.clone();
         return NO_ERROR;
     }

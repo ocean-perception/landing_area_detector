@@ -171,7 +171,10 @@ int main(int argc, char *argv[])
 
     int k = iParam;
     Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
+
+    // WARNING RESULTING LAYER CONATINES SOME DEAD PIXELS BECAUSE DIFF = 0 (MATCHES NO-DATA VALUE)
     Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
+    // fix *********************
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
@@ -188,16 +191,10 @@ int main(int argc, char *argv[])
 
     waitKey(0);
 
-    // Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("SlopeMapHIRES", "SlopeMapHIRES.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("SlopeMap", "SlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P1-LoSlopeExclMap", "P1-LoSlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("ExclusionMap", "ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }
