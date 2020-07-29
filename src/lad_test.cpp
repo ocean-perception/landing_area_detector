@@ -188,8 +188,9 @@ int main(int argc, char *argv[])
 
     waitKey(0);
 
-    Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
 
     // Pipeline.exportLayer("CONTOUR_Mask", "CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     // Pipeline.exportLayer("P3-SlopeExclMap", "P3-SlopeExclMap.tif", FMT_TIFF, WORLD_COORDINATE);

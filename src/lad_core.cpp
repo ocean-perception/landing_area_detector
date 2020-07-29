@@ -1160,24 +1160,53 @@ namespace lad
             createLayer(dst, LAYER_RASTER);
         }
 
+        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
+        // cv::Mat filter_mask = cv::Mat(filterSize, CV_8UC1); //binary mask to remove non-valid data
+        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
+
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
-        // cv::boxFilter(-apSrc->rasterData, apDst->rasterData, -1, filterSize);
-    //    cv::GaussianBlur(-apSrc->rasterData, apDst->rasterData, filterSize, 4);
-       cv::GaussianBlur(-apSrc->rasterData, apDst->rasterData, filterSize, 2.8);
+        if (apSrc == nullptr){
+            cout << "ApSrc error" << endl;
+            return -1;
+        }
+        if (apDst == nullptr){
+            cout << "ApDst error" << endl;
+            return -1;
+        }
+
+        cv::Mat dest;
+        cv::filter2D(apSrc->rasterData, apDst->rasterData, CV_32FC1, filter_kernel);
+        apDst->rasterData = (apDst->rasterData * -1.0);
         return NO_ERROR;
     }
 
     int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
-        int retval = lowpassFilter(src, dst, filterSize);
+        int retval = lowpassFilter(src, dst, filterSize, 1);
         if (retval != NO_ERROR){
-            cout << red << "[computeHeight] some error ocurred while calling lowpassFilter" << reset << endl;
+            cout << red << "[computeHeight] error when calling lowpassFilter" << reset << endl;
+            return retval;
         }
+        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
+        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
-        apDst->rasterData = -apSrc->rasterData - apDst->rasterData;
+
+        if (apSrc == nullptr){
+            cout << "ApSrc error" << endl;
+            return -1;
+        }
+        if (apDst == nullptr){
+            cout << "ApDst error" << endl;
+            return -1;
+        }
+
+        cv::Mat dest;
+
+        dest = apSrc->rasterData + apDst->rasterData;
+        apDst->rasterData = dest.clone();
         return NO_ERROR;
     }
 
