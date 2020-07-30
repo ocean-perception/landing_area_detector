@@ -1180,22 +1180,26 @@ namespace lad
         cout << "src Size: " << apSrc->rasterData.size() << endl; 
         cout << "filter Size: " << filterSize.width << " x " << filterSize. height << endl; 
 
+        float srcNoData = apSrc->getNoDataValue();
+        cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
+        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // true is 255
+
         for (int row=0; row<(rows-filterSize.height); row++){
             for (int col=0; col<(cols-filterSize.width); col++){
                 cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
-                cv::Mat roi_patch;
-                cv::compare(subImage, nodata, roi_patch, CMP_NE); // true is 255
+                cv::Mat roi_patch = roi_image(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
+                // we create our own local nodatamask (maybe we can create a global mask to avoid repeating)
+                // cv::compare(subImage, srcNoData, roi_patch, CMP_NE); // true is 255
 
                 float acum = cv::sum(subImage)[0];
                 float den  = cv::sum(roi_patch)[0] / 255;
-                
                 apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
 
             }
         }
-
-        // cv::Mat dest;
-        // cv::filter2D(apSrc->rasterData, apDst->rasterData, CV_32FC1, filter_kernel,cv::Point(-1,-1), 0.0, BORDER_ISOLATED);
+        // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
+        // as we are removing the non validad data point (not -defined)
+        apDst->setNoDataValue(srcNoData);
         return NO_ERROR;
     }
 
@@ -1224,6 +1228,7 @@ namespace lad
 
         dest = apSrc->rasterData - apDst->rasterData;
         apDst->rasterData = dest.clone();
+        apDst->setNoDataValue(DEFAULT_NODATA_VALUE); // WARNING: the expected output range can contain ZERO which is used sometimes as NOVALID data label
         return NO_ERROR;
     }
 
