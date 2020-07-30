@@ -1227,8 +1227,10 @@ namespace lad
         cv::Mat dest(apSrc->rasterData.size(), CV_32FC1);
 
         dest = apSrc->rasterData - apDst->rasterData;
-        apDst->rasterData = dest.clone();
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE); // WARNING: the expected output range can contain ZERO which is used sometimes as NOVALID data label
+        // to avoid inhering invalida values from source layers, we calculate the target valid data mask
+
+        apDst->rasterData = dest.clone();
         return NO_ERROR;
     }
 

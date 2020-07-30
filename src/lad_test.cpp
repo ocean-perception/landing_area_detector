@@ -166,14 +166,15 @@ int main(int argc, char *argv[])
     Pipeline.useNodataMask = true;
     Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
     Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
-    Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "SlopeMap-masked");
-    Pipeline.compareLayer("SlopeMap-masked", "P3-SlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
+    // Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "SlopeMap-masked");
+    // Pipeline.compareLayer("SlopeMap-masked", "P3-SlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
-    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelSlope", "VALID_DataMask", "SlopeMapHIRES");
+    // Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelSlope", "VALID_DataMask", "SlopeMapHIRES");
 //    Pipeline.maskLayer ("SlopeMapHIRES", "ExclusionMap", "SlopeMapHIRES-masked");
-    Pipeline.compareLayer("SlopeMapHIRES", "P1-LoSlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
+    // Pipeline.compareLayer("SlopeMapHIRES", "P1-LoSlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
     int k = iParam;
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
     Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
 
     // WARNING RESULTING LAYER CONATINES SOME DEAD PIXELS BECAUSE DIFF = 0 (MATCHES NO-DATA VALUE)

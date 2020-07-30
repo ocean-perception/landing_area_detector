@@ -340,13 +340,13 @@ namespace lad
         GDALDriver *driverGeotiff;
         GDALRasterBand *geotiffBand; // also declare pointers for Geotiff
                                // and raster band object(s)
-        int nrows,ncols;
         int *dimensions = geotiff->GetDimensions();
 
-        nrows = dimensions[0];
-        ncols = dimensions[1];
-        double noData, noDataTemp; 
-        noData = geotiff->GetNoDataValue();
+        int    nrows  = dimensions[0];
+        int    ncols  = dimensions[1];
+        double noData = getNoDataValue();
+
+        // geotiff->GetNoDataValue();
         if (rasterData.depth() == CV_8U){
             noData = -1.0;
         }
