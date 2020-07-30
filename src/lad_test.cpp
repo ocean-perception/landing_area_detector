@@ -111,12 +111,16 @@ int main(int argc, char *argv[])
     int     iParam = 1;
     if (argIntParam)
         iParam = args::get(argIntParam);
+    float footprintRotation = 0; // default no rotation (heading north)
+    if (argRotation)
+        footprintRotation = args::get(argRotation);
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
+    cout << "footprintRotation (degrees):\t" << footprintRotation << endl;
     cout << "fParam:\t" << fParam << endl;
     cout << "iParam:\t" << iParam << endl;
 
@@ -157,7 +161,7 @@ int main(int argc, char *argv[])
         cout << red << "Error creating AUV footprint layer " << reset << endl;
         return -1;
     }
-    apKernel->setRotation(-10);
+    apKernel->setRotation(footprintRotation);
     
     Pipeline.useNodataMask = true;
     Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");

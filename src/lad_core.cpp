@@ -853,7 +853,7 @@ namespace lad
         if (apOutput == mapLayers.end()){
             cout << green << "[computeExclusionMap] Output raster [" << dstLayer << "] not found in the stack. Creating" << reset << endl;
             createLayer(dstLayer, LAYER_RASTER);
-            apOutput =  mapLayers.find(dstLayer);    //we get thepointer, it should appear now in the stack!
+            apOutput =  mapLayers.find(dstLayer);    //we get the pointer, it should appear now in the stack!
         }
         else if (apOutput->second->getType() != LAYER_RASTER){
             cout << "[computeExclusionMap] Output layer [" << dstLayer << "] must be of type LAYER_RASTER" << endl;
@@ -867,7 +867,9 @@ namespace lad
         shared_ptr<RasterLayer> apLayerO = dynamic_pointer_cast<RasterLayer>(apOutput->second);
 
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
-
+        // we do not need to set nodata field for destination layer if we use it as mask
+        // if we use it for other purposes (QGIS related), we can use a negative value to flag it
+        apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
@@ -940,13 +942,13 @@ namespace lad
                 // is n > K/2, being K = 3x3 = 9 ---> n = 5
                 std::vector<KPoint> pointList;
                 pointList = convertMatrix2Vector (&temp, sx, sy);
-                if (pointList.size() > 4){
+                if (pointList.size() > 3){
                     KPlane plane = computeFittingPlane(pointList);
                     double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
                     apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
                 }
                 else{ // we do not have enough points to compute a valid plane
-                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = 0;
+                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = DEFAULT_NODATA_VALUE;
                 }
             }
         }
