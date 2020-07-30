@@ -345,7 +345,7 @@ namespace lad
 
         nrows = dimensions[0];
         ncols = dimensions[1];
-        double noData; 
+        double noData, noDataTemp; 
         noData = geotiff->GetNoDataValue();
         if (rasterData.depth() == CV_8U){
             noData = -1.0;

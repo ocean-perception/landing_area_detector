@@ -456,22 +456,14 @@ namespace lad
         // Check if we the name is valid (non-empty)
         if (name.empty())
             return LAYER_INVALID_NAME;
-
-        // Now, we retrieve the ID for that name
-        int id = getLayerID(name);
-        if ((id == LAYER_INVALID_ID) || (id == LAYER_NOT_FOUND))
-        { //TODO: Should we create it?
-            cout << "*************Layer_INVALID!: [" << id << "]" << endl;
-            return LAYER_INVALID; // some error ocurred getting the ID of a layer with such name (double validation)
-        }
-        int retval = LAYER_NOT_FOUND;
-        
+        int retval = NO_ERROR;        
         auto layer = getLayer(name);
-        if (layer == nullptr)
+        if (layer == nullptr){
+            cout << red << "[uploadData] Error when getting layer: [" << name << "]" << reset << endl;
             return LAYER_NOT_FOUND;
+        }
         
-                                // Check ID match
-        int type = layer->getType(); // slight speed improve
+        int type = layer->getType(); // let's operate according to the layer type
         // WARNING: if we change these 'if' to switch , -fPermissive will trigger error
         if (type == LAYER_VECTOR)
         {
@@ -589,6 +581,8 @@ namespace lad
             id = createLayer(rasterName, LAYER_RASTER);
         }
         uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
+        shared_ptr<RasterLayer> apRaster= dynamic_pointer_cast<RasterLayer> (getLayer(rasterName));
+        apRaster->setNoDataValue(apInputGeotiff->GetNoDataValue());
         //*********************************************************
         // Check DATA mask layer
         //*********************************************************

@@ -32,6 +32,7 @@ namespace lad
         int layerID;     // Layer identifier that can be used as UID in multilayer implementations
         int layerStatus; // Status identifier: takes a value from enumerated list of layer status.
         int layerType;   // Layer type identifier: takes a value from enumerated list of layer types
+        double noDataValue;
 
     protected:
     public:
@@ -48,6 +49,7 @@ namespace lad
             layerID = 0;
             layerType = LAYER_ANYTYPE;
             layerStatus = LAYER_INVALID;
+            noDataValue = 0.0;
         }
 
         /**
@@ -63,6 +65,7 @@ namespace lad
             layerName = src->layerName;
             fileName = src->fileName;
             filePath = src->filePath;
+            noDataValue = src->getNoDataValue();
         }
 
         /**
@@ -94,6 +97,8 @@ namespace lad
         int setStatus(int newStatus);   // Modify the layer status
         int getType();                  // Return a copy of the layer type
         int setType(int newType);       // Modify the layer type
+        double  getNoDataValue(){ return noDataValue;}
+        void    setNoDataValue(double newval){noDataValue = newval;}
         virtual void showInformation(); // Dumps relevant information of the layer
 
         virtual int clear();       // Clear all the layer specific information, and stored data if any.
