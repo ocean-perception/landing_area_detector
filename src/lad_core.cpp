@@ -1188,13 +1188,11 @@ namespace lad
             for (int col=0; col<(cols-filterSize.width); col++){
                 cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
                 cv::Mat roi_patch = roi_image(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
-                // we create our own local nodatamask (maybe we can create a global mask to avoid repeating)
-                // cv::compare(subImage, srcNoData, roi_patch, CMP_NE); // true is 255
 
+        // TODO: failing to compute when data is partially available at the edges
                 float acum = cv::sum(subImage)[0];
                 float den  = cv::sum(roi_patch)[0] / 255;
                 apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
-
             }
         }
         // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
@@ -1223,14 +1221,28 @@ namespace lad
             cout << "ApDst error" << endl;
             return -1;
         }
-
-        cv::Mat dest(apSrc->rasterData.size(), CV_32FC1);
-
-        dest = apSrc->rasterData - apDst->rasterData;
-        apDst->setNoDataValue(DEFAULT_NODATA_VALUE); // WARNING: the expected output range can contain ZERO which is used sometimes as NOVALID data label
-        // to avoid inhering invalida values from source layers, we calculate the target valid data mask
-
-        apDst->rasterData = dest.clone();
+        // cv::Mat dest(apSrc->rasterData.size(), CV_32FC1);
+        cv::Mat dest; //(apSrc->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
+        // we flipped the order because the source is giving bathymetry depth as altitude (wrong sign)
+        // dest = apSrc->rasterData - apDst->rasterData;
+        dest = - apSrc->rasterData + apDst->rasterData;
+        // WARNING: the expected output range can contain ZERO which is used sometimes as NOVALID data label
+        // to avoid inhering invalida values from source layers, we calculate the valid data mask for the  dst layer
+        // from the valida data mask of each source (src1 AND src2 -> dst) 
+        // a) create src1 data mask
+        cv::Mat mask1(apSrc->rasterData.size(), CV_8UC1);
+        cv::Mat mask2 = cv::Mat(apDst->rasterData.size(), CV_8UC1); // they must have the same size
+        cv::Mat final_mask = cv::Mat(apDst->rasterData.size(), CV_8UC1); // final mask        
+        cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask1, CMP_NE);
+        cv::compare(apDst->rasterData, apDst->getNoDataValue(), mask2, CMP_NE);
+        // combine to generate final valida mas
+        cv::bitwise_and(mask1, mask2, final_mask);
+        // use a base constant value layer labelled as NODATA
+        apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        // let's apply the resulting mask
+        dest.copyTo(apDst->rasterData, final_mask);
+        // TODO: trim the edges because the lowpassfilter cannot compute outside the filtersize box
         return NO_ERROR;
     }
 
