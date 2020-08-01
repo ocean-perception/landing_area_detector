@@ -1004,7 +1004,7 @@ namespace lad
 
             if (useNodataMask){
                 cv::Mat mask;
-                cv::compare(dst, apInputGeotiff->GetNoDataValue(), mask, CMP_NE);  // create a no-data mask
+                cv::compare(dst, apLayer->getNoDataValue(), mask, CMP_NE);  // create a no-data mask
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
             }
             else{
@@ -1093,7 +1093,7 @@ namespace lad
      * @param angleThreshold 
      * @return int 
      */
-    int Pipeline::compareLayer(std::string src, std::string dst, int threshold, int cmp){
+    int Pipeline::compareLayer(std::string src, std::string dst, double threshold, int cmp){
         // check that both src and mask layers exist. If not, return with error
         if (isAvailable(src)){
             cout << red << "[thresholdLayer] source layer ["  << src << "] does not exist" << reset << endl;
@@ -1155,7 +1155,7 @@ namespace lad
             cout << "[lowpassFilter] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
             createLayer(dst, LAYER_RASTER);
         }
-
+        
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
@@ -1167,37 +1167,67 @@ namespace lad
             cout << "ApDst error" << endl;
             return -1;
         }
-
         cv::Mat src_patch;
-        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
-        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
-
         int cols = apSrc->rasterData.cols;
         int rows = apSrc->rasterData.rows;
 
-        apDst->rasterData = cv::Mat::zeros(apSrc->rasterData.size(), CV_32FC1); //copy
+        // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
+        // as we are removing the non validad data point (not -defined)
+        float srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
+        apDst->setNoDataValue(srcNoData);
+        apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1); 
+        // we create a matrix with NOVALID data
 
+        // cv::Mat temp(apDst->rasterData); //deep copy
         cout << "src Size: " << apSrc->rasterData.size() << endl; 
         cout << "filter Size: " << filterSize.width << " x " << filterSize. height << endl; 
 
-        float srcNoData = apSrc->getNoDataValue();
         cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
         cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // true is 255
 
-        for (int row=0; row<(rows-filterSize.height); row++){
-            for (int col=0; col<(cols-filterSize.width); col++){
-                cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
-                cv::Mat roi_patch = roi_image(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
+
+        for (int row=0; row<rows; row++){
+            for (int col=0; col<cols; col++){
+
+                int rt = row - filterSize.height/2;
+                if (rt < 0) rt = 0;
+                int rb = row + filterSize.height/2;
+                if (rb > rows) rb = rows;
+                int cl = col - filterSize.width/2;
+                if (cl < 0) cl = 0;
+                int cr = col + filterSize.width/2;
+                if (cr > cols) cr = cols;
+
+                cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
+                cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
+                // cv::Mat subImage = apSrc->rasterData(cv::Range(row - filterSize.height/2, row + filterSize.height/2), cv::Range(col - filterSize.width/2, col + filterSize.width/2));
+                // cv::Mat roi_patch = roi_image(cv::Range(row - filterSize.height/2, row + filterSize.height/2), cv::Range(col - filterSize.width/2, col + filterSize.width/2));
 
         // TODO: failing to compute when data is partially available at the edges
                 float acum = cv::sum(subImage)[0];
                 float den  = cv::sum(roi_patch)[0] / 255;
-                apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
+                apDst->rasterData.at<float>(cv::Point(col, row)) = acum/den;
             }
         }
-        // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
-        // as we are removing the non validad data point (not -defined)
-        apDst->setNoDataValue(srcNoData);
+        // for (int row=0; row<(rows-filterSize.height); row++){
+        //     for (int col=0; col<(cols-filterSize.width); col++){
+        //         cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
+        //         cv::Mat roi_patch = roi_image(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
+
+        // // TODO: failing to compute when data is partially available at the edges
+        //         float acum = cv::sum(subImage)[0];
+        //         float den  = cv::sum(roi_patch)[0] / 255;
+        //         apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
+        //     }
+        // }
+        // now we must clip-out those points that were labelled as NODATA in the source layer
+        cv::Mat mask;
+        cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);
+        namedWindow("mask_");
+        imshow("mask_", mask);
+        // the mask contains true (255) for thos invalid points
+        roi_image = cv::Mat(apSrc->rasterData.size(), CV_32FC1);
+        roi_image.copyTo(apDst->rasterData, mask);
         return NO_ERROR;
     }
 
@@ -1207,8 +1237,6 @@ namespace lad
             cout << red << "[computeHeight] error when calling lowpassFilter" << reset << endl;
             return retval;
         }
-        cv::Mat filter_kernel;// = cv::Mat(filterSize, CV_32FC1); //let's create the filter kernel
-        filter_kernel = cv::Mat::ones(filterSize, CV_32FC1)/(filterSize.area());
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));

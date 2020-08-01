@@ -153,9 +153,8 @@ int main(int argc, char *argv[])
 
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
     Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
+    Pipeline.createKernelTemplate("KernelCIRC", 0.4, 0.4);
   
-//    Pipeline.rotateLayer("KernelAUV", -10);
-
     shared_ptr<KernelLayer> apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
     if (apKernel == nullptr){
         cout << red << "Error creating AUV footprint layer " << reset << endl;
@@ -166,20 +165,14 @@ int main(int argc, char *argv[])
     Pipeline.useNodataMask = true;
     Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
     Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
-    // Pipeline.maskLayer ("SlopeMap", "ExclusionMap", "SlopeMap-masked");
-    // Pipeline.compareLayer("SlopeMap-masked", "P3-SlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
-
-    // Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelSlope", "VALID_DataMask", "SlopeMapHIRES");
-//    Pipeline.maskLayer ("SlopeMapHIRES", "ExclusionMap", "SlopeMapHIRES-masked");
-    // Pipeline.compareLayer("SlopeMapHIRES", "P1-LoSlopeExclMap", 17.7, CMP_LE); // flag as valid those points that are LOWER THAN
 
     int k = iParam;
     Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
     Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
 
-    // WARNING RESULTING LAYER CONATINES SOME DEAD PIXELS BECAUSE DIFF = 0 (MATCHES NO-DATA VALUE)
     Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
-    // fix *********************
+    Pipeline.compareLayer("HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
+    Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
@@ -187,18 +180,16 @@ int main(int argc, char *argv[])
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
     Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
     Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
-
-    // Pipeline.showImage("SlopeMap", COLORMAP_JET);
-    // Pipeline.showImage("SlopeMapHIRES", COLORMAP_JET);
-    // Pipeline.showImage("P1-LoSlopeExclMap", COLORMAP_JET);
-    // Pipeline.showImage("ExclusionMap", COLORMAP_JET);
-    // Pipeline.showImage("P3-SlopeExclMap", COLORMAP_JET);
+    Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
+    Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
 
     waitKey(0);
 
     Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P7-HiProtExclMap", "P7-HiProtExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P8-ExclusionMap", "P8-ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
 
     return lad::NO_ERROR;
