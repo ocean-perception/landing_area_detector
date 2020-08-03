@@ -135,59 +135,56 @@ int main(int argc, char *argv[])
     cout << "*************************************************" << endl
          << endl;
 
-    // create the container and the open input file
-    Geotiff inputGeotiff(inputFileName.c_str());
-    if (!inputGeotiff.isValid())
-    { // check if nothing wrong happened with the constructor
-        cout << red << "Error opening Geotiff file: " << reset << inputFileName << endl;
-        return lad::ERROR_GDAL_FAILOPEN;
-    }
-    //**************************************
-    // Get/print summary information of the TIFF
-    GDALDataset *poDataset;
-    poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
+    Pipeline.verbosity = verboseLevel;
+    Pipeline.readTIFF(inputFileName, "RAW_Bathymetry", "VALID_DataMask");
+    Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", verboseLevel);
+    
+    cout << "Create kernels" << endl;
 
-    Pipeline.apInputGeotiff = &inputGeotiff;
-    Pipeline.processGeotiff("RAW_Bathymetry", "VALID_DataMask", argVerbose);
-    Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", argVerbose);
+    // we need to retrieve the parameters from any layer (geotiff related) and fill the void in the pipeline
 
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
+    cout << "Create KernelSLope" << endl;
     Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
-    Pipeline.createKernelTemplate("KernelCIRC", 0.4, 0.4);
   
-    shared_ptr<KernelLayer> apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
+    cout << "pull apKernel" << endl;
+    auto apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
     if (apKernel == nullptr){
         cout << red << "Error creating AUV footprint layer " << reset << endl;
         return -1;
     }
     apKernel->setRotation(footprintRotation);
-    
-    Pipeline.useNodataMask = true;
-    // Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
-    // Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
+    cout << "coputeExclusion" << endl;
+    Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
+
+    cout << "MeanSLope" << endl;
+
+    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
 
     int k = iParam;
-    // Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
-    // Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
+    cout << "loPass" << endl;
 
-    // Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
-    // Pipeline.compareLayer("HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
-    // Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
+    Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
+    cout << "Height" << endl;
+    Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
+    cout << "compare" << endl;
+    
+    Pipeline.compareLayer("HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
+    Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    auto ap = dynamic_pointer_cast<RasterLayer>(Pipeline.getLayer("RAW_Bathymetry"));
+    // apRaw->showInformation();
 
-    // ap->updateMask(0.0);
-    ap->updateStats();
-    // ap->showInformation();
-
+    Pipeline.useNodataMask = true;
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
-    // Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
+    Pipeline.showImage("ExclusionMap",COLORMAP_JET);
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
+    Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
 
     waitKey(0);
 

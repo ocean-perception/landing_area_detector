@@ -485,22 +485,6 @@ namespace lad
         return retval;
     }
 
-
-    /**
- * @brief Reads a geoTIFF file using the GDAL driver and populate the object container
- * 
- * @param inputFile Name of the geotTIFF file to be read
- * @return int Success/error code
- */
-    int Pipeline::readTIFF(std::string inputFile)
-    {
-        if (inputFile.empty())
-        {
-            cout << red << "[readTIFF] input filename is empty!" << reset << endl;
-        }
-        cout << red << "NOT IMPLEMENTED YET ***********************************" << endl;
-    }
-
     /**
  * @brief Shows summary/detailed information of the pipeline object
  * 
@@ -600,6 +584,42 @@ namespace lad
             imshow(rasterName, tiff_colormap);
             resizeWindow(rasterName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
+    }
+
+    /**
+     * @brief Reads a geoTIFF file, imports the raster data and also creates a valida data mask 
+     * 
+     * @param inputFile Name of the geoTIFF file
+     * @param rasterLayer Name of the raster layer that will hold the valid raster data
+     * @param maskLayer Name of the raster layer that will hold the valida data mask
+     * @return int Eror code, if any
+     */
+    int Pipeline::readTIFF(std::string inputFile, std::string rasterLayer, std::string maskLayer){
+        // first we create the destination layers, if missing
+        if (isAvailable(rasterLayer)){
+            createLayer(rasterLayer, LAYER_RASTER);
+        }
+        if (isAvailable(maskLayer)){
+            createLayer(maskLayer, LAYER_RASTER);
+        }
+        auto apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterLayer));
+        if (apRaster == nullptr){
+            cout << red << "[readTIFF] Error retrieving layer [" << rasterLayer << "]" << endl;
+        }
+        auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(maskLayer));
+        if (apMask == nullptr){
+            cout << red << "[readTIFF] Error retrieving layer [" << maskLayer << "]" << endl;
+        }
+
+        if (apRaster->readTIFF(inputFile) != NO_ERROR){
+            cout << red << "[readTIFF] Error reading file [" << inputFile << "]" << endl;
+            return ERROR_GDAL_FAILOPEN;
+        }
+        apRaster->updateMask();
+        // transfer the recently computed mask layer from the source raster layer
+        apRaster->rasterMask.copyTo(apMask->rasterData);
+        apMask->rasterMask = cv::Mat::ones(apMask->rasterData.size(), CV_8UC1);
+        return NO_ERROR;
     }
 
     /**

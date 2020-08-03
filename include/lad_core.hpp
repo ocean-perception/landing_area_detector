@@ -59,7 +59,7 @@ namespace lad
 
         // Methods **************
 
-        int readTIFF(std::string inputFile); // Read a given geoTIFF file an loads into current container
+        int readTIFF(std::string inputFile, std::string rasterLayer, std::string maskLayer); // Read a given geoTIFF file an loads into current container
 
         std::string getLayerName(int id);              // Returns name of Layer with given ID number
         int setLayerName(int id, std::string newName); // Overwrite Layers name using is ID

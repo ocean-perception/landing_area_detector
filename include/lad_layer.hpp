@@ -132,7 +132,8 @@ namespace lad
         }
 
         int loadData(cv::Mat *);
-        int readLayer(std::string name); // read and load raster data from a geoTIFF file
+        int readTIFF(std::string name); // read and load raster data from a geoTIFF file
+        // int readLayer(std::string name); // read and load raster data from a geoTIFF file
         int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
         double getDiagonalSize();

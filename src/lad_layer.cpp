@@ -188,6 +188,54 @@ namespace lad
     }
 
     /**
+     * @brief 
+     * 
+     * @param name 
+     */
+    int RasterLayer::readTIFF(std::string name){
+
+    // create the container and the open input file
+    Geotiff inputGeotiff(name.c_str());
+    if (!inputGeotiff.isValid())
+    { // check if nothing wrong happened with the constructor
+        cout << red << "[readTIFF] Error opening Geotiff file: " << reset << name << endl;
+        return lad::ERROR_GDAL_FAILOPEN;
+    }
+    //**************************************
+    // Get/print summary information of the TIFF
+    GDALDataset *poDataset;
+    poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
+
+    // Pipeline.apInputGeotiff = &inputGeotiff;
+    //First, check if have any valid Geotiff object loaded in memory
+    int *dimensions;
+    dimensions = inputGeotiff.GetDimensions();
+    float **apData; //pull 2D float matrix containing the image data for Band 1
+
+    apData = inputGeotiff.GetRasterBand(1);
+    if (apData == nullptr)
+    {
+        cout << red << "[processGeotiff]: Error reading input geoTIFF data: NULL" << reset << endl;
+        return ERROR_GDAL_FAILOPEN;
+    }
+
+    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
+    for (int i = 0; i < dimensions[0]; i++)
+    {
+        for (int j = 0; j < dimensions[1]; j++)
+        {
+            tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
+        }
+    }
+
+    tiff.copyTo(rasterData);
+    setNoDataValue(inputGeotiff.GetNoDataValue());
+    updateMask();
+    updateStats();
+    return NO_ERROR;
+    }
+
+    /**
  * @brief Extended method that prints general and raster specific information
  * 
  */
