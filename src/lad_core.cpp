@@ -286,28 +286,30 @@ namespace lad
         shared_ptr<KernelLayer> apKernel;
 
         // 6D matrix geotransformation is assumed to be internally stored in the geotiff object
-        double *adfGeoTransform;
-        adfGeoTransform = apInputGeotiff->GetGeoTransform();
-        if (adfGeoTransform == nullptr)
-        {
-            cout << red << "[exportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
-            return ERROR_WRONG_ARGUMENT;
-        }
+        // double *adfGeoTransform;
+        // adfGeoTransform = apInputGeotiff->GetGeoTransform();
+        // if (adfGeoTransform == nullptr)
+        // {
+        //     cout << red << "[exportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
+        //     return ERROR_WRONG_ARGUMENT;
+        // }
 
         // now, depending on the type of Layer and target format, we operate
         switch (type)
         {
         case LAYER_RASTER:
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
-            apRaster->writeLayer(exportName, format, apInputGeotiff,coord_sys, adfGeoTransform);
+            apRaster->writeLayer(exportName, format, coord_sys);
             break;
 
         case LAYER_VECTOR:
+            cout << "Export VECTOR" << endl;
             apVector = dynamic_pointer_cast<VectorLayer>(apLayer);
-            apVector->writeLayer(exportName, format, apInputGeotiff->GetProjection(), coord_sys, adfGeoTransform);
+            apVector->writeLayer(exportName, format, geoProjection, coord_sys, geoTransform);
             break;
 
         case LAYER_KERNEL:
+            cout << "Export RASTER" << endl;
             cout << yellow << "KERNEL_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
             apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
             break;
@@ -1037,6 +1039,28 @@ namespace lad
             imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
             // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
+
+        return NO_ERROR;
+    }
+
+    
+    /**
+     * @brief Use geoTIFF related structures from a reference raster layer as template for the whole stack
+     * 
+     * @param reference Name of the RasterLayer that will be used as template
+     * @return int Error code, if any
+     */
+    int Pipeline::setTemplate (std::string reference){
+        if (isAvailable(reference)){
+            cout << red << "[setTemplate] Template layer does not exist: [" << reference << "]" << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        auto ap = getLayer(reference);
+        if (ap->getType() != LAYER_RASTER){
+            cout << red << "[setTemplate] Provided layer [" << reference << "] must be of type LAYER_RASTER" << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        // Now we start copying the parameters from the raster layer to the stack
 
         return NO_ERROR;
     }

@@ -125,6 +125,8 @@ namespace lad
         // \todo check if size/type must/can be updated at construction time
         cv::Mat rasterData; //OpenCV matrix that will hold the data
         cv::Mat rasterMask; //OpenCV matrix with valida data mask (0=invalid, 255=valid)
+        int     layerDimensions[3];
+        const char *layerProjection;
 
         RasterLayer(std::string name, int id) : Layer(name, id)
         {
@@ -134,7 +136,7 @@ namespace lad
         int loadData(cv::Mat *);
         int readTIFF(std::string name); // read and load raster data from a geoTIFF file
         // int readLayer(std::string name); // read and load raster data from a geoTIFF file
-        int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); // Overloaded method of exporting vectorData to user defined file
+        int writeLayer(std::string outputFilename, int fileFormat, int outputCoordinate); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
         double getDiagonalSize();
 

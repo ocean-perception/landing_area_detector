@@ -52,6 +52,8 @@ namespace lad
             inputFileTIFF = "";
         }
 
+        const char *geoProjection;
+        double      geoTransform[6]; //!< 6 DOF geotransformation matrix
         Geotiff    *apInputGeotiff; //< Pointer to geoTIFF container
         std::string inputFileTIFF; //< Input TIFF filename containing base bathymetry. It can be used as base name for output products files
         int         verbosity; //!< Verbosity levels (from 0 to 2)
@@ -59,6 +61,7 @@ namespace lad
 
         // Methods **************
 
+        int setTemplate (std::string); // Use raster layer as template for geoTIFF structure
         int readTIFF(std::string inputFile, std::string rasterLayer, std::string maskLayer); // Read a given geoTIFF file an loads into current container
 
         std::string getLayerName(int id);              // Returns name of Layer with given ID number

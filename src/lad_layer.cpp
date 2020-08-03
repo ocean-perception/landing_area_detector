@@ -205,13 +205,12 @@ namespace lad
     // Get/print summary information of the TIFF
     GDALDataset *poDataset;
     poDataset = inputGeotiff.GetDataset(); //pull the pointer to the main GDAL dataset structure
+    // store a copy of the geo-transormation matrix
+    poDataset->GetGeoTransform(transformMatrix);
+    inputGeotiff.GetDimensions(layerDimensions);
+    layerProjection = inputGeotiff.GetProjection();
 
-    // Pipeline.apInputGeotiff = &inputGeotiff;
-    //First, check if have any valid Geotiff object loaded in memory
-    int *dimensions;
-    dimensions = inputGeotiff.GetDimensions();
     float **apData; //pull 2D float matrix containing the image data for Band 1
-
     apData = inputGeotiff.GetRasterBand(1);
     if (apData == nullptr)
     {
@@ -219,10 +218,11 @@ namespace lad
         return ERROR_GDAL_FAILOPEN;
     }
 
-    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
-    for (int i = 0; i < dimensions[0]; i++)
+    cv::Mat tiff(layerDimensions[1], layerDimensions[0], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
+    cout << "Dim: [" << layerDimensions[0] << "x" << layerDimensions[1] << endl;
+    for (int i = 0; i < layerDimensions[1]; i++)
     {
-        for (int j = 0; j < dimensions[1]; j++)
+        for (int j = 0; j < layerDimensions[0]; j++)
         {
             tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
         }
@@ -399,7 +399,7 @@ namespace lad
         }
     }
 
-    int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, Geotiff *geotiff, int outputCoordinate, double *apMatrix){
+    int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, int outputCoordinate){
         if (outputFilename.empty()){
             cout << red <<"[writeLayer] Empty output filename provided" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
@@ -435,10 +435,10 @@ namespace lad
         GDALDriver *driverGeotiff;
         GDALRasterBand *geotiffBand; // also declare pointers for Geotiff
                                // and raster band object(s)
-        int *dimensions = geotiff->GetDimensions();
+        // int *dimensions = geotiff->GetDimensions();
 
-        int    nrows  = dimensions[0];
-        int    ncols  = dimensions[1];
+        int    nrows  = layerDimensions[1];
+        int    ncols  = layerDimensions[0];
         double noData = getNoDataValue();
 
         // geotiff->GetNoDataValue();
@@ -448,9 +448,10 @@ namespace lad
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
         geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
-        geotiffDataset->SetGeoTransform(geotiff->GetGeoTransform());
-        geotiffDataset->SetProjection(geotiff->GetProjection());
-        
+
+        geotiffDataset->SetGeoTransform(transformMatrix);
+        geotiffDataset->SetProjection(layerProjection);
+
         // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;
         float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
