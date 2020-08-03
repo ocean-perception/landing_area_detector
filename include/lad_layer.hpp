@@ -124,6 +124,7 @@ namespace lad
         // this should interface with OpenCV Mat and 2D matrix (vector style)
         // \todo check if size/type must/can be updated at construction time
         cv::Mat rasterData; //OpenCV matrix that will hold the data
+        cv::Mat rasterMask; //OpenCV matrix with valida data mask (0=invalid, 255=valid)
 
         RasterLayer(std::string name, int id) : Layer(name, id)
         {
@@ -136,12 +137,16 @@ namespace lad
         void showInformation();
         double getDiagonalSize();
 
-
-        double getMin(){return rasterStats[0];}  // we assume the values are up-to-date      
-        double getMax(){return rasterStats[1];}  //\todo force update after modiciations
-        double getMean(){return rasterStats[2];} // easy to enforce when loading raster data from file
-        double getStdev(){return rasterStats[3];} // easy to enforce when loading raster data from file
-        double *getStats(){return rasterStats;} // return a copy of the 4 element vector
+        void updateStats(); //!< Recomputes stats of valid raster data
+        void updateMask();          //!< Update valid data mask by comparing rasterData with implicit no-data value 
+        void updateMask(double nd); //!< Update valid data mask by comparing rasterData with user-provided no-data value
+        void   setNoDataVal(double nd){dfNoData = nd;}  //!< Assigns current layer NO-DATA value with user provided value
+        double getNoDataVal(){return dfNoData;}         //!< Returns current layer NO-DATA value
+        double getMin()     {return rasterStats[LAYER_MIN];}    // we assume the values are up-to-date      
+        double getMax()     {return rasterStats[LAYER_MAX];}    //\todo force update after modiciations
+        double getMean()    {return rasterStats[LAYER_MEAN];}    // easy to enforce when loading raster data from file
+        double getStdev()   {return rasterStats[LAYER_STDEV];}    // easy to enforce when loading raster data from file
+        double *getStats()  {return rasterStats;}       // return a copy of the 4 element vector
         void getStats(double *);
     };
 

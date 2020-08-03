@@ -153,6 +153,41 @@ namespace lad
     }
 
     /**
+     * @brief Updates the content of rasterMask matrix by comparing rasterData content with explicit NO-DATA value provided as argument
+     * @details The resulting mask is a single channel 8-bit matrix containing 0 for invalid pixels in rasterData and 255 for valid pixels
+     * @param nd NO-DATA scalar value to be used for comparison. 
+     */
+    void RasterLayer::updateMask(double nd){
+        cv::compare(rasterData, nd, rasterMask, CMP_NE);
+    }
+
+    /**
+     * @brief Updates the content of rasterMask by comparing rasterData content with implicit NO-DATA value of the layer
+     * @details The NO-DATA value is assigned when importint a geoTIFF file, or during any construction methods. Can be modified using setNoDataVal
+     */
+    void RasterLayer::updateMask(){
+        updateMask(dfNoData);
+    }
+
+    /**
+     * @brief Recompute the stats of rasterData using the correspoding valid data mask
+     * 
+     */
+    void RasterLayer::updateStats(){
+        // first, let's find min, max using opencv methods
+        double min, max;
+        cv::minMaxLoc(rasterData, &min, &max, nullptr, nullptr, rasterMask);
+        rasterStats[LAYER_MIN] = min;
+        rasterStats[LAYER_MAX] = max;
+        // now, let's calculate the mean value of the valid data
+        Scalar mean, stdev;
+        cv::meanStdDev(rasterData, mean, stdev, rasterMask);
+        cout << "Mean: " << mean << "\tstdev " << stdev << endl;
+        rasterStats[LAYER_MEAN] = mean[0];
+        rasterStats[LAYER_STDEV] = stdev[0];
+    }
+
+    /**
  * @brief Extended method that prints general and raster specific information
  * 
  */
@@ -161,7 +196,7 @@ namespace lad
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
         cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << endl;
         cout << "\t> Stats:\tMin [" << rasterStats[LAYER_MIN] << "] Max [" << rasterStats[LAYER_MAX] << "]"; 
-        cout << "Mean [" << rasterStats[LAYER_MEAN] << "] Stdev [" << rasterStats[LAYER_STDEV] << "]" << endl;
+        cout << " Mean [" << rasterStats[LAYER_MEAN] << "] Stdev [" << rasterStats[LAYER_STDEV] << "]" << endl;
     }
 
     /**
