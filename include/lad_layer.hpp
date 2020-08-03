@@ -115,6 +115,11 @@ namespace lad
 // TODO: Create copyContructor for Layer derived classes
     class RasterLayer : public Layer
     {
+    private:
+        double rasterStats[4];
+        double transformMatrix[6];
+        double dfNoData;
+
     public:
         // this should interface with OpenCV Mat and 2D matrix (vector style)
         // \todo check if size/type must/can be updated at construction time
@@ -122,14 +127,22 @@ namespace lad
 
         RasterLayer(std::string name, int id) : Layer(name, id)
         {
-            setType(LAYER_RASTER); // This can be done passing LAYER_VECTOR as 3rd argument of the constructor
-            // rasterData =
+            setType(LAYER_RASTER); 
         }
 
-        double getDiagonalSize();        
+        int loadData(cv::Mat *);
+        int readLayer(std::string name); // read and load raster data from a geoTIFF file
         int writeLayer(std::string outputFilename, int fileFormat, Geotiff *geotiff, int outputCoordinate, double *apMatrix); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
-        int loadData(cv::Mat *);
+        double getDiagonalSize();
+
+
+        double getMin(){return rasterStats[0];}  // we assume the values are up-to-date      
+        double getMax(){return rasterStats[1];}  //\todo force update after modiciations
+        double getMean(){return rasterStats[2];} // easy to enforce when loading raster data from file
+        double getStdev(){return rasterStats[3];} // easy to enforce when loading raster data from file
+        double *getStats(){return rasterStats;} // return a copy of the 4 element vector
+        void getStats(double *);
     };
 
     class VectorLayer : public Layer

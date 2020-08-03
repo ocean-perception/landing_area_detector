@@ -121,6 +121,13 @@ namespace lad{
         LAYER_DUPLICATED_NAME   =-5, //!< Provided new name for Layer already exists
         LAYER_INVALID_NAME      =-6, //!< Provided new name for Layer is invalid. It must be a non-NULL std::string
     };
+
+    enum LayerStats{
+        LAYER_MIN = 0,  //!< Minimum value of valid raster data
+        LAYER_MAX = 1,  //!< Maximum value of valid raster data
+        LAYER_MEAN = 2, //!< Average value of valid raster data
+        LAYER_STDEV = 3,//!< Stadard deviation valid raster data
+    };
 };
 
 #endif // _LAD_ENUM_HPP_ guard

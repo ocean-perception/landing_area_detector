@@ -143,6 +143,16 @@ namespace lad
     }
 
     /**
+     * @brief Populates a user provided array of double with the locally computed raster layer stats (min, max, mean, stdev)
+     * 
+     * @param array 
+     */
+    void RasterLayer::getStats(double *array){
+        for (int i=0; i<4; i++)
+            array[i] = rasterStats[i];
+    }
+
+    /**
  * @brief Extended method that prints general and raster specific information
  * 
  */
@@ -150,6 +160,8 @@ namespace lad
     {
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
         cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << endl;
+        cout << "\t> Stats:\tMin [" << rasterStats[LAYER_MIN] << "] Max [" << rasterStats[LAYER_MAX] << "]"; 
+        cout << "Mean [" << rasterStats[LAYER_MEAN] << "] Stdev [" << rasterStats[LAYER_STDEV] << "]" << endl;
     }
 
     /**
@@ -381,7 +393,6 @@ namespace lad
         double y = (double) rasterData.rows;
         return (sqrt(x*x + y*y));
     }        
-
 
     /**
  * @brief Extended method that prints general and kernel specific information

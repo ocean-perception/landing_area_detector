@@ -1209,17 +1209,7 @@ namespace lad
                 apDst->rasterData.at<float>(cv::Point(col, row)) = acum/den;
             }
         }
-        // for (int row=0; row<(rows-filterSize.height); row++){
-        //     for (int col=0; col<(cols-filterSize.width); col++){
-        //         cv::Mat subImage = apSrc->rasterData(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
-        //         cv::Mat roi_patch = roi_image(cv::Range(row,row + filterSize.height), cv::Range(col, col + filterSize.width));
 
-        // // TODO: failing to compute when data is partially available at the edges
-        //         float acum = cv::sum(subImage)[0];
-        //         float den  = cv::sum(roi_patch)[0] / 255;
-        //         apDst->rasterData.at<float>(cv::Point(col + filterSize.width/2, row + filterSize.height/2)) = acum/den;
-        //     }
-        // }
         // now we must clip-out those points that were labelled as NODATA in the source layer
         cv::Mat mask;
         cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);

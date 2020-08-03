@@ -183,6 +183,11 @@ int main(int argc, char *argv[])
     Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
     Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
 
+    auto apR = dynamic_pointer_cast<RasterLayer> (Pipeline.getLayer("RAW_Bathymetry"));
+    double stats[4];
+    apR->showInformation();
+
+
     waitKey(0);
 
     Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
