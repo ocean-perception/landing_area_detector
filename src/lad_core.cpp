@@ -219,7 +219,7 @@ namespace lad
         // Let's check name
         if (isValidName(name) != LAYER_OK)
         {
-            cout << "[Pipeline] Duplicated layer name: " << name << endl;
+            cout << "[Pipeline] Invalid layer name: " << name << endl;
             return LAYER_INVALID_NAME;
         }
         int newid = getValidID();
@@ -568,39 +568,24 @@ namespace lad
             }
         }
         // we need check if the raster layer exist
-        int id = -1;
-        id = getLayerID(rasterName);
-        if (id == LAYER_INVALID_NAME)
-        { // Provided rasterName is invalid
-            cout << "[processGeotiff]" << red << "Invalid raster name: [" << rasterName << "]" << reset << endl;
-            return LAYER_INVALID_NAME;
+        if (isAvailable(rasterName)){ // does not exist? let's create it
+            createLayer(rasterName, LAYER_RASTER); //\todo: check if there is any error
         }
-        // TIFF name is VALID
-        if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
-        { // Layer was not found, we have been asked to create it
-            id = createLayer(rasterName, LAYER_RASTER);
-        }
-        uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
-        shared_ptr<RasterLayer> apRaster= dynamic_pointer_cast<RasterLayer> (getLayer(rasterName));
+
+        uploadData(rasterName, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
+        auto apRaster= dynamic_pointer_cast<RasterLayer> (getLayer(rasterName));
         apRaster->setNoDataValue(apInputGeotiff->GetNoDataValue());
-        apRaster->updateStats();
         apRaster->updateMask();
+        apRaster->updateStats();
         //*********************************************************
         // Check DATA mask layer
         //*********************************************************
-       id = getLayerID(maskName);
-        if (id == LAYER_INVALID_NAME)
-        { // Provided maskName is invalid
-            cout << "[processGeotiff]" << red << "Invalid data mask name: [" << maskName << "]" << reset << endl;
-            return LAYER_INVALID_NAME;
-        }
-
-        if ((id == LAYER_EMPTY) || (id == LAYER_NOT_FOUND))
+        if (isAvailable(maskName))
         { // Layer was not found, we have been asked to create it
-            id = createLayer(maskName, LAYER_RASTER);
+            createLayer(maskName, LAYER_RASTER);
         }
         // as we already have a valida data mask from the raster layer, we upload it (depp copy) to the new layer
-        uploadData(id, (void *)&apRaster->rasterMask); //upload cvMat tiff for deep-copy into the internal container
+        uploadData(maskName, (void *)&apRaster->rasterMask); //upload cvMat tiff for deep-copy into the internal container
 
         if (showImage)
         {
@@ -1002,9 +987,8 @@ namespace lad
             cv::Mat dst = apLayer->rasterData.clone();
 
             if (useNodataMask){
-                cv::Mat mask;
-                cv::compare(dst, apLayer->getNoDataValue(), mask, CMP_NE);  // create a no-data mask
-                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
+                apLayer->updateMask();
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
             }
             else{
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow

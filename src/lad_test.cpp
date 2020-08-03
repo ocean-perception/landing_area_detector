@@ -179,9 +179,9 @@ int main(int argc, char *argv[])
 
     auto ap = dynamic_pointer_cast<RasterLayer>(Pipeline.getLayer("RAW_Bathymetry"));
 
-    ap->updateMask(0.0);
+    // ap->updateMask(0.0);
     ap->updateStats();
-    ap->showInformation();
+    // ap->showInformation();
 
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
     // Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);

@@ -194,7 +194,7 @@ namespace lad
     void RasterLayer::showInformation()
     {
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
-        cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << endl;
+        cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << "\t NoDataVal: [" << yellow << dfNoData << reset << "]" << endl;
         cout << "\t> Stats:\tMin [" << yellow << rasterStats[LAYER_MIN] << reset << "] Max [" << yellow << rasterStats[LAYER_MAX] << reset << "]"; 
         cout << " Mean [" << yellow << rasterStats[LAYER_MEAN] << reset << "] Stdev ["<< yellow  << rasterStats[LAYER_STDEV] << reset << "]" << endl;
     }
