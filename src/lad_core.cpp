@@ -583,14 +583,12 @@ namespace lad
         uploadData(id, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
         shared_ptr<RasterLayer> apRaster= dynamic_pointer_cast<RasterLayer> (getLayer(rasterName));
         apRaster->setNoDataValue(apInputGeotiff->GetNoDataValue());
+        apRaster->updateStats();
+        apRaster->updateMask();
         //*********************************************************
         // Check DATA mask layer
         //*********************************************************
-        cv::Mat matDataMask;                                                      // Now, using the NoData field from the Geotiff/GDAL interface, let's obtain a binary mask for valid/invalid pixels
-        cv::compare(tiff, apInputGeotiff->GetNoDataValue(), matDataMask, CMP_NE); // check if NOT EQUAL to GDAL NoData field
-        // the dst image from cv::compare function is CV_8U. When exporting to disk, it will require to transform as CV_32F
-
-        id = getLayerID(maskName);
+       id = getLayerID(maskName);
         if (id == LAYER_INVALID_NAME)
         { // Provided maskName is invalid
             cout << "[processGeotiff]" << red << "Invalid data mask name: [" << maskName << "]" << reset << endl;
@@ -601,16 +599,17 @@ namespace lad
         { // Layer was not found, we have been asked to create it
             id = createLayer(maskName, LAYER_RASTER);
         }
-        uploadData(id, (void *)&matDataMask); //upload cvMat tiff for deep-copy into the internal container
+        // as we already have a valida data mask from the raster layer, we upload it (depp copy) to the new layer
+        uploadData(id, (void *)&apRaster->rasterMask); //upload cvMat tiff for deep-copy into the internal container
 
         if (showImage)
         {
             cv::Mat tiff_colormap = Mat::zeros(tiff.size(), CV_8UC1);                      // colour mapped image for visualization purposes
-            cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, matDataMask); // normalize within the expected range 0-255 for imshow
+            cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, apRaster->rasterMask); // normalize within the expected range 0-255 for imshow
             // apply colormap for enhanced visualization purposes
             cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
             namedWindow(maskName, WINDOW_NORMAL);
-            imshow(maskName, matDataMask);
+            imshow(maskName, apRaster->rasterMask);
             resizeWindow(maskName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             namedWindow(rasterName, WINDOW_NORMAL);
             imshow(rasterName, tiff_colormap);
