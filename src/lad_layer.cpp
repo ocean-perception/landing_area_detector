@@ -188,6 +188,18 @@ namespace lad
     }
 
     /**
+     * @brief Copy geoTIFF specific properties from a source layer to the current layer (this)
+     * 
+     * @param src Pointer to the source layer to be copied
+     */
+    void RasterLayer::copyGeoProperties(shared_ptr<RasterLayer> src){
+        layerProjection = src->layerProjection;
+        // also, let's clone transformMatrix which contains pixel size and origin
+        for (int i=0; i<6; i++)
+            transformMatrix[i] = src->transformMatrix[i];
+    }
+
+    /**
      * @brief 
      * 
      * @param name 
@@ -208,7 +220,7 @@ namespace lad
     // store a copy of the geo-transormation matrix
     poDataset->GetGeoTransform(transformMatrix);
     inputGeotiff.GetDimensions(layerDimensions);
-    layerProjection = inputGeotiff.GetProjection();
+    layerProjection = std::string(inputGeotiff.GetProjection());
 
     float **apData; //pull 2D float matrix containing the image data for Band 1
     apData = inputGeotiff.GetRasterBand(1);
@@ -409,7 +421,7 @@ namespace lad
         // before exporting, we need to verify if the data to be exported is already CV_32F
         if (rasterData.depth() != CV_32F){
             rasterData.convertTo(tempData, CV_32F);
-            cout << "[r.writeLayer] Converting [" << yellow << layerName << reset << "] to CV_32F" << endl; 
+            cout << "[r.writeLayer] Converted [" << yellow << layerName << reset << "] to CV_32F" << endl; 
         }
         else{
             rasterData.copyTo(tempData);
@@ -440,9 +452,9 @@ namespace lad
         int    nrows  = layerDimensions[1];
         int    ncols  = layerDimensions[0];
         double noData = getNoDataValue();
+        cout << "[r.writeLayer] Dataset dimensions: [" << nrows << "] x [" << ncols << "]\tNoData = [" << noData << "]" << endl; 
 
-        // geotiff->GetNoDataValue();
-        if (rasterData.depth() == CV_8U){
+        if (rasterData.depth() == CV_8U){ //if source range was 8-bit (0 to 255) use safe NoData value of -1.0
             noData = -1.0;
         }
  
@@ -450,7 +462,9 @@ namespace lad
         geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
 
         geotiffDataset->SetGeoTransform(transformMatrix);
-        geotiffDataset->SetProjection(layerProjection);
+        // cout << "[r.writeLayer] Projection string:" << endl;
+        // cout << layerProjection.c_str() << endl;
+        geotiffDataset->SetProjection(layerProjection.c_str());
 
         // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;

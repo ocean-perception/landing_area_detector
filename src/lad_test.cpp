@@ -137,13 +137,14 @@ int main(int argc, char *argv[])
 
     Pipeline.verbosity = verboseLevel;
     Pipeline.readTIFF(inputFileName, "RAW_Bathymetry", "VALID_DataMask");
+    Pipeline.setTemplate("RAW_Bathymetry");
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", verboseLevel);
     
     cout << "Create kernels" << endl;
 
     // we need to retrieve the parameters from any layer (geotiff related) and fill the void in the pipeline
 
-    // Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
+    Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
     // cout << "Create KernelSLope" << endl;
     // Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
   
@@ -190,6 +191,7 @@ int main(int argc, char *argv[])
 
     Pipeline.exportLayer("RAW_Bathymetry", "test.tif", FMT_TIFF, WORLD_COORDINATE);
     Pipeline.exportLayer("VALID_DataMask", "mask.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("CONTOUR_Mask", "contours.shp", FMT_SHP, WORLD_COORDINATE);
 
     // Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);

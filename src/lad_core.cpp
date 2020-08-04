@@ -298,24 +298,28 @@ namespace lad
         switch (type)
         {
         case LAYER_RASTER:
+            if (verbosity > VERBOSITY_0)
+                cout << "[exportLayer] Exporting RasterLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]" << endl; 
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
             apRaster->writeLayer(exportName, format, coord_sys);
             break;
 
         case LAYER_VECTOR:
-            cout << "Export VECTOR" << endl;
+            if (verbosity > VERBOSITY_0)
+                cout << "[exportLayer] Exporting VectorLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]" << endl; 
+            // cout << "Export VECTOR" << endl;
             apVector = dynamic_pointer_cast<VectorLayer>(apLayer);
-            apVector->writeLayer(exportName, format, geoProjection, coord_sys, geoTransform);
+            apVector->writeLayer(exportName, format, geoProjection.c_str(), coord_sys, geoTransform);
             break;
 
         case LAYER_KERNEL:
             cout << "Export RASTER" << endl;
             cout << yellow << "KERNEL_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
-            apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
+            // apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
             break;
 
         default:
-            cout << yellow << "[exportLayer] Layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
+            cout << red << "[exportLayer] Error layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
             break;
         }
@@ -362,9 +366,9 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::createKernelTemplate (std::string name, double width, double length){
-        double sx = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SX);
+        double sx = geoTransform[GEOTIFF_PARAM_SX];
         if (sx == 0) sx = 1;
-        double sy = apInputGeotiff->GetGeoTransformParam(GEOTIFF_PARAM_SY);
+        double sy = geoTransform[GEOTIFF_PARAM_SY];
         if (sy == 0) sy = 1;
         return (createKernelTemplate (name, width,length, sx, sy));
     }
@@ -621,6 +625,11 @@ namespace lad
         // transfer the recently computed mask layer from the source raster layer
         apRaster->rasterMask.copyTo(apMask->rasterData);
         apMask->rasterMask = cv::Mat::ones(apMask->rasterData.size(), CV_8UC1);
+        // update layerDimensions array, as they are needed when exporting as geoTIFF
+        // \todo use actual size from the raster container?
+        apMask->layerDimensions[1] = apMask->rasterData.rows;
+        apMask->layerDimensions[0] = apMask->rasterData.cols;
+        apMask->copyGeoProperties(apRaster);
         return NO_ERROR;
     }
 
@@ -1055,13 +1064,16 @@ namespace lad
             cout << red << "[setTemplate] Template layer does not exist: [" << reference << "]" << endl;
             return ERROR_WRONG_ARGUMENT;
         }
-        auto ap = getLayer(reference);
-        if (ap->getType() != LAYER_RASTER){
+        auto ap = dynamic_pointer_cast<RasterLayer> (getLayer(reference));
+        if (ap == nullptr){
             cout << red << "[setTemplate] Provided layer [" << reference << "] must be of type LAYER_RASTER" << endl;
             return ERROR_WRONG_ARGUMENT;
         }
         // Now we start copying the parameters from the raster layer to the stack
-
+        for (int i=0; i<6; i++)
+            geoTransform[i] = ap->transformMatrix[i];
+        
+        geoProjection = ap->layerProjection;     // copy the WKT projection string
         return NO_ERROR;
     }
 

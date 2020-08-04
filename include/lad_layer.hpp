@@ -117,7 +117,6 @@ namespace lad
     {
     private:
         double rasterStats[4];
-        double transformMatrix[6];
         double dfNoData;
 
     public:
@@ -125,8 +124,9 @@ namespace lad
         // \todo check if size/type must/can be updated at construction time
         cv::Mat rasterData; //OpenCV matrix that will hold the data
         cv::Mat rasterMask; //OpenCV matrix with valida data mask (0=invalid, 255=valid)
+        double  transformMatrix[6];
         int     layerDimensions[3];
-        const char *layerProjection;
+        std::string layerProjection;
 
         RasterLayer(std::string name, int id) : Layer(name, id)
         {
@@ -140,6 +140,7 @@ namespace lad
         void showInformation();
         double getDiagonalSize();
 
+        void copyGeoProperties(shared_ptr<RasterLayer> src); //!< Copy geoTIFF specific properties from a source layer
         void updateStats(); //!< Recomputes stats of valid raster data
         void updateMask();          //!< Update valid data mask by comparing rasterData with implicit no-data value 
         void updateMask(double nd); //!< Update valid data mask by comparing rasterData with user-provided no-data value
