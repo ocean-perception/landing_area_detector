@@ -140,64 +140,48 @@ int main(int argc, char *argv[])
     Pipeline.setTemplate("RAW_Bathymetry");
     Pipeline.extractContours("VALID_DataMask", "CONTOUR_Mask", verboseLevel);
     
-    cout << "Create kernels" << endl;
-
-    // we need to retrieve the parameters from any layer (geotiff related) and fill the void in the pipeline
-
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
-    // cout << "Create KernelSLope" << endl;
-    // Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
+    Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
+    Pipeline.createKernelTemplate("KernelCIRC", 0.5, 0.5);
   
-    // cout << "pull apKernel" << endl;
-    // auto apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
-    // if (apKernel == nullptr){
-    //     cout << red << "Error creating AUV footprint layer " << reset << endl;
-    //     return -1;
-    // }
-    // apKernel->setRotation(footprintRotation);
-    // cout << "coputeExclusion" << endl;
-    // Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
-
-    cout << "MeanSLope" << endl;
-
-    // Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
+    auto apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
+    if (apKernel == nullptr){
+        cout << red << "Error creating AUV footprint layer " << reset << endl;
+        return -1;
+    }
+    apKernel->setRotation(footprintRotation);
+    Pipeline.computeExclusionMap("VALID_DataMask", "KernelAUV", "ExclusionMap");
+    Pipeline.computeMeanSlopeMap("RAW_Bathymetry", "KernelAUV", "VALID_DataMask", "SlopeMap");
 
     int k = iParam;
-    cout << "loPass" << endl;
-
-    // Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
-    // Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
-    cout << "Height" << endl;
-    // Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
-    cout << "compare" << endl;
+    Pipeline.lowpassFilter("RAW_Bathymetry", "FILT_Bathymetry", cv::Size(k, k));
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
+    Pipeline.computeHeight("RAW_Bathymetry", "HEIGHT_Bathymetry", cv::Size(k, k));
     
-    // Pipeline.compareLayer("HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
-    // Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
+    Pipeline.compareLayer("HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
+    Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    // apRaw->showInformation();
-
     Pipeline.useNodataMask = true;
     Pipeline.showImage("RAW_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("ExclusionMap",COLORMAP_JET);
-    // Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
-    // Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
+    Pipeline.showImage("ExclusionMap",COLORMAP_JET);
+    Pipeline.showImage("FILT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("HEIGHT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("P7-HiProtExclMap",COLORMAP_JET);
+    Pipeline.showImage("P8-ExclusionMap",COLORMAP_JET);
 
     waitKey(0);
 
-    Pipeline.exportLayer("RAW_Bathymetry", "test.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("VALID_DataMask", "mask.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("CONTOUR_Mask", "contours.shp", FMT_SHP, WORLD_COORDINATE);
-
-    // Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P7-HiProtExclMap", "P7-HiProtExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P8-ExclusionMap", "P8-ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("RAW_Bathymetry", "test.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("VALID_DataMask", "mask.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("CONTOUR_Mask", "Contours.shp", FMT_SHP, WORLD_COORDINATE);
+    Pipeline.exportLayer("FILT_Bathymetry", "FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("HEIGHT_Bathymetry", "HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P7-HiProtExclMap", "P7-HiProtExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("P8-ExclusionMap", "P8-ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }

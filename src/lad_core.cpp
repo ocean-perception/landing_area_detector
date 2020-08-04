@@ -502,18 +502,7 @@ namespace lad
         // Geotiff input information
         int retval = NO_ERROR;
         cout << endl << cyan << "****** Geotiff Summary *****************" << reset << endl;
-        cout << "Geotiff file:\t\t";
-        if (apInputGeotiff == nullptr)
-        {
-            cout << red << "None" << reset << endl;
-            retval = ERROR_GEOTIFF_EMPTY;
-        }
-        else
-        {
-            cout << apInputGeotiff->GetFileName() << endl;
-            if (verbosity > 1)
-                apInputGeotiff->ShowInformation();
-        }
+        // \todo print geotransformation (if available) from the template
         cout << cyan
              << "++++++ Layers ++++++++++++++++++++++++++" << reset << endl;
         if (mapLayers.empty())
@@ -528,68 +517,6 @@ namespace lad
         }
         cout << cyan << "****** End of Summary ******************" << reset << endl;
         return retval;
-    }
-
-    /**
- * @brief Process Geotiff object & data and generate data raster and valid-data mask raster
- * 
- * @return int error code, if any
- */
-    int Pipeline::processGeotiff(std::string rasterName, std::string maskName, int showImage)
-    {
-        //First, check if have any valid Geotiff object loaded in memory
-        int *dimensions;
-        dimensions = apInputGeotiff->GetDimensions();
-        float **apData; //pull 2D float matrix containing the image data for Band 1
-
-        apData = apInputGeotiff->GetRasterBand(1);
-        if (apData == nullptr)
-        {
-            cout << red << "[processGeotiff]: Error reading input geoTIFF data: NULL" << reset << endl;
-            return ERROR_GDAL_FAILOPEN;
-        }
-
-        cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
-        for (int i = 0; i < dimensions[0]; i++)
-        {
-            for (int j = 0; j < dimensions[1]; j++)
-            {
-                tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
-            }
-        }
-        // we need check if the raster layer exist
-        if (isAvailable(rasterName)){ // does not exist? let's create it
-            createLayer(rasterName, LAYER_RASTER); //\todo: check if there is any error
-        }
-
-        uploadData(rasterName, (void *)&tiff); //upload cvMat tiff for deep-copy into the internal container
-        auto apRaster= dynamic_pointer_cast<RasterLayer> (getLayer(rasterName));
-        apRaster->setNoDataValue(apInputGeotiff->GetNoDataValue());
-        apRaster->updateMask();
-        apRaster->updateStats();
-        //*********************************************************
-        // Check DATA mask layer
-        //*********************************************************
-        if (isAvailable(maskName))
-        { // Layer was not found, we have been asked to create it
-            createLayer(maskName, LAYER_RASTER);
-        }
-        // as we already have a valida data mask from the raster layer, we upload it (depp copy) to the new layer
-        uploadData(maskName, (void *)&apRaster->rasterMask); //upload cvMat tiff for deep-copy into the internal container
-
-        if (showImage)
-        {
-            cv::Mat tiff_colormap = Mat::zeros(tiff.size(), CV_8UC1);                      // colour mapped image for visualization purposes
-            cv::normalize(tiff, tiff_colormap, 0, 255, NORM_MINMAX, CV_8UC1, apRaster->rasterMask); // normalize within the expected range 0-255 for imshow
-            // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(tiff_colormap, tiff_colormap, COLORMAP_TWILIGHT_SHIFTED);
-            namedWindow(maskName, WINDOW_NORMAL);
-            imshow(maskName, apRaster->rasterMask);
-            resizeWindow(maskName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-            namedWindow(rasterName, WINDOW_NORMAL);
-            imshow(rasterName, tiff_colormap);
-            resizeWindow(rasterName,DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-        }
     }
 
     /**
@@ -885,6 +812,8 @@ namespace lad
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
         apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
+        apLayerO->copyGeoProperties(apLayerR); //let's copy the geoproperties
+
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
@@ -928,23 +857,25 @@ namespace lad
         }
         // we create the empty container for the destination layer
         apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_32FC1, 0.0);
-
+        apSlopeMap->copyGeoProperties(apBaseMap);
         // second, we iterate over the source image
         int nRows = apBaseMap->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
         int nCols = apBaseMap->rasterData.cols;
         int hKernel = apKernel->rotatedData.rows;   // height of the kernel 
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
-        // namedWindow("tiff colormap", WINDOW_NORMAL);
+        if (verbosity > VERBOSITY_0){
+            cout << "[p.computeMeanSlope] Layers created, now defining container elements" << endl;
+            cout << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel << endl;
+        }
+
         cv::Mat kernelMask;
         cv::Mat temp, sout;
 
-        double *adfGeoTransform;
-        adfGeoTransform = apInputGeotiff->GetGeoTransform();
-        float cx = adfGeoTransform[0];
-        float cy = adfGeoTransform[3];
-        float sx = adfGeoTransform[1];
-        float sy = adfGeoTransform[5];
+        float cx = geoTransform[0];
+        float cy = geoTransform[3];
+        float sx = geoTransform[1];
+        float sy = geoTransform[5];
 
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
         for (int row=0; row<(nRows-hKernel); row++){
@@ -1145,7 +1076,7 @@ namespace lad
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
-
+        apDst->copyGeoProperties(apSrc);
         cv::compare(apSrc->rasterData, threshold, apDst->rasterData, cmp);  // create a no-data mask
         return NO_ERROR;
     }
@@ -1214,6 +1145,7 @@ namespace lad
         // as we are removing the non validad data point (not -defined)
         float srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
         apDst->setNoDataValue(srcNoData);
+        apDst->copyGeoProperties(apSrc);
         apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1); 
         // we create a matrix with NOVALID data
 
@@ -1297,6 +1229,7 @@ namespace lad
         cv::bitwise_and(mask1, mask2, final_mask);
         // use a base constant value layer labelled as NODATA
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        apDst->copyGeoProperties(apSrc);
         // let's apply the resulting mask
         dest.copyTo(apDst->rasterData, final_mask);
         // TODO: trim the edges because the lowpassfilter cannot compute outside the filtersize box

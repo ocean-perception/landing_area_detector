@@ -449,23 +449,21 @@ namespace lad
                                // and raster band object(s)
         // int *dimensions = geotiff->GetDimensions();
 
-        int    nrows  = layerDimensions[1];
-        int    ncols  = layerDimensions[0];
-        double noData = getNoDataValue();
-        cout << "[r.writeLayer] Dataset dimensions: [" << nrows << "] x [" << ncols << "]\tNoData = [" << noData << "]" << endl; 
+        int    nrows  = rasterData.rows; //layerDimensions[1]
+        int    ncols  = rasterData.cols; //layerDimensions[0]
 
+        double noData = getNoDataValue();
+        // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
         if (rasterData.depth() == CV_8U){ //if source range was 8-bit (0 to 255) use safe NoData value of -1.0
             noData = -1.0;
         }
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
         geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
-
         geotiffDataset->SetGeoTransform(transformMatrix);
         // cout << "[r.writeLayer] Projection string:" << endl;
         // cout << layerProjection.c_str() << endl;
         geotiffDataset->SetProjection(layerProjection.c_str());
-
         // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;
         float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
@@ -476,8 +474,8 @@ namespace lad
             }
             errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float32, 0, 0);
         }
-        GDALClose(geotiffDataset) ;
 
+        GDALClose(geotiffDataset) ;
         return NO_ERROR;
     }
 
