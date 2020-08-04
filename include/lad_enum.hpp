@@ -28,7 +28,7 @@ namespace lad{
         DEFAULT_STACK_SIZE  = 100,   //!< Initial Layer vector size (stack or map). Deprecated
         ID_AVAILABLE        = 0,     //!< Flag to indicate ID is available in the LUT
         ID_TAKEN            = 1,      //!< Flag to indicate ID is available in the LUT
-        DEFAULT_NODATA_VALUE= -9999  //!< Default value for NODATA field in raster layers
+        DEFAULT_NODATA_VALUE= -9999 //!< Default value for NODATA field in raster layers
     };
 
     /**

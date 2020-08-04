@@ -32,10 +32,10 @@ namespace lad
         int layerID;     // Layer identifier that can be used as UID in multilayer implementations
         int layerStatus; // Status identifier: takes a value from enumerated list of layer status.
         int layerType;   // Layer type identifier: takes a value from enumerated list of layer types
-        double noDataValue;
 
     protected:
     public:
+        double noDataValue;
         std::string layerName;     //  Layer name (mandatory)
         std::string fileName; // Name of associated output file (optional)
         std::string filePath; // Name of associated output filepath (optional)
@@ -117,7 +117,7 @@ namespace lad
     {
     private:
         double rasterStats[4];
-        double dfNoData;
+        // double dfNoData;
 
     public:
         // this should interface with OpenCV Mat and 2D matrix (vector style)
@@ -135,7 +135,6 @@ namespace lad
 
         int loadData(cv::Mat *);
         int readTIFF(std::string name); // read and load raster data from a geoTIFF file
-        // int readLayer(std::string name); // read and load raster data from a geoTIFF file
         int writeLayer(std::string outputFilename, int fileFormat, int outputCoordinate); // Overloaded method of exporting vectorData to user defined file
         void showInformation();
         double getDiagonalSize();
@@ -144,8 +143,6 @@ namespace lad
         void updateStats(); //!< Recomputes stats of valid raster data
         void updateMask();          //!< Update valid data mask by comparing rasterData with implicit no-data value 
         void updateMask(double nd); //!< Update valid data mask by comparing rasterData with user-provided no-data value
-        void   setNoDataVal(double nd){dfNoData = nd;}  //!< Assigns current layer NO-DATA value with user provided value
-        double getNoDataVal(){return dfNoData;}         //!< Returns current layer NO-DATA value
         double getMin()     {return rasterStats[LAYER_MIN];}    // we assume the values are up-to-date      
         double getMax()     {return rasterStats[LAYER_MAX];}    //\todo force update after modiciations
         double getMean()    {return rasterStats[LAYER_MEAN];}    // easy to enforce when loading raster data from file

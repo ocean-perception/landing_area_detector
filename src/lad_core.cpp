@@ -783,7 +783,6 @@ namespace lad
             cout << "[computeExclusionMap] Input layer [" << kernel << "] must be of type LAYER_RASTER" << endl;
             return LAYER_NOT_FOUND;
         }
-
         // *****************************************
         // Validating output raster (exclusion map) layer
         if (dstLayer.empty()){
@@ -811,15 +810,14 @@ namespace lad
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
-        apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
         apLayerO->copyGeoProperties(apLayerR); //let's copy the geoproperties
-
+        apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
+        apLayerO->rasterMask = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
             resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
-        
         // return no error
         return NO_ERROR;
     }
@@ -871,12 +869,10 @@ namespace lad
 
         cv::Mat kernelMask;
         cv::Mat temp, sout;
-
         float cx = geoTransform[0];
         float cy = geoTransform[3];
         float sx = geoTransform[1];
         float sy = geoTransform[5];
-
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
         for (int row=0; row<(nRows-hKernel); row++){
             for (int col=0; col<(nCols-wKernel); col++){
@@ -898,6 +894,12 @@ namespace lad
                 }
             }
         }
+        // \todo we must clip those points out of boundary
+
+        apSlopeMap->copyGeoProperties(apBaseMap); //let's copy the geoproperties
+        apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
+        apSlopeMap->updateMask();
+        // apLayerO->rasterMask = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
 
         if (verbosity > VERBOSITY_1){
             cv::normalize(apSlopeMap->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
@@ -942,12 +944,8 @@ namespace lad
                 cout << "[showImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
                 return NO_ERROR;                
             }
-            namedWindow(apLayer->layerName);
-            // correct data range to improve visualization using provided colormap
-
-            cout << "Exporting " << apLayer->layerName << endl;
+            // correct data range to improv
             cv::Mat dst = apLayer->rasterData.clone();
-
             if (useNodataMask){
                 apLayer->updateMask();
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
@@ -957,6 +955,7 @@ namespace lad
             }
             // apply colormap for enhanced visualization purposes
             cv::applyColorMap(dst, dst, colormap);
+            namedWindow(apLayer->layerName);
             imshow(apLayer->layerName, dst);
             resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
@@ -1150,12 +1149,13 @@ namespace lad
         // we create a matrix with NOVALID data
 
         // cv::Mat temp(apDst->rasterData); //deep copy
-        cout << "src Size: " << apSrc->rasterData.size() << endl; 
-        cout << "filter Size: " << filterSize.width << " x " << filterSize. height << endl; 
+        if (verbosity > VERBOSITY_1){
+            cout << "[lowpassFilter] Input raster size: " << apSrc->rasterData.size() << endl; 
+            cout << "[lowpassFilter] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
+        }
 
         cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
         cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // true is 255
-
 
         for (int row=0; row<rows; row++){
             for (int col=0; col<cols; col++){
@@ -1181,11 +1181,13 @@ namespace lad
             }
         }
 
-        // now we must clip-out those points that were labelled as NODATA in the source layer
         cv::Mat mask;
         cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);
-        namedWindow("mask_");
-        imshow("mask_", mask);
+        if (verbosity > VERBOSITY_0){
+            // now we must clip-out those points that were labelled as NODATA in the source layer
+            namedWindow(src + "_mask");
+            imshow(src + "_mask", mask);
+        }
         // the mask contains true (255) for thos invalid points
         roi_image = cv::Mat(apSrc->rasterData.size(), CV_32FC1);
         roi_image.copyTo(apDst->rasterData, mask);

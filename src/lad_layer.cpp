@@ -166,7 +166,7 @@ namespace lad
      * @details The NO-DATA value is assigned when importint a geoTIFF file, or during any construction methods. Can be modified using setNoDataVal
      */
     void RasterLayer::updateMask(){
-        updateMask(dfNoData);
+        updateMask(noDataValue);
     }
 
     /**
@@ -231,7 +231,7 @@ namespace lad
     }
 
     cv::Mat tiff(layerDimensions[1], layerDimensions[0], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
-    cout << "Dim: [" << layerDimensions[0] << "x" << layerDimensions[1] << endl;
+    // cout << "Dim: [" << layerDimensions[0] << "x" << layerDimensions[1] << endl;
     for (int i = 0; i < layerDimensions[1]; i++)
     {
         for (int j = 0; j < layerDimensions[0]; j++)
@@ -254,7 +254,7 @@ namespace lad
     void RasterLayer::showInformation()
     {
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
-        cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << "\t NoDataVal: [" << yellow << dfNoData << reset << "]" << endl;
+        cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << "\t NoDataVal: [" << yellow << noDataValue << reset << "]" << endl;
         cout << "\t> Stats:\tMin [" << yellow << rasterStats[LAYER_MIN] << reset << "] Max [" << yellow << rasterStats[LAYER_MAX] << reset << "]"; 
         cout << " Mean [" << yellow << rasterStats[LAYER_MEAN] << reset << "] Stdev ["<< yellow  << rasterStats[LAYER_STDEV] << reset << "]" << endl;
     }
