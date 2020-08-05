@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
     Pipeline.lowpassFilter("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", cv::Size(k, k));
     Pipeline.showImage("B0_FILT_Bathymetry", COLORMAP_JET);
     Pipeline.computeHeight("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry", cv::Size(k, k));
-    Pipeline.showImage("B1_HEIGHT_Bathymetry",COLORMAP_JET);
+    Pipeline.showImage("B1_HEIGHT_Bathymetry");
     
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlopeMap");
     Pipeline.showImage("A1_DetailedSlopeMap",COLORMAP_JET);
@@ -178,6 +178,9 @@ int main(int argc, char *argv[])
     Pipeline.showImage("A2_HiSlopeExclusion",COLORMAP_JET);
     // Pipeline.compareLayer("B1_HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
     // Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
+
+    Pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_ProtrusionsMap");
+    Pipeline.showImage("M2_ProtrusionsMap");
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
