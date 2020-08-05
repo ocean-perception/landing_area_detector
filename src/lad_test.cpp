@@ -155,8 +155,15 @@ int main(int argc, char *argv[])
     Pipeline.showImage("M1_RAW_Bathymetry");
     Pipeline.showImage("C1_ExclusionMap");
 
-    Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_SlopeMap");
-    Pipeline.showImage("C2_SlopeMap");
+    Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
+    // Pipeline.showImage("C2_MeanSlopeMap");
+
+    Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
+    Pipeline.showImage("C2_MeanSlopeMap_Clip");
+
+    double slopeThreshold = fParam;
+    Pipeline.compareLayer("C2_MeanSlopeMap_Clip", "C3_MeanSlopeExclusion", slopeThreshold, CMP_GT);
+    Pipeline.showImage("C3_MeanSlopeExclusion");
 
     int k = iParam;
     // Pipeline.lowpassFilter("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", cv::Size(k, k));
@@ -175,6 +182,7 @@ int main(int argc, char *argv[])
 
     waitKey(0);
 
+    Pipeline.exportLayer("C2_SlopeMap_Clip", "C2_SlopeMap_Clip.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("RAW_Bathymetry", "test.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("VALID_DataMask", "mask.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);

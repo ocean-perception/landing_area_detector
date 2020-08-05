@@ -1034,6 +1034,10 @@ namespace lad
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
+        apDst->rasterData = cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1) * apSrc->getNoDataValue();
+        apDst->copyGeoProperties (apSrc);
+        apDst->setNoDataValue(apSrc->getNoDataValue());
+
         int type = getLayer(mask)->getType();
         if (type == LAYER_RASTER){
             auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(mask));
@@ -1051,6 +1055,8 @@ namespace lad
             cout << red << "[maskLayer] mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
+        apDst->updateMask();
+
         return NO_ERROR;
     } 
 
@@ -1076,6 +1082,7 @@ namespace lad
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         apDst->copyGeoProperties(apSrc);
+        apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         cv::compare(apSrc->rasterData, threshold, apDst->rasterData, cmp);  // create a no-data mask
         return NO_ERROR;
     }
