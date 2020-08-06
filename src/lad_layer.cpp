@@ -239,8 +239,8 @@ namespace lad
             tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
         }
     }
-
     tiff.copyTo(rasterData);
+
     setNoDataValue(inputGeotiff.GetNoDataValue());
     updateMask();
     updateStats();
@@ -253,6 +253,7 @@ namespace lad
  */
     void RasterLayer::showInformation()
     {
+        updateStats();
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
         cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << "\t NoDataVal: [" << yellow << noDataValue << reset << "]" << endl;
         cout << "\t> Stats:\tMin [" << yellow << rasterStats[LAYER_MIN] << reset << "] Max [" << yellow << rasterStats[LAYER_MAX] << reset << "]"; 
@@ -496,6 +497,7 @@ namespace lad
  */
     void KernelLayer::showInformation()
     {
+        updateStats();
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [KERNEL]\tStatus: [" << green << getStatus() << reset << "]" << endl;
         cout << "\t> Kernel data container size: " << yellow << rasterData.size() << reset << endl;
         cout << "\t> Rotated container size:     " << yellow << rotatedData.size() << reset << "\tKernel rotation: " << yellow << dRotation << reset << endl;

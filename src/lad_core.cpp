@@ -1134,7 +1134,6 @@ namespace lad
         
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
-
         if (apSrc == nullptr){
             cout << "ApSrc error" << endl;
             return -1;
@@ -1143,61 +1142,62 @@ namespace lad
             cout << "ApDst error" << endl;
             return -1;
         }
-        cv::Mat src_patch;
         int cols = apSrc->rasterData.cols;
         int rows = apSrc->rasterData.rows;
 
         // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
         // as we are removing the non validad data point (not -defined)
-        float srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
+        double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
         apDst->setNoDataValue(srcNoData);
-        apDst->copyGeoProperties(apSrc);
-        apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1); 
-        // we create a matrix with NOVALID data
-
-        // cv::Mat temp(apDst->rasterData); //deep copy
-        if (verbosity > VERBOSITY_1){
+        if (verbosity > VERBOSITY_0){
+            cout << "[p.lowpassFilter] Source NoData value: " << srcNoData << endl;
+            cout << "[p.lowpassFilter] Target NoData value: " << apDst->getNoDataValue() << endl;
             cout << "[lowpassFilter] Input raster size: " << apSrc->rasterData.size() << endl; 
             cout << "[lowpassFilter] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
         }
-
+        apDst->copyGeoProperties(apSrc);
+        apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1); 
+        // we create a matrix with NOVALID data
         cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
-        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // true is 255
+        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
 
         for (int row=0; row<rows; row++){
             for (int col=0; col<cols; col++){
+                if (roi_image.at<unsigned char>(cv::Point(col, row))){
+                    int rt = row - filterSize.height/2;
+                    if (rt < 0) rt = 0;
+                    int rb = row + filterSize.height/2;
+                    if (rb > rows) rb = rows;
+                    int cl = col - filterSize.width/2;
+                    if (cl < 0) cl = 0;
+                    int cr = col + filterSize.width/2;
+                    if (cr > cols) cr = cols;
 
-                int rt = row - filterSize.height/2;
-                if (rt < 0) rt = 0;
-                int rb = row + filterSize.height/2;
-                if (rb > rows) rb = rows;
-                int cl = col - filterSize.width/2;
-                if (cl < 0) cl = 0;
-                int cr = col + filterSize.width/2;
-                if (cr > cols) cr = cols;
+                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
+                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
 
-                cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
-                cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
-                // cv::Mat subImage = apSrc->rasterData(cv::Range(row - filterSize.height/2, row + filterSize.height/2), cv::Range(col - filterSize.width/2, col + filterSize.width/2));
-                // cv::Mat roi_patch = roi_image(cv::Range(row - filterSize.height/2, row + filterSize.height/2), cv::Range(col - filterSize.width/2, col + filterSize.width/2));
-
-        // TODO: failing to compute when data is partially available at the edges
-                float acum = cv::sum(subImage)[0];
-                float den  = cv::sum(roi_patch)[0] / 255;
-                apDst->rasterData.at<float>(cv::Point(col, row)) = acum/den;
+            // TODO: failing to compute when data is partially available at the edges
+                    float acum = cv::sum(subImage)[0];
+                    float den  = cv::sum(roi_patch)[0] / 255;
+                    apDst->rasterData.at<float>(cv::Point(col, row)) = acum/den;
+                }
+                else
+                    apDst->rasterData.at<float>(cv::Point(col, row)) = srcNoData;
             }
         }
-
-        cv::Mat mask;
-        cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);
-        if (verbosity > VERBOSITY_0){
+        // cv::Mat mask;
+        // cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);
+        if (verbosity > VERBOSITY_1){
             // now we must clip-out those points that were labelled as NODATA in the source layer
-            namedWindow(src + "_mask");
-            imshow(src + "_mask", mask);
+            // namedWindow(src + "_mask");
+            // imshow(src + "_mask", mask);
         }
         // the mask contains true (255) for thos invalid points
-        roi_image = cv::Mat(apSrc->rasterData.size(), CV_32FC1);
-        roi_image.copyTo(apDst->rasterData, mask);
+        // roi_image = cv::Mat(apSrc->rasterData.size(), CV_32FC1);
+        // roi_image.copyTo(apDst->rasterData, mask);
+
+        apDst->updateMask();
+        apDst->updateStats();
         return NO_ERROR;
     }
 

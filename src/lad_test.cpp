@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
     Pipeline.showImage("C1_ExclusionMap");
 
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
-    // Pipeline.showImage("C2_MeanSlopeMap");
+    Pipeline.showImage("C2_MeanSlopeMap");
 
     Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
     Pipeline.showImage("C2_MeanSlopeMap_Clip");
@@ -169,8 +169,10 @@ int main(int argc, char *argv[])
     int k = iParam;
     Pipeline.lowpassFilter("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", cv::Size(k, k));
     Pipeline.showImage("B0_FILT_Bathymetry", COLORMAP_JET);
+    Pipeline.exportLayer("B0_FILT_Bathymetry", "B0_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+
     Pipeline.computeHeight("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry", cv::Size(k, k));
-    Pipeline.showImage("B1_HEIGHT_Bathymetry");
+    Pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
     
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlopeMap");
     Pipeline.showImage("A1_DetailedSlopeMap",COLORMAP_JET);
@@ -179,26 +181,22 @@ int main(int argc, char *argv[])
     // Pipeline.compareLayer("B1_HEIGHT_Bathymetry", "P7-HiProtExclMap", fParam, CMP_LT); // flag as valid those points that are LOWER THAN
     // Pipeline.computeExclusionMap("P7-HiProtExclMap", "KernelCIRC", "P8-ExclusionMap");
 
-    Pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_ProtrusionsMap");
-    Pipeline.showImage("M2_ProtrusionsMap");
+    Pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_Protrusions");
+    Pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for
 
-    // Pipeline.showImage("M1_RAW_Bathymetry",COLORMAP_JET);
-    // Pipeline.showImage("C2_SlopeMap",COLORMAP_JET);
-
     waitKey(0);
 
-    Pipeline.exportLayer("C2_SlopeMap_Clip", "C2_SlopeMap_Clip.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("RAW_Bathymetry", "test.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("VALID_DataMask", "mask.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("RAW_Bathymetry", "RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("CONTOUR_Mask", "Contours.shp", FMT_SHP, WORLD_COORDINATE);
-    // Pipeline.exportLayer("B0_FILT_Bathymetry", "B1_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P7-HiProtExclMap", "P7-HiProtExclMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("P8-ExclusionMap", "P8-ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("M1_VALID_DataMask", "M1_VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("M2_Protrusions","M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("B0_FILT_Bathymetry", "B0_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("A1_DetailedSlopeMap","A1_DetailedSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("A2_HiSlopeExclusion","A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("C2_MeanSlopeMap_Clip", "C2_MeanSlopeMap_Clip.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }
