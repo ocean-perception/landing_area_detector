@@ -548,15 +548,16 @@ namespace lad
             cout << red << "[readTIFF] Error reading file [" << inputFile << "]" << endl;
             return ERROR_GDAL_FAILOPEN;
         }
-        apRaster->updateMask();
         // transfer the recently computed mask layer from the source raster layer
         apRaster->rasterMask.copyTo(apMask->rasterData);
-        apMask->rasterMask = cv::Mat::ones(apMask->rasterData.size(), CV_8UC1);
+        apRaster->rasterMask.copyTo(apMask->rasterMask);
+        // apMask->rasterMask = cv::Mat::ones(apMask->rasterData.size(), CV_8UC1);
         // update layerDimensions array, as they are needed when exporting as geoTIFF
         // \todo use actual size from the raster container?
         apMask->layerDimensions[1] = apMask->rasterData.rows;
         apMask->layerDimensions[0] = apMask->rasterData.cols;
         apMask->copyGeoProperties(apRaster);
+        apMask->setNoDataValue(DEFAULT_NODATA_VALUE);
         return NO_ERROR;
     }
 
@@ -854,8 +855,8 @@ namespace lad
             apSlopeMap = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         }
         // we create the empty container for the destination layer
-        apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_32FC1, 0.0);
-        apSlopeMap->copyGeoProperties(apBaseMap);
+        apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        // apSlopeMap->copyGeoProperties(apBaseMap);
         // second, we iterate over the source image
         int nRows = apBaseMap->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
         int nCols = apBaseMap->rasterData.cols;
@@ -867,33 +868,75 @@ namespace lad
             cout << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel << endl;
         }
 
-        cv::Mat kernelMask;
-        cv::Mat temp, sout;
+//*******************************************
+
+        // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
+        // as we are removing the non validad data point (not -defined)
+        double srcNoData = apBaseMap->getNoDataValue(); //we inherit ource no valid data value
+        apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
+        if (verbosity > VERBOSITY_0){
+            cout << "[p.computeMeanSlopeMap] Source NoData value: " << srcNoData << endl;
+            cout << "[p.computeMeanSlopeMap] Target NoData value: " << apSlopeMap->getNoDataValue() << endl;
+            cout << "[p.computeMeanSlopeMap] Input raster size: " << apBaseMap->rasterData.size() << endl; 
+            // cout << "[p,computeMeanSlopeMap] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
+        }
+        apSlopeMap->copyGeoProperties(apBaseMap);
+        apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_32FC1); 
+        // we create a matrix with NOVALID data
+        cv::Mat  roi_image = cv::Mat(apBaseMap->rasterData.size(), CV_8UC1); // create global valid_data mask
+        cv::compare(apBaseMap->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
+        int rt, lt, rb, lb;
+
         float cx = geoTransform[0];
         float cy = geoTransform[3];
         float sx = geoTransform[1];
         float sy = geoTransform[5];
+        cv::Mat kernelMask;
+        cv::Mat temp, sout;
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
-        for (int row=0; row<(nRows-hKernel); row++){
-            for (int col=0; col<(nCols-wKernel); col++){
-                cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
-                subImage.convertTo(subImage, CV_32FC1);
-                temp = subImage.mul(kernelMask);
-                // WARNING: as we need a minimum set of valid 3D points for the plane fitting
-                // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
-                // is n > K/2, being K = 3x3 = 9 ---> n = 5
-                std::vector<KPoint> pointList;
-                pointList = convertMatrix2Vector (&temp, sx, sy);
-                if (pointList.size() > 3){
-                    KPlane plane = computeFittingPlane(pointList);
-                    double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
-                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = slope;
+
+        for (int row=0; row<nRows; row++){
+            for (int col=0; col<nCols; col++){
+                if (roi_image.at<unsigned char>(cv::Point(col, row))){
+                    int rt = row - hKernel/2;
+                    if (rt < 0) rt = 0;
+                    int rb = row + hKernel/2;
+                    if (rb > nRows) rb = nRows;
+                    int cl = col - wKernel/2;
+                    if (cl < 0) cl = 0;
+                    int cr = col + wKernel/2;
+                    if (cr > nCols) cr = nCols;
+
+                    //subImage contains the raw data patch
+                    cv::Mat subImage = apBaseMap->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
+                    // roi_patch contains a binary mask of valid data
+                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
+                    // apKernel contains and additional mask
+
+                    roi_patch.convertTo(temp, CV_32FC1);
+                    // cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
+                    // subImage.convertTo(subImage, CV_32FC1);
+                    temp = subImage.mul(temp);
+                    // WARNING: as we need a minimum set of valid 3D points for the plane fitting
+                    // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
+                    // is n > K/2, being K = 3x3 = 9 ---> n = 5
+                    std::vector<KPoint> pointList;
+                    pointList = convertMatrix2Vector (&temp, sx, sy);
+                    if (pointList.size() > 4){
+                        KPlane plane = computeFittingPlane(pointList);
+                        double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
+                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = slope;
+                    }
+                    else{ // we do not have enough points to compute a valid plane
+                        // cout << "some default ";
+                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                    }
                 }
-                else{ // we do not have enough points to compute a valid plane
-                    apSlopeMap->rasterData.at<float>(cv::Point(col + wKernel/2, row + hKernel/2)) = DEFAULT_NODATA_VALUE;
-                }
+                else
+                    apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
+
         // \todo we must clip those points out of boundary
 
         apSlopeMap->copyGeoProperties(apBaseMap); //let's copy the geoproperties

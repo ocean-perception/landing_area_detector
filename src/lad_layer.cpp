@@ -182,7 +182,6 @@ namespace lad
         // now, let's calculate the mean value of the valid data
         Scalar mean, stdev;
         cv::meanStdDev(rasterData, mean, stdev, rasterMask);
-        cout << "Mean: " << mean << "\tstdev " << stdev << endl;
         rasterStats[LAYER_MEAN] = mean[0];
         rasterStats[LAYER_STDEV] = stdev[0];
     }
@@ -256,8 +255,8 @@ namespace lad
         updateStats();
         cout << "Name: [" << green << layerName << reset << "]\t ID: [" << getID() << "]\tType: [RASTER]\tStatus: [" << green << getStatus() << reset << "]" << endl;
         cout << "\t> Raster data container size: " << yellow << rasterData.size() << reset << "\t NoDataVal: [" << yellow << noDataValue << reset << "]" << endl;
-        cout << "\t> Stats:\tMin [" << yellow << rasterStats[LAYER_MIN] << reset << "] Max [" << yellow << rasterStats[LAYER_MAX] << reset << "]"; 
-        cout << " Mean [" << yellow << rasterStats[LAYER_MEAN] << reset << "] Stdev ["<< yellow  << rasterStats[LAYER_STDEV] << reset << "]" << endl;
+        cout << "\t> Stats:\tMin [" << yellow << rasterStats[LAYER_MIN] << reset << "] Max [" << yellow << rasterStats[LAYER_MAX] << reset << "]" << endl; 
+        cout << "\t> Mean [" << yellow << rasterStats[LAYER_MEAN] << reset << "] Stdev ["<< yellow  << rasterStats[LAYER_STDEV] << reset << "]" << endl;
     }
 
     /**
