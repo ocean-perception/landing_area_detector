@@ -141,10 +141,8 @@ int main(int argc, char *argv[])
     Pipeline.setTemplate("M1_RAW_Bathymetry");
     Pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", verboseLevel);
 
-    Pipeline.showImage("M1_VALID_DataMask");
-    waitKey(0);
-        Pipeline.showInfo(); // show detailed information if asked for
-    return -1;
+    // Pipeline.showImage("M1_RAW_Bathymetry");
+    // Pipeline.showImage("M1_VALID_DataMask");
 
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4);
     Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1);
@@ -155,15 +153,21 @@ int main(int argc, char *argv[])
         cout << red << "Error creating AUV footprint layer " << reset << endl;
         return -1;
     }
-    // apKernel->setRotation(footprintRotation);
-    // Pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
-    // Pipeline.showImage("M1_RAW_Bathymetry");
+    apKernel->setRotation(footprintRotation);
+    Pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
+
+    Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
+
+    Pipeline.showImage("M1_RAW_Bathymetry");
     Pipeline.showImage("M1_VALID_DataMask");
-    // Pipeline.showImage("C1_ExclusionMap");
+    Pipeline.showImage("C1_ExclusionMap");
+    Pipeline.showImage("C2_MeanSlopeMap");
 
+    Pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    // Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
-    // Pipeline.showImage("C2_MeanSlopeMap");
+    waitKey(0);
+    return 0;
 
     // Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
     // Pipeline.showImage("C2_MeanSlopeMap_Clip");

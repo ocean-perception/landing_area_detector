@@ -807,7 +807,7 @@ namespace lad
         shared_ptr<RasterLayer> apLayerR = dynamic_pointer_cast<RasterLayer>(apBase->second);
         shared_ptr<KernelLayer> apLayerK = dynamic_pointer_cast<KernelLayer>(apKernel->second);
         shared_ptr<RasterLayer> apLayerO = dynamic_pointer_cast<RasterLayer>(apOutput->second);
-
+        // output is a binary image
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
@@ -856,7 +856,10 @@ namespace lad
         }
         // we create the empty container for the destination layer
         apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
-        // apSlopeMap->copyGeoProperties(apBaseMap);
+        // apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_32FC1); 
+        apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
+        double srcNoData = apBaseMap->getNoDataValue(); //we inherit ource no valid data value
+        apSlopeMap->copyGeoProperties(apBaseMap);
         // second, we iterate over the source image
         int nRows = apBaseMap->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
         int nCols = apBaseMap->rasterData.cols;
@@ -869,24 +872,19 @@ namespace lad
         }
 
 //*******************************************
-
         // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
         // as we are removing the non validad data point (not -defined)
-        double srcNoData = apBaseMap->getNoDataValue(); //we inherit ource no valid data value
-        apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
         if (verbosity > VERBOSITY_0){
             cout << "[p.computeMeanSlopeMap] Source NoData value: " << srcNoData << endl;
             cout << "[p.computeMeanSlopeMap] Target NoData value: " << apSlopeMap->getNoDataValue() << endl;
             cout << "[p.computeMeanSlopeMap] Input raster size: " << apBaseMap->rasterData.size() << endl; 
             // cout << "[p,computeMeanSlopeMap] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
         }
-        apSlopeMap->copyGeoProperties(apBaseMap);
-        apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_32FC1); 
         // we create a matrix with NOVALID data
-        cv::Mat  roi_image = cv::Mat(apBaseMap->rasterData.size(), CV_8UC1); // create global valid_data mask
+        cv::Mat  roi_image;// = cv::Mat(apBaseMap->rasterData.size(), CV_8UC1); // create global valid_data mask
         cv::compare(apBaseMap->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
-        int rt, lt, rb, lb;
 
+        int rt, lt, rb, lb;
         float cx = geoTransform[0];
         float cy = geoTransform[3];
         float sx = geoTransform[1];
@@ -897,40 +895,56 @@ namespace lad
 
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
-                if (roi_image.at<unsigned char>(cv::Point(col, row))){
-                    int rt = row - hKernel/2;
-                    if (rt < 0) rt = 0;
-                    int rb = row + hKernel/2;
-                    if (rb > nRows) rb = nRows;
+                if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
                     int cl = col - wKernel/2;
                     if (cl < 0) cl = 0;
                     int cr = col + wKernel/2;
-                    if (cr > nCols) cr = nCols;
+                    if (cr > nCols) cr = nCols - 1;
+                    int rt = row - hKernel/2;
+                    if (rt < 0) rt = 0;
+                    int rb = row + hKernel/2;
+                    if (rb > nRows) rb = nRows - 1;
 
+                    // ROI cropped selected window from the rotated kernel of the filter
+                    int xi = wKernel/2 - (col - cl);
+                    int yi = hKernel/2 - (row - rt);
+                    int xf = cr - col + wKernel/2;
+                    int yf = rb - row + hKernel/2;
+
+                    // cout << "col/row: " << col << " " << row << endl;
+                    // cout << "cl/cr/rt/rb: " << cl << " " << cr << " " << rt << " " << rb << endl;
+                    // cout << "xi/xf/yi/yf: " << xi << " " << xf << " " << yi << " " << yf << endl;
+
+                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf));
                     //subImage contains the raw data patch
                     cv::Mat subImage = apBaseMap->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
                     // roi_patch contains a binary mask of valid data
                     cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
                     // apKernel contains and additional mask
-
+                    subMask.convertTo(subMask, CV_32FC1);
                     roi_patch.convertTo(temp, CV_32FC1);
-                    // cv::Mat subImage = apBaseMap->rasterData(cv::Range(row,row + hKernel), cv::Range(col, col + wKernel));
-                    // subImage.convertTo(subImage, CV_32FC1);
+
+                    // cout << "roi/img/mask: " << roi_patch.size() << " " << subImage.size() << " " << subMask.size() << endl;
                     temp = subImage.mul(temp);
+                    temp = subMask.mul(temp);
+
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
                     std::vector<KPoint> pointList;
                     pointList = convertMatrix2Vector (&temp, sx, sy);
-                    if (pointList.size() > 4){
-                        KPlane plane = computeFittingPlane(pointList);
-                        double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
-                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = slope;
-                    }
-                    else{ // we do not have enough points to compute a valid plane
-                        // cout << "some default ";
-                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
-                    }
+                    apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = pointList.size();
+
+                    // if (pointList.size() > 5){
+                    //     KPlane plane = computeFittingPlane(pointList);
+                    //     double slope = computePlaneSlope(plane); // returned value is the angle of the normal to the plane, in radians
+                    //     // double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
+                    //     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = slope;
+                    // }
+                    // else{ // we do not have enough points to compute a valid plane
+                    //     // cout << "some default ";
+                    //     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                    // }
                 }
                 else
                     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
