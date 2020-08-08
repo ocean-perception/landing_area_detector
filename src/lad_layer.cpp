@@ -229,7 +229,7 @@ namespace lad
         return ERROR_GDAL_FAILOPEN;
     }
 
-    cv::Mat tiff(layerDimensions[1], layerDimensions[0], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
+    cv::Mat tiff(layerDimensions[1], layerDimensions[0], CV_64FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
     // cout << "Dim: [" << layerDimensions[0] << "x" << layerDimensions[1] << endl;
     for (int i = 0; i < layerDimensions[1]; i++)
     {
@@ -418,10 +418,10 @@ namespace lad
         }
         
         cv::Mat tempData;
-        // before exporting, we need to verify if the data to be exported is already CV_32F
-        if (rasterData.depth() != CV_32F){
-            rasterData.convertTo(tempData, CV_32F);
-            cout << "[r.writeLayer] Converted [" << yellow << layerName << reset << "] to CV_32F" << endl; 
+        // before exporting, we need to verify if the data to be exported is already CV_64F
+        if (rasterData.depth() != CV_64F){
+            rasterData.convertTo(tempData, CV_64F);
+            cout << "[r.writeLayer] Converted [" << yellow << layerName << reset << "] to CV_64F" << endl; 
         }
         else{
             rasterData.copyTo(tempData);
@@ -470,7 +470,7 @@ namespace lad
         geotiffDataset->GetRasterBand(1)->SetNoDataValue (noData);       
         for(int row=0; row<nrows; row++) {
             for(int col=0; col<ncols; col++) {
-                rowBuff[col] = (float) tempData.at<float>(cv::Point(col,row)); // tempData should be CV_32F
+                rowBuff[col] = (float) tempData.at<float>(cv::Point(col,row)); // tempData should be CV_64F
             }
             errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float32, 0, 0);
         }

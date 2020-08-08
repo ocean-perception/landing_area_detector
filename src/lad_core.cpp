@@ -855,8 +855,8 @@ namespace lad
             apSlopeMap = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         }
         // we create the empty container for the destination layer
-        apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
-        // apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_32FC1); 
+        apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
+        // apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_64FC1); 
         apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
         double srcNoData = apBaseMap->getNoDataValue(); //we inherit ource no valid data value
         apSlopeMap->copyGeoProperties(apBaseMap);
@@ -891,7 +891,7 @@ namespace lad
         float sy = geoTransform[5];
         cv::Mat kernelMask;
         cv::Mat temp, sout;
-        apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
+        apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
 
         cout << "============++"<<sx << " " << sy << endl;
 
@@ -923,8 +923,8 @@ namespace lad
                     // roi_patch contains a binary mask of valid data
                     cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
                     // apKernel contains and additional mask
-                    subMask.convertTo(subMask, CV_32FC1);
-                    roi_patch.convertTo(temp, CV_32FC1);
+                    subMask.convertTo(subMask, CV_64FC1);
+                    roi_patch.convertTo(temp, CV_64FC1);
 
                     // cout << "roi/img/mask: " << roi_patch.size() << " " << subImage.size() << " " << subMask.size() << endl;
                     temp = subImage.mul(temp);
@@ -1094,7 +1094,7 @@ namespace lad
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
-        apDst->rasterData = cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1) * apSrc->getNoDataValue();
+        apDst->rasterData = cv::Mat::ones(apSrc->rasterData.size(), CV_64FC1) * apSrc->getNoDataValue();
         apDst->copyGeoProperties (apSrc);
         apDst->setNoDataValue(apSrc->getNoDataValue());
 
@@ -1216,7 +1216,7 @@ namespace lad
             cout << "[lowpassFilter] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
         }
         apDst->copyGeoProperties(apSrc);
-        apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_32FC1); 
+        apDst->rasterData = srcNoData * cv::Mat::ones(apSrc->rasterData.size(), CV_64FC1); 
         // we create a matrix with NOVALID data
         cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
         cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
@@ -1253,7 +1253,7 @@ namespace lad
             // imshow(src + "_mask", mask);
         }
         // the mask contains true (255) for thos invalid points
-        // roi_image = cv::Mat(apSrc->rasterData.size(), CV_32FC1);
+        // roi_image = cv::Mat(apSrc->rasterData.size(), CV_64FC1);
         // roi_image.copyTo(apDst->rasterData, mask);
 
         apDst->updateMask();
@@ -1279,8 +1279,8 @@ namespace lad
             cout << "ApDst error" << endl;
             return -1;
         }
-        // cv::Mat dest(apSrc->rasterData.size(), CV_32FC1);
-        cv::Mat dest; //(apSrc->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        // cv::Mat dest(apSrc->rasterData.size(), CV_64FC1);
+        cv::Mat dest; //(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         // we flipped the order because the source is giving bathymetry depth as altitude (wrong sign)
         // dest = apSrc->rasterData - apDst->rasterData;
@@ -1297,7 +1297,7 @@ namespace lad
         // combine to generate final valida mas
         cv::bitwise_and(mask1, mask2, final_mask);
         // use a base constant value layer labelled as NODATA
-        apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         apDst->copyGeoProperties(apSrc);
         // let's apply the resulting mask
         dest.copyTo(apDst->rasterData, final_mask);
@@ -1328,7 +1328,7 @@ namespace lad
             return -1;
         }
 
-        apDst->rasterData = cv::Mat(apTemp->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        apDst->rasterData = cv::Mat(apTemp->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         apDst->copyGeoProperties(apTemp);
 
         double z; // height (z) will be compute as a function from the plane equation

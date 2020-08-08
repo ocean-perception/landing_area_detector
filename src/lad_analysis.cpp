@@ -31,7 +31,7 @@ int processGeotiff(Geotiff *apGeotiff){
     float **apData; //pull 2D float matrix containing the image data for Band 1
     apData = apGeotiff->GetRasterBand(1);
 
-    cv::Mat tiff(dimensions[0], dimensions[1], CV_32FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
+    cv::Mat tiff(dimensions[0], dimensions[1], CV_64FC1); // cv container for tiff data . WARNING: cv::Mat constructor is failing to initialize with apData
     for (int i=0; i<dimensions[0]; i++){
         for (int j=0; j<dimensions[1]; j++){
             tiff.at<float>(cv::Point(j,i)) = (float)apData[i][j];   // swap row/cols from matrix to OpenCV container
