@@ -235,7 +235,7 @@ namespace lad
     {
         for (int j = 0; j < layerDimensions[0]; j++)
         {
-            tiff.at<float>(cv::Point(j, i)) = (float)apData[i][j]; // swap row/cols from matrix to OpenCV container
+            tiff.at<double>(cv::Point(j, i)) = (double)apData[i][j]; // swap row/cols from matrix to OpenCV container
         }
     }
     tiff.copyTo(rasterData);
@@ -434,7 +434,7 @@ namespace lad
             ofs.open(outputFilename, std::ofstream::out); //overwrite if exist            
             for (int row = 0; row < tempData.rows; row++){
                 for (int col = 0; col < tempData.cols; col++){
-                    double value = tempData.at<float>(row,col);
+                    double value = tempData.at<double>(row,col);
                     ofs << value << "\t";
                 }
                 ofs << endl;
@@ -459,20 +459,20 @@ namespace lad
         }
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
-        geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float32, NULL);
+        geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float64, NULL);
         geotiffDataset->SetGeoTransform(transformMatrix);
         // cout << "[r.writeLayer] Projection string:" << endl;
         // cout << layerProjection.c_str() << endl;
         geotiffDataset->SetProjection(layerProjection.c_str());
         // \todo figure out if we need to convert/cast the cvMat to float/double for all layers
         int errcode;
-        float *rowBuff = (float*) CPLMalloc(sizeof(float)*ncols);
+        double *rowBuff = (double*) CPLMalloc(sizeof(double)*ncols);
         geotiffDataset->GetRasterBand(1)->SetNoDataValue (noData);       
         for(int row=0; row<nrows; row++) {
             for(int col=0; col<ncols; col++) {
-                rowBuff[col] = (float) tempData.at<float>(cv::Point(col,row)); // tempData should be CV_64F
+                rowBuff[col] = (double) tempData.at<double>(cv::Point(col,row)); // tempData should be CV_64F
             }
-            errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float32, 0, 0);
+            errcode = geotiffDataset->GetRasterBand(1)->RasterIO(GF_Write, 0, row,ncols, 1, rowBuff, ncols, 1, GDT_Float64, 0, 0);
         }
 
         GDALClose(geotiffDataset) ;

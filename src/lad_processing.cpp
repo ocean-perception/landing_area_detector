@@ -28,18 +28,19 @@ namespace lad
      * @param sy Vertical pixel scale
      * @return std::vector<KPoint> 
      */
-    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, float sx, float sy){
+    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix->cols;
         int rows = matrix->rows;
-        float px, py, pz;
+        double px, py, pz;
         std::vector<KPoint> output;
 
         for (int x=0; x<cols; x++){
             px = x * sx;
             for (int y=0; y<rows; y++){
                 py = y * sy;
-                pz = matrix->at<float>(cv::Point(x,y));
+                pz = matrix->at<double>(cv::Point(x,y));
+                // cout << pz << " ";
                 // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
                 if (pz != 0)    //only non-NULL points are included (those are assumed to be invalida data points)
                     output.push_back(KPoint(px,py,pz));
