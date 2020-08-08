@@ -19,33 +19,6 @@
 namespace lad
 {
 
-    /**
-     * @brief Compute the smallest angle between normalVector and the best least-square fitting plane for a collection of 3D points 
-     * 
-     * @param inputPoints  3D points to be fitted with the plane
-     * @param normalVector Angle reference vector (typ n={ 0 0 1})
-     * @return double Smallest angle in radians
-     */
-    // double computeMeanSlope (std::vector<cv::Point2d> inputPoints, cv::Vec3d normalVector){
-    double computeMeanSlope (){
-
-        std::vector<KTriangle> triangles;
-        KPoint a(1.0,2.0,3.0);
-        KPoint b(4.0,0.0,6.0);
-        KPoint c(7.0,8.0,9.0);
-        KPoint d(8.0,7.0,6.0);
-        KPoint e(5.0,3.0,4.0);
-        triangles.push_back(KTriangle(a,b,c));
-        triangles.push_back(KTriangle(a,b,d));
-        triangles.push_back(KTriangle(d,e,c));
-        KLine line;
-        KPlane plane;
-        // fit plane to whole triangles
-        linear_least_squares_fitting_3(triangles.begin(),triangles.end(),plane,CGAL::Dimension_tag<2>());
-
-        cout << "Plane:" << plane << endl;
-        return 0;
-    }//*/
 
     /**
      * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
@@ -55,7 +28,7 @@ namespace lad
      * @param sy Vertical pixel scale
      * @return std::vector<KPoint> 
      */
-    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy){
+    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, float sx, float sy){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix->cols;
         int rows = matrix->rows;
@@ -82,11 +55,19 @@ namespace lad
      * @return double Minimum angle between the plane a the reference vector ([0 0 1] as default)
      */
     double computePlaneSlope(KPlane plane, KVector reference){
-        KVector normal = plane.orthogonal_vector();
-        
-        double p = normal * reference;
+
+        KVector normal = plane.orthogonal_vector();        
+        // normal = normal /(normal*normal);
+        KVector nu = normal/sqrt(normal*normal);
+        KVector ru = reference/sqrt(reference*reference);
+        double p = nu * ru;// / (reference*reference);
+        // cout << p << " ";        
         //  angle(reference, normal);
-        return (p); //acos(p/(normal*normal));
+        p = acos(p)*180/M_PI;
+        //if (p>90)   p = 180 - p;
+       // if (p<-90)  p = 180 + p;
+        // cout << " p:" << p;
+        return p;
         //WARNING: fix return value
         // return acos(p/(normal*normal));
     }
@@ -99,7 +80,7 @@ namespace lad
      * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
      */
     KPlane computeFittingPlane (std::vector<KPoint> points){
-        KPlane plane(0,0,-1,0);
+        KPlane plane(0,0,1,0);
         if (points.empty()) // early exit
             return plane;
         // fit plane to whole triangles

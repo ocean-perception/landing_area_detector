@@ -113,6 +113,7 @@ namespace lad
         int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0, double nodata = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
         int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);
 
+        int generatePlaneMap (std::string src, KPlane plane, std::string templ);
     };
 } // namespace lad
 #endif // _LAD_CORE_HPP_

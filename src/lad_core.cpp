@@ -893,6 +893,8 @@ namespace lad
         cv::Mat temp, sout;
         apKernel->rotatedData.convertTo(kernelMask, CV_32FC1);
 
+        cout << "============++"<<sx << " " << sy << endl;
+
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
                 if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
@@ -932,10 +934,10 @@ namespace lad
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
                     std::vector<KPoint> pointList;
-                    pointList = convertMatrix2Vector (&temp, sx, sy);
-                    apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = pointList.size();
+                    pointList = convertMatrix2Vector (&temp, 1/sx, 1/sy);
+                    // apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = pointList.size();
 
-                    if (pointList.size() > 5){
+                    if (pointList.size() > 3){
                         KPlane plane = computeFittingPlane(pointList);
                         double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                         // double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
@@ -944,7 +946,7 @@ namespace lad
                     else{ // we do not have enough points to compute a valid plane
                         // cout << "some default ";
                         apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
-                    }
+                    }//*/
                 }
                 else
                     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
@@ -1057,9 +1059,10 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
         }
         // Now we start copying the parameters from the raster layer to the stack
-        for (int i=0; i<6; i++)
+        for (int i=0; i<6; i++){
             geoTransform[i] = ap->transformMatrix[i];
-        
+            cout << "[p.Template] Copy gT[" <<i <<"]: " << geoTransform[i] << endl;  
+        }        
         geoProjection = ap->layerProjection;     // copy the WKT projection string
         return NO_ERROR;
     }
@@ -1301,5 +1304,66 @@ namespace lad
         // TODO: trim the edges because the lowpassfilter cannot compute outside the filtersize box
         return NO_ERROR;
     }
+
+    int Pipeline::generatePlaneMap (std::string dst, KPlane plane, std::string templ){
+        // we ignore filter type for the preliminary implementation. Future dev may include bilateral, box, user-defined, or raster defined kernel for filtering purposes
+        // first we check if the layer exist in the stack
+        if (isAvailable(templ)){
+            cout << red << "[generatePlaneMap] Error, template layer [" << templ << "] not found" << reset << endl;
+            return LAYER_NOT_FOUND;
+        }
+        if (isAvailable(dst)){
+            cout << "[generatePlaneMap] Destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+        
+        auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+        auto apTemp = dynamic_pointer_cast<RasterLayer> (getLayer(templ));
+        if (apDst == nullptr){
+            cout << "Template layer must be of type: Raster" << endl;
+            return -1;
+        }
+        if (apTemp == nullptr){
+            cout << "Destination layer must be of type: Raster" << endl;
+            return -1;
+        }
+
+        apDst->rasterData = cv::Mat(apTemp->rasterData.size(), CV_32FC1, DEFAULT_NODATA_VALUE);
+        apDst->copyGeoProperties(apTemp);
+
+        double z; // height (z) will be compute as a function from the plane equation
+        double sx = geoTransform[GEOTIFF_PARAM_SX];
+        double sy = geoTransform[GEOTIFF_PARAM_SY];
+
+        // Plane eq: a.x + b.y + c.z + d =0
+        // if (plane.c = 0) cannot be computed
+        double planeA = plane.a();
+        double planeB = plane.b();
+        double planeC = plane.c();
+        double planeD = plane.d();
+
+        cout << cyan << "[planeEquation] " << plane << reset << endl;
+
+        if (planeC == 0){
+            cout << red << "[generatePlaneMap] provided plane [" << plane << "] contains NULL c() parameter" << reset << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+        if (verbosity > VERBOSITY_0){
+            cout << "[.generatePlaneMap] Populating the target raster layer" << endl;
+            cout << "\tPlane parameters: " << plane << endl;
+        }
+
+        for (int c=0; c<apDst->rasterData.cols; c++){
+            double px = c * sx; // x coordinate of the pixel
+            for (int r=0; r<apDst->rasterData.rows; r++){
+                double py = r * sy; // x coordinate of the pixel
+                z = -(planeA*px + planeB*py + planeD) / planeC;
+                apDst->rasterData.at<float>(cv::Point(c,r)) = z; 
+            }        
+        }        
+        return NO_ERROR;
+    }
+
 
 } // namespace lad
