@@ -37,7 +37,7 @@ namespace lad
     // double computeMeanSlope (std::vector<cv::Point2d> inputPoints = NULL, cv::Vec3d normalVector = NULL);
     double computeMeanSlope ();
 
-    double computePlaneSlope(KPlane plane, KVector reference = KVector(0,0,1));
+    double computePlaneSlope(KPlane plane, KVector reference = KVector(0,0,-1));
 
     KPlane computeFittingPlane (std::vector<KPoint> points);
 

@@ -86,7 +86,9 @@ namespace lad
         
         double p = normal * reference;
         //  angle(reference, normal);
-        return acos(p/(normal*normal));
+        return (p); //acos(p/(normal*normal));
+        //WARNING: fix return value
+        // return acos(p/(normal*normal));
     }
 
 
@@ -97,7 +99,7 @@ namespace lad
      * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
      */
     KPlane computeFittingPlane (std::vector<KPoint> points){
-        KPlane plane(0,0,1,0);
+        KPlane plane(0,0,-1,0);
         if (points.empty()) // early exit
             return plane;
         // fit plane to whole triangles

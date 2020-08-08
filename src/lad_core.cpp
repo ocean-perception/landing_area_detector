@@ -935,16 +935,16 @@ namespace lad
                     pointList = convertMatrix2Vector (&temp, sx, sy);
                     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = pointList.size();
 
-                    // if (pointList.size() > 5){
-                    //     KPlane plane = computeFittingPlane(pointList);
-                    //     double slope = computePlaneSlope(plane); // returned value is the angle of the normal to the plane, in radians
-                    //     // double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
-                    //     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = slope;
-                    // }
-                    // else{ // we do not have enough points to compute a valid plane
-                    //     // cout << "some default ";
-                    //     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
-                    // }
+                    if (pointList.size() > 5){
+                        KPlane plane = computeFittingPlane(pointList);
+                        double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
+                        // double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
+                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = slope;
+                    }
+                    else{ // we do not have enough points to compute a valid plane
+                        // cout << "some default ";
+                        apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                    }
                 }
                 else
                     apSlopeMap->rasterData.at<float>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
