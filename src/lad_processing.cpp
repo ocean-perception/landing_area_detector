@@ -65,7 +65,7 @@ namespace lad
         // cout << p << " ";        
         //  angle(reference, normal);
         p = acos(p)*180/M_PI;
-        //if (p>90)   p = 180 - p;
+        if (p>90)   p = 180 - p;
        // if (p<-90)  p = 180 + p;
         // cout << " p:" << p;
         return p;

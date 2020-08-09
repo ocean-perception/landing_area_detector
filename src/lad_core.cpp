@@ -370,7 +370,7 @@ namespace lad
         if (sx == 0) sx = 1;
         double sy = geoTransform[GEOTIFF_PARAM_SY];
         if (sy == 0) sy = 1;
-        return (createKernelTemplate (name, width,length, sx, sy));
+        return (createKernelTemplate (name, width, length, sx, sy));
     }
 
 
@@ -408,8 +408,8 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
         }
 
-        int ncols = width / sx; // each pixel is of sx horizontal size
-        int nrows = length / sy; // each pixel is of sy vertical size
+        int ncols = ceil (width / sx); // each pixel is of sx horizontal size
+        int nrows = ceil (length / sy); // each pixel is of sy vertical size
         // create the template 
         cv::Mat A = cv::Mat::ones(nrows, ncols, CV_8UC1);
         // create a new KernelLayer
@@ -420,6 +420,7 @@ namespace lad
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
             namedWindow(name);
             imshow(name, apLayer->rasterData * 255);
+            resizeWindow(name, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         return NO_ERROR;
     }
@@ -884,9 +885,11 @@ namespace lad
             }
             namedWindow(apLayer->layerName);
             imshow(apLayer->layerName, apLayer->rasterData);
+            resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             // resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             namedWindow(apLayer->layerName + "_rotated");
             imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
+            resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
             // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
 
@@ -1228,8 +1231,8 @@ namespace lad
      */
     int Pipeline::computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst){
         // first, we retrieve the raster Layer
-        shared_ptr<RasterLayer> apBaseMap = dynamic_pointer_cast<RasterLayer> (getLayer(raster));
-        if (apBaseMap == nullptr){
+        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(raster));
+        if (apSrc == nullptr){
             cout << red << "[computeMeanSlopeMap] Base bathymetry Layer [" << yellow << raster << red << "] not found..." << reset << endl;
             return LAYER_NOT_FOUND;
         }
@@ -1250,14 +1253,14 @@ namespace lad
             apSlopeMap = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         }
         // we create the empty container for the destination layer
-        apSlopeMap->rasterData = cv::Mat(apBaseMap->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
-        // apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apBaseMap->rasterData.size(), CV_64FC1); 
+        apSlopeMap->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
+        // apSlopeMap->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apSrc->rasterData.size(), CV_64FC1); 
         apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
-        double srcNoData = apBaseMap->getNoDataValue(); //we inherit ource no valid data value
-        apSlopeMap->copyGeoProperties(apBaseMap);
+        double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
+        apSlopeMap->copyGeoProperties(apSrc);
         // second, we iterate over the source image
-        int nRows = apBaseMap->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
-        int nCols = apBaseMap->rasterData.cols;
+        int nRows = apSrc->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
+        int nCols = apSrc->rasterData.cols;
         int hKernel = apKernel->rotatedData.rows;   // height of the kernel 
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
@@ -1272,12 +1275,12 @@ namespace lad
         if (verbosity > VERBOSITY_0){
             cout << "[p.computeMeanSlopeMap] Source NoData value: " << srcNoData << endl;
             cout << "[p.computeMeanSlopeMap] Target NoData value: " << apSlopeMap->getNoDataValue() << endl;
-            cout << "[p.computeMeanSlopeMap] Input raster size: " << apBaseMap->rasterData.size() << endl; 
+            cout << "[p.computeMeanSlopeMap] Input raster size: " << apSrc->rasterData.size() << endl; 
             // cout << "[p,computeMeanSlopeMap] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
         }
         // we create a matrix with NOVALID data
-        cv::Mat  roi_image;// = cv::Mat(apBaseMap->rasterData.size(), CV_8UC1); // create global valid_data mask
-        cv::compare(apBaseMap->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
+        cv::Mat  roi_image;// = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
+        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
 
         int rt, lt, rb, lb;
         double cx = geoTransform[0];
@@ -1312,7 +1315,7 @@ namespace lad
 
                     cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf));
                     //subImage contains the raw data patch
-                    cv::Mat subImage = apBaseMap->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
+                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
                     // roi_patch contains a binary mask of valid data
                     cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
                     // apKernel contains and additional mask
@@ -1348,9 +1351,10 @@ namespace lad
         }
 
         // \todo we must clip those points out of boundary
-
-        apSlopeMap->copyGeoProperties(apBaseMap); //let's copy the geoproperties
+        cout << yellow << "p.Slope complete... now transfer parameters" << endl;
+        apSlopeMap->copyGeoProperties(apSrc); //let's copy the geoproperties
         apSlopeMap->setNoDataValue(DEFAULT_NODATA_VALUE);
+        cout << yellow << "p.Slope complete... update mask" << endl;
         apSlopeMap->updateMask();
         // apLayerO->rasterMask = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
 
