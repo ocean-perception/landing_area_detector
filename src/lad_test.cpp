@@ -145,11 +145,9 @@ int main(int argc, char *argv[])
     // Pipeline.showImage("plane",COLORMAP_JET);
     // Pipeline.exportLayer("plane","plane.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    double kSlopeSize = fParam;
-
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4, cv::MORPH_RECT);
-    Pipeline.createKernelTemplate("KernelSlope", kSlopeSize, kSlopeSize, cv::MORPH_ELLIPSE);
-    Pipeline.createKernelTemplate("KernelSQUARE", 0.5, 0.5, cv::MORPH_RECT);
+    Pipeline.createKernelTemplate("KernelSlope", 0.06, 0.06, cv::MORPH_ELLIPSE);
+    Pipeline.createKernelTemplate("KernelDiag", 1.0, 1.0, cv::MORPH_ELLIPSE);
   
     auto apKernel = dynamic_pointer_cast<KernelLayer>(Pipeline.getLayer("KernelAUV"));
     if (apKernel == nullptr){
@@ -162,7 +160,7 @@ int main(int argc, char *argv[])
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
     Pipeline.showImage("C2_MeanSlopeMap");
     Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
+    // Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
 
     double slopeThreshold = 17.7;
 
@@ -171,30 +169,21 @@ int main(int argc, char *argv[])
     Pipeline.exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
 
     int k = iParam;
-    Pipeline.lowpassFilter ("M1_RAW_Bathymetry", "KernelSQUARE", "M1_VALID_DataMask", "B0_FILT_Bathymetry");
+    Pipeline.lowpassFilter ("M1_RAW_Bathymetry", "KernelDiag", "M1_VALID_DataMask", "B0_FILT_Bathymetry");
     Pipeline.showImage("B0_FILT_Bathymetry", COLORMAP_JET);
     Pipeline.exportLayer("B0_FILT_Bathymetry", "B0_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
 
-
-    Pipeline.computeHeight("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry", cv::Size(k, k));
-    Pipeline.computeHeight("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", "B1_test");
+    Pipeline.computeHeight("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", "B1_HEIGHT_Bathymetry");
     Pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    Pipeline.showImage("B1_test", COLORMAP_TWILIGHT_SHIFTED);
     Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("B1_test", "B1_test.tif", FMT_TIFF, WORLD_COORDINATE);
     
-    waitKey(0);
-    return -1;
-    //*********************************************
-    //*********************************************
-
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     Pipeline.showImage("A1_DetailedSlope",COLORMAP_JET);
     Pipeline.exportLayer("A1_DetailedSlope", "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    Pipeline.compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", slopeThreshold, CMP_GT);
-    Pipeline.showImage("A2_HiSlopeExclusion",COLORMAP_JET);
-    Pipeline.exportLayer("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", slopeThreshold, CMP_GT);
+    // Pipeline.showImage("A2_HiSlopeExclusion",COLORMAP_JET);
+    // Pipeline.exportLayer("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
 
     // Pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_Protrusions");
     // Pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
@@ -211,8 +200,8 @@ int main(int argc, char *argv[])
     // Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("A1_DetailedSlope","A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.exportLayer("A2_HiSlopeExclusion","A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    Pipeline.exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    // Pipeline.exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }

@@ -1168,8 +1168,10 @@ namespace lad
         cv::Mat mask1(apSrc->rasterData.size(), CV_8UC1);
         cv::Mat mask2(apDst->rasterData.size(), CV_8UC1); // they must have the same size
         cv::Mat maskf(apDst->rasterData.size(), CV_8UC1); // final mask        
+
+        // apSrc->updateMask();
         cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask1, CMP_NE);
-        cv::compare(apDst->rasterData, apDst->getNoDataValue(), mask2, CMP_NE);
+        cv::compare(apFilt->rasterData, apFilt->getNoDataValue(), mask2, CMP_NE);
         // combine to generate final valid mask
         cv::bitwise_and(mask1, mask2, maskf);
         // use a base constant value layer labeled as NODATA
