@@ -1129,22 +1129,70 @@ namespace lad
         applyWindowFilter(src, kernel, mask, dst, FILTER_MEAN);
     }
 
+    /**
+     * @brief Computes the seafloor height map by direct substraction of the raw and filtered maps 
+     * @details This version relies on the previous computation of a base filtered map, eliminating the duplicity when exporting the intermediate products
+     * @param src raster of the raw bathymetry
+     * @param filt raster containing a filtered version of the bathymetry
+     * @param dst name of the layer that will contain the resulting height map
+     * @return int 
+     */
+    int Pipeline::computeHeight (std::string src, std::string filt, std::string dst){
+        // src contains the RAW bathymetry. We substract the filtered map from it to obtain the height
+        if (isAvailable(dst)){
+            cout << "[computeHeight] Destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            createLayer(dst, LAYER_RASTER);
+        }
+        auto apSrc  = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        auto apFilt = dynamic_pointer_cast<RasterLayer> (getLayer(filt));
+        auto apDst  = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        if (apSrc == nullptr){
+            cout << "apSrc error" << endl;
+            return -1;
+        }
+        if (apFilt == nullptr){
+            cout << "apSrc error" << endl;
+            return -1;
+        }
+        if (apDst == nullptr){
+            cout << "apDst error" << endl;
+            return -1;
+        }
+
+        apDst->copyGeoProperties(apSrc);
+        apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
+        cv::Mat dest; //(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
+        dest = - apSrc->rasterData + apFilt->rasterData;
+
+        cv::Mat mask1(apSrc->rasterData.size(), CV_8UC1);
+        cv::Mat mask2(apDst->rasterData.size(), CV_8UC1); // they must have the same size
+        cv::Mat maskf(apDst->rasterData.size(), CV_8UC1); // final mask        
+        cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask1, CMP_NE);
+        cv::compare(apDst->rasterData, apDst->getNoDataValue(), mask2, CMP_NE);
+        // combine to generate final valid mask
+        cv::bitwise_and(mask1, mask2, maskf);
+        // use a base constant value layer labeled as NODATA
+        apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
+        // let's apply the resulting mask
+        dest.copyTo(apDst->rasterData, maskf);
+        return NO_ERROR;
+    }
+
     int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
         int retval = lowpassFilter(src, dst, filterSize, filterType);
         if (retval != NO_ERROR){
             cout << red << "[computeHeight] error when calling lowpassFilter" << reset << endl;
             return retval;
         }
-
-        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
-        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
-
+        auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apSrc == nullptr){
-            cout << "ApSrc error" << endl;
+            cout << "apSrc error" << endl;
             return -1;
         }
         if (apDst == nullptr){
-            cout << "ApDst error" << endl;
+            cout << "apDst error" << endl;
             return -1;
         }
         // cv::Mat dest(apSrc->rasterData.size(), CV_64FC1);
@@ -1155,20 +1203,20 @@ namespace lad
         dest = - apSrc->rasterData + apDst->rasterData;
         // WARNING: the expected output range can contain ZERO which is used sometimes as NOVALID data label
         // to avoid inhering invalida values from source layers, we calculate the valid data mask for the  dst layer
-        // from the valida data mask of each source (src1 AND src2 -> dst) 
+        // from the valid data mask of each source (src1 AND src2 -> dst) 
         // a) create src1 data mask
         cv::Mat mask1(apSrc->rasterData.size(), CV_8UC1);
-        cv::Mat mask2 = cv::Mat(apDst->rasterData.size(), CV_8UC1); // they must have the same size
-        cv::Mat final_mask = cv::Mat(apDst->rasterData.size(), CV_8UC1); // final mask        
+        cv::Mat mask2(apDst->rasterData.size(), CV_8UC1); // they must have the same size
+        cv::Mat maskf(apDst->rasterData.size(), CV_8UC1); // final mask        
         cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask1, CMP_NE);
         cv::compare(apDst->rasterData, apDst->getNoDataValue(), mask2, CMP_NE);
-        // combine to generate final valida mas
-        cv::bitwise_and(mask1, mask2, final_mask);
-        // use a base constant value layer labelled as NODATA
+        // combine to generate final valid mask
+        cv::bitwise_and(mask1, mask2, maskf);
+        // use a base constant value layer labeled as NODATA
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         apDst->copyGeoProperties(apSrc);
         // let's apply the resulting mask
-        dest.copyTo(apDst->rasterData, final_mask);
+        dest.copyTo(apDst->rasterData, maskf);
         // TODO: trim the edges because the lowpassfilter cannot compute outside the filtersize box
         return NO_ERROR;
     }

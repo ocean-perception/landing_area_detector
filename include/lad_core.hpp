@@ -109,7 +109,8 @@ namespace lad
         int computeExclusionMap(std::string src, std::string kernel, std::string dst);
         int computeMeanSlopeMap(std::string src, std::string kernel, std::string mask, std::string dst);
         int lowpassFilter      (std::string src, std::string kernel, std::string mask, std::string dst); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
-        int applyWindowFilter  (std::string raster, std::string kernel, std::string mask, std::string dst, int filtertype);
+        int applyWindowFilter  (std::string src, std::string kernel, std::string mask, std::string dst, int filtertype);
+        int computeHeight      (std::string src, std::string filt, std::string dst);
 
         int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
         int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);

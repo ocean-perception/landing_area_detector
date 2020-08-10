@@ -175,16 +175,19 @@ int main(int argc, char *argv[])
     Pipeline.showImage("B0_FILT_Bathymetry", COLORMAP_JET);
     Pipeline.exportLayer("B0_FILT_Bathymetry", "B0_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
 
+
+    Pipeline.computeHeight("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry", cv::Size(k, k));
+    Pipeline.computeHeight("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", "B1_test");
+    Pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+    Pipeline.showImage("B1_test", COLORMAP_TWILIGHT_SHIFTED);
+    Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+    Pipeline.exportLayer("B1_test", "B1_test.tif", FMT_TIFF, WORLD_COORDINATE);
+    
     waitKey(0);
     return -1;
     //*********************************************
     //*********************************************
-    //*********************************************
 
-    Pipeline.computeHeight("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry", cv::Size(k, k));
-    Pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     Pipeline.showImage("A1_DetailedSlope",COLORMAP_JET);
     Pipeline.exportLayer("A1_DetailedSlope", "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
