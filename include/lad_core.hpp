@@ -102,17 +102,19 @@ namespace lad
         int maskLayer(std::string src, std::string mask, std::string dst, int useRotated = true); // apply mask to raster layer src and store it in dst layer
         int rotateLayer(std::string src, double angle); // rotate a kernel layer a given angle
         
-        int createKernelTemplate (std::string name, double width, double length); // Create a Kernel layer using a rectangular shape as template. Uses implicit values for pixel scale
-        int createKernelTemplate (std::string name, double width, double length, double sx, double sy); // Create a Kernel layer using a rectangular shape as template
+        int createKernelTemplate (std::string name, double width, double length, int morphtype = cv::MORPH_RECT); // Create a Kernel layer using a rectangular shape as template. Uses implicit values for pixel scale
+        int createKernelTemplate (std::string name, double width, double length, double sx, double sy, int morphtype = cv::MORPH_RECT); // Create a Kernel layer using a rectangular shape as template
         int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers
         int extractContours(std::string rasterName, std::string contourName, int showImage = false);
-        int computeExclusionMap(std::string raster, std::string kernel, std::string dst);
-        int computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst);
+        int computeExclusionMap(std::string src, std::string kernel, std::string dst);
+        int computeMeanSlopeMap(std::string src, std::string kernel, std::string mask, std::string dst);
+        int lowpassFilter      (std::string src, std::string kernel, std::string mask, std::string dst); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
+        int applyWindowFilter  (std::string raster, std::string kernel, std::string mask, std::string dst, int filtertype);
 
-        int compareLayer(std::string src, std::string dst, double threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
-        int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0, double nodata = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
+        int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
         int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);
 
+        int compareLayer(std::string src, std::string dst, double threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
         int generatePlaneMap (std::string src, KPlane plane, std::string templ);
     };
 } // namespace lad

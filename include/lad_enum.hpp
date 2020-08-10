@@ -128,6 +128,11 @@ namespace lad{
         LAYER_MEAN = 2, //!< Average value of valid raster data
         LAYER_STDEV = 3,//!< Stadard deviation valid raster data
     };
+
+    enum FilterType{
+        FILTER_MEAN  = 0, //!< Computes the mean value of the masked points in the sliding window
+        FILTER_SLOPE = 1, //!< Computes the slope of the plane that fits the points in the sliding window
+    };
 };
 
 #endif // _LAD_ENUM_HPP_ guard
