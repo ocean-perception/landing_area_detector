@@ -914,10 +914,8 @@ namespace lad
             return ERROR_WRONG_ARGUMENT;
         }
         // Now we start copying the parameters from the raster layer to the stack
-        for (int i=0; i<6; i++){
+        for (int i=0; i<6; i++)
             geoTransform[i] = ap->transformMatrix[i];
-            cout << "[p.Template] Copy gT[" <<i <<"]: " << geoTransform[i] << endl;  
-        }        
         geoProjection = ap->layerProjection;     // copy the WKT projection string
         return NO_ERROR;
     }
@@ -1297,22 +1295,22 @@ namespace lad
         // first, we retrieve the raster Layer
         auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(raster));
         if (apSrc == nullptr){
-            cout << red << "[computeMeanSlopeMap] Base bathymetry Layer [" << yellow << raster << red << "] not found..." << reset << endl;
+            cout << red << "[applyWindowFilter] Base bathymetry Layer [" << yellow << raster << red << "] not found..." << reset << endl;
             return LAYER_NOT_FOUND;
         }
         auto apMask = dynamic_pointer_cast<RasterLayer> (getLayer(mask));
         if (apMask == nullptr){
-            cout << red << "[computeMeanSlopeMap] Base valid mask Layer [" << yellow << mask << red << "] not found..." << reset << endl;
+            cout << red << "[applyWindowFilter] Base valid mask Layer [" << yellow << mask << red << "] not found..." << reset << endl;
             return LAYER_NOT_FOUND;
         }
         auto apKernel = dynamic_pointer_cast<KernelLayer> (getLayer(kernel));
         if (apKernel == nullptr){
-            cout << red << "[computeMeanSlopeMap] Kernel layer [" << yellow << kernel << red << "] not found..." << reset << endl;
+            cout << red << "[applyWindowFilter] Kernel layer [" << yellow << kernel << red << "] not found..." << reset << endl;
             return LAYER_NOT_FOUND;
         }
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apDst == nullptr){
-            cout << "[computeMeanSlopeMap] Destination layer [" << yellow << dst << reset << "] not found. Creating it.." << endl;
+            cout << "[applyWindowFilter] Destination layer [" << yellow << dst << reset << "] not found. Creating it.." << endl;
             createLayer(dst, LAYER_RASTER);
             apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         }
@@ -1329,16 +1327,16 @@ namespace lad
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
         if (verbosity > VERBOSITY_0){
-            cout << "[p.computeMeanSlope] Layers created, now defining container elements" << endl;
+            cout << "[p.applyWindowFilter] Layers created, now defining container elements" << endl;
             cout << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel << endl;
         }
 
         // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
         // as we are removing the non validad data point (not -defined)
         if (verbosity > VERBOSITY_0){
-            cout << "[p.computeMeanSlopeMap] Source NoData value: " << srcNoData << endl;
-            cout << "[p.computeMeanSlopeMap] Target NoData value: " << apDst->getNoDataValue() << endl;
-            cout << "[p.computeMeanSlopeMap] Input raster size: " << apSrc->rasterData.size() << endl; 
+            cout << "[p.applyWindowFilter] Source NoData value: " << srcNoData << endl;
+            cout << "[p.applyWindowFilter] Target NoData value: " << apDst->getNoDataValue() << endl;
+            cout << "[p.applyWindowFilter] Input raster size: " << apSrc->rasterData.size() << endl; 
             // cout << "[p,computeMeanSlopeMap] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
         }
         // we create a matrix with NOVALID data
@@ -1392,7 +1390,7 @@ namespace lad
                     std::vector<KPoint> pointList;
                     pointList = convertMatrix2Vector (&temp, sx, sy);
 
-                    if (pointList.size() > 3){
+                    if (pointList.size() > 2){
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList);
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
@@ -1405,6 +1403,7 @@ namespace lad
                                 acum = acum + it.hz();
                             }
                             acum = acum / pointList.size();
+                            // if (acum < 0) acum = 0;
                             apDst->rasterData.at<double>(cv::Point(col, row)) = acum;
                         }
                     }
@@ -1440,6 +1439,9 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst){
+        if (verbosity > VERBOSITY_0){
+            cout << "[computeMeanSlopeMap] Calling applyWindowFilter" << endl;
+        }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
     }
 
