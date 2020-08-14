@@ -15,4 +15,5 @@ using namespace std;
 
 std::string type2str(int type);
 
+
 #endif // _PROJECT_HELPER_H_

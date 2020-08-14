@@ -1445,5 +1445,34 @@ namespace lad
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
     }
 
+    /**
+     * @brief Starts tictac counter
+     * 
+     */
+    void tictac::start(){
+        start_time = getTickCount();
+    }
+
+    /**
+     * @brief Stops tictac counter
+     * 
+     */
+    void tictac::stop(){
+        stop_time = getTickCount();
+    }
+
+    int64 tictac::elapsed(){
+        return 1000 * ((double) stop_time - start_time) / getTickFrequency();
+    }
+
+    void tictac::show(){
+        cout << highlight << "Elapsed time: " << elapsed() << " ms " << reset << endl;
+    }
+
+    void tictac::lap(){
+        stop();
+        show();
+        start();
+    }
 
 } // namespace lad

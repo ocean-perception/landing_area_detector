@@ -124,6 +124,7 @@ int main(int argc, char *argv[])
     cout << "fParam:\t" << fParam << endl;
     cout << "iParam:\t" << iParam << endl;
 
+    lad::tictac tt;
     int verboseLevel = 0;
     lad::Pipeline Pipeline;
     if (argVerbose)
@@ -134,6 +135,8 @@ int main(int argc, char *argv[])
     }
     cout << "*************************************************" << endl
          << endl;
+
+    tt.start();
 
     Pipeline.useNodataMask = true;
     Pipeline.verbosity = verboseLevel;
@@ -155,10 +158,14 @@ int main(int argc, char *argv[])
     Pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
         Pipeline.exportLayer("C1_ExclusionMap", "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
+    tt.lap();
+
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
     Pipeline.showImage("C2_MeanSlopeMap");
         Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
+
+    tt.lap();
 
     double slopeThreshold = 17.7;
 
@@ -174,10 +181,14 @@ int main(int argc, char *argv[])
     Pipeline.computeHeight("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", "B1_HEIGHT_Bathymetry");
     Pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
         Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    
+
+    tt.lap();
+
     Pipeline.computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     Pipeline.showImage("A1_DetailedSlope",COLORMAP_JET);
         Pipeline.exportLayer("A1_DetailedSlope", "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    tt.lap();
 
     Pipeline.compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", slopeThreshold, CMP_GT);
     Pipeline.showImage("A2_HiSlopeExclusion",COLORMAP_JET);
@@ -186,6 +197,9 @@ int main(int argc, char *argv[])
     Pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_Protrusions");
     Pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
         Pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    tt.stop();
+    tt.show();
 
     if (argVerbose)
         Pipeline.showInfo(); // show detailed information if asked for

@@ -118,5 +118,42 @@ namespace lad
         int compareLayer(std::string src, std::string dst, double threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
         int generatePlaneMap (std::string src, KPlane plane, std::string templ);
     };
+
+
+    class tictac{
+        private:
+        protected:
+        public:
+            int64 start_time;
+            int64 stop_time;
+            std::string message;
+
+            /**
+             * @brief Construct a new tictac object
+             * 
+             */
+            tictac(){
+                start_time = 0;
+                stop_time = 0;
+            }
+            
+            /**
+             * @brief Destroy the tictac object
+             * 
+             */
+            ~tictac(){
+
+            }
+
+            void  start();
+            void  stop();
+            void  clear();
+            void  show();
+            int64 elapsed();
+            void lap();
+    };
+
+
+
 } // namespace lad
 #endif // _LAD_CORE_HPP_
