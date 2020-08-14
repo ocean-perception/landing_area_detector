@@ -1469,8 +1469,9 @@ namespace lad
         cout << highlight << "Elapsed time: " << elapsed() << " ms " << reset << endl;
     }
 
-    void tictac::lap(){
+    void tictac::lap(std::string str){
         stop();
+        cout << str << endl;
         show();
         start();
     }

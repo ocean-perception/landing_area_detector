@@ -150,7 +150,7 @@ namespace lad
             void  clear();
             void  show();
             int64 elapsed();
-            void lap();
+            void lap(std::string);
     };
 
 
