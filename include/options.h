@@ -22,6 +22,7 @@ args::Positional<std::string> 	argInput(argParser, "input", "Input bathymetry ma
 args::ValueFlag	<std::string> 	argOutput(argParser, "output", "Output file",{'o',"output"});
 args::ValueFlag	<int> 	        argVerbose(argParser, "verbose", "Show verbose information",{"verbose"});
 args::ValueFlag	<float>         argRotation(argParser, "rotation", "User defined rotation in degrees. Defined as ZERO heading NORTH",{"rotation"});
+args::ValueFlag	<float>         argThreshold(argParser, "thresh", "User defined threshold for slope exclusion1",{"thresh"});
 args::ValueFlag	<int> 	        argIntParam(argParser, "param", "User defined parameter INTEGER for testing purposes",{"int"});
 args::ValueFlag	<float> 	    argFloatParam(argParser, "param", "User defined parameter FLOAT for testing purposes",{"float"});
 

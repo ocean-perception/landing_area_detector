@@ -1461,14 +1461,28 @@ namespace lad
         stop_time = getTickCount();
     }
 
+    /**
+     * @brief Return the number of ms elapsed between last start / stop calls
+     * 
+     * @return int64 Elapsed time in ms
+     */
     int64 tictac::elapsed(){
         return 1000 * ((double) stop_time - start_time) / getTickFrequency();
     }
 
+    /**
+     * @brief Show elapsed time between events (start-stop pairs)
+     * 
+     */
     void tictac::show(){
         cout << highlight << "Elapsed time: " << elapsed() << " ms " << reset << endl;
     }
 
+    /**
+     * @brief Helper function that triggers a new lap as a stop/start pair
+     * 
+     * @param str Explicit string containing message to be shown  for the lap
+     */
     void tictac::lap(std::string str){
         stop();
         cout << str << endl;

@@ -114,12 +114,18 @@ int main(int argc, char *argv[])
     float footprintRotation = 0; // default no rotation (heading north)
     if (argRotation)
         footprintRotation = args::get(argRotation);
+
+    double slopeThreshold = 17.7;
+    if (argThreshold)
+        slopeThreshold = args::get(argThreshold);
+
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
     cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
+    cout << "slopeThreshold:\t" << slopeThreshold << endl;
     cout << "footprintRotation (degrees):\t" << footprintRotation << endl;
     cout << "fParam:\t" << fParam << endl;
     cout << "iParam:\t" << iParam << endl;
@@ -165,8 +171,6 @@ int main(int argc, char *argv[])
         Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     // Pipeline.maskLayer("C2_MeanSlopeMap", "C1_ExclusionMap", "C2_MeanSlopeMap_Clip");
 
-    double slopeThreshold = 17.7;
-
     Pipeline.compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExclusion", slopeThreshold, CMP_GT);
     Pipeline.showImage("C3_MeanSlopeExclusion");
         Pipeline.exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
@@ -205,15 +209,6 @@ int main(int argc, char *argv[])
         Pipeline.showInfo(); // show detailed information if asked for
 
     waitKey(0);
-
-    // Pipeline.exportLayer("M1_VALID_DataMask", "M1_VALID_DataMask.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("M2_Protrusions","M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("B0_FILT_Bathymetry", "B0_FILT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("A1_DetailedSlope","A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("A2_HiSlopeExclusion","A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    // Pipeline.exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
 
     return lad::NO_ERROR;
 }
