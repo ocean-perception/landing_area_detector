@@ -1352,30 +1352,16 @@ namespace lad
         cv::Mat temp, sout;
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
 
-        cv::SparseMat sparse(roi_image);
+        cv::SparseMat roi_sparse(roi_image);
         SparseMatIterator 
-                it     = sparse.begin(),
-                it_end = sparse.end();
-        cout << "Dims: " << sparse.dims() << endl;
-        cout << "nZCount: " << sparse.nzcount() << endl;
-        size_t esz = sparse.elemSize();
-        cout << "Elem size: " << esz << endl << endl;
+                // it     = roi_sparse.begin(),
+                it_end = roi_sparse.end();
+        size_t esz = roi_sparse.elemSize();
 
-        cv::MatIterator_ <unsigned char> dense_it = roi_image.begin<unsigned char>();
+        cv::MatIterator_ <unsigned char> dense_it      = roi_image.begin<unsigned char>();
         cv::MatIterator_ <unsigned char> dense_it_end  = roi_image.end<unsigned char>();
 
-        // for (; dense_it != dense_it_end; ++dense_it){
-
-        //     ptrdiff_t ofs = dense_it.ptr - roi_image.ptr(); // substract pointer offsett
-        //     int y = (int)(ofs/roi_image.step[0]);
-
-        //     cv::Point pix =  Point((int)((ofs - y*roi_image.step[0])/esz), y);
-
-        //     cout << (unsigned int) *dense_it.ptr << "/" << (unsigned int) roi_image.at<unsigned char>(pix) << " ";
-
-        // }
-
-        for (; it != it_end; ++it){
+        for (auto it = roi_sparse.begin(); it != it_end; ++it){
             cv::SparseMat::Node *node = it.node();
 
             ptrdiff_t ofs = roi_image.ptr(node->idx) - roi_image.ptr(); // substract pointer offsett
