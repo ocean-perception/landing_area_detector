@@ -1352,43 +1352,15 @@ namespace lad
         cv::Mat temp, sout;
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
 
-        cv::SparseMat roi_sparse(roi_image);
-        SparseMatIterator 
-                // it     = roi_sparse.begin(),
-                it_end = roi_sparse.end();
-        size_t esz = roi_sparse.elemSize();
-
-        cv::MatIterator_ <unsigned char> dense_it      = roi_image.begin<unsigned char>();
-        cv::MatIterator_ <unsigned char> dense_it_end  = roi_image.end<unsigned char>();
-
-        for (auto it = roi_sparse.begin(); it != it_end; ++it){
-            cv::SparseMat::Node *node = it.node();
-
-            ptrdiff_t ofs = roi_image.ptr(node->idx) - roi_image.ptr(); // substract pointer offsett
-            int y = (int)(ofs/roi_image.step[0]);
-
-            cv::Point pix =  Point((int)((ofs - y*roi_image.step[0])/esz), y);
-            cout << (unsigned int) roi_image.at<unsigned char>(pix) << "/" << (unsigned int) *roi_image.ptr(node->idx) << " ";
-        }
-
-
-// void SparseMat::copyTo( Mat& m ) const
-// {
-//     CV_Assert( hdr );
-//     int ndims = dims();
-//     m.create( ndims, hdr->size, type() );
-//     m = Scalar(0);
-
-//     SparseMatConstIterator from = begin();
-//     size_t N = nzcount(), esz = elemSize();
-
-//     for( size_t i = 0; i < N; i++, ++from )
-//     {
-//         const Node* n = from.node();
-//         copyElem( from.ptr, (ndims > 1 ? m.ptr(n->idx) : m.ptr(n->idx[0])), esz);
-//     }
-// }
-
+        // cv::SparseMat     roi_sparse(roi_image);    // sparse version of ROI mask. Non-masked values are stored (255 in 8bits)
+        // SparseMatIterator it_end = roi_sparse.end();// pointer to last element of sparse matrix, faster for comparisons in the for loop
+        // size_t esz = roi_sparse.elemSize();         // element size, expected to match that of 8UC1 / unsigned char
+        // for (auto it = roi_sparse.begin(); it != it_end; ++it){
+        //     cv::SparseMat::Node *node = it.node();  //retrieve node ptr from the current sparse iterator 
+        //     ptrdiff_t ofs = roi_image.ptr(node->idx) - roi_image.ptr(); // substract pointer offset
+        //     int row = (int)(ofs/roi_image.step[0]);   // y/row as floor of integer division
+        //     int col = (int)((ofs - y*roi_image.step[0])/esz); // the x/col should be integer remain
+        // }
 
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
@@ -1453,6 +1425,7 @@ namespace lad
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
+
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         apDst->updateMask();
