@@ -18,8 +18,6 @@
  */
 namespace lad
 {
-
-
     /**
      * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
      * 
