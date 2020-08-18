@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
     Pipeline.setTemplate("M1_RAW_Bathymetry");
     Pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", verboseLevel);
         Pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+        Pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
 
     Pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4, cv::MORPH_RECT);
     Pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
