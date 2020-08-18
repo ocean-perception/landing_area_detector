@@ -41,7 +41,7 @@ namespace lad
 
     KPlane computeFittingPlane (std::vector<KPoint> points);
 
-    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy);
+    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
 
     // Own implementation for scale independant landability analysis
 

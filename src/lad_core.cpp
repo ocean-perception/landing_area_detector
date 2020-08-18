@@ -1348,9 +1348,10 @@ namespace lad
         double cy = geoTransform[3];
         double sx = geoTransform[1];
         double sy = geoTransform[5];
-        cv::Mat kernelMask;
+        cv::Mat kernelMask, kernelMaskBin;
         cv::Mat temp, sout;
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
+        apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
         // cv::SparseMat     roi_sparse(roi_image);    // sparse version of ROI mask. Non-masked values are stored (255 in 8bits)
         // SparseMatIterator it_end = roi_sparse.end();// pointer to last element of sparse matrix, faster for comparisons in the for loop
@@ -1380,41 +1381,38 @@ namespace lad
                     int xf = cr - col + wKernel/2;
                     int yf = rb - row + hKernel/2;
 
-                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf));
+                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1
                     //subImage contains the raw data patch
-                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr));
+                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1
                     // roi_patch contains a binary mask of valid data
-                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));
+                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1
                     // apKernel contains and additional mask
-                    subMask.convertTo(subMask, CV_64FC1);
-                    roi_patch.convertTo(temp, CV_64FC1);
+                    subMask.convertTo(subMask, CV_64FC1); //64FC1
+                    roi_patch.convertTo(temp, CV_64FC1); //64FC1
 
                     // cout << subImage << endl << endl << endl;
                     // cout << "roi/img/mask: " << roi_patch.size() << " " << subImage.size() << " " << subMask.size() << endl;
-                    temp = subImage.mul(temp)/255;
-                    temp = subMask.mul(temp);
-                    // cout << temp << endl;
+                   temp = subImage.mul(temp)/255;  //64FC1
+                   temp = subMask.mul(temp); //64FC1
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
+                    double acum = 0;
                     std::vector<KPoint> pointList;
-                    pointList = convertMatrix2Vector (&temp, sx, sy);
+                    pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
 
-                    if (pointList.size() > 2){
+                    if (pointList.size() > 3){
                         if (filtertype == FILTER_SLOPE){
-                            KPlane plane = computeFittingPlane(pointList);
+                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
-                            // double slope = computePlaneSlope(plane) * 180/M_PI; // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
                         }
                         else if (filtertype == FILTER_MEAN){
-                            double acum = 0;
-                            for (auto it:pointList){
-                                acum = acum + it.hz();
-                            }
-                            acum = acum / pointList.size();
+                            // for (auto it:pointList){
+                            //     acum = acum + it.hz();
+                            // }
                             // if (acum < 0) acum = 0;
-                            apDst->rasterData.at<double>(cv::Point(col, row)) = acum;
+                            apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
                     }
                     else{ // we do not have enough points to compute a valid plane
