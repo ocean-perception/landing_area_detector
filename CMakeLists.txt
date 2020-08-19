@@ -11,7 +11,7 @@ endif ()
 
 # Define project name
 project(lad_project)
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
 find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
 message(STATUS "GDAL library status:")
