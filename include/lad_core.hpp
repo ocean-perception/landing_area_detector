@@ -95,6 +95,7 @@ namespace lad
         int showInfo(int level = 0);              // Show summary information of current pipeline object
         int showLayers(int type = LAYER_ANYTYPE); // Call showInformation() method for each layer
         int showImage(std::string layer, int colormap = cv::COLORMAP_HOT); // show, if available, the raster content of the layer as an image
+        int saveImage(std::string layer, std::string filename, int colormap = cv::COLORMAP_HOT); // save as image file the raster content of the layer
 
         int uploadData(int id, void *data);           // uploads data into a layer identified by its id
         int uploadData(std::string name, void *data); // uploads data into a layer identified by its name

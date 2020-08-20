@@ -105,7 +105,8 @@ namespace lad{
         EXPORT_OK   = 0,    //!< No error exporting file
         FMT_CSV     = 1,    //!< Export data as CSV file using built-in engine
         FMT_SHP     = 2,    //!< Export as ESRI Shapefile using GDAL
-        FMT_TIFF    = 3    //!< Export as geoTIFF using GDAL
+        FMT_TIFF    = 3,    //!< Export as geoTIFF using GDAL
+        FMT_PNG     = 4     //!< Export as flat PNG image
     };
 
     /**

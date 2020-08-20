@@ -896,7 +896,66 @@ namespace lad
         return NO_ERROR;
     }
 
-    
+    int Pipeline::saveImage(std::string layer, std::string filename, int colormap){
+        // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
+        if (getLayer(layer) == nullptr){
+            cout << "[saveImage] layer [" << yellow << layer << reset << "] not found..." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
+        if (type == LAYER_VECTOR){
+            cout << "[saveImage] layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Image export method not supported yet." << endl;
+            return ERROR_WRONG_ARGUMENT;
+        }
+        // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
+        // we must check if the container is non-empty
+        // WARNING: As KERNEL is a derived class from RASTER we could downcast to RASTER without risking object slicing, and still be able to retrieve the rasterData
+        if (type == LAYER_RASTER){
+            shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[saveImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[saveImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save" << endl;
+                return NO_ERROR;                
+            }
+            // correct data range to improv
+            cv::Mat dst = apLayer->rasterData.clone();
+            if (useNodataMask){
+                apLayer->updateMask();
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
+            }
+            else{
+                cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+            }
+            // apply colormap for enhanced visualization purposes
+            cv::applyColorMap(dst, dst, colormap);
+            cv::imwrite(filename, dst);
+        }
+
+        if (type == LAYER_KERNEL){
+            shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
+            if (apLayer == nullptr){
+                cout << red << "[saveImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+                return ERROR_WRONG_ARGUMENT;
+            }
+            if (apLayer->rasterData.empty()){
+                cout << "[saveImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                return NO_ERROR;                
+            }
+            cv::imwrite(filename, apLayer->rasterData);
+            cv::imwrite(filename + "_rotated", apLayer->rotatedData);
+            // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        }
+
+        return NO_ERROR;
+    }
+
+
+
     /**
      * @brief Use geoTIFF related structures from a reference raster layer as template for the whole stack
      * 
@@ -940,7 +999,7 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[maskLayer] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            cout << "[maskLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -988,7 +1047,7 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[thresholdLayer] destination layer ["  << yellow << dst << yellow<< "] does not exist. Creating..." << reset << endl;
+            cout << "[thresholdLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
             createLayer(dst, LAYER_RASTER);
         }
 
