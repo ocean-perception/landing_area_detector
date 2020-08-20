@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    tt.lap("Lanes A,B & C completed -> M2_Protrusion map done");
+    tt.lap("** Lanes A,B & C completed -> M2_Protrusion map done");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     pipeline.showImage("D2_LoProtExcl");
     pipeline.showImage("D3_HiProtExcl");
     
-    tic.lap("Pipeline completed");
+    tic.lap("***\tPipeline completed");
 
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
