@@ -45,7 +45,7 @@ const std::string red("\033[1;31m");
 const std::string reset("\033[0m");
 const std::string highlight("\033[30;43m");
 
-
+#define LO_NPART  5
 
 #define DEFAULT_OUTPUT_FILE "LAD_output.tif"
 #define DEFAULT_WINDOW_WIDTH 800

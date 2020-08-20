@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     cout << "iParam:\t" << iParam << endl;
     lad::printParams(&params);
 
-    lad::tictac tt;
+    lad::tictac tt, tic;
     int verboseLevel = 0;
     lad::Pipeline pipeline;
     if (argVerbose)
@@ -156,6 +156,7 @@ int main(int argc, char *argv[])
     cout << yellow << "*************************************************" << reset << endl
          << endl;
 
+    tic.start();
     tt.start();
     
     pipeline.useNodataMask = true;
@@ -204,22 +205,16 @@ int main(int argc, char *argv[])
     tt.lap("Lanes A,B & C completed -> M2_Protrusion map done");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
-    // A2 contains the exclusion map
-    // pipeline.showImage("A2_HiSlopeExclusion");
-
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
     threadLaneD.join();
-    pipeline.showImage("D2_LoProtMask");
-    pipeline.showImage("D3_HiProtMask");
+    pipeline.showImage("D2_LoProtExcl");
+    pipeline.showImage("D3_HiProtExcl");
     
-    // lad::processLaneD(&pipeline, &params);
-
-    tt.lap("Pipeline completed");
+    tic.lap("Pipeline completed");
 
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
 
     waitKey(0);
-
     return lad::NO_ERROR;
 }

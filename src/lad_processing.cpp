@@ -73,7 +73,6 @@ namespace lad
         // return acos(p/(normal*normal));
     }
 
-
     /**
      * @brief 
      * 
@@ -164,8 +163,33 @@ namespace lad
         cout << "\theightThreshold [mm]:\t" << p->heightThreshold << endl;
         cout << "\tslopeThreshold [deg]:\t" <<  p->slopeThreshold << endl;
         cout << "\tgroundThreshold [mm]:\t" << p->groundThreshold << endl;
-        cout << "\tprotrusionSize [mm]:\t" <<  p->protrusionSize << endl;
+        cout << "\tprotrusionSize [m]:\t" <<  p->protrusionSize << endl;
 
     }
+
+    /**
+     * @brief Returns the exclusion zone size (disk radius [m]) for a given obstacle height 'x'. Additionaly returns the lower and upper thershold for the height region
+     * 
+     * @param x Obstacle height in meters 
+     * @return double exclusion disk radius in meters
+     */
+    double computeExclusionSize(double x){
+    // exzone	 height 
+    // 0.025	0.008772129409728
+    // 0.05	0.019110046267601
+    // 0.075	0.030975368886052
+    // 0.1	0.044321160365278
+    // 0.125	0.05909278542667
+    // 0.15	0.075228908315143
+    // 0.175	0.092662592462244
+    // 0.2	0.111322460369619
+    // 0.225	0.131133872530442
+    // 0.25	0.152020086896598
+        // Curve fitting eq:
+        // f(x) = -3.948793 x*x + 2.16931 + 0.0094463
+        // R2 = 0.9994
+        return (-3.948793*x*x + 2.16931*x + 0.0094463);
+    }
+
 
 } // namespace lad

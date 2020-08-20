@@ -63,7 +63,8 @@ namespace lad
     // Pixel to World coordinates transformation
     // World to Pixel coordinates transformation
     // Already internally implemented with convertSpace + geoTransform matrix
-
+    double computeExclusionSize(double x);
+    // double computeHeightRange(double hi, double *lt, double *ut);
     void printParams(parameterStruct *p);
 } // namespace lad
 
