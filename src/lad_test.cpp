@@ -108,30 +108,35 @@ int main(int argc, char *argv[])
     else
         cout << "Using default value for [argAlphaRadius]: " << yellow << alphaShapeRadius << reset << endl;
 
-    float   fParam = 1.0;
-    if (argFloatParam)
-        fParam = args::get(argFloatParam);
-    int     iParam = 1;
-    if (argIntParam)
-        iParam = args::get(argIntParam);
-    float footprintRotation = 0; // default no rotation (heading north)
-    if (argRotation)
-        footprintRotation = args::get(argRotation);
+    parameterStruct params;
 
-    double slopeThreshold = 17.7;
-    if (argThreshold)
-        slopeThreshold = args::get(argThreshold);
+    float fParam = 1.0;
+    if (argFloatParam) fParam = args::get(argFloatParam);
+
+    int  iParam = 1;
+    if (argIntParam)   iParam = args::get(argIntParam);
+
+    params.rotation = 0; // default no rotation (heading north)
+    if (argRotation)    params.rotation = args::get(argRotation);
+    params.slopeThreshold = 17.7; //DEFAULT;
+    if (argSlopeThreshold)   params.slopeThreshold = args::get(argSlopeThreshold);
+    params.robotHeight = 0.8;
+    if (argRobotHeight) params.robotHeight = args::get(argRobotHeight);
+    params.robotLength = 1.4;
+    if (argRobotLength) params.robotLength = args::get(argRobotLength);
+    params.robotWidth = 0.5;
+    if (argRobotWidth)  params.robotWidth = args::get(argRobotWidth);
+    params.protrusionSize = 10.0;
+    if (argProtrusionSize)  params.protrusionSize = args::get(argProtrusionSize);
 
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:\t\t" << inputFileName << endl;
     cout << "Output file:\t\t" << outputFileName << endl;
-    cout << "alphaShapeRadius:\t" << alphaShapeRadius << endl;
-    cout << "slopeThreshold:\t" << slopeThreshold << endl;
-    cout << "footprintRotation (degrees):\t" << footprintRotation << endl;
     cout << "fParam:\t" << fParam << endl;
     cout << "iParam:\t" << iParam << endl;
+    lad::printParams(&params);
 
     lad::tictac tt;
     int verboseLevel = 0;
@@ -156,7 +161,7 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
 
-    pipeline.createKernelTemplate("KernelAUV", 0.5, 1.4, cv::MORPH_RECT);
+    pipeline.createKernelTemplate("KernelAUV", params.robotWidth, params.robotLength, cv::MORPH_RECT);
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
     pipeline.createKernelTemplate("KernelDiag", 1.0, 1.0, cv::MORPH_ELLIPSE);
 
@@ -165,7 +170,7 @@ int main(int argc, char *argv[])
         cout << red << "Error creating AUV footprint layer " << reset << endl;
         return -1;
     }
-    apKernel->setRotation(footprintRotation);
+    apKernel->setRotation(params.rotation);
     pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
         pipeline.exportLayer("C1_ExclusionMap", "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
@@ -173,9 +178,9 @@ int main(int argc, char *argv[])
 
     int k = iParam;
 
-    std::thread threadLaneC (&lad::processLaneC, &pipeline, slopeThreshold);
+    std::thread threadLaneC (&lad::processLaneC, &pipeline, params.slopeThreshold);
     std::thread threadLaneB (&lad::processLaneB, &pipeline);
-    std::thread threadLaneA (&lad::processLaneA, &pipeline, slopeThreshold);
+    std::thread threadLaneA (&lad::processLaneA, &pipeline, params.slopeThreshold);
 
     threadLaneA.join();
     threadLaneB.join();
@@ -183,13 +188,19 @@ int main(int argc, char *argv[])
 
     pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.showImage("A1_DetailedSlope");
-    pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    pipeline.showImage("C2_MeanSlopeMap");
+    // pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+    // pipeline.showImage("C2_MeanSlopeMap");
 
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_Protrusions");
     pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    tt.lap("Lanes A,B & C completed -> M2_Protrusion map done");
+
+    //now we proceed with final LoProt/HiProt exclusion calculation
+    // A2 contains the exclusion map
+    pipeline.showImage("A2_HiSlopeExclusion");
 
     tt.lap("Pipeline completed");
 

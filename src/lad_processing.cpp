@@ -10,6 +10,7 @@
  */
 #include "headers.h"
 #include "lad_processing.hpp"
+#include "lad_core.hpp"
 #include "lad_layer.hpp"
 #include <CGAL/Kernel/global_functions.h>
 /**
@@ -150,6 +151,21 @@ namespace lad
             break;
         }
         return 0;
+    }
+
+    void printParams(parameterStruct_ *p){
+        cout << "Parameters:" << endl;
+        cout << "\talphaShapeRadius [m]:\t" << p->alphaShapeRadius << endl;
+        cout << "\trobotHeight [m]:\t" << p->robotHeight << endl;
+        cout << "\trobotWidth [m]:\t" << p->robotWidth << endl;
+        cout << "\trobotLength [m]:\t" << p->robotLength << endl;
+        cout << "\trotation [deg]:\t" << p->rotation  << endl;
+
+        cout << "\theightThreshold [mm]:\t" << p->heightThreshold << endl;
+        cout << "\tslopeThreshold [deg]:\t" <<  p->slopeThreshold << endl;
+        cout << "\tgroundThreshold [mm]:\t" << p->groundThreshold << endl;
+        cout << "\tprotrusionSize [mm]:\t" <<  p->protrusionSize << endl;
+
     }
 
 } // namespace lad

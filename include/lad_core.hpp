@@ -154,7 +154,5 @@ namespace lad
             void lap(std::string);
     };
 
-
-
 } // namespace lad
 #endif // _LAD_CORE_HPP_

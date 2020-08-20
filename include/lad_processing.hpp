@@ -15,6 +15,7 @@
 
 #include "headers.h"
 #include "lad_enum.hpp"
+#include "lad_core.hpp"
 
 using namespace std; // STL
 using namespace cv;  // OpenCV
@@ -25,6 +26,19 @@ using namespace cv;  // OpenCV
  */
 namespace lad
 { // landing area detection algorithm namespace
+    typedef struct parameterStruct_{
+        float robotHeight;
+        float robotWidth;
+        float robotLength;
+        float rotation;
+        
+        float heightThreshold;
+        float slopeThreshold;
+        float groundThreshold;
+        float protrusionSize;
+
+        float alphaShapeRadius;
+    }parameterStruct;
 
     int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers
     int extractContours(std::string rasterName, std::string contourName, int showImage = false);
@@ -51,6 +65,7 @@ namespace lad
     // World to Pixel coordinates transformation
     // Already internally implemented with convertSpace + geoTransform matrix
 
+    void printParams(parameterStruct *p);
 } // namespace lad
 
 #endif // _LAD_PROCESSING_HPP_
