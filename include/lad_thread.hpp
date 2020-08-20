@@ -26,27 +26,37 @@ namespace lad{
      * @brief Computes the sequence of maps related to lane (A): Detailed slope (low&high), with exclusion maps
      * 
      * @param ap Pointer to Pipeline object containing a valid stack for processing
-     * @param slopeThreshold user defined slope threshold, defaut should be 17.7 degrees
+     * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneA(lad::Pipeline *ap, int slopeThreshold);
+    int processLaneA(lad::Pipeline *ap, parameterStruct *param);
 
     /**
      * @brief Computes the sequence of maps related to lane (B): Low pass terrain map, Terrain height map
      * 
      * @param ap Pointer to Pipeline object containing a valid stack for processing
+     * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneB(lad::Pipeline *ap);
+    int processLaneB(lad::Pipeline *ap, parameterStruct *param);
 
     /**
      * @brief Computes the sequence of maps related to lane (C): Mean slope, with exclusion maps
      * 
      * @param ap Pointer to Pipeline object containing a valid stack for processing
-     * @param slopeThreshold user defined slope threshold, defaut should be 17.7 degrees
+     * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneC(lad::Pipeline *ap, int slopeThreshold);
+    int processLaneC(lad::Pipeline *ap, parameterStruct *param);
+
+    /**
+     * @brief Computes the maps correspondnig to lane (D): Hi and Lo Protrusion maps
+     * 
+     * @param ap Pointer to Pipeline object containing a valid stack for processing
+     * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
+     * @return int error code, if any
+     */
+    int processLaneD(lad::Pipeline *ap, parameterStruct *param);
 
 }
 

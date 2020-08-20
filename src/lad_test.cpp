@@ -118,6 +118,9 @@ int main(int argc, char *argv[])
 
     params.rotation = 0; // default no rotation (heading north)
     if (argRotation)    params.rotation = args::get(argRotation);
+    params.heightThreshold = 0.1; //DEFAULT;
+    if (argHeightThreshold)   params.heightThreshold = args::get(argHeightThreshold);
+    params.robotHeight = 0.8;
     params.slopeThreshold = 17.7; //DEFAULT;
     if (argSlopeThreshold)   params.slopeThreshold = args::get(argSlopeThreshold);
     params.robotHeight = 0.8;
@@ -178,9 +181,9 @@ int main(int argc, char *argv[])
 
     int k = iParam;
 
-    std::thread threadLaneC (&lad::processLaneC, &pipeline, params.slopeThreshold);
-    std::thread threadLaneB (&lad::processLaneB, &pipeline);
-    std::thread threadLaneA (&lad::processLaneA, &pipeline, params.slopeThreshold);
+    std::thread threadLaneC (&lad::processLaneC, &pipeline, &params);
+    std::thread threadLaneB (&lad::processLaneB, &pipeline, &params);
+    std::thread threadLaneA (&lad::processLaneA, &pipeline, &params);
 
     threadLaneA.join();
     threadLaneB.join();
@@ -200,7 +203,13 @@ int main(int argc, char *argv[])
 
     //now we proceed with final LoProt/HiProt exclusion calculation
     // A2 contains the exclusion map
-    pipeline.showImage("A2_HiSlopeExclusion");
+    // pipeline.showImage("A2_HiSlopeExclusion");
+
+    std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
+    threadLaneD.join();
+    pipeline.showImage("D3_HiProt");
+    
+    // lad::processLaneD(&pipeline, &params);
 
     tt.lap("Pipeline completed");
 

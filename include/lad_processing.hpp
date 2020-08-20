@@ -27,15 +27,14 @@ using namespace cv;  // OpenCV
 namespace lad
 { // landing area detection algorithm namespace
     typedef struct parameterStruct_{
-        float robotHeight;
-        float robotWidth;
-        float robotLength;
-        float rotation;
-        
-        float heightThreshold;
-        float slopeThreshold;
-        float groundThreshold;
-        float protrusionSize;
+        double robotHeight;
+        double robotWidth;
+        double robotLength;
+        double rotation;
+        double heightThreshold;
+        double slopeThreshold;
+        double groundThreshold;
+        double protrusionSize;
 
         float alphaShapeRadius;
     }parameterStruct;

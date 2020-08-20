@@ -22,22 +22,22 @@ args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file"
 args::ValueFlag	<int> 	        argVerbose(argParser,   "verbose",  "Define verbosity level",                                                   {"verbose"});
 
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha",  "Search radius for alpha Shape concave hull algorithm",                     {"alpharadius"});
-args::ValueFlag	<float>         argRotation(argParser,  "rotation", "Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW", {"rotation"});
+args::ValueFlag	<double>         argRotation(argParser,  "rotation", "Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW", {"rotation"});
 
 // Free parameters for debugging
 args::ValueFlag	<int> 	argIntParam(argParser,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
 args::ValueFlag	<float> argFloatParam(argParser,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
 
 // Robot dimensions
-args::ValueFlag	<float> argRobotHeight(argParser,"height",  "User defined robot height in meters",    {"robotheight"});
-args::ValueFlag	<float> argRobotWidth (argParser,"width",   "User defined robot width in meters",     {"robotwidth"});
-args::ValueFlag	<float> argRobotLength(argParser,"length",  "User defined robot length in meters",    {"robotlength"});
+args::ValueFlag	<double> argRobotHeight(argParser,"height",  "User defined robot height in meters",    {"robotheight"});
+args::ValueFlag	<double> argRobotWidth (argParser,"width",   "User defined robot width in meters",     {"robotwidth"});
+args::ValueFlag	<double> argRobotLength(argParser,"length",  "User defined robot length in meters",    {"robotlength"});
 
 // Threshold parameters
-args::ValueFlag	<float> argProtrusionSize (argParser,"size", "Size threshold [cm] to consider a protrusion an obstacle", {"prot_size"});
-args::ValueFlag	<float> argHeightThreshold(argParser,"height", "Height threshold [m] to determine high obstacles",    {"height_th"});
-args::ValueFlag	<float> argSlopeThreshold (argParser,"slope",  "Slope threshold [deg] to determine high slope areas", {"slope_th"});
-args::ValueFlag	<float> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
+args::ValueFlag	<double> argProtrusionSize (argParser,"size", "Size threshold [cm] to consider a protrusion an obstacle", {"prot_size"});
+args::ValueFlag	<double> argHeightThreshold(argParser,"height", "Height threshold [m] to determine high obstacles",    {"height_th"});
+args::ValueFlag	<double> argSlopeThreshold (argParser,"slope",  "Slope threshold [deg] to determine high slope areas", {"slope_th"});
+args::ValueFlag	<double> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
 
 
 #endif //_PROJECT_OPTIONS_H_

@@ -11,7 +11,22 @@
 #include "lad_core.hpp"
 #include "lad_thread.hpp"
 
-int lad::processLaneC(lad::Pipeline *ap, int slopeThreshold){
+int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
+
+    lad::tictac tt;
+    tt.start();
+    double th = p->heightThreshold;
+
+    cout << "Threshold:   " << th << endl;
+    //first step is to create the HiProt map (h > hcrit)
+    ap->compareLayer("M2_Protrusions", "D3_HiProt", th, cv::CMP_GT);
+    ap->saveImage("D3_HiProt", "D3_HiProt.png");
+    ap->exportLayer("D3_HiProt", "D3_HiProt.tif", FMT_TIFF, WORLD_COORDINATE);
+    tt.lap("Lane D: D3_HiProt");
+    return 0;
+}
+
+int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p){
 
     lad::tictac tt;
     tt.start();
@@ -21,7 +36,7 @@ int lad::processLaneC(lad::Pipeline *ap, int slopeThreshold){
     ap->exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     tt.lap("Lane C: C2_MeanSlopeMap");
 
-    ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExclusion", slopeThreshold, CMP_GT);
+    ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExclusion", p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExclusion");
     ap->saveImage("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.png");
     ap->exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
@@ -29,7 +44,7 @@ int lad::processLaneC(lad::Pipeline *ap, int slopeThreshold){
     return 0;
 }
 
-int lad::processLaneB(lad::Pipeline *ap){
+int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p){
     lad::tictac tt;
     tt.start();
     ap->lowpassFilter ("M1_RAW_Bathymetry", "KernelDiag", "M1_VALID_DataMask", "B0_FILT_Bathymetry");
@@ -46,7 +61,7 @@ int lad::processLaneB(lad::Pipeline *ap){
     return 0;
 }
 
-int lad::processLaneA(lad::Pipeline *ap, int slopeThreshold){
+int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p){
     lad::tictac tt;
     tt.start();
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
@@ -55,11 +70,10 @@ int lad::processLaneA(lad::Pipeline *ap, int slopeThreshold){
     ap->exportLayer("A1_DetailedSlope", "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
     tt.lap("Lane A: A1_DetailedSlope");
 
-    ap->compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", slopeThreshold, CMP_GT);
+    ap->compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", p->slopeThreshold, CMP_GT);
     // ap->showImage("A2_HiSlopeExclusion",COLORMAP_JET);
     ap->saveImage("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.png", COLORMAP_JET);
     ap->exportLayer("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
     tt.lap("Lane A: A2_HiSlopeExclusion");
-
     return 0;
 }

@@ -1033,21 +1033,21 @@ namespace lad
     } 
 
     /**
-     * @brief 
+     * @brief Compares src raster layer against a given threshold and stores the resulting binary raster layer in dst
      * 
      * @param src 
      * @param dst 
-     * @param angleThreshold 
+     * @param threshold
      * @return int 
      */
     int Pipeline::compareLayer(std::string src, std::string dst, double threshold, int cmp){
         // check that both src and mask layers exist. If not, return with error
         if (isAvailable(src)){
-            cout << red << "[thresholdLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            cout << red << "[compareLayer] source layer ["  << src << "] does not exist" << reset << endl;
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[thresholdLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            cout << "[compareLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
             createLayer(dst, LAYER_RASTER);
         }
 
