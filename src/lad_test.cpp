@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
 
     params.rotation = 0; // default no rotation (heading north)
     if (argRotation)    params.rotation = args::get(argRotation);
+    params.groundThreshold = 0.02; //DEFAULT;
+    if (argGroundThreshold)   params.groundThreshold = args::get(argGroundThreshold);
     params.heightThreshold = 0.1; //DEFAULT;
     if (argHeightThreshold)   params.heightThreshold = args::get(argHeightThreshold);
     params.robotHeight = 0.8;
@@ -207,8 +209,8 @@ int main(int argc, char *argv[])
 
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
     threadLaneD.join();
-    pipeline.showImage("D2_LoProt");
-    pipeline.showImage("D3_HiProt");
+    pipeline.showImage("D2_LoProtMask");
+    pipeline.showImage("D3_HiProtMask");
     
     // lad::processLaneD(&pipeline, &params);
 

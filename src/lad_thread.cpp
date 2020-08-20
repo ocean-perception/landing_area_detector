@@ -15,23 +15,27 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
 
     lad::tictac tt;
     tt.start();
-    double th = p->heightThreshold;
 
-    cout << "Threshold:   " << th << endl;
-    //first step is to create the HiProt map (h > hcrit)
-    ap->compareLayer("M2_Protrusions", "D2_LoProt_all", th, cv::CMP_LT);
     auto apSrc  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("M2_Protrusions"));
+    //first step is to create the LoProt map (h < hcrit)
+    ap->compareLayer("M2_Protrusions", "D3_HiProtMask", p->heightThreshold, cv::CMP_GE);
+    ap->compareLayer("M2_Protrusions", "D2_tempLO", p->heightThreshold, cv::CMP_LT);
     // the LoProt must be masked against the valid protrusion mask: 
-    ap->maskLayer("D2_LoProt_all", "A2_HiSlopeExclusion", "D2_LoProt");
-        ap->removeLayer("D2_LoProt_all");
+    // create a mask to remove those below h_ground
+    ap->compareLayer("M2_Protrusions", "D2_tempGR", p->groundThreshold, CMP_GE);
+    //need a logical OP between D2_tempLT AND D2_tempGT
+    ap->maskLayer("D2_tempLO", "D2_tempGR", "D2_LoProtMask");
 
-    ap->compareLayer("M2_Protrusions", "D3_HiProt", th, cv::CMP_GE);
-    // now, we create the Exclusion map, for the current vehicle heading (stored in KernelAUV)
-    
-    auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProt"));
-    auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProt"));
+    ap->showImage("D2_tempGR");
+    ap->removeLayer("D2_tempGR");
+    ap->removeLayer("D2_tempLO");
+
+    // ap->showImage("D2_LoProtMask");
+
+    auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtMask"));
+    auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProtMask"));
     auto auvKernel = dynamic_pointer_cast<KernelLayer> (ap->getLayer("KernelAUV"));
-    
+    // now, we create the Exclusion map, for the current vehicle heading (stored in KernelAUV)
     cv::Mat excl(apHiProt->rasterData.size(), CV_8UC1); //same size and type as original mask
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
     ap->createLayer("D4_HiProtExcl", LAYER_RASTER);
@@ -43,14 +47,21 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     apHiProt->copyGeoProperties(apSrc);
     apLoProt->copyGeoProperties(apSrc);
 
-    ap->saveImage("D2_LoProt", "D2_LoProt.png");
-    ap->exportLayer("D2_LoProt", "D2_LoProt.tif", FMT_TIFF, WORLD_COORDINATE);
-    ap->saveImage("D3_HiProt", "D3_HiProt.png");
-    ap->exportLayer("D3_HiProt", "D3_HiProt.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->saveImage("D2_LoProtMask", "D2_LoProtMask.png");
+    ap->exportLayer("D2_LoProtMask", "D2_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->saveImage("D3_HiProtMask", "D3_HiProtMask.png");
+    ap->exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
     ap->saveImage("D4_HiProtExcl", "D4_HiProtExcl.png");
     ap->exportLayer("D4_HiProtExcl", "D4_HiProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("Lane D: D2_LoProt, D3_HiProt");
+
+    // now, the final step is to comput the D2_LoProt exclusion using a disk(ei) as structuring element
+    // the radius of the disk (ei) depends on the obstacle height
+    // all the obstacles below ground_threshold must be neglected (Mehul's implementation consider them as noise, but the threshold doesn't match the reported one) 
+    // typ threshold: 2cm
+    // the target set must contain points where h_ground < h_i < h_crit --> D2_LoProt_Heights
+    // M2_Protrusions contains those where (slope > slope_crit)
 
     return 0;
 }
