@@ -207,6 +207,7 @@ int main(int argc, char *argv[])
 
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
     threadLaneD.join();
+    pipeline.showImage("D2_LoProt");
     pipeline.showImage("D3_HiProt");
     
     // lad::processLaneD(&pipeline, &params);

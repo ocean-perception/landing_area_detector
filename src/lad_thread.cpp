@@ -19,10 +19,39 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
 
     cout << "Threshold:   " << th << endl;
     //first step is to create the HiProt map (h > hcrit)
-    ap->compareLayer("M2_Protrusions", "D3_HiProt", th, cv::CMP_GT);
+    ap->compareLayer("M2_Protrusions", "D2_LoProt_all", th, cv::CMP_LT);
+    auto apSrc  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("M2_Protrusions"));
+    // the LoProt must be masked against the valid protrusion mask: 
+    ap->maskLayer("D2_LoProt_all", "A2_HiSlopeExclusion", "D2_LoProt");
+        ap->removeLayer("D2_LoProt_all");
+
+    ap->compareLayer("M2_Protrusions", "D3_HiProt", th, cv::CMP_GE);
+    // now, we create the Exclusion map, for the current vehicle heading (stored in KernelAUV)
+    
+    auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProt"));
+    auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProt"));
+    auto auvKernel = dynamic_pointer_cast<KernelLayer> (ap->getLayer("KernelAUV"));
+    
+    cv::Mat excl(apHiProt->rasterData.size(), CV_8UC1); //same size and type as original mask
+    cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
+    ap->createLayer("D4_HiProtExcl", LAYER_RASTER);
+    auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl"));
+
+    excl.copyTo(apHiProtExcl->rasterData); // transfer the data, now the config & georef
+    apHiProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
+    apHiProtExcl->copyGeoProperties(apSrc);
+    apHiProt->copyGeoProperties(apSrc);
+    apLoProt->copyGeoProperties(apSrc);
+
+    ap->saveImage("D2_LoProt", "D2_LoProt.png");
+    ap->exportLayer("D2_LoProt", "D2_LoProt.tif", FMT_TIFF, WORLD_COORDINATE);
     ap->saveImage("D3_HiProt", "D3_HiProt.png");
     ap->exportLayer("D3_HiProt", "D3_HiProt.tif", FMT_TIFF, WORLD_COORDINATE);
-    tt.lap("Lane D: D3_HiProt");
+    ap->saveImage("D4_HiProtExcl", "D4_HiProtExcl.png");
+    ap->exportLayer("D4_HiProtExcl", "D4_HiProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    tt.lap("Lane D: D2_LoProt, D3_HiProt");
+
     return 0;
 }
 
