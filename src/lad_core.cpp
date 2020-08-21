@@ -1554,6 +1554,7 @@ namespace lad
     void tictac::lap(std::string str){
         stop();
         cout << str << endl;
+        last_lap = elapsed();
         show();
         start();
     }

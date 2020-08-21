@@ -127,6 +127,7 @@ namespace lad
         public:
             int64 start_time;
             int64 stop_time;
+            int64 last_lap;
             std::string message;
 
             /**
@@ -136,6 +137,7 @@ namespace lad
             tictac(){
                 start_time = 0;
                 stop_time = 0;
+                last_lap = 0;
             }
             
             /**

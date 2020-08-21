@@ -446,16 +446,14 @@ namespace lad
         GDALDataset *geotiffDataset;
         GDALDriver *driverGeotiff;
         GDALRasterBand *geotiffBand; // also declare pointers for Geotiff
-                               // and raster band object(s)
-        // int *dimensions = geotiff->GetDimensions();
 
-        int    nrows  = rasterData.rows; //layerDimensions[1]
-        int    ncols  = rasterData.cols; //layerDimensions[0]
+        int nrows  = rasterData.rows; //layerDimensions[1]
+        int ncols  = rasterData.cols; //layerDimensions[0]
 
         double noData = getNoDataValue();
         // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
         if (rasterData.depth() == CV_8U){ //if source range was 8-bit (0 to 255) use safe NoData value of -1.0
-            noData = -1.0;
+            noData = -1.0;  // WARNING: WE NEED TO UPDATE THE LAYER MASK ACCORDINGLY
         }
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");

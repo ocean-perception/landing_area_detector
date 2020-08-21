@@ -108,11 +108,11 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p){
     ap->exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
     // tt.lap("Lane C: C2_MeanSlopeMap");
 
-    ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExclusion", p->slopeThreshold, CMP_GT);
+    ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExcl", p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExclusion");
-    ap->saveImage("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.png");
-    ap->exportLayer("C3_MeanSlopeExclusion", "C3_MeanSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
-    tt.lap("\tLane C: C2_MeanSlope, C2_MeanSlopeMapExclusion");
+    ap->saveImage("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.png");
+    ap->exportLayer("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    tt.lap("\tLane C: C2_MeanSlope, C2_MeanSlopeMapExcl");
     return 0;
 }
 
@@ -142,10 +142,10 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p){
     ap->exportLayer("A1_DetailedSlope", "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
     // tt.lap("Lane A: A1_DetailedSlope");
 
-    ap->compareLayer("A1_DetailedSlope", "A2_HiSlopeExclusion", p->slopeThreshold, CMP_GT);
-    // ap->showImage("A2_HiSlopeExclusion",COLORMAP_JET);
-    ap->saveImage("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.png", COLORMAP_JET);
-    ap->exportLayer("A2_HiSlopeExclusion", "A2_HiSlopeExclusion.tif", FMT_TIFF, WORLD_COORDINATE);
-    tt.lap("\tLane A: A1_DetailedSlope, A2_HiSlopeExclusion");
+    ap->compareLayer("A1_DetailedSlope", "A2_HiSlopeExcl", p->slopeThreshold, CMP_GT);
+    // ap->showImage("A2_HiSlopeExcl",COLORMAP_JET);
+    ap->saveImage("A2_HiSlopeExcl", "A2_HiSlopeExcl.png", COLORMAP_JET);
+    ap->exportLayer("A2_HiSlopeExcl", "A2_HiSlopeExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    tt.lap("\tLane A: A1_DetailedSlope, A2_HiSlopeExcl");
     return 0;
 }

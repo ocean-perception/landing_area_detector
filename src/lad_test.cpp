@@ -24,14 +24,6 @@ using namespace std;
 using namespace cv;
 using namespace lad;
 
-// General structure index:
-//**** 1- Parse arguments from CLI
-//**** 2- Read input TIFF file
-//**** 3- Show image properties
-//**** 4- Generate binary version of the input image
-//**** 5- Determine the concave alphaShape
-//**** 6- Export binary image as geoTIFF and the alphaShape as ESRI Shapefile
-
 /*!
 	@fn		int main(int argc, char* argv[])
 	@brief	Main function
@@ -82,7 +74,6 @@ int main(int argc, char *argv[])
         std::cerr << "Use -h, --help command to see usage" << std::endl;
         return lad::ERROR_WRONG_ARGUMENT;
     }
-
     // Start parsing mandatory arguments
     if (!argInput)
     {
@@ -98,17 +89,11 @@ int main(int argc, char *argv[])
     else
         outputFileName = args::get(argOutput); //String containing the output file template from cvParser function
 
-    /*
-     * Now we proceed to optional parameters.
-     * When each variable is defined, we override the default value.
-     */
-    float alphaShapeRadius = 1.0;
-    if (argAlphaRadius)
-        cout << "Using user-defined [argAlphaRadius]: " << (alphaShapeRadius = args::get(argAlphaRadius)) << endl;
-    else
-        cout << "Using default value for [argAlphaRadius]: " << yellow << alphaShapeRadius << reset << endl;
-
+    // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     parameterStruct params;
+
+    float alphaShapeRadius = 1.0;
+    if (argAlphaRadius) alphaShapeRadius = args::get(argAlphaRadius);
 
     float fParam = 1.0;
     if (argFloatParam) fParam = args::get(argFloatParam);
@@ -116,23 +101,26 @@ int main(int argc, char *argv[])
     int  iParam = 1;
     if (argIntParam)   iParam = args::get(argIntParam);
 
-    params.rotation = 0; // default no rotation (heading north)
-    if (argRotation)    params.rotation = args::get(argRotation);
-    params.groundThreshold = 0.02; //DEFAULT;
-    if (argGroundThreshold)   params.groundThreshold = args::get(argGroundThreshold);
-    params.heightThreshold = 0.1; //DEFAULT;
-    if (argHeightThreshold)   params.heightThreshold = args::get(argHeightThreshold);
-    params.robotHeight = 0.8;
-    params.slopeThreshold = 17.7; //DEFAULT;
-    if (argSlopeThreshold)   params.slopeThreshold = args::get(argSlopeThreshold);
-    params.robotHeight = 0.8;
-    if (argRobotHeight) params.robotHeight = args::get(argRobotHeight);
-    params.robotLength = 1.4;
-    if (argRobotLength) params.robotLength = args::get(argRobotLength);
-    params.robotWidth = 0.5;
-    if (argRobotWidth)  params.robotWidth = args::get(argRobotWidth);
-    params.protrusionSize = 10.0;
-    if (argProtrusionSize)  params.protrusionSize = args::get(argProtrusionSize);
+    int nThreads = DEFAULT_NTHREADS;
+    if (argNThreads)    nThreads = args::get(argNThreads);
+    if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+
+    params.rotation         = 0; // default no rotation (heading north)
+    if (argRotation)        params.rotation         = args::get(argRotation);
+    params.groundThreshold  = 0.02; //DEFAULT;
+    if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
+    params.heightThreshold  = 0.1; //DEFAULT;
+    if (argHeightThreshold) params.heightThreshold  = args::get(argHeightThreshold);
+    params.slopeThreshold   = 17.7; //DEFAULT;
+    if (argSlopeThreshold)  params.slopeThreshold   = args::get(argSlopeThreshold);
+    params.robotHeight      = 0.8;     //DEFAULT
+    if (argRobotHeight)     params.robotHeight      = args::get(argRobotHeight);
+    params.robotLength      = 1.4;
+    if (argRobotLength)     params.robotLength      = args::get(argRobotLength);
+    params.robotWidth       = 0.5;
+    if (argRobotWidth)      params.robotWidth       = args::get(argRobotWidth);
+    params.protrusionSize   = 10.0;
+    if (argProtrusionSize)  params.protrusionSize   = args::get(argProtrusionSize);
 
     //**************************************************************************
     /* Summary list parameters */
@@ -152,9 +140,8 @@ int main(int argc, char *argv[])
         cout << "Verbose level:\t\t" << verboseLevel << endl;
         pipeline.verbosity = verboseLevel;
     }
-    cout << cyan << "Multithreaded version (3)" << reset << endl;
-    cout << yellow << "*************************************************" << reset << endl
-         << endl;
+    cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
+    cout << yellow << "*************************************************" << reset << endl << endl;
 
     tic.start();
     tt.start();
@@ -167,22 +154,16 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
 
-    pipeline.createKernelTemplate("KernelAUV", params.robotWidth, params.robotLength, cv::MORPH_RECT);
+    pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
-    pipeline.createKernelTemplate("KernelDiag", 1.0, 1.0, cv::MORPH_ELLIPSE);
+    pipeline.createKernelTemplate("KernelDiag",  1.0, 1.0, cv::MORPH_ELLIPSE);
 
-    auto apKernel = dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"));
-    if (apKernel == nullptr){
-        cout << red << "Error creating AUV footprint layer " << reset << endl;
-        return -1;
-    }
-    apKernel->setRotation(params.rotation);
+    dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
+
     pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
         pipeline.exportLayer("C1_ExclusionMap", "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("Load M1, C1");
-
-    int k = iParam;
 
     std::thread threadLaneC (&lad::processLaneC, &pipeline, &params);
     std::thread threadLaneB (&lad::processLaneB, &pipeline, &params);
@@ -194,16 +175,13 @@ int main(int argc, char *argv[])
 
     pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.showImage("A1_DetailedSlope");
-    // pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    // pipeline.showImage("C2_MeanSlopeMap");
 
-    pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExclusion", "M2_Protrusions");
+    pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
     pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("** Lanes A,B & C completed -> M2_Protrusion map done");
-
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
     threadLaneD.join();
