@@ -1256,6 +1256,15 @@ namespace lad
         return NO_ERROR;
     }
 
+    /**
+     * @brief Cimputes local height of the terrain by substracting a low-pass filtered version to the original bathymetry
+     * 
+     * @param src source bathymetry layer
+     * @param dst target height layer
+     * @param filterSize 2D sie of the filter for low-pass filter
+     * @param filterType type of the low-pass filter to be applied
+     * @return int Error code, if any.
+     */
     int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
         int retval = lowpassFilter(src, dst, filterSize, filterType);
         if (retval != NO_ERROR){
@@ -1298,9 +1307,15 @@ namespace lad
         return NO_ERROR;
     }
 
+    /**
+     * @brief Generate bathymetry map from a plane seed. The resulting flat map can be used for debugging purposes or for height/slope fitting 
+     * 
+     * @param dst Name of the layer to store the resulting synthetic planar terrain
+     * @param plane plane equation, CGAL format
+     * @param templ Name of the layer acting as template for the GeoProperties, extent, resolution.
+     * @return int 
+     */
     int Pipeline::generatePlaneMap (std::string dst, KPlane plane, std::string templ){
-        // we ignore filter type for the preliminary implementation. Future dev may include bilateral, box, user-defined, or raster defined kernel for filtering purposes
-        // first we check if the layer exist in the stack
         if (isAvailable(templ)){
             cout << red << "[generatePlaneMap] Error, template layer [" << templ << "] not found" << reset << endl;
             return LAYER_NOT_FOUND;

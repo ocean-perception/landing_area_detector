@@ -35,11 +35,12 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     cv::Mat D3_Excl = cv::Mat::zeros(apElev->rasterData.size(), CV_8UC1); // empty mask
     cv::Mat D3_layers[LO_NPART], temp;
     int diskSize[LO_NPART];
-    double sx = fabs(ap->geoTransform[1]);
+    double sx = fabs(ap->geoTransform[1]);  // we need the pixel scale to generate scale-aware structuring element
     double sy = fabs(ap->geoTransform[5]);
-    for (int i=0; i<LO_NPART; i++){// 5 partitions
-        double h = (p->heightThreshold - p->groundThreshold)*i/LO_NPART + p->groundThreshold;
-        double e = computeExclusionSize(h);
+    for (int i=0; i<LO_NPART; i++){// 5 partitions default, it can be any positive integer value (too fine, and it won't make any difference)
+        double h = (p->heightThreshold - p->groundThreshold)*(i+1)/LO_NPART + p->groundThreshold; // (i+1) for conservative approximation (obstacle height range rounded-up) 
+        // double h = (p->heightThreshold - p->groundThreshold)*(i)/LO_NPART + p->groundThreshold;
+        double e = computeExclusionSize(h); // fitted curve that estimate the disk size (radius) according to the obstacle height
         diskSize[i] = 2*round(e/sx);
         cv::compare(apElev->rasterData, h, D3_layers[i], CMP_GE);
     }
@@ -57,6 +58,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     ap->createLayer("D2_LoProtExcl", LAYER_RASTER);
     auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl"));
     D3_Excl.copyTo(apLoProtExcl->rasterData); // transfer the data, now the config & georef
+    // TODO: use Pipeline method uploadData
     apLoProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
     apLoProtExcl->copyGeoProperties(apSrc);
 
@@ -69,6 +71,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
     ap->createLayer("D4_HiProtExcl", LAYER_RASTER);
     auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl"));
+    // construction time upload method?
     excl.copyTo(apHiProtExcl->rasterData); // transfer the data, now the config & georef
     apHiProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
     apHiProtExcl->copyGeoProperties(apSrc);
@@ -110,7 +113,7 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p){
     // tt.lap("Lane C: C2_MeanSlopeMap");
 
     ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExcl", p->slopeThreshold, CMP_GT);
-    // ap->showImage("C3_MeanSlopeExclusion");
+    // ap->showImage("C3_MeanSlopeExcl");
     ap->saveImage("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.png");
     ap->exportLayer("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.tif", FMT_TIFF, WORLD_COORDINATE);
     tt.lap("\tLane C: C2_MeanSlope, C2_MeanSlopeMapExcl");

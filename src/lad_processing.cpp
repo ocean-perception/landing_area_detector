@@ -152,6 +152,11 @@ namespace lad
         return 0;
     }
 
+    /**
+     * @brief Print on screen the parameters stored in the structure p
+     * 
+     * @param p Structure containing the parameter values to be printed
+     */
     void printParams(parameterStruct_ *p){
         cout << "Parameters:" << endl;
         cout << "\talphaShapeRadius [m]:\t" << p->alphaShapeRadius << endl;

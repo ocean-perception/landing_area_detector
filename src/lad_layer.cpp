@@ -417,9 +417,6 @@ namespace lad
         // Created with the same size, and filled with the currently defined NODATA value
         cv::Mat tempData(rasterData.size(), CV_64FC1, noData);
 
-        // cout << layerName << " // Size: " << rasterMask.size() << endl;
-        // namedWindow("write_mask_" + layerName);
-        // imshow("write_mask_" + layerName, rasterMask);
         // before exporting, we need to verify if the data to be exported is already CV_64F
         if (rasterData.depth() != CV_64F){
             cv::Mat raster64;
