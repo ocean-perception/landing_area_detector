@@ -99,6 +99,7 @@ namespace lad
         int uploadData(int id, void *data);           // uploads data into a layer identified by its id
         int uploadData(std::string name, void *data); // uploads data into a layer identified by its name
 
+        int copyMask (std::string src, std::string dst); // propagates rasterMask from src to dst
         int maskLayer(std::string src, std::string mask, std::string dst, int useRotated = true); // apply mask to raster layer src and store it in dst layer
         int rotateLayer(std::string src, double angle); // rotate a kernel layer a given angle
         

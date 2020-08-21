@@ -980,6 +980,21 @@ namespace lad
     }
 
     /**
+     * @brief Copy the rasterMask from src to dst layers. The mask is assumed to be CV8UC1 where any non-NULL value is treated as true
+     * 
+     * @param src Name of the source layer. The rasterMask cv::Mat will be copied, not the actual rasterData matrix
+     * @param dst Name of the target layer (any type) where a copy of the rasterMask will be stored
+     * @return int Error code, if any.
+     */
+    int Pipeline::copyMask (std::string src, std::string dst){
+        auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+        // TODO catch if failed cast (worng layer type?)
+        apSrc->rasterMask.copyTo(apDst->rasterMask);
+        return NO_ERROR;
+    }
+
+    /**
      * @brief Apply a raster/kernel mask to a raster input layer and store the result in another layer.
      * 
      * @param src Name of an existing raster or kernel layer that will be used as the source

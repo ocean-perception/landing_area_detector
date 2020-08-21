@@ -75,26 +75,27 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     apHiProt->copyGeoProperties(apSrc);
     apLoProt->copyGeoProperties(apSrc);
 
+    ap->copyMask("C1_ExclusionMap", "D1_LoProtMask");
     ap->saveImage("D1_LoProtMask", "D1_LoProtMask.png");
     ap->exportLayer("D1_LoProtMask", "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    ap->copyMask("C1_ExclusionMap", "D2_LoProtExcl");
     ap->saveImage("D2_LoProtExcl", "D2_LoProtExcl.png");
     ap->exportLayer("D2_LoProtExcl", "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    ap->copyMask("C1_ExclusionMap", "D1_LoProtElev");
     ap->saveImage("D1_LoProtElev", "D1_LoProtElev.png");
     ap->exportLayer("D1_LoProtElev", "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    ap->copyMask("C1_ExclusionMap", "D3_HiProtMask");
     ap->saveImage("D3_HiProtMask", "D3_HiProtMask.png");
     ap->exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl");
     ap->saveImage("D4_HiProtExcl", "D4_HiProtExcl.png");
     ap->exportLayer("D4_HiProtExcl", "D4_HiProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("\tLane D: D1_LoProt, D3_HiProt, D3_HiProtExcl");
-
-    // now, the final step is to comput the D1_LoProt exclusion using a disk(ei) as structuring element
-    // the radius of the disk (ei) depends on the obstacle height
-    // all the obstacles below ground_threshold must be neglected (Mehul's implementation consider them as noise, but the threshold doesn't match the reported one) 
-    // typ threshold: 2cm
-    // the target set must contain points where h_ground < h_i < h_crit --> D1_LoProt_Heights
-    // M2_Protrusions contains those where (slope > slope_crit)
-
     return 0;
 }
 
