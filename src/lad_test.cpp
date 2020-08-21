@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
     pipeline.verbosity = verboseLevel;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
     pipeline.setTemplate("M1_RAW_Bathymetry");
+    // pipeline.showImage("M1_VALID_DataMask");
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", verboseLevel);
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
@@ -177,16 +178,17 @@ int main(int argc, char *argv[])
     pipeline.showImage("A1_DetailedSlope");
 
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
-    pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
+    // pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("** Lanes A,B & C completed -> M2_Protrusion map done");
+
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
     threadLaneD.join();
     pipeline.showImage("D2_LoProtExcl");
-    pipeline.showImage("D3_HiProtExcl");
+    pipeline.showImage("D4_HiProtExcl");
     
     tic.lap("***\tPipeline completed");
 

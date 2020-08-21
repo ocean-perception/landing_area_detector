@@ -329,13 +329,9 @@ namespace lad
             {
                 cout << "[v.writeLayer] Converting coordinate space of [" << exportName << "] to [";
                 if (outputCoordinate == PIXEL_COORDINATE)
-                {
                     cout << yellow << "PIXEL" << reset << "]" << endl;
-                }
                 else
-                {
                     cout << yellow << "WORLD" << reset << "]" << endl;
-                }
                 convertDataSpace(&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
             }
             //vectorData
@@ -416,19 +412,27 @@ namespace lad
             cout << red <<"[writeLayer] Empty output filename provided" << reset << endl;
             return ERROR_WRONG_ARGUMENT;
         }
-        
-        cv::Mat tempData;
+        double noData = getNoDataValue();
+        // temporary matrix that will hold the data to be exported
+        // Created with the same size, and filled with the currently defined NODATA value
+        cv::Mat tempData(rasterData.size(), CV_64FC1, noData);
+
+        // cout << layerName << " // Size: " << rasterMask.size() << endl;
+        // namedWindow("write_mask_" + layerName);
+        // imshow("write_mask_" + layerName, rasterMask);
         // before exporting, we need to verify if the data to be exported is already CV_64F
         if (rasterData.depth() != CV_64F){
-            rasterData.convertTo(tempData, CV_64F);
+            cv::Mat raster64;
+            rasterData.convertTo(raster64, CV_64F);
             cout << "[r.writeLayer] Converted [" << yellow << layerName << reset << "] to CV_64F" << endl; 
+            raster64.copyTo(tempData, rasterMask);
         }
         else{
-            rasterData.copyTo(tempData);
+            rasterData.copyTo(tempData, rasterMask);
         }
+
         // exporting as CSV in the pixel domain
         if (fileFmt == FMT_CSV){
-
             cout << "[r.writeLayer] exporting [" << yellow << layerName << reset << "] as CSV" << endl;
             std::ofstream ofs;
             ofs.open(outputFilename, std::ofstream::out); //overwrite if exist            
@@ -450,11 +454,7 @@ namespace lad
         int nrows  = rasterData.rows; //layerDimensions[1]
         int ncols  = rasterData.cols; //layerDimensions[0]
 
-        double noData = getNoDataValue();
         // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
-        if (rasterData.depth() == CV_8U){ //if source range was 8-bit (0 to 255) use safe NoData value of -1.0
-            noData = -1.0;  // WARNING: WE NEED TO UPDATE THE LAYER MASK ACCORDINGLY
-        }
  
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
         geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float64, NULL);

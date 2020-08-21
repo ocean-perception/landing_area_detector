@@ -72,7 +72,7 @@ namespace lad
         std::shared_ptr<Layer> getLayer(std::string name); // Return shared_ptr to a Layer identified by its name
 
         int createLayer(std::string name, int type);   // Create a new layer "name" of given type and insert it into the pipeline stack.
-        int InsertLayer(std::shared_ptr<Layer> layer); // Insert previously created layer into the pipeline stack
+        // int insertLayer(std::shared_ptr<Layer> layer); // Insert externally created layer into the pipeline stack
 
         int removeLayer(std::string name); // Remove layer by its name
         int removeLayer(int ID);           // Remove layer by its ID
@@ -83,14 +83,13 @@ namespace lad
 
         int isValidName(std::string name); // Verify if "name" is a valid layer name for the current pipeline stack
         int isValidID(int ID);             // Verify is ID is a valid layer ID for the current pipeline stack
-
         int isValid(int);         // Returs true if the provided ID is valid. It does not check whether it is available in the current stack
         int isValid(std::string); // Returs true if the provided NAME is valid. It does not check whether it is available in the current stack
 
+        int getValidID(); // Return a valid ID available for the current stack
+
         int isAvailable(int);         // Return true if the provided ID is not taken in the current stack. It's validity is assumed but not verified
         int isAvailable(std::string); // Return true if the provided NAME is not taken in the current stack. It's validity is assumed but not verified
-
-        int getValidID(); // Return a valid ID available for the current stack
 
         int showInfo(int level = 0);              // Show summary information of current pipeline object
         int showLayers(int type = LAYER_ANYTYPE); // Call showInformation() method for each layer

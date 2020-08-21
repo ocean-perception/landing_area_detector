@@ -136,6 +136,7 @@ int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p){
 int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p){
     lad::tictac tt;
     tt.start();
+
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     // ap->showImage("A1_DetailedSlope",COLORMAP_JET);
     ap->saveImage("A1_DetailedSlope", "A1_DetailedSlope.png", COLORMAP_JET);
@@ -144,8 +145,9 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p){
 
     ap->compareLayer("A1_DetailedSlope", "A2_HiSlopeExcl", p->slopeThreshold, CMP_GT);
     // ap->showImage("A2_HiSlopeExcl",COLORMAP_JET);
-    ap->saveImage("A2_HiSlopeExcl", "A2_HiSlopeExcl.png", COLORMAP_JET);
+    // ap->saveImage("A2_HiSlopeExcl", "A2_HiSlopeExcl.png", COLORMAP_JET);
     ap->exportLayer("A2_HiSlopeExcl", "A2_HiSlopeExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+
     tt.lap("\tLane A: A1_DetailedSlope, A2_HiSlopeExcl");
     return 0;
 }

@@ -794,7 +794,7 @@ namespace lad
         // cout << "Searching [" << dstLayer << "] +++++++++++++++++++++" << endl; 
         auto apOutput = mapLayers.find(dstLayer); // not found? let's create it
         if (apOutput == mapLayers.end()){
-            cout << green << "[computeExclusionMap] Output raster [" << dstLayer << "] not found in the stack. Creating" << reset << endl;
+            cout << "[computeExclusionMap] Output raster [" << yellow << dstLayer << reset << "] not found in the stack. Creating..."  << endl;
             createLayer(dstLayer, LAYER_RASTER);
             apOutput =  mapLayers.find(dstLayer);    //we get the pointer, it should appear now in the stack!
         }
@@ -814,7 +814,9 @@ namespace lad
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
         apLayerO->copyGeoProperties(apLayerR); //let's copy the geoproperties
         apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
-        apLayerO->rasterMask = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
+        apLayerR->rasterMask.copyTo(apLayerO->rasterMask);  //transfer mask
+
+        //  = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
         if (verbosity > 0){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
@@ -924,7 +926,7 @@ namespace lad
             // correct data range to improv
             cv::Mat dst = apLayer->rasterData.clone();
             if (useNodataMask){
-                apLayer->updateMask();
+                // apLayer->updateMask();
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
             }
             else{
@@ -953,8 +955,6 @@ namespace lad
 
         return NO_ERROR;
     }
-
-
 
     /**
      * @brief Use geoTIFF related structures from a reference raster layer as template for the whole stack
@@ -1053,9 +1053,12 @@ namespace lad
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
         apDst->copyGeoProperties(apSrc);
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         cv::compare(apSrc->rasterData, threshold, apDst->rasterData, cmp);  // create a no-data mask
+        // we need to propagate the NODATA mask from the source
+        apSrc->rasterMask.copyTo(apDst->rasterMask);
         return NO_ERROR;
     }
 
@@ -1379,6 +1382,7 @@ namespace lad
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
         apDst->copyGeoProperties(apSrc);
+        apSrc->rasterMask.copyTo(apDst->rasterMask);
         // second, we iterate over the source image
         int nRows = apSrc->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
         int nCols = apSrc->rasterData.cols;
@@ -1485,7 +1489,6 @@ namespace lad
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
-        apDst->updateMask();
 
         if (verbosity > VERBOSITY_1){
             cv::normalize(apDst->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
