@@ -861,7 +861,7 @@ namespace lad
             // correct data range to improv
             cv::Mat dst = apLayer->rasterData.clone();
             if (useNodataMask){
-                apLayer->updateMask();
+                // apLayer->updateMask();
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
             }
             else{
@@ -1545,6 +1545,52 @@ namespace lad
         }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
     }
+
+    /**
+     * @brief Generate final binary landability map by combining the three intermediate maps: M3 = SRC1 | SRC2 | SRC3
+     * 
+     * @param src1 Source layer, typ. C3_MeanSlope. This layer also provides the valid rasterMask that will be transferred to the destination layer
+     * @param src2 Source layer, typ. D2_LoProtExcl
+     * @param src3 Source layer, typ. D4_HiProtExcl
+     * @param dst  Name of the destination layer, typ. M3_FinalMap. The rasterMask is copied from the first source layer
+     * @return int Error code, if any
+     */
+    int Pipeline::computeFinalMap(std::string src1, std::string src2, std::string src3, std::string dst){
+        // verifying source layers exist
+        auto apSrc1 = dynamic_pointer_cast<RasterLayer> (getLayer(src1));
+        if (apSrc1 == nullptr){
+            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src1 << "]." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        auto apSrc2 = dynamic_pointer_cast<RasterLayer> (getLayer(src2));
+        if (apSrc2 == nullptr){
+            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src2 << "]." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        auto apSrc3 = dynamic_pointer_cast<RasterLayer> (getLayer(src3));
+        if (apSrc3 == nullptr){
+            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src3 << "]." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        // if destination layer doesn't exist, let's create it.
+        if (isAvailable(dst)){
+            cout << "[computeFinalMap] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
+            createLayer(dst, LAYER_RASTER);
+        }
+        auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
+
+        // logical OR for the three source layers (pixel wise). We assume the input raster data is CV_8UC1. 
+        // the destination mask will be retrieved from the first source layer
+        cv::Mat tmp;
+        cv::bitwise_or(apSrc1->rasterData, apSrc2->rasterData, tmp, apSrc1->rasterMask);
+        cv::bitwise_or(apSrc3->rasterData, tmp, apDst->rasterData, apSrc1->rasterMask);
+
+        apDst->setNoDataValue(apSrc1->getNoDataValue());
+        apDst->copyGeoProperties(apSrc1);
+        copyMask(src1, dst);
+        return NO_ERROR;
+    }
+
 
     /**
      * @brief Starts tictac counter

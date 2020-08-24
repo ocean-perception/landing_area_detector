@@ -416,7 +416,6 @@ namespace lad
         // temporary matrix that will hold the data to be exported
         // Created with the same size, and filled with the currently defined NODATA value
         cv::Mat tempData(rasterData.size(), CV_64FC1, noData);
-
         // before exporting, we need to verify if the data to be exported is already CV_64F
         if (rasterData.depth() != CV_64F){
             cv::Mat raster64;

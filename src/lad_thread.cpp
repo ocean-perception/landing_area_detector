@@ -131,6 +131,7 @@ int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p){
 
     ap->computeHeight("M1_RAW_Bathymetry", "B0_FILT_Bathymetry", "B1_HEIGHT_Bathymetry");
     // ap->showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+    ap->copyMask("M1_RAW_Bathymetry", "B1_HEIGHT_Bathymetry");
     ap->saveImage("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.png", COLORMAP_TWILIGHT_SHIFTED);
     ap->exportLayer("B1_HEIGHT_Bathymetry", "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
     tt.lap("\tLane B: BO_FILT_Bathymetry, B1_HEIGHT_Bathymetry");

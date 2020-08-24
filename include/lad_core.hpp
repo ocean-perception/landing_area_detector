@@ -116,6 +116,8 @@ namespace lad
         int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
         int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);
 
+        int computeFinalMap(std::string src1, std::string src2, std::string src3, std::string dst);
+
         int compareLayer(std::string src, std::string dst, double threshold, int cmpop); // apply scalar threshold to src raster and store resulting raster in dst layer
         int generatePlaneMap (std::string src, KPlane plane, std::string templ);
     };

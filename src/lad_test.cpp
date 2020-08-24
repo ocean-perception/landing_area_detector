@@ -192,6 +192,12 @@ int main(int argc, char *argv[])
     pipeline.showImage("D2_LoProtExcl");
     pipeline.showImage("D4_HiProtExcl");
     
+    // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
+    pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
+        pipeline.showImage("M3_FinalMap");
+        pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.exportLayer("M3_FinalMap", "M3_FinalMap.tif", FMT_TIFF, WORLD_COORDINATE);
+
     tic.lap("***\tPipeline completed");
 
     if (argVerbose)
