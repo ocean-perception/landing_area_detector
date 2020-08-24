@@ -18,6 +18,8 @@
 #include "lad_processing.hpp"
 #include "lad_thread.hpp"
 
+#include <yaml-cpp/yaml.h>
+
 #include <thread>
 
 using namespace std;
@@ -194,6 +196,7 @@ int main(int argc, char *argv[])
 
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
+
 
     waitKey(0);
     return lad::NO_ERROR;

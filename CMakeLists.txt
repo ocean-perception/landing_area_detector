@@ -109,8 +109,12 @@ add_executable(lad_test   src/lad_test.cpp
                           src/lad_thread.cpp
                           ${PROJECT_HEADERS})
 
+
+#find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
+#message (${yaml-cpp_INCLUDE_DIRS})
+
 target_compile_options(lad_test PUBLIC -std=c++11)
-target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY})
+target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 ############################ GDAL_WRITE_TEST ####################
 #add_executable (gdal_write  src/gdal_write_test.cpp
