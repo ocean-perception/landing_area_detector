@@ -16,6 +16,8 @@
 #ifndef _LAD_ENUM_HPP_
 #define _LAD_ENUM_HPP_
 
+#include "headers.h"
+
 namespace lad{
 
     const std::string DEFAULT_LAYER_NAME = "default_layer_name"; //!< Employed as fallback name during construction time of a new Layer

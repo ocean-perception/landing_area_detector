@@ -18,6 +18,7 @@
 #include "lad_layer.hpp"
 #include "lad_processing.hpp"
 #include "lad_enum.hpp"
+#include "lad_config.hpp"
 
 #include <regex>
 

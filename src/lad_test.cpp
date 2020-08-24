@@ -13,12 +13,11 @@
 #include "options.h"
 #include "geotiff.hpp" // Geotiff class definitions
 #include "lad_core.hpp"
+#include "lad_config.hpp"
 #include "lad_analysis.h"
 #include "lad_enum.hpp"
 #include "lad_processing.hpp"
 #include "lad_thread.hpp"
-
-#include <yaml-cpp/yaml.h>
 
 #include <thread>
 
@@ -32,81 +31,31 @@ using namespace lad;
 */
 int main(int argc, char *argv[])
 {
+    int retval = initParser(argc, argv);   // initial argument validation, populates arg parsing structure args
+    if (retval != 0)  // some error ocurred, we have been signaled to stop
+        return retval;
+    // Parameters hierarchy
+    // DEFAULTS < CONFIG_FILE < COMMAND_LINE
+    parameterStruct params; // structure to hold configuration parameters
+    if (argConfig)     // check if config file is provided
+        lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
 
-    //*********************************************************************************
-    /* PARSER section */
-    std::string descriptionString =
-        "lad_test - testing module part of [landing-area-detection] pipeline \
-    Compatible interface with geoTIFF bathymetry datasets via GDAL + OpenCV";
-
-    argParser.Description(descriptionString);
-    argParser.Epilog("Author: J. Cappelletto (GitHub: @cappelletto)\n");
-    argParser.Prog(argv[0]);
-    argParser.helpParams.width = 120;
-
-    cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
-    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
-    cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl
-         << endl;
-    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
-
-    try
-    {
-        argParser.ParseCLI(argc, argv);
-    }
-    catch (const args::Completion &e)
-    {
-        cout << e.what();
-        return 0;
-    }
-    catch (args::Help)
-    { // if argument asking for help, show this message
-        cout << argParser;
-        return lad::ERROR_MISSING_ARGUMENT;
-    }
-    catch (args::ParseError e)
-    { //if some error ocurr while parsing, show summary
-        std::cerr << e.what() << std::endl;
-        std::cerr << "Use -h, --help command to see usage" << std::endl;
-        return lad::ERROR_WRONG_ARGUMENT;
-    }
-    catch (args::ValidationError e)
-    { // if some error at argument validation, show
-        std::cerr << "Bad input commands" << std::endl;
-        std::cerr << "Use -h, --help command to see usage" << std::endl;
-        return lad::ERROR_WRONG_ARGUMENT;
-    }
-    // Start parsing mandatory arguments
-    if (!argInput)
-    {
-        cerr << "Mandatory <input> file name missing" << endl;
-        cerr << "Use -h, --help command to see usage" << endl;
-        return lad::ERROR_MISSING_ARGUMENT;
-    }
-
-    string inputFileName = args::get(argInput); //String containing the input file path+name from cvParser function
+    string inputFileName = args::get(argInput); //input file is mandatory positional argument (cannot be defined in configuration.yaml)
     string outputFileName = DEFAULT_OUTPUT_FILE;
-    if (!argOutput)
-        cout << "Using default output filename: " << yellow << outputFileName << reset << endl;
-    else
-        outputFileName = args::get(argOutput); //String containing the output file template from cvParser function
 
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
-    parameterStruct params;
-
-    float alphaShapeRadius = 1.0;
-    if (argAlphaRadius) alphaShapeRadius = args::get(argAlphaRadius);
-
     float fParam = 1.0;
-    if (argFloatParam) fParam = args::get(argFloatParam);
-
+        if (argFloatParam) fParam = args::get(argFloatParam);
     int  iParam = 1;
-    if (argIntParam)   iParam = args::get(argIntParam);
-
+        if (argIntParam)   iParam = args::get(argIntParam);
     int nThreads = DEFAULT_NTHREADS;
-    if (argNThreads)    nThreads = args::get(argNThreads);
-    if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+        if (argNThreads)    nThreads = args::get(argNThreads);
+        if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
 
+
+
+    params.alphaShapeRadius = 1.0;
+    if (argAlphaRadius) params.alphaShapeRadius = args::get(argAlphaRadius);
     params.rotation         = 0; // default no rotation (heading north)
     if (argRotation)        params.rotation         = args::get(argRotation);
     params.groundThreshold  = 0.02; //DEFAULT;

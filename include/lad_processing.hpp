@@ -1,5 +1,5 @@
 /**
- * @file lad_core.hpp
+ * @file lad_processing.hpp
  * @author Jose Cappelletto (j.cappelletto@soton.ac.uk)
  * @brief Core module of Landing Area Detection (lad) algorithm
  * @version 0.1
@@ -15,10 +15,12 @@
 
 #include "headers.h"
 #include "lad_enum.hpp"
+#include "lad_config.hpp"
 #include "lad_core.hpp"
 
 using namespace std; // STL
 using namespace cv;  // OpenCV
+using namespace lad;  // OpenCV
 
 /**
  * @brief Extend <lad> namespace with major processing tools for every type of layer 
@@ -26,19 +28,6 @@ using namespace cv;  // OpenCV
  */
 namespace lad
 { // landing area detection algorithm namespace
-    typedef struct parameterStruct_{
-        double robotHeight;
-        double robotWidth;
-        double robotLength;
-        double rotation;
-        double heightThreshold;
-        double slopeThreshold;
-        double groundThreshold;
-        double protrusionSize;
-
-        float alphaShapeRadius;
-    }parameterStruct;
-
     int processGeotiff(std::string dataName, std::string maskName, int showImage = false); // Process Geotiff object and generate correspondig data and mask raster layers
     int extractContours(std::string rasterName, std::string contourName, int showImage = false);
 
@@ -65,7 +54,6 @@ namespace lad
     // Already internally implemented with convertSpace + geoTransform matrix
     double computeExclusionSize(double x);
     // double computeHeightRange(double hi, double *lt, double *ut);
-    void printParams(parameterStruct *p);
 } // namespace lad
 
 #endif // _LAD_PROCESSING_HPP_

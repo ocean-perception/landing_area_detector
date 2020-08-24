@@ -107,6 +107,7 @@ add_executable(lad_test   src/lad_test.cpp
                           src/lad_layer.cpp
                           src/lad_processing.cpp
                           src/lad_thread.cpp
+                          src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
 

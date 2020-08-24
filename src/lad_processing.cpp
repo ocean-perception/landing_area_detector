@@ -88,7 +88,6 @@ namespace lad
         return plane;
     }
 
-
     /**
      * @brief Converts vector of 2D points from one coordinate space to another. The valid spaces are PIXEL and WORLD coordinates 
      * 
@@ -150,26 +149,6 @@ namespace lad
             break;
         }
         return 0;
-    }
-
-    /**
-     * @brief Print on screen the parameters stored in the structure p
-     * 
-     * @param p Structure containing the parameter values to be printed
-     */
-    void printParams(parameterStruct_ *p){
-        cout << "Parameters:" << endl;
-        cout << "\talphaShapeRadius [m]:\t" << p->alphaShapeRadius << endl;
-        cout << "\trobotHeight [m]:\t" << p->robotHeight << endl;
-        cout << "\trobotWidth [m]:\t" << p->robotWidth << endl;
-        cout << "\trobotLength [m]:\t" << p->robotLength << endl;
-        cout << "\trotation [deg]:\t" << p->rotation  << endl;
-
-        cout << "\theightThreshold [mm]:\t" << p->heightThreshold << endl;
-        cout << "\tslopeThreshold [deg]:\t" <<  p->slopeThreshold << endl;
-        cout << "\tgroundThreshold [mm]:\t" << p->groundThreshold << endl;
-        cout << "\tprotrusionSize [m]:\t" <<  p->protrusionSize << endl;
-
     }
 
     /**
