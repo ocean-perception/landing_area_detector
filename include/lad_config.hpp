@@ -20,24 +20,25 @@
 
 namespace lad
 { // landing area detection algorithm namespace
+    // structure that holds most of the relevant pipeline parameters
     typedef struct parameterStruct_{
-        double robotHeight;
-        double robotWidth;
-        double robotLength;
-        bool   fixRotation;
-        double rotation;
-        double rotationMin;
-        double rotationMax;
-        double rotationStep;
-        double heightThreshold;
-        double slopeThreshold;
-        double groundThreshold;
-        double protrusionSize;
-        float  alphaShapeRadius;
-        bool   maskBorder;
-        bool   useNoDataMask;
-        double defaultNoData;
-        int    verbosity;
+        double robotHeight;     // robot height [m]
+        double robotWidth;      // robot width [m] 
+        double robotLength;     // robot length [m]
+        bool   fixRotation;     // flag indication if we are going to use a single LAUV heading [true]. If [false], pipeline operates in range mode
+        double rotation;        // heading value [deg]
+        double rotationMin;     // min heading value [deg] when in range mode
+        double rotationMax;     // max heading value [deg] when in range mode
+        double rotationStep;    // heading ange steps [deg] when in range mode
+        double heightThreshold; // critical height [m] to separate Low Protrusions from High Protrusions 
+        double slopeThreshold;  // critical slope [deg]
+        double groundThreshold; // min. height [m] to consider a protrusion
+        double protrusionSize;  // min. planar size [m] to consider a protrusion
+        float  alphaShapeRadius;// radius [m] of alphaShape contour detection
+        bool   maskBorder;      // indicate to mask the border of the map
+        bool   useNoDataMask;   // indicate if we use rasterMask cv::Mat to mask the exported/visualized images (PNG) 
+        double defaultNoData;   // redefine value of NODATA field when exporting geoTIFF files
+        int    verbosity;       // define verbosity level [0,3]
     }parameterStruct;
 
     void printParams(lad::parameterStruct *p);

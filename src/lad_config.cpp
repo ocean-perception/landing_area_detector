@@ -47,18 +47,21 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\tverbosity:      \t" << p->verbosity << endl;
 }
 
+/**
+ * @brief Read pipeline configuration from user defined file
+ * 
+ * @param file Name of YAML file containing configuration parameters
+ * @param p pointer to structure to store the parameters retrieved from the configuration file
+ * @return YAML::Node copy of base YAML node containing all the parsed parameters 
+ */
 YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
     cout << "Processing user defined configuration: [" << cyan << file << reset << "]" << endl;
 
     YAML::Node config = YAML::LoadFile(file);
 
     int verb = 0;
-    // if (config["version"]) {
-    //     cout << "Version: " << config["version"].as<int>() << "\n";
-    // }
 
     if (config["general"]) {
-        // cout << "Version: " << config["version"].as<int>() << "\n";
         if (config["general"]["verbosity"])
             verb = config["general"]["verbosity"].as<int>();
     }
@@ -73,8 +76,6 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["vehicle"]["height"])
             p->robotHeight = config["vehicle"]["height"].as<double>();
     }
-        // double rotation;
-        // float alphaShapeRadius;
 
     if (config["threshold"]){
         if (verb > 0)
@@ -115,7 +116,6 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->rotationMax  = config["rotation"]["range_max"].as<double>();
         if (config["rotation"]["step"])
             p->rotationStep = config["rotation"]["step"].as<double>();
-
     }
     return config;
 }

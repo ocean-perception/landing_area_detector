@@ -72,7 +72,6 @@ int main(int argc, char *argv[])
     int nThreads = DEFAULT_NTHREADS;
         if (argNThreads)    nThreads = args::get(argNThreads);
         if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
-
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
     if (argRotation)        params.rotation         = args::get(argRotation);
@@ -102,15 +101,12 @@ int main(int argc, char *argv[])
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
 
-    return -1;
-
     tic.start();
     tt.start();
     
     pipeline.useNodataMask = params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
     pipeline.setTemplate("M1_RAW_Bathymetry");
-    // pipeline.showImage("M1_VALID_DataMask");
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
@@ -136,13 +132,12 @@ int main(int argc, char *argv[])
 
     pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.showImage("A1_DetailedSlope");
-
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
     // pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    tt.lap("** Lanes A,B & C completed -> M2_Protrusion map done");
+    tt.lap("** Lanes A,B & C completed -> M2_Protrusions map done");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
@@ -160,7 +155,6 @@ int main(int argc, char *argv[])
 
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
-
 
     waitKey(0);
     return lad::NO_ERROR;
