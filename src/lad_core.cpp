@@ -591,7 +591,6 @@ namespace lad
         int largest = 0;
         vector<vector<Point>> good_contours; // find contours of the DataMask layer
 
-        int k = 0;
         for (auto it : contours)
         {
             if (it.size() > largest)

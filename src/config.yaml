@@ -1,0 +1,40 @@
+#YAML 1.0
+
+version: 1
+
+general:
+  verbosity:  1      #verbosity level 0-3
+  showimages: true   # not implemented yet
+
+input:
+  filepath:   /home/cappelletto/Desktop/LAD_Test/
+  filename:   M1_RAW_Bathymetry.tif
+
+output:
+  filepath:   /home/cappelletto/Desktop/LAD_Test/
+  fileprefix: M3_FinalMap.tif
+
+#pipeline
+
+vehicle:        # Landing AUV parameters
+  length: 1.4   # length [m] of AUV footprint
+  width:  0.6   # width [m] of AUV footprint
+  height: 0.8   # height [m] of AUV
+
+rotation:       # LAUV heading angle [deg]
+  # fixed_rotation: 40.0   # if defined, the algorithm will only use one value for the LAUV heading (orientation)
+  range_min:     -90.0  # minimum heading value [deg] to be tested 
+  range_max:      90.0  # maximum heading value [deg] to be tested
+  step:           5.0   # angle step size [deg]
+
+threshold:          # Exclusion map calculation parameters
+  slope:  17.7      # Slope [deg] threshold. Anything above this is considered as a potential obstacle
+  ground: 0.01      # Minimum height [m] for an obstacle to be considered as such
+  height: 0.085     # Critical height [m] employed to classify a Protrusion as HiProt
+  protrusion: 0.04  # Minimum size [m] for a protrusion to be considered. This is used as size of structuring element during D2 maps MORPH_OPEN
+
+map:
+  maskborder:     false # General map parameters
+  alpharadius:    1.0   # radius for calculation of map alphaShape (boundary polygon) 
+  usenodatamask:  true  # indicates if rasterMask should be used when normalizaing images for exporting/visualization
+  # nodata:         -9999  # redefines default nodata value

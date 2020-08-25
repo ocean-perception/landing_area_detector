@@ -37,8 +37,29 @@ int main(int argc, char *argv[])
     // Parameters hierarchy
     // DEFAULTS < CONFIG_FILE < COMMAND_LINE
     parameterStruct params; // structure to hold configuration parameters
-    if (argConfig)     // check if config file is provided
-        lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
+    // populate with defaults. They will be updated if config file or command line arguments are provided
+    // Precedence ARGS > CONFIG > DEFAULT (this)
+    params.alphaShapeRadius = 1.0;
+    params.fixRotation      = true;
+    params.rotation         = 0.0;    // default no rotation (heading north)
+    params.rotationMin      = -90.0;
+    params.rotationMax      =  90.0;
+    params.rotationStep     =  5.0;
+    params.groundThreshold  = 0.02; //DEFAULT;
+    params.heightThreshold  = 0.10;  //DEFAULT;
+    params.slopeThreshold   = 17.7; //DEFAULT;
+    params.robotHeight      = 0.80;  //DEFAULT
+    params.robotLength      = 1.40;
+    params.robotWidth       = 0.50;
+    params.protrusionSize   = 0.04;
+    params.defaultNoData    = DEFAULT_NODATA_VALUE;
+    params.maskBorder       = false;;
+    params.useNoDataMask    = true;
+    params.verbosity        = 1;
+
+    YAML::Node config;
+    if (argConfig)     // check if config YAML file is provided
+        config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
 
     string inputFileName = args::get(argInput); //input file is mandatory positional argument (cannot be defined in configuration.yaml)
     string outputFileName = DEFAULT_OUTPUT_FILE;
@@ -52,25 +73,15 @@ int main(int argc, char *argv[])
         if (argNThreads)    nThreads = args::get(argNThreads);
         if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
 
-
-
-    params.alphaShapeRadius = 1.0;
-    if (argAlphaRadius) params.alphaShapeRadius = args::get(argAlphaRadius);
-    params.rotation         = 0; // default no rotation (heading north)
+    // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
+    if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
     if (argRotation)        params.rotation         = args::get(argRotation);
-    params.groundThreshold  = 0.02; //DEFAULT;
     if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
-    params.heightThreshold  = 0.1; //DEFAULT;
     if (argHeightThreshold) params.heightThreshold  = args::get(argHeightThreshold);
-    params.slopeThreshold   = 17.7; //DEFAULT;
     if (argSlopeThreshold)  params.slopeThreshold   = args::get(argSlopeThreshold);
-    params.robotHeight      = 0.8;     //DEFAULT
     if (argRobotHeight)     params.robotHeight      = args::get(argRobotHeight);
-    params.robotLength      = 1.4;
     if (argRobotLength)     params.robotLength      = args::get(argRobotLength);
-    params.robotWidth       = 0.5;
     if (argRobotWidth)      params.robotWidth       = args::get(argRobotWidth);
-    params.protrusionSize   = 10.0;
     if (argProtrusionSize)  params.protrusionSize   = args::get(argProtrusionSize);
 
     //**************************************************************************
@@ -83,26 +94,24 @@ int main(int argc, char *argv[])
     lad::printParams(&params);
 
     lad::tictac tt, tic;
-    int verboseLevel = 0;
     lad::Pipeline pipeline;
-    if (argVerbose)
-    {
-        verboseLevel = args::get(argVerbose);
-        cout << "Verbose level:\t\t" << verboseLevel << endl;
-        pipeline.verbosity = verboseLevel;
-    }
+    if   (argVerbose) pipeline.verbosity = args::get(argVerbose);
+        else          pipeline.verbosity = params.verbosity;
+    
+    cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
+
+    return -1;
 
     tic.start();
     tt.start();
     
-    pipeline.useNodataMask = true;
-    pipeline.verbosity = verboseLevel;
+    pipeline.useNodataMask = params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
     pipeline.setTemplate("M1_RAW_Bathymetry");
     // pipeline.showImage("M1_VALID_DataMask");
-    pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", verboseLevel);
+    pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
 
