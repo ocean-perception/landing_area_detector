@@ -61,8 +61,20 @@ int main(int argc, char *argv[])
     if (argConfig)     // check if config YAML file is provided
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
 
-    string inputFileName = args::get(argInput); //input file is mandatory positional argument (cannot be defined in configuration.yaml)
+    // Input file priority: must be defined either by the config.yaml or --input argument
+    string inputFileName;
     string outputFileName = DEFAULT_OUTPUT_FILE;
+
+    if (argInput) inputFileName = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+
+    if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
+        if (config["input"]["filename"])
+            inputFileName = config["input"]["filename"].as<std::string>();
+        else{ // ERROR! We do not have any definition of the input file
+            cout << red << "[main] Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)";
+            return -1;
+        }
+    }
 
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
@@ -94,12 +106,12 @@ int main(int argc, char *argv[])
 
     lad::tictac tt, tic;
     lad::Pipeline pipeline;
-    if   (argVerbose) pipeline.verbosity = args::get(argVerbose);
-        else          pipeline.verbosity = params.verbosity;
     
     cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
+
+    return 0;
 
     tic.start();
     tt.start();

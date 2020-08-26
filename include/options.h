@@ -19,7 +19,8 @@ args::ArgumentParser argParser("","");
 args::HelpFlag 	     argHelp(argParser, "help", "Display this help menu", {'h', "help"});
 args::CompletionFlag completion(argParser, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
-args::Positional<std::string> 	argInput(argParser,     "input",    "Input bathymetry map. TIFF file or XYZ point collection");
+args::ValueFlag <std::string> 	argInput(argParser, "input", "Input bathymetry map. TIFF file or XYZ point collection", {"input"});
+// args::Positional<std::string> 	argInput(argParser,     "input",    "Input bathymetry map. TIFF file or XYZ point collection");
 args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file",{'o',"output"});
 args::ValueFlag	<int> 	        argVerbose(argParser,   "verbose",  "Define verbosity level",                                                   {"verbose"});
 args::ValueFlag	<int> 	        argNThreads(argParser,  "number",   "Define max number of threads",  {"nthreads"});
@@ -83,12 +84,12 @@ int initParser(int argc, char *argv[]){
         return lad::ERROR_WRONG_ARGUMENT;
     }
     // Start parsing mandatory arguments
-    if (!argInput)
-    {
-        cerr << "Mandatory <input> file name missing" << endl;
-        cerr << "Use -h, --help command to see usage" << endl;
-        return lad::ERROR_MISSING_ARGUMENT;
-    }
+    // if (!argInput)
+    // {
+    //     cerr << "Mandatory <input> file name missing" << endl;
+    //     cerr << "Use -h, --help command to see usage" << endl;
+    //     return lad::ERROR_MISSING_ARGUMENT;
+    // }
     cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl
