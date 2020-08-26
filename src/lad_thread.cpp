@@ -40,17 +40,18 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     for (int i=0; i<LO_NPART; i++){// 5 partitions default, it can be any positive integer value (too fine, and it won't make any difference)
         double h = (p->heightThreshold - p->groundThreshold)*(i+1)/LO_NPART + p->groundThreshold; // (i+1) for conservative approximation (obstacle height range rounded-up) 
         // double h = (p->heightThreshold - p->groundThreshold)*(i)/LO_NPART + p->groundThreshold;
-        double e = computeExclusionSize(h); // fitted curve that estimate the disk size (radius) according to the obstacle height
-        diskSize[i] = 2*round(e/sx);
+        double e = computeExclusionSize(2*h); // fitted curve that estimate the disk size (radius) according to the obstacle height
+        diskSize[i] = 2*round(e/sx); // diameter instead of radius
         cv::compare(apElev->rasterData, h, D3_layers[i], CMP_GE);
     }
     // we filter (remove) small protrusion clusters
-    cv::Mat open_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(p->protrusionSize/sx, p->protrusionSize/sy));
+   // warning: filter size cannot be zero (ceiling to 1)
+   cv::Mat open_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(ceil(p->protrusionSize/sx), ceil(p->protrusionSize/sy)));
     for (int i=0; i<LO_NPART-1; i++){
         temp = D3_layers[i] - D3_layers[i+1];
-        cv::morphologyEx(temp, temp, MORPH_OPEN, open_disk);
-        cv::Mat dilate_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(diskSize[i], diskSize[i]));
-        cv::morphologyEx(temp, D3_layers[i], MORPH_DILATE, dilate_disk);
+        cv::morphologyEx(temp, temp, MORPH_OPEN, open_disk); //remove the small protrusions
+        cv::Mat dilate_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(diskSize[i], diskSize[i])); // disk e(h) 
+        cv::morphologyEx(temp, D3_layers[i], MORPH_DILATE, dilate_disk); //dilate e(h) disk
         // Final step: blend into the final exclusion map
         D3_Excl = D3_Excl | D3_layers[i];
     }

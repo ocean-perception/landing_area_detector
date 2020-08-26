@@ -35,35 +35,20 @@ int main(int argc, char *argv[])
     if (retval != 0)  // some error ocurred, we have been signaled to stop
         return retval;
     // Parameters hierarchy
-    // DEFAULTS < CONFIG_FILE < COMMAND_LINE
-    parameterStruct params; // structure to hold configuration parameters
-    // populate with defaults. They will be updated if config file or command line arguments are provided
-    // Precedence ARGS > CONFIG > DEFAULT (this)
-    params.alphaShapeRadius = 1.0;
-    params.fixRotation      = true;
-    params.rotation         = 0.0;    // default no rotation (heading north)
-    params.rotationMin      =-90.0;
-    params.rotationMax      = 90.0;
-    params.rotationStep     = 5.0;
-    params.groundThreshold  = 0.02; //DEFAULT;
-    params.heightThreshold  = 0.10;  //DEFAULT;
-    params.slopeThreshold   = 17.7; //DEFAULT;
-    params.robotHeight      = 0.8;  //DEFAULT
-    params.robotLength      = 1.4;
-    params.robotWidth       = 0.5;
-    params.protrusionSize   = 0.04;
-    params.defaultNoData    = DEFAULT_NODATA_VALUE;
-    params.maskBorder       = false;
-    params.useNoDataMask    = true;
-    params.verbosity        = 1;
+    // ARGS > CONFIG > DEFAULT (this)
+    parameterStruct params = getDefaultParams(); // structure to hold configuration (populated with defaults).
+    // They will be updated if config file or command line arguments are provided
 
     YAML::Node config;
     if (argConfig)     // check if config YAML file is provided
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
 
     // Input file priority: must be defined either by the config.yaml or --input argument
-    string inputFileName;
-    string outputFileName = DEFAULT_OUTPUT_FILE;
+    string inputFileName    = ""; // command arg or config defined
+    string inputFilePath    = ""; // can be retrieved from the fully qualified inputFileName 
+    string outputFilePrefix = ""; // none, output filenames will be the same as the standard
+    string outputFilePath   = ""; // same relative folder
+    // string outputFileName = DEFAULT_OUTPUT_FILE;
 
     if (argInput) inputFileName = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
@@ -98,10 +83,12 @@ int main(int argc, char *argv[])
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
-    cout << "Input file:\t\t" << inputFileName << endl;
-    cout << "Output file:\t\t" << outputFileName << endl;
-    cout << "fParam:\t" << fParam << endl;
-    cout << "iParam:\t" << iParam << endl;
+    cout << "Input file:   \t" << inputFileName << endl;
+    cout << "Input path:   \t" << inputFilePath << endl;
+    cout << "Output prefix:\t" << outputFilePrefix << endl;
+    cout << "Output path:  \t" << outputFilePath << endl;
+    cout << "fParam:       \t" << fParam << endl;
+    cout << "iParam:       \t" << iParam << endl;
     lad::printParams(&params);
 
     lad::tictac tt, tic;
@@ -111,7 +98,7 @@ int main(int argc, char *argv[])
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
 
-    return 0;
+    // return 0;
 
     tic.start();
     tt.start();
@@ -159,7 +146,7 @@ int main(int argc, char *argv[])
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
-        pipeline.showImage("M3_FinalMap");
+        // pipeline.showImage("M3_FinalMap");
         pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M3_FinalMap", "M3_FinalMap.tif", FMT_TIFF, WORLD_COORDINATE);
 

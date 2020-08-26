@@ -119,3 +119,25 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
     }
     return config;
 }
+
+lad::parameterStruct lad::getDefaultParams(){
+    lad::parameterStruct params;
+    params.alphaShapeRadius = 1.0;
+    params.fixRotation      = true;
+    params.rotation         = 0.0;    // default no rotation (heading north)
+    params.rotationMin      =-90.0;
+    params.rotationMax      = 90.0;
+    params.rotationStep     = 5.0;
+    params.groundThreshold  = 0.02; //DEFAULT;
+    params.heightThreshold  = 0.10;  //DEFAULT;
+    params.slopeThreshold   = 17.7; //DEFAULT;
+    params.robotHeight      = 0.8;  //DEFAULT
+    params.robotLength      = 1.4;
+    params.robotWidth       = 0.5;
+    params.protrusionSize   = 0.04;
+    params.defaultNoData    = DEFAULT_NODATA_VALUE;
+    params.maskBorder       = false;
+    params.useNoDataMask    = true;
+    params.verbosity        = 1;
+    return params;
+}

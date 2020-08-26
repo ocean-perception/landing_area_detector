@@ -45,6 +45,8 @@ namespace lad
 
     YAML::Node readConfiguration(std::string file, lad::parameterStruct *);
 
+    lad::parameterStruct getDefaultParams();
+
 }
 
 #endif 
