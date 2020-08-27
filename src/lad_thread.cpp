@@ -10,28 +10,30 @@
  */
 #include "lad_core.hpp"
 #include "lad_thread.hpp"
+#include "helper.h"
 
-int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
+int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
 
     lad::tictac tt;
     tt.start();
+
     auto apSrc  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("M2_Protrusions"));
     //first step is to create the LoProt map (h < hcrit)
-    ap->compareLayer("M2_Protrusions", "D3_HiProtMask", p->heightThreshold, cv::CMP_GE);
-    ap->compareLayer("M2_Protrusions", "D1_tempLO", p->heightThreshold, cv::CMP_LT);
+    ap->compareLayer("M2_Protrusions", "D3_HiProtMask" + suffix, p->heightThreshold, cv::CMP_GE);
+    ap->compareLayer("M2_Protrusions", "D1_tempLO" + suffix, p->heightThreshold, cv::CMP_LT);
     // the LoProt must be masked against the valid protrusion mask: 
     // create a mask to remove those below h_ground
-    ap->compareLayer("M2_Protrusions", "D1_tempGR", p->groundThreshold, CMP_GE);
+    ap->compareLayer("M2_Protrusions", "D1_tempGR" + suffix, p->groundThreshold, CMP_GE);
     // need a logical op: D1_tempLT AND D1_tempGT
-    ap->maskLayer("D1_tempLO", "D1_tempGR", "D1_LoProtMask");
-    ap->maskLayer("M2_Protrusions", "D1_LoProtMask", "D1_LoProtElev");
-    ap->removeLayer("D1_tempGR");
-    ap->removeLayer("D1_tempLO");
+    ap->maskLayer("D1_tempLO" + suffix, "D1_tempGR" + suffix, "D1_LoProtMask" + suffix);
+    ap->maskLayer("M2_Protrusions", "D1_LoProtMask" + suffix, "D1_LoProtElev" + suffix);
+    ap->removeLayer("D1_tempGR" + suffix);
+    ap->removeLayer("D1_tempLO" + suffix);
 
     // Final step, iterate through different LO obstacle heights and compute correpsonding exlusion area (disk) 
     // we need a vector containing the partitioned thresholds/disk size pairs.
     // Starting from ground_threshold (lowest) to height_threshold (highest) LoProt elevation value
-    auto apElev = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtElev"));
+    auto apElev = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtElev" + suffix));
     cv::Mat D3_Excl = cv::Mat::zeros(apElev->rasterData.size(), CV_8UC1); // empty mask
     cv::Mat D3_layers[LO_NPART], temp;
     int diskSize[LO_NPART];
@@ -56,22 +58,22 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
         D3_Excl = D3_Excl | D3_layers[i];
     }
 
-    ap->createLayer("D2_LoProtExcl", LAYER_RASTER);
-    auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl"));
+    ap->createLayer("D2_LoProtExcl" + suffix, LAYER_RASTER);
+    auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl" + suffix));
     D3_Excl.copyTo(apLoProtExcl->rasterData); // transfer the data, now the config & georef
     // TODO: use Pipeline method uploadData
     apLoProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
     apLoProtExcl->copyGeoProperties(apSrc);
 
     //*******************************
-    auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtMask"));
-    auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProtMask"));
-    auto auvKernel = dynamic_pointer_cast<KernelLayer> (ap->getLayer("KernelAUV"));
+    auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtMask" + suffix));
+    auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProtMask" + suffix));
+    auto auvKernel = dynamic_pointer_cast<KernelLayer> (ap->getLayer("KernelAUV" + suffix));
     // now, we create the Exclusion map, for the current vehicle heading (stored in KernelAUV)
     cv::Mat excl(apHiProt->rasterData.size(), CV_8UC1); //same size and type as original mask
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
-    ap->createLayer("D4_HiProtExcl", LAYER_RASTER);
-    auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl"));
+    ap->createLayer("D4_HiProtExcl" + suffix, LAYER_RASTER);
+    auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl" + suffix));
     // construction time upload method?
     excl.copyTo(apHiProtExcl->rasterData); // transfer the data, now the config & georef
     apHiProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -79,49 +81,51 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p){
     apHiProt->copyGeoProperties(apSrc);
     apLoProt->copyGeoProperties(apSrc);
 
-    ap->copyMask("C1_ExclusionMap", "D1_LoProtMask");
-    ap->saveImage("D1_LoProtMask", "D1_LoProtMask.png");
-    ap->exportLayer("D1_LoProtMask", "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->copyMask("C1_ExclusionMap", "D1_LoProtMask" + suffix);
+    ap->saveImage("D1_LoProtMask" + suffix, "D1_LoProtMask"  + suffix + ".png");
+    ap->exportLayer("D1_LoProtMask" + suffix, "D1_LoProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D2_LoProtExcl");
-    ap->saveImage("D2_LoProtExcl", "D2_LoProtExcl.png");
-    ap->exportLayer("D2_LoProtExcl", "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->copyMask("C1_ExclusionMap", "D2_LoProtExcl" + suffix);
+    ap->saveImage("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".png");
+    ap->exportLayer("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D1_LoProtElev");
-    ap->saveImage("D1_LoProtElev", "D1_LoProtElev.png");
-    ap->exportLayer("D1_LoProtElev", "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->copyMask("C1_ExclusionMap" + suffix, "D1_LoProtElev" + suffix);
+    ap->saveImage("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".png");
+    ap->exportLayer("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D3_HiProtMask");
-    ap->saveImage("D3_HiProtMask", "D3_HiProtMask.png");
-    ap->exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->copyMask("C1_ExclusionMap", "D3_HiProtMask" + suffix);
+    ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
+    ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl");
-    ap->saveImage("D4_HiProtExcl", "D4_HiProtExcl.png");
-    ap->exportLayer("D4_HiProtExcl", "D4_HiProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->copyMask("C1_ExclusionMap" + suffix, "D4_HiProtExcl" + suffix);
+    ap->saveImage("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".png");
+    ap->exportLayer("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
     tt.lap("\tLane D: D1_LoProt, D3_HiProt, D3_HiProtExcl");
     return 0;
 }
 
-int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p){
+int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
 
     lad::tictac tt;
     tt.start();
-    ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV", "M1_VALID_DataMask", "C2_MeanSlopeMap");
+    // we create an unique name using the rotation angle
+
+    ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
-    ap->saveImage("C2_MeanSlopeMap", "C2_MeanSlopeMap.png");
-    ap->exportLayer("C2_MeanSlopeMap", "C2_MeanSlopeMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
+    ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     // tt.lap("Lane C: C2_MeanSlopeMap");
 
-    ap->compareLayer("C2_MeanSlopeMap", "C3_MeanSlopeExcl", p->slopeThreshold, CMP_GT);
+    ap->compareLayer("C2_MeanSlopeMap" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
-    ap->saveImage("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.png");
-    ap->exportLayer("C3_MeanSlopeExcl", "C3_MeanSlopeExcl.tif", FMT_TIFF, WORLD_COORDINATE);
-    tt.lap("\tLane C: C2_MeanSlope, C2_MeanSlopeMapExcl");
+    ap->saveImage("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".png");
+    ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl");
     return 0;
 }
 
-int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p){
+int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
     lad::tictac tt;
     tt.start();
     ap->lowpassFilter ("M1_RAW_Bathymetry", "KernelDiag", "M1_VALID_DataMask", "B0_FILT_Bathymetry");
@@ -139,7 +143,7 @@ int lad::processLaneB(lad::Pipeline *ap, parameterStruct *p){
     return 0;
 }
 
-int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p){
+int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
     lad::tictac tt;
     tt.start();
 

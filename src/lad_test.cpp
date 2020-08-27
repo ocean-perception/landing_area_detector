@@ -9,6 +9,7 @@
  * 
  */
 #include "headers.h"
+#include "helper.h"
 
 #include "options.h"
 #include "geotiff.hpp" // Geotiff class definitions
@@ -38,7 +39,6 @@ int main(int argc, char *argv[])
     // ARGS > CONFIG > DEFAULT (this)
     parameterStruct params = getDefaultParams(); // structure to hold configuration (populated with defaults).
     // They will be updated if config file or command line arguments are provided
-
     YAML::Node config;
     if (argConfig)     // check if config YAML file is provided
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     string inputFilePath    = ""; // can be retrieved from the fully qualified inputFileName 
     string outputFilePrefix = ""; // none, output filenames will be the same as the standard
     string outputFilePath   = ""; // same relative folder
-    // string outputFileName = DEFAULT_OUTPUT_FILE;
 
     if (argInput) inputFileName = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
@@ -60,18 +59,16 @@ int main(int argc, char *argv[])
             return -1;
         }
     }
-
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
         if (argFloatParam) fParam = args::get(argFloatParam);
     int  iParam = 1;
         if (argIntParam)   iParam = args::get(argIntParam);
     int nThreads = DEFAULT_NTHREADS;
-        if (argNThreads)    nThreads = args::get(argNThreads);
-        if (nThreads < 3)   cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+        if (argNThreads)   nThreads = args::get(argNThreads);
+        if (nThreads < 3)  cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
-    if (argRotation)        params.rotation         = args::get(argRotation);
     if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
     if (argHeightThreshold) params.heightThreshold  = args::get(argHeightThreshold);
     if (argSlopeThreshold)  params.slopeThreshold   = args::get(argSlopeThreshold);
@@ -79,7 +76,10 @@ int main(int argc, char *argv[])
     if (argRobotLength)     params.robotLength      = args::get(argRobotLength);
     if (argRobotWidth)      params.robotWidth       = args::get(argRobotWidth);
     if (argProtrusionSize)  params.protrusionSize   = args::get(argProtrusionSize);
-
+    if (argRotation){
+                            params.rotation         = args::get(argRotation);
+                            params.fixRotation      = true;
+    }   
     //**************************************************************************
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
@@ -90,22 +90,19 @@ int main(int argc, char *argv[])
     cout << "fParam:       \t" << fParam << endl;
     cout << "iParam:       \t" << iParam << endl;
     lad::printParams(&params);
-
     lad::tictac tt, tic;
-    lad::Pipeline pipeline;
-    
+
+    lad::Pipeline pipeline;    
     cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
-
-    // return 0;
 
     tic.start();
     tt.start();
     
     pipeline.useNodataMask = params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
-    pipeline.setTemplate("M1_RAW_Bathymetry");
+    pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
         pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
@@ -113,7 +110,6 @@ int main(int argc, char *argv[])
     pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
     pipeline.createKernelTemplate("KernelDiag",  1.0, 1.0, cv::MORPH_ELLIPSE);
-
     dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
 
     pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
@@ -121,9 +117,9 @@ int main(int argc, char *argv[])
 
     tt.lap("Load M1, C1");
 
-    std::thread threadLaneC (&lad::processLaneC, &pipeline, &params);
-    std::thread threadLaneB (&lad::processLaneB, &pipeline, &params);
-    std::thread threadLaneA (&lad::processLaneA, &pipeline, &params);
+    std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
+    std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
+    std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, "");
 
     threadLaneA.join();
     threadLaneB.join();
@@ -139,7 +135,7 @@ int main(int argc, char *argv[])
     tt.lap("** Lanes A,B & C completed -> M2_Protrusions map done");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
-    std::thread threadLaneD (&lad::processLaneD, &pipeline, &params);
+    std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
     threadLaneD.join();
     pipeline.showImage("D2_LoProtExcl");
     pipeline.showImage("D4_HiProtExcl");
@@ -155,6 +151,24 @@ int main(int argc, char *argv[])
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
 
-    waitKey(0);
-    return lad::NO_ERROR;
+    if (params.fixRotation == true){
+        cout << endl << green << "Press any key to exit..." << endl;
+        waitKey(0);
+        return NO_ERROR;
+    }
+    // if fixRotation = false, we iterate from rotationMin to rotationMax
+    cout << cyan << "[main] Calculating landability maps for every rotation:" << reset << endl;
+    cout << "\tMin:   \t" << params.rotationMin << endl;
+    cout << "\tMax:   \t" << params.rotationMax << endl;
+    cout << "\tStep:  \t" << params.rotationStep << endl;
+    int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
+    cout << "\t#Steps:\t" << nIter << endl;
+
+    if (params.verbosity > 0){
+        string suffix = "_r" + makeFixedLength((int) params.rotation, 3);
+        pipeline.createKernelTemplate("KernelAUV" + suffix,   params.robotWidth, params.robotLength, cv::MORPH_RECT);
+        dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
+    } 
+
+    return NO_ERROR;
 }

@@ -14,6 +14,6 @@
 using namespace std;
 
 std::string type2str(int type);
-
+std::string makeFixedLength(const int i, const int length);
 
 #endif // _PROJECT_HELPER_H_

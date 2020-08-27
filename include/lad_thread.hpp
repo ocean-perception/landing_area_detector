@@ -29,7 +29,7 @@ namespace lad{
      * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneA(lad::Pipeline *ap, parameterStruct *param);
+    int processLaneA(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
     /**
      * @brief Computes the sequence of maps related to lane (B): Low pass terrain map, Terrain height map
@@ -38,7 +38,7 @@ namespace lad{
      * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneB(lad::Pipeline *ap, parameterStruct *param);
+    int processLaneB(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
     /**
      * @brief Computes the sequence of maps related to lane (C): Mean slope, with exclusion maps
@@ -47,7 +47,7 @@ namespace lad{
      * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneC(lad::Pipeline *ap, parameterStruct *param);
+    int processLaneC(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
     /**
      * @brief Computes the maps correspondnig to lane (D): Hi and Lo Protrusion maps
@@ -56,7 +56,7 @@ namespace lad{
      * @param param Pointer to structure containing all the parameters (interested in slope for this lane)
      * @return int error code, if any
      */
-    int processLaneD(lad::Pipeline *ap, parameterStruct *param);
+    int processLaneD(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
 }
 
