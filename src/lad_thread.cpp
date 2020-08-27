@@ -12,6 +12,39 @@
 #include "lad_thread.hpp"
 #include "helper.h"
 
+int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::string suffix){
+
+    parameterStruct params = *p;    // local copy, to avoid accident
+    lad::Pipeline pipeline = *ap;
+
+    int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
+    for (int r=0; r<=nRot; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
+        params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        pipeline.createKernelTemplate("KernelAUV" + suffix,   params.robotWidth, params.robotLength, cv::MORPH_RECT);
+        dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV" + suffix))->setRotation(params.rotation);
+        // compute the rotation dependent layers
+        // C3_MeanSlopeExcl
+        std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, suffix);
+        //D2_LoProtExcl & D4_HiProtExcl
+        std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, suffix);
+        threadLaneC.join();
+        threadLaneD.join();
+
+        // TODO: Add validation for copyemask when src is missing
+        cout << green << "[main] Recomputing lanes C & D done" << reset << endl;
+        // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
+        pipeline.computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
+            pipeline.copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
+            pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png", COLORMAP_TWILIGHT_SHIFTED);
+            pipeline.exportLayer("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    } 
+    return NO_ERROR;
+
+}
+
 int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
 
     lad::tictac tt;

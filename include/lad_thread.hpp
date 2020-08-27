@@ -17,6 +17,8 @@
 #include "lad_core.hpp"
 #include "lad_enum.hpp"
 
+#include <thread>
+
 using namespace std; // STL
 using namespace cv;  // OpenCV
 
@@ -57,6 +59,16 @@ namespace lad{
      * @return int error code, if any
      */
     int processLaneD(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
+
+    /**
+     * @brief 
+     * 
+     * @param ap Pointer to Pipeline object containing a valid stack for processing
+     * @param p Pointer to structure containing all the parameters (interested in slope for this lane)
+     * @param suffix String to append at the end of the layer names (deprecated)  
+     * @return int Error code, if any
+     */
+    int processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::string suffix);
 
 }
 

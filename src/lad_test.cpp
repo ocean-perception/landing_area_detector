@@ -20,8 +20,6 @@
 #include "lad_processing.hpp"
 #include "lad_thread.hpp"
 
-#include <thread>
-
 using namespace std;
 using namespace cv;
 using namespace lad;
@@ -168,36 +166,18 @@ int main(int argc, char *argv[])
     cout << "\t#Steps:\t" << nIter << endl;
 
     // let's define the set of rotation values to be tested 
-    int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
-    cout << "[main] Iterating for [" << yellow << (nRot + 1) << reset << "] orientation combinations" << endl;
     // TODO: STEP MUST BE POSITIVE
     // TODO: MIN MUST BE LOWER THAN MAX
     // TODO: nRot should result as a positive number
-    for (int r=0; r<=nRot; r++){
-        double currRotation = params.rotationMin + r*params.rotationStep;
-        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
-        params.rotation = currRotation;
-        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-        pipeline.createKernelTemplate("KernelAUV" + suffix,   params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV" + suffix))->setRotation(params.rotation);
+    int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
+    cout << "[main] Iterating for [" << yellow << (nRot + 1) << reset << "] orientation combinations" << endl;
 
-        // compute the rotation dependent layers
-        // C3_MeanSlopeExcl
-        std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, suffix);
-        threadLaneC.join();
-        //D2_LoProtExcl & D4_HiProtExcl
-        std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, suffix);
-        threadLaneD.join();
+    // split the workload in nThreads (nWorkers)
+    int nWorkers = nThreads;
+    vector <parameterStruct> workerParam(nWorkers);
 
-        // TODO: Add validation for copyemask when src is missing
-        cout << green << "[main] Recomputing lanes C & D done" << reset << endl;
-        // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
-        pipeline.computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
-            pipeline.copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
-            pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png", COLORMAP_TWILIGHT_SHIFTED);
-            pipeline.exportLayer("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
-    } 
-
+    lad::processRotationWorker (&pipeline, &params, "");
+    
     tt.lap("\t\t+++++++++++++++Complete pipeline +++++++++++++++");
     return NO_ERROR;
 }
