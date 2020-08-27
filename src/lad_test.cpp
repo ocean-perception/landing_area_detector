@@ -137,16 +137,19 @@ int main(int argc, char *argv[])
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
     threadLaneD.join();
-    pipeline.showImage("D2_LoProtExcl");
-    pipeline.showImage("D4_HiProtExcl");
+    if (params.verbosity> 0){
+        pipeline.showImage("D2_LoProtExcl");
+        pipeline.showImage("D4_HiProtExcl");
+    }
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
         // pipeline.showImage("M3_FinalMap");
+        pipeline.copyMask("C1_ExclusionMap","M3_FinalMap");
         pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M3_FinalMap", "M3_FinalMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    tic.lap("***\tPipeline completed");
+    tic.lap("***\tBase pipeline completed");
 
     if (argVerbose)
         pipeline.showInfo(); // show detailed information if asked for
@@ -164,11 +167,37 @@ int main(int argc, char *argv[])
     int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
     cout << "\t#Steps:\t" << nIter << endl;
 
-    if (params.verbosity > 0){
-        string suffix = "_r" + makeFixedLength((int) params.rotation, 3);
+    // let's define the set of rotation values to be tested 
+    int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
+    cout << "[main] Iterating for [" << yellow << (nRot + 1) << reset << "] orientation combinations" << endl;
+    // TODO: STEP MUST BE POSITIVE
+    // TODO: MIN MUST BE LOWER THAN MAX
+    // TODO: nRot should result as a positive number
+    for (int r=0; r<=nRot; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
+        params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         pipeline.createKernelTemplate("KernelAUV" + suffix,   params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
+        dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV" + suffix))->setRotation(params.rotation);
+
+        // compute the rotation dependent layers
+        // C3_MeanSlopeExcl
+        std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, suffix);
+        threadLaneC.join();
+        //D2_LoProtExcl & D4_HiProtExcl
+        std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, suffix);
+        threadLaneD.join();
+
+        // TODO: Add validation for copyemask when src is missing
+        cout << green << "[main] Recomputing lanes C & D done" << reset << endl;
+        // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
+        pipeline.computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
+            pipeline.copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
+            pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png", COLORMAP_TWILIGHT_SHIFTED);
+            pipeline.exportLayer("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     } 
 
+    tt.lap("\t\t+++++++++++++++Complete pipeline +++++++++++++++");
     return NO_ERROR;
 }

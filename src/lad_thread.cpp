@@ -89,7 +89,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     ap->saveImage("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".png");
     ap->exportLayer("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap" + suffix, "D1_LoProtElev" + suffix);
+    ap->copyMask("C1_ExclusionMap", "D1_LoProtElev" + suffix);
     ap->saveImage("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".png");
     ap->exportLayer("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
@@ -97,7 +97,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
     ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap" + suffix, "D4_HiProtExcl" + suffix);
+    ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl" + suffix);
     ap->saveImage("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".png");
     ap->exportLayer("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 

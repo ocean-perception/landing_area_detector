@@ -1177,11 +1177,6 @@ namespace lad
         }
         // cv::Mat mask;
         // cv::compare(apSrc->rasterData, apSrc->getNoDataValue(), mask, CMP_EQ);
-        if (verbosity > VERBOSITY_1){
-            // now we must clip-out those points that were labelled as NODATA in the source layer
-            // namedWindow(src + "_mask");
-            // imshow(src + "_mask", mask);
-        }
         // the mask contains true (255) for thos invalid points
         // roi_image = cv::Mat(apSrc->rasterData.size(), CV_64FC1);
         // roi_image.copyTo(apDst->rasterData, mask);
@@ -1588,8 +1583,6 @@ namespace lad
         apDst->setNoDataValue(apSrc1->getNoDataValue());
         apDst->copyGeoProperties(apSrc1);
         copyMask(src1, dst);
-        namedWindow("Final: " + dst);
-        imshow("Final: " + dst, apDst->rasterData);
         return NO_ERROR;
     }
 
