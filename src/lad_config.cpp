@@ -138,6 +138,6 @@ lad::parameterStruct lad::getDefaultParams(){
     params.defaultNoData    = DEFAULT_NODATA_VALUE;
     params.maskBorder       = false;
     params.useNoDataMask    = true;
-    params.verbosity        = 1;
+    params.verbosity        = 0;
     return params;
 }

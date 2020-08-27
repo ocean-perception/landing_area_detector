@@ -159,25 +159,44 @@ int main(int argc, char *argv[])
     }
     // if fixRotation = false, we iterate from rotationMin to rotationMax
     cout << cyan << "[main] Calculating landability maps for every rotation:" << reset << endl;
-    cout << "\tMin:   \t" << params.rotationMin << endl;
-    cout << "\tMax:   \t" << params.rotationMax << endl;
-    cout << "\tStep:  \t" << params.rotationStep << endl;
+    cout << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep << endl;
     int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
-    cout << "\t#Steps:\t" << nIter << endl;
 
     // let's define the set of rotation values to be tested 
     // TODO: STEP MUST BE POSITIVE
     // TODO: MIN MUST BE LOWER THAN MAX
     // TODO: nRot should result as a positive number
-    int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
-    cout << "[main] Iterating for [" << yellow << (nRot + 1) << reset << "] orientation combinations" << endl;
-
     // split the workload in nThreads (nWorkers)
-    int nWorkers = nThreads;
+    int    nWorkers = (nThreads > 3)? nThreads : 4;
     vector <parameterStruct> workerParam(nWorkers);
+    vector <thread>          workerThreads(nWorkers);
+    // define job for each worker
+    int nSteps = ceil((params.rotationMax - params.rotationMin) / params.rotationStep); // user defined range/step should match
+    int blockSize = nSteps / nWorkers;
+    int blockRemain = nSteps % nWorkers;
+    cout << "[main] Iterating for [" << yellow << (nSteps) << reset << "] orientation combinations" << endl;
+    cout << "[main] nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset << endl;
+    for (int w=0; w<nWorkers; w++){
+        double minR = params.rotationMin + w * blockSize * params.rotationStep;
+        double maxR = params.rotationMin + ((w+1) * blockSize - 1) * params.rotationStep;// - params.rotationStep;
+        if (w == nWorkers-1) maxR += params.rotationStep;
 
-    lad::processRotationWorker (&pipeline, &params, "");
-    
+        cout << "[main] Dispatching range: [" << minR << "," << maxR << "]" << endl; 
+        workerParam[w] = params;
+        workerParam[w].rotationMin = minR;
+        workerParam[w].rotationMax = maxR;
+
+        workerThreads[w] = std::thread (lad::processRotationWorker, &pipeline, &workerParam[w], "");
+        cout << cyan << "[main] Dispatched for execution" << reset << endl;
+    }
+
+    for (int w=0; w<nWorkers; w++){
+        cout << "[main] Waiting to finish worker ["<< cyan << w << reset << "]" << endl;
+        workerThreads[w].join();
+        cout << "[main] Worker ["<< cyan << w << reset << "] finished!" << endl;
+    }
+
+    cout << endl;    
     tt.lap("\t\t+++++++++++++++Complete pipeline +++++++++++++++");
     return NO_ERROR;
 }
