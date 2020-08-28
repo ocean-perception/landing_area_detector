@@ -114,21 +114,21 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     apHiProt->copyGeoProperties(apSrc);
     apLoProt->copyGeoProperties(apSrc);
 
-    ap->copyMask("C1_ExclusionMap", "D1_LoProtMask" + suffix);
-    ap->saveImage("D1_LoProtMask" + suffix, "D1_LoProtMask"  + suffix + ".png");
-    ap->exportLayer("D1_LoProtMask" + suffix, "D1_LoProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    // ap->copyMask("C1_ExclusionMap", "D1_LoProtMask");
+    // ap->saveImage("D1_LoProtMask" + suffix, "D1_LoProtMask"  + suffix + ".png");
+    // ap->exportLayer("D1_LoProtMask" + suffix, "D1_LoProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D2_LoProtExcl" + suffix);
-    ap->saveImage("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".png");
-    ap->exportLayer("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    // ap->copyMask("C1_ExclusionMap", "D2_LoProtExcl");
+    // ap->saveImage("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".png");
+    // ap->exportLayer("D2_LoProtExcl" + suffix, "D2_LoProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D1_LoProtElev" + suffix);
-    ap->saveImage("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".png");
-    ap->exportLayer("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    // ap->copyMask("C1_ExclusionMap", "D1_LoProtElev");
+    // ap->saveImage("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".png");
+    // ap->exportLayer("D1_LoProtElev" + suffix, "D1_LoProtElev" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
-    ap->copyMask("C1_ExclusionMap", "D3_HiProtMask" + suffix);
-    ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
-    ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    // ap->copyMask("C1_ExclusionMap", "D3_HiProtMask" + suffix);
+    // ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
+    // ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
     ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl" + suffix);
     ap->saveImage("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".png");

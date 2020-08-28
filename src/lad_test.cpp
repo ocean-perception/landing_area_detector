@@ -135,6 +135,23 @@ int main(int argc, char *argv[])
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
     threadLaneD.join();
+
+    pipeline.copyMask("C1_ExclusionMap", "D1_LoProtMask");
+    pipeline.saveImage("D1_LoProtMask", "D1_LoProtMask.png");
+    pipeline.exportLayer("D1_LoProtMask", "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    pipeline.copyMask("C1_ExclusionMap", "D2_LoProtExcl");
+    pipeline.saveImage("D2_LoProtExcl", "D2_LoProtExcl.png");
+    pipeline.exportLayer("D2_LoProtExcl", "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    pipeline.copyMask("C1_ExclusionMap", "D1_LoProtElev");
+    pipeline.saveImage("D1_LoProtElev", "D1_LoProtElev.png");
+    pipeline.exportLayer("D1_LoProtElev", "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
+
+    pipeline.copyMask("C1_ExclusionMap", "D3_HiProtMask");
+    pipeline.saveImage("D3_HiProtMask", "D3_HiProtMask.png");
+    pipeline.exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+
     if (params.verbosity> 0){
         pipeline.showImage("D2_LoProtExcl");
         pipeline.showImage("D4_HiProtExcl");
