@@ -452,8 +452,10 @@ namespace lad
 
         // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
  
+        char **optionsForTIFF = NULL;
+        optionsForTIFF = CSLSetNameValue(optionsForTIFF, "COMPRESS", "LZW");
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
-        geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float64, NULL);
+        geotiffDataset = driverGeotiff->Create(outputFilename.c_str(), ncols, nrows, 1, GDT_Float64, optionsForTIFF);
         geotiffDataset->SetGeoTransform(transformMatrix);
         // cout << "[r.writeLayer] Projection string:" << endl;
         // cout << layerProjection.c_str() << endl;
