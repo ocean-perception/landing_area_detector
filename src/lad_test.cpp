@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     tic.start();
     tt.start();
     
-    pipeline.useNodataMask = params.useNoDataMask;
+    pipeline.useNodataMask = true;//params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
     pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
     pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.showImage("A1_DetailedSlope");
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
-    // pipeline.showImage("M2_Protrusions", COLORMAP_TWILIGHT_SHIFTED);
+    pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
 
@@ -159,9 +159,9 @@ int main(int argc, char *argv[])
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
-        // pipeline.showImage("M3_FinalMap");
         pipeline.copyMask("C1_ExclusionMap","M3_FinalMap");
-        pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.showImage("M3_FinalMap");
+        pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png");
         pipeline.exportLayer("M3_FinalMap", "M3_FinalMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
     tic.lap("***\tBase pipeline completed");

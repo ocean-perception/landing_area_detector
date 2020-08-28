@@ -38,7 +38,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
         pipeline.computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
             pipeline.copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
-            pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png", COLORMAP_TWILIGHT_SHIFTED);
+            pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png");
             pipeline.exportLayer("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     } 
     return NO_ERROR;
