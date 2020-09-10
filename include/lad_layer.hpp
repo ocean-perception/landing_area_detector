@@ -133,6 +133,7 @@ namespace lad
             setType(LAYER_RASTER); 
         }
 
+        RasterLayer operator+(const RasterLayer& b);
         int loadData(cv::Mat *);
         int readTIFF(std::string name); // read and load raster data from a geoTIFF file
         int writeLayer(std::string outputFilename, int fileFormat, int outputCoordinate); // Overloaded method of exporting vectorData to user defined file

@@ -158,22 +158,21 @@ int main(int argc, char *argv[])
     }
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
-    pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
+    if (params.fixRotation == true){
+        pipeline.computeFinalMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_FinalMap");
         pipeline.copyMask("C1_ExclusionMap","M3_FinalMap");
         pipeline.showImage("M3_FinalMap");
         pipeline.saveImage("M3_FinalMap", "M3_FinalMap.png");
         pipeline.exportLayer("M3_FinalMap", "M3_FinalMap.tif", FMT_TIFF, WORLD_COORDINATE);
+        if (argVerbose)
+            pipeline.showInfo(); // show detailed information if asked for
 
-    tic.lap("***\tBase pipeline completed");
-
-    if (argVerbose)
-        pipeline.showInfo(); // show detailed information if asked for
-
-    if (params.fixRotation == true){
+        tic.lap("***\tBase pipeline completed");
         cout << endl << green << "Press any key to exit..." << endl;
         waitKey(0);
         return NO_ERROR;
     }
+
     // if fixRotation = false, we iterate from rotationMin to rotationMax
     cout << cyan << "[main] Calculating landability maps for every rotation:" << reset << endl;
     cout << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep << endl;
@@ -193,10 +192,12 @@ int main(int argc, char *argv[])
     int blockRemain = nSteps % nWorkers;
     cout << "[main] Iterating for [" << yellow << (nSteps) << reset << "] orientation combinations" << endl;
     cout << "[main] nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset << endl;
+    // cout << "[main] blockSize: " << yellow << blockSize << reset << endl;
+    // cout << "[main] blockRemain: " << yellow << blockRemain << reset << endl;
     for (int w=0; w<nWorkers; w++){
         double minR = params.rotationMin + w * blockSize * params.rotationStep;
         double maxR = params.rotationMin + ((w+1) * blockSize - 1) * params.rotationStep;// - params.rotationStep;
-        if (w == nWorkers-1) maxR += params.rotationStep;
+        if (w == nWorkers-1) maxR = params.rotationMax;
 
         cout << "[main] Dispatching range: [" << minR << "," << maxR << "]" << endl; 
         workerParam[w] = params;
@@ -204,16 +205,76 @@ int main(int argc, char *argv[])
         workerParam[w].rotationMax = maxR;
 
         workerThreads[w] = std::thread (lad::processRotationWorker, &pipeline, &workerParam[w], "");
-        cout << cyan << "[main] Dispatched for execution" << reset << endl;
+        // sleep(10);
+        cout << cyan << "[main] Dispatched for execution: [" << yellow << w << cyan << "]" << reset << endl;
     }
 
     for (int w=0; w<nWorkers; w++){
-        cout << "[main] Waiting to finish worker ["<< cyan << w << reset << "]" << endl;
+        cout << "[main] Waiting to finish worker ["<< green << w << reset << "]" << endl;
         workerThreads[w].join();
-        cout << "[main] Worker ["<< cyan << w << reset << "] finished!" << endl;
+        cout << "[main] Worker ["<< cyan << w << reset << "] finished!\t\t\t\t\t\t******" << endl;
     }
 
+    // now we need to merge all the intermediate rotated binary layers (M3) into a single M3_Final layer
+    // every landability rotation map is a binary map indicating "landable or no-landable"
+    // This can be used to describe the landing process as a Bernoulli one (binary distribution). However, as it is rotation dependent
+    // and our question is "can we land?" regardless the orientation (which is something that the LAUV can determine in -situ), we proceed
+    // to generate composite map as the sum/average of each map for every tested rotation.
+    // This produces the equivalent of a probability map, where 0 is NO_LANDABLE and 1 is FULLY_LANDABLE
+
+    // Step 1: Create base empty container that will hold the final value
+    // pipeline.showInfo();
+    cout << endl << red <<  "*************************************************" << reset << endl;
+
+    pipeline.createLayer("M3_Final_BLEND", LAYER_RASTER);
+    pipeline.copyMask("M1_RAW_Bathymetry", "M3_Final_BLEND");
+    auto apBase  = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M1_RAW_Bathymetry"));
+    auto apFinal = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M3_Final_BLEND"));
+
+    apFinal->copyGeoProperties(apBase);
+    apFinal->setNoDataValue(DEFAULT_NODATA_VALUE);
+
+    apFinal->rasterData = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
+    cv::Mat acum        = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
+
+    // pipeline.showInfo();
+    // Step 2: iterate through every  
+    // Layer name: "M3_FinalMap" + suffix
+    cout << "[main] Blending all rotation-depending maps (M3)..." << endl;
+
+    for (int r=0; r<=nIter; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]" << endl;
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        string currentname = "M3_FinalMap" + suffix;
+        // cout << "\tName: " << currentname << endl;
+        // let's retrieve the rasterData for the current orientation layer
+        auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
+        // let's convert to a CV64FC1 normalized matrix
+        cv::Mat currentmat;
+        apCurrent->rasterData.convertTo(currentmat, CV_64FC1,(double) 1.0/255.0);
+
+        acum = acum + currentmat; // sum to the acum
+    }
+
+    cout << "[main] Normalizing..." << endl;
+    // normalizing
+    acum = acum / (nIter+1);
+    cout << "[main] Exporting M3_Final_BLEND" << endl;
+    // transfer, via mask
+    acum.copyTo(apFinal->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
+
+    pipeline.saveImage("M3_Final_BLEND", "M3_Final_BLEND.png");
+    pipeline.exportLayer("M3_Final_BLEND", "M3_Final_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.showImage("M3_Final_BLEND");
     cout << endl;    
-    tt.lap("\t\t+++++++++++++++Complete pipeline +++++++++++++++");
+    tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
+
+    if (params.verbosity > 0)
+        pipeline.showInfo();
+
+    cout << "... press any key to exit" << endl;
+    waitKey(0);
     return NO_ERROR;
 }

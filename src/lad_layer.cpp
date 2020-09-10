@@ -640,5 +640,11 @@ namespace lad
         GDALClose(poDS);
         return NO_ERROR;
     }
-
+ 
+     RasterLayer RasterLayer::operator+(const RasterLayer& b){
+         RasterLayer r(this->layerName, this->getID());
+         r.rasterData = this->rasterData + b.rasterData;
+         return r;
+     }
+ 
 } // namespace lad
