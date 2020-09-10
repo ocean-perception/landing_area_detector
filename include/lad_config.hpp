@@ -25,6 +25,7 @@ namespace lad
         double robotHeight;     // robot height [m]
         double robotWidth;      // robot width [m] 
         double robotLength;     // robot length [m]
+        double robotDiagonal;   // locally computed robot diagonal dimension, used for lowPassFilter of the terrain
         bool   fixRotation;     // flag indication if we are going to use a single LAUV heading [true]. If [false], pipeline operates in range mode
         double rotation;        // heading value [deg]
         double rotationMin;     // min heading value [deg] when in range mode

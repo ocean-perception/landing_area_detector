@@ -23,6 +23,7 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\talphaRadius:    \t" << p->alphaShapeRadius << "\t[m]" << endl;
     cout << "\trobotLength:    \t" << p->robotLength << "\t[m]" << endl;
     cout << "\trobotWidth:     \t" << p->robotWidth << "\t[m]" << endl;
+    cout << "\trobotDiagonal:  \t" << p->robotDiagonal << "\t[m]" << endl;
     cout << "\trobotHeight:    \t" << p->robotHeight << "\t[m]"<< endl;
     if (p->fixRotation){
         cout << "\trotation:       \t" << p->rotation  << "\t[deg]" << yellow << " [fixed]" << reset << endl;

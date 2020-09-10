@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
     cout << "Output path:  \t" << outputFilePath << endl;
     cout << "fParam:       \t" << fParam << endl;
     cout << "iParam:       \t" << iParam << endl;
+    params.robotDiagonal = sqrt(params.robotWidth*params.robotWidth + params.robotLength*params.robotLength); 
     lad::printParams(&params);
     lad::tictac tt, tic;
 
@@ -107,7 +108,7 @@ int main(int argc, char *argv[])
 
     pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
-    pipeline.createKernelTemplate("KernelDiag",  1.0, 1.0, cv::MORPH_ELLIPSE);
+    pipeline.createKernelTemplate("KernelDiag",  params.robotDiagonal, params.robotDiagonal, cv::MORPH_ELLIPSE);
     dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
 
     pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
