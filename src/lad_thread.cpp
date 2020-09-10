@@ -38,8 +38,11 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
         pipeline.computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
             pipeline.copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
+        // here we should ask if we need to export every intermediate layer (rotated)
+        if (p->exportRotated){
             pipeline.saveImage("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".png");
             pipeline.exportLayer("M3_FinalMap" + suffix, "M3_FinalMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+        }
     } 
     return NO_ERROR;
 
@@ -131,9 +134,10 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
 
     ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl" + suffix);
-    ap->saveImage("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".png");
-    ap->exportLayer("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (p->exportRotated){
+        ap->saveImage("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".png");
+        ap->exportLayer("D4_HiProtExcl" + suffix, "D4_HiProtExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     tt.lap("\tLane D: D1_LoProt, D3_HiProt, D3_HiProtExcl");
     return 0;
 }
@@ -146,14 +150,18 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
 
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
-    ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
-    ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    if (p->exportRotated){
+        ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
+        ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     // tt.lap("Lane C: C2_MeanSlopeMap");
 
     ap->compareLayer("C2_MeanSlopeMap" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
-    ap->saveImage("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".png");
-    ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    if (p->exportRotated){
+        ap->saveImage("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".png");
+        ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl");
     return 0;
 }

@@ -19,7 +19,7 @@ using namespace lad;
  * @param p Structure containing the parameter values to be printed
  */
 void lad::printParams(parameterStruct_ *p){
-    cout << "Parameters:" << endl;
+    cout << "Algorithm parameters:" << endl;
     cout << "\talphaRadius:    \t" << p->alphaShapeRadius << "\t[m]" << endl;
     cout << "\trobotLength:    \t" << p->robotLength << "\t[m]" << endl;
     cout << "\trobotWidth:     \t" << p->robotWidth << "\t[m]" << endl;
@@ -40,11 +40,15 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\tgroundThreshold:\t" << p->groundThreshold  << "\t[m]" << endl;
     cout << "\tprotrusionSize: \t" <<  p->protrusionSize  << "\t[m]" << endl;
 
-    cout << endl;
+    cout << "Map options" << endl;
     cout << "\tdefaultNoData:  \t" << p->defaultNoData << endl;
     cout << "\tmaskBorder:     \t" << (p->maskBorder ? "true" : "false") << endl;
     cout << "\tuseNoDataMask:  \t" << (p->useNoDataMask ? "true" : "false") << endl;
     cout << "\tverbosity:      \t" << p->verbosity << endl;
+
+    cout << "Export options" << endl;
+    cout << "\texportIntermediate:\t" << (p->exportIntermediate ? "true" : "false") << endl;
+    cout << "\texportRotated:  \t" << (p->exportRotated ? "true" : "false") << endl;
 }
 
 /**
@@ -64,6 +68,11 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
     if (config["general"]) {
         if (config["general"]["verbosity"])
             verb = config["general"]["verbosity"].as<int>();
+        if (config["general"]["export"]["intermediate"])
+            p->exportIntermediate = config["general"]["export"]["intermediate"].as<bool>();
+        if (config["general"]["export"]["rotated"])
+            p->exportRotated      = config["general"]["export"]["rotated"].as<bool>();
+
     }
 
     if (config["vehicle"]){
@@ -139,5 +148,7 @@ lad::parameterStruct lad::getDefaultParams(){
     params.maskBorder       = false;
     params.useNoDataMask    = true;
     params.verbosity        = 0;
+    params.exportIntermediate = true;
+    params.exportRotated    = false;
     return params;
 }

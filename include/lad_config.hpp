@@ -39,6 +39,8 @@ namespace lad
         bool   useNoDataMask;   // indicate if we use rasterMask cv::Mat to mask the exported/visualized images (PNG) 
         double defaultNoData;   // redefine value of NODATA field when exporting geoTIFF files
         int    verbosity;       // define verbosity level [0,3]
+        bool   exportIntermediate; // indicate to export intermediate layers of the pipeline, useful for detailed analysis. Default: true
+        bool   exportRotated;   // indicate to export every rotation independent intermediate and final layer. Warning: can take up a lot of disk space. Default: false
     }parameterStruct;
 
     void printParams(lad::parameterStruct *p);
