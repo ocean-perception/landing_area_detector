@@ -32,6 +32,7 @@ threshold:          # Exclusion map calculation parameters
   ground: 0.01      # Minimum height [m] for an obstacle to be considered as such
   height: 0.085     # Critical height [m] employed to classify a Protrusion as HiProt
   protrusion: 0.04  # Minimum size [m] for a protrusion to be considered. This is used as size of structuring element during D2 maps MORPH_OPEN
+  geosensor: 0.2    # Geotech distance threshold to consider a point as 'measurable'
 
 map:
   maskborder:     false # General map parameters

@@ -42,6 +42,8 @@ namespace lad
         int    verbosity;       // define verbosity level [0,3]
         bool   exportIntermediate; // indicate to export intermediate layers of the pipeline, useful for detailed analysis. Default: true
         bool   exportRotated;   // indicate to export every rotation independent intermediate and final layer. Warning: can take up a lot of disk space. Default: false
+
+        double geotecThreshold; // distance threshold to consider a terrain point as measurable
     }parameterStruct;
 
     void printParams(lad::parameterStruct *p);

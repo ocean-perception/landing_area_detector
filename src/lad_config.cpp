@@ -97,7 +97,9 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["threshold"]["ground"])
             p->groundThreshold = config["threshold"]["ground"].as<double>();
         if (config["threshold"]["protrusion"])
-            p->protrusionSize = config["threshold"]["protrusion"].as<double>();
+            p->protrusionSize  = config["threshold"]["protrusion"].as<double>();
+        if (config["threshold"]["geosensor"])
+            p->geotecThreshold = config["threshold"]["geosensor"].as<double>();
     }
     if (config["map"]){
         if (verb > 0)
@@ -151,5 +153,7 @@ lad::parameterStruct lad::getDefaultParams(){
     params.verbosity        = 0;
     params.exportIntermediate = true;
     params.exportRotated    = false;
+
+    params.geotecThreshold  = 0.2;  // distance range for geotech sensor
     return params;
 }
