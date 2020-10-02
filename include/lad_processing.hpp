@@ -41,7 +41,10 @@ namespace lad
 
     double computePlaneSlope(KPlane plane, KVector reference = KVector(0,0,-1));
 
+    std::vector<double> computePlaneDistance(KPlane plane, std::vector<KPoint> points);
+
     KPlane computeFittingPlane (std::vector<KPoint> points);
+
 
     std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
 

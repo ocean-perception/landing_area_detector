@@ -1482,8 +1482,8 @@ namespace lad
 
                     // cout << subImage << endl << endl << endl;
                     // cout << "roi/img/mask: " << roi_patch.size() << " " << subImage.size() << " " << subMask.size() << endl;
-                   temp = subImage.mul(temp)/255;  //64FC1
-                   temp = subMask.mul(temp); //64FC1
+                    temp = subImage.mul(temp)/255;  //64FC1
+                    temp = subMask.mul(temp); //64FC1
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
@@ -1503,6 +1503,16 @@ namespace lad
                             // }
                             // if (acum < 0) acum = 0;
                             apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
+                        }
+                        else if (filtertype == FILTER_DISTANCE){
+                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds
+                            std::vector<double> distances = computePlaneDistance(plane, pointList);
+                            double count = 0;
+                            for (auto it:distances){
+                                if (fabs(it) < 0.15) count++;
+                            }
+                            // computes the proportion of points within the range
+                            apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                         }
                     }
                     else{ // we do not have enough points to compute a valid plane
@@ -1541,6 +1551,21 @@ namespace lad
             cout << "[computeMeanSlopeMap] Calling applyWindowFilter" << endl;
         }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
+    }
+
+    /**
+     * @brief Compute the measurability map using least-square fitting plane for every point of raster Layer. It uses kernel Layer as a local mask to clip the 3D point cloud used for plan estimation
+     * 
+     * @param raster Bathymetry Layer interpreted as a 2.5D map, where depth is defined for every pixel as Z = f(X,Y). Correspond to the union of both (V)alid and (N)on valid pixels from the RAW bathymetry map
+     * @param kernel Binary mask Layer that is used to determine the subset S of points to be used for plane calculation. Such plane is used for local slope calculation
+     * @param dst Resulting raster Layer containing the slope field computed for every point defined in the raster Layer
+     * @return int Error code, if any
+     */
+    int Pipeline::computeMeasurabilityMap(std::string raster, std::string kernel, std::string mask, std::string dst){
+        if (verbosity > VERBOSITY_0){
+            cout << "[computeMeasurabilityMap] Calling applyWindowFilter" << endl;
+        }
+        return applyWindowFilter(raster, kernel, mask, dst, FILTER_DISTANCE);
     }
 
     /**

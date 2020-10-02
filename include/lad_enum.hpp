@@ -135,6 +135,7 @@ namespace lad{
     enum FilterType{
         FILTER_MEAN  = 0, //!< Computes the mean value of the masked points in the sliding window
         FILTER_SLOPE = 1, //!< Computes the slope of the plane that fits the points in the sliding window
+        FILTER_DISTANCE = 2, //!< Computes the normal distance between a point cloud and its fitting plane
     };
 };
 

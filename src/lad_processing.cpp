@@ -73,6 +73,19 @@ namespace lad
         // return acos(p/(normal*normal));
     }
 
+    std::vector<double> computePlaneDistance(KPlane plane, std::vector<KPoint> points){
+        double a = plane.a();   //for faster access, less overhead calling the methods
+        double b = plane.b();
+        double c = plane.c();
+        double d = plane.d();
+        std::vector<double> distances;
+        for (auto p:points){
+            double val = a*p.x() + b*p.y() + c*p.z() + d;
+            distances.push_back(val);
+        }
+        return distances;
+    }
+
     /**
      * @brief 
      * 

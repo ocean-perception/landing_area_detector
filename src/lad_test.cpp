@@ -259,6 +259,8 @@ int main(int argc, char *argv[])
         acum = acum + currentmat; // sum to the acum
     }
 
+    cout << "[main] Blending all rotation-depending M-maps (X1)..." << endl;
+
     cout << "[main] Normalizing..." << endl;
     // normalizing
     acum = acum / (nIter+1);
@@ -270,6 +272,25 @@ int main(int argc, char *argv[])
     pipeline.exportLayer("M3_Final_BLEND", "M3_Final_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
     pipeline.showImage("M3_Final_BLEND");
     cout << endl;    
+
+    acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
+    for (int r=0; r<=nIter; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]" << endl;
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        string currentname = "X1_MeasurabilityMap" + suffix;
+        // cout << "\tName: " << currentname << endl;
+        // let's retrieve the rasterData for the current orientation layer
+        auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
+        // let's convert to a CV64FC1 normalized matrix
+        cv::Mat currentmat;
+        apCurrent->rasterData.convertTo(currentmat, CV_64FC1);
+
+        acum = acum + currentmat; // sum to the acum
+    }
+
+
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
 
     if (params.verbosity > 0)
