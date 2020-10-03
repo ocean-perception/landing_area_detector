@@ -1513,7 +1513,7 @@ namespace lad
                             std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double count = 0;
                             for (auto it:distances){
-                                if (fabs(it) < 0.05) count++;
+                                if (fabs(it) < 0.05) count++;   //TODO : globally defned threshold? arg pass? filter param structure?
                                 // count += fabs(it);
                             }
                             // computes the proportion of points within the range
@@ -1643,9 +1643,7 @@ namespace lad
         // the destination mask will be retrieved from the first source layer
         cv::Mat tmp;
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
-        cout << "src1:" << apSrc1->rasterData.size() << endl;
-        cout << "src2:" << apSrc2->rasterData.size() << endl;
-        cout << "temp:" << tmp.size() << endl;
+
         
         cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 

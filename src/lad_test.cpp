@@ -234,13 +234,13 @@ int main(int argc, char *argv[])
     // pipeline.showInfo();
     cout << endl << red <<  "*************************************************" << reset << endl;
 
-    pipeline.createLayer("M3_Final_BLEND", LAYER_RASTER);
-    pipeline.copyMask("M1_RAW_Bathymetry", "M3_Final_BLEND");
-    pipeline.createLayer("X1_Measure_BLEND", LAYER_RASTER);
-    pipeline.copyMask("M1_RAW_Bathymetry", "X1_Measure_BLEND");
+    pipeline.createLayer("M3_LandabilityMap_BLEND", LAYER_RASTER);
+    pipeline.copyMask("M1_RAW_Bathymetry", "M3_LandabilityMap_BLEND");
+    pipeline.createLayer("M4_FinalMeasurability", LAYER_RASTER);
+    pipeline.copyMask("M1_RAW_Bathymetry", "M4_FinalMeasurability");
     auto apBase    = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M1_RAW_Bathymetry"));
-    auto apFinal   = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M3_Final_BLEND"));
-    auto apMeasure = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("X1_Measure_BLEND"));
+    auto apFinal   = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M3_LandabilityMap_BLEND"));
+    auto apMeasure = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M4_FinalMeasurability"));
 
     apFinal->copyGeoProperties(apBase);
     apFinal->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -274,14 +274,15 @@ int main(int argc, char *argv[])
     cout << "[main] Normalizing..." << endl;
     // normalizing
     acum = acum / (nIter+1);
-    cout << "[main] Exporting M3_Final_BLEND" << endl;
+    cout << "[main] Exporting M3_LandabilityMap_BLEND" << endl;
     // transfer, via mask
     acum.copyTo(apFinal->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
-    pipeline.saveImage("M3_Final_BLEND", "M3_Final_BLEND.png");
-    pipeline.exportLayer("M3_Final_BLEND", "M3_Final_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
-    pipeline.showImage("M3_Final_BLEND");
+    pipeline.saveImage("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.png");
+    pipeline.exportLayer("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.showImage("M3_LandabilityMap_BLEND");
     cout << endl;    
+
 //*******************************************************//
     acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
     for (int r=0; r<=nIter; r++){
@@ -289,7 +290,7 @@ int main(int argc, char *argv[])
         cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]" << endl;
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-        string currentname = "X1_MeasurabilityMap" + suffix;
+        string currentname = "M4_FinalMeasurability" + suffix;
         // cout << "\tName: " << currentname << endl;
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
@@ -299,17 +300,17 @@ int main(int argc, char *argv[])
 
         acum = acum + currentmat; // sum to the acum
     }
-    cout << "[main] Blending all rotation-depending M-maps (X1)..." << endl;
+    cout << "[main] Blending all rotation-depending MAD-maps (M4)..." << endl;
     cout << "[main] Normalizing..." << endl;
     // normalizing
     acum = acum / (nIter+1);
-    cout << "[main] Exporting X1_MeasurabilityMap" << endl;
+    cout << "[main] Exporting M4_FinalMeasurability" << endl;
     // transfer, via mask
-    acum.copyTo(apFinal->rasterData, apMeasure->rasterMask); // dst.rasterData use non-null values as binary mask ones
+    acum.copyTo(apMeasure->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
-    pipeline.saveImage("X1_MeasurabilityMap", "X1_MeasurabilityMap.png");
-    pipeline.exportLayer("X1_MeasurabilityMap", "X1_MeasurabilityMap.tif", FMT_TIFF, WORLD_COORDINATE);
-    pipeline.showImage("X1_MeasurabilityMap");
+    pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
+    pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.showImage("M4_FinalMeasurability");
     cout << endl;    
 
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
