@@ -54,6 +54,7 @@ const std::string highlight("\033[30;43m");
 
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/linear_least_squares_fitting_3.h>
+#include <CGAL/Polyhedron_3.h>
 
 typedef CGAL::Simple_cartesian<double>  K;          // redefinition to avoid name clashing with OpenCV
 typedef K::Vector_3                     KVector;

@@ -1506,10 +1506,15 @@ namespace lad
                         }
                         else if (filtertype == FILTER_DISTANCE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
+
+                            // Polyhedron_3 poly;
+                            // CGAL::convex_hull_3(pointList.begin(), pointList.end(), poly);
+
                             std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double count = 0;
                             for (auto it:distances){
-                                if (fabs(it) < 0.15) count++;
+                                if (fabs(it) < 0.05) count++;
+                                // count += fabs(it);
                             }
                             // computes the proportion of points within the range
                             apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
@@ -1577,26 +1582,26 @@ namespace lad
      * @param dst  Name of the destination layer, typ. M3_FinalMap. The rasterMask is copied from the first source layer
      * @return int Error code, if any
      */
-    int Pipeline::computeFinalMap(std::string src1, std::string src2, std::string src3, std::string dst){
+    int Pipeline::computeLandabilityMap(std::string src1, std::string src2, std::string src3, std::string dst){
         // verifying source layers exist
         auto apSrc1 = dynamic_pointer_cast<RasterLayer> (getLayer(src1));
         if (apSrc1 == nullptr){
-            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src1 << "]." << endl;
+            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src1 << "]." << endl;
             return LAYER_NOT_FOUND;
         }
         auto apSrc2 = dynamic_pointer_cast<RasterLayer> (getLayer(src2));
         if (apSrc2 == nullptr){
-            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src2 << "]." << endl;
+            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src2 << "]." << endl;
             return LAYER_NOT_FOUND;
         }
         auto apSrc3 = dynamic_pointer_cast<RasterLayer> (getLayer(src3));
         if (apSrc3 == nullptr){
-            cout << red << "[computeFinalMap] Error retrieving pointer to source layer [" << src3 << "]." << endl;
+            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src3 << "]." << endl;
             return LAYER_NOT_FOUND;
         }
         // if destination layer doesn't exist, let's create it.
         if (isAvailable(dst)){
-            cout << "[computeFinalMap] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
+            cout << "[computeLandability] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
@@ -1606,6 +1611,43 @@ namespace lad
         cv::Mat tmp;
         cv::bitwise_or(apSrc1->rasterData, apSrc2->rasterData, tmp, apSrc1->rasterMask);
         cv::bitwise_or(apSrc3->rasterData, tmp, apDst->rasterData, apSrc1->rasterMask);
+        cv::bitwise_not(apDst->rasterData, apDst->rasterData, apSrc1->rasterMask);
+        //now we invert: 0 - NON LANDABLE, 1 - LANDABLE, so we can use to mask/multiply the measurability map
+
+        apDst->setNoDataValue(apSrc1->getNoDataValue());
+        apDst->copyGeoProperties(apSrc1);
+        copyMask(src1, dst);
+        return NO_ERROR;
+    }
+
+    int Pipeline::computeBlendMeasurability(std::string src1, std::string src2, std::string dst){
+        // verifying source layers exist
+        auto apSrc1 = dynamic_pointer_cast<RasterLayer> (getLayer(src1));
+        if (apSrc1 == nullptr){
+            cout << red << "[computeBlendMeasurability] Error retrieving pointer to source layer [" << src1 << "]." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        auto apSrc2 = dynamic_pointer_cast<RasterLayer> (getLayer(src2));
+        if (apSrc2 == nullptr){
+            cout << red << "[computeBlendMeasurability] Error retrieving pointer to source layer [" << src2 << "]." << endl;
+            return LAYER_NOT_FOUND;
+        }
+        // if destination layer doesn't exist, let's create it.
+        if (isAvailable(dst)){
+            cout << "[computeBlendMeasurability] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
+            createLayer(dst, LAYER_RASTER);
+        }
+        auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
+
+        // pixelwise arithmetic multiplication
+        // the destination mask will be retrieved from the first source layer
+        cv::Mat tmp;
+        apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
+        cout << "src1:" << apSrc1->rasterData.size() << endl;
+        cout << "src2:" << apSrc2->rasterData.size() << endl;
+        cout << "temp:" << tmp.size() << endl;
+        
+        cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 
         apDst->setNoDataValue(apSrc1->getNoDataValue());
         apDst->copyGeoProperties(apSrc1);

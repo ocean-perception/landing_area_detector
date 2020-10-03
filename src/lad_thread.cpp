@@ -37,8 +37,11 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // TODO: Add validation for copyemask when src is missing
         cout << green << "[main] Recomputing lanes C & D done" << reset << endl;
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
-        ap->computeFinalMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
-            ap->copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
+        ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_FinalMap" + suffix);
+        ap->copyMask("C1_ExclusionMap","M3_FinalMap" + suffix);
+
+        // ap->blendMeasurabilityMap ("M3_FinalMap" + suffix, "X1_MeasurabilityMap" + suffix, "X2_BlendedMap" + suffix);
+
         // cout << "\t\t\t\t\t\t{thread} worker::computeFinalMap done for:" << "M3_FinalMap" + suffix << endl;
         // here we should ask if we need to export every intermediate layer (rotated)
         if (p->exportRotated){
