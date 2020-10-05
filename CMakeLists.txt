@@ -100,7 +100,25 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a si
 #target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
 
 ############################ LAD_TEST ####################
-add_executable(lad_test   src/lad_test.cpp
+# add_executable(lad_test   src/lad_test.cpp
+#                           src/lad_analysis.cpp
+#                           ${GEOTIFF_MODULE}/src/geotiff.cpp
+#                           src/lad_core.cpp
+#                           src/lad_layer.cpp
+#                           src/lad_processing.cpp
+#                           src/lad_thread.cpp
+#                           src/lad_config.cpp
+#                           ${PROJECT_HEADERS})
+
+
+# #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
+# #message (${yaml-cpp_INCLUDE_DIRS})
+
+# target_compile_options(lad_test PUBLIC -std=c++11)
+# target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+
+############################ MAD_TEST ####################
+add_executable(mad_test   src/mad_test.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
                           src/lad_core.cpp
@@ -114,8 +132,8 @@ add_executable(lad_test   src/lad_test.cpp
 #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(lad_test PUBLIC -std=c++11)
-target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_compile_options(mad_test PUBLIC -std=c++11)
+target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 ############################ GDAL_WRITE_TEST ####################
 #add_executable (gdal_write  src/gdal_write_test.cpp
@@ -127,4 +145,5 @@ target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 # Define install target for main testing module
 # install (TARGETS lad_test gdal_write DESTINATION $ENV{HOME}/bin)
-install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)
+# install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)
+install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
