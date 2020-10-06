@@ -55,6 +55,8 @@ message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 # include helper file
 include( ${CGAL_USE_FILE} )
 
+find_package(PCL REQUIRED COMPONENTS common io)
+
 # Boost and its components
 find_package( Boost REQUIRED )
 
@@ -73,7 +75,8 @@ include_directories(BEFORE ../include
                     include
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIR}
-                    ${GEOTIFF_MODULE}/include)
+                    ${GEOTIFF_MODULE}/include
+                    ${PCL_INCLUDE_DIRS})
 
 # Retrieve git commit information, forward it to compilation time
 exec_program(
@@ -82,14 +85,6 @@ exec_program(
     ARGS "describe --abbrev=4 --dirty --always --tags"
     OUTPUT_VARIABLE GIT_INFO )
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
-
-############################ GDAL_TEST ####################
-#add_executable (lad_gdal  src/gdal_test.cpp
-#                          ${GEOTIFF_MODULE}/src/geotiff.cpp
-#                          ${PROJECT_HEADERS})
-
-#target_compile_options(lad_gdal PUBLIC -std=c++11)
-#target_link_libraries(lad_gdal ${OpenCV_LIBS} ${GDAL_LIBRARY})
 
 ############################ LAD_TEST ####################
 #add_executable(cgal_test  src/cgal_test.cpp
@@ -133,12 +128,14 @@ add_executable(mad_test   src/mad_test.cpp
 #message (${yaml-cpp_INCLUDE_DIRS})
 
 target_compile_options(mad_test PUBLIC -std=c++11)
-target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PCL_LIBRARIES} yaml-cpp)
 
 ############################ GDAL_WRITE_TEST ####################
 #add_executable (gdal_write  src/gdal_write_test.cpp
 #                          ${PROJECT_HEADERS})
-
+# add_definitions($PCL_DEFINITIONS)
+add_executable(pcd_write_test src/write_pcd.cpp)
+target_link_libraries(pcd_write_test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 #target_compile_options(gdal_write PUBLIC -std=c++11)
 #target_link_libraries(gdal_write ${GDAL_LIBRARY})
 
