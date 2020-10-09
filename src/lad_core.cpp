@@ -1452,6 +1452,7 @@ namespace lad
         //     int row = (int)(ofs/roi_image.step[0]);   // y/row as floor of integer division
         //     int col = (int)((ofs - y*roi_image.step[0])/esz); // the x/col should be integer remain
         // }
+        double acumA = 0, acumB = 0, acumC = 0; 
 
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
@@ -1470,6 +1471,9 @@ namespace lad
                     int yi = hKernel/2 - (row - rt);
                     int xf = cr - col + wKernel/2;
                     int yf = rb - row + hKernel/2;
+            
+                    lad::tictac timer;
+                    timer.start();
 
                     cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1
                     //subImage contains the raw data patch
@@ -1477,7 +1481,7 @@ namespace lad
                     // roi_patch contains a binary mask of valid data
                     cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1
                     // apKernel contains and additional mask
-                    subMask.convertTo(subMask, CV_64FC1); //64FC1
+                    // subMask.convertTo(subMask, CV_64FC1); //64FC1
                     roi_patch.convertTo(temp, CV_64FC1); //64FC1
 
                     // cout << subImage << endl << endl << endl;
@@ -1487,15 +1491,22 @@ namespace lad
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
+                    timer.lap("----block A: mask/patch");
+                    acumA += timer.last_lap;
                     double acum = 0;
                     std::vector<KPoint> pointList;
                     pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+                    timer.lap("----block B: convert2Vector");
+                    acumB += timer.last_lap;
 
                     if (pointList.size() > 3){
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
+                            timer.lap("----block C: FILTER_SLOPE");
+                            acumC += timer.last_lap;
+
                         }
                         else if (filtertype == FILTER_MEAN){
                             // for (auto it:pointList){
@@ -1503,6 +1514,9 @@ namespace lad
                             // }
                             // if (acum < 0) acum = 0;
                             apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
+                            timer.lap("----block C: FILTER_MEAN");
+                            acumC += timer.last_lap;
+                        
                         }
                         else if (filtertype == FILTER_DISTANCE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
@@ -1518,16 +1532,30 @@ namespace lad
                             }
                             // computes the proportion of points within the range
                             apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                            timer.lap("----block C: FILTER_MAD");
+                            acumC += timer.last_lap;
+
                         }
                     }
                     else{ // we do not have enough points to compute a valid plane
                         apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                        timer.lap("----block C: Empty points");
+                        acumC += timer.last_lap;
+
                     }//*/
+                    // timer.lap("----block C: fit plane");
+                    timer.stop();
+
                 }
                 else
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
+        // timer.lap("----block A: mask/patch + ALL");
+
+        cout << "Block A - mask:\t" << acumA << endl;
+        cout << "Block B - convert:\t" << acumB << endl;
+        cout << "Block C - fit:\t" << acumC << endl;
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -1675,8 +1703,8 @@ namespace lad
      * 
      * @return int64 Elapsed time in ms
      */
-    int64 tictac::elapsed(){
-        return 1000 * ((double) stop_time - start_time) / getTickFrequency();
+    double tictac::elapsed(){
+        return 1000 * ((int64) stop_time - start_time) / getTickFrequency();
     }
 
     /**
@@ -1694,9 +1722,9 @@ namespace lad
      */
     void tictac::lap(std::string str){
         stop();
-        cout << str << endl;
+        // cout << str << ":\t";
         last_lap = elapsed();
-        show();
+        // show();
         start();
     }
 
