@@ -49,10 +49,14 @@ namespace lad
 
     std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum);
     std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
-
+    std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum);
     // Own implementation for scale independant landability analysis
 
     // Own implementation of rotation invariant landability detector
+
+    float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy);
+    //    float fitPlaneToSetOfPoints(const std::vector<cv::Point3f> &pts, cv::Point3f &p0, cv::Vec3f &nml);
+
 
     // Pixel to World coordinates transformation
     // World to Pixel coordinates transformation

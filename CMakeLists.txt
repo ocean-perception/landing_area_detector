@@ -11,7 +11,7 @@ endif ()
 
 # Define project name
 project(lad_project)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
 find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
 message(STATUS "GDAL library status:")
@@ -127,7 +127,7 @@ add_executable(mad_test   src/mad_test.cpp
 #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(mad_test PUBLIC -std=c++11)
+target_compile_options(mad_test PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PCL_LIBRARIES} yaml-cpp)
 
 ############################ GDAL_WRITE_TEST ####################

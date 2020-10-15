@@ -12,13 +12,67 @@
 #include "lad_processing.hpp"
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
+
 #include <CGAL/Kernel/global_functions.h>
+#include <opencv2/core/eigen.hpp>
 /**
  * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by Pipeline objects 
  * Valid data is assumed to be present in the layer containers involved
  */
 namespace lad
 {
+
+    float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy) {
+        const int SCALAR_TYPE = CV_64F;
+        typedef float ScalarType;
+
+        // Calculate centroid
+        p0 = cv::Point3f(0,0,0);
+        int nPix = 0;
+
+        // Calculate centroid
+        for(int r = 0; r < pts.rows; r++) {
+            // We obtain a pointer to the beginning of row r
+            const double* ptr = pts.ptr<double>(r);
+            //compute centroid
+            for(int c = 0; c < pts.cols; c++) {
+                if (ptr[c] !=0){
+                    p0 = p0 + cv::Point3f(c*sx, r*sy, ptr[c]);
+                    ++nPix; //increase the numebr of valid pixels
+                }
+            }
+        }
+        p0 *= 1.0/nPix;
+
+        // return -2;
+        // Compose data matrix subtracting the centroid from each point
+        cv::Mat Q(nPix, 3, SCALAR_TYPE);
+
+        // Calculate centroid
+        int i=0;
+        for(int r = 0; r < pts.rows; r++) {
+            // We obtain a pointer to the beginning of row r
+            const double* ptr = pts.ptr<double>(r);
+            //compute centroid
+            for(int c = 0; c < pts.cols; c++) {
+                if (ptr[c] !=0){
+                    Q.at<ScalarType>(i,0) = c*sx   - p0.x;
+                    Q.at<ScalarType>(i,1) = r*sy   - p0.y;
+                    Q.at<ScalarType>(i,2) = ptr[c] - p0.z;
+                    i++;
+                }
+            }
+        }
+        // return -1;
+        // Compute SVD decomposition and the Total Least Squares solution, which is the eigenvector corresponding to the least eigenvalue
+        // cout << "computing eigen" << endl;
+        cv::SVD svd(Q, cv::SVD::MODIFY_A|cv::SVD::FULL_UV);
+        nml = svd.vt.row(2);
+        // cout << "done eigen" << endl;
+
+        return 0;
+    }
+
     /**
      * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
      * 
@@ -42,6 +96,31 @@ namespace lad
                 // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
                     output.push_back(KPoint(px,py,pz));
+                    *acum = *acum + pz;
+                }
+            }
+        }
+        return output;
+    }
+
+//    std::vector<Eigen::Vector3f> points;
+//    best_plane_from_points(points);
+
+    std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum){
+        //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
+        int cols = matrix->cols;
+        int rows = matrix->rows;
+        double px, py, pz;
+        std::vector<Eigen::Vector3f> output;
+
+        for (int x=0; x<cols; x++){
+            px = x * sx;
+            for (int y=0; y<rows; y++){
+                py = y * sy;
+                pz = matrix->at<double>(cv::Point(x,y));
+                // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
+                if (pz != 0){    //only non-NULL points are included (those are assumed to be invalid data points)
+                    output.push_back(Eigen::Vector3f(px,py,pz));
                     *acum = *acum + pz;
                 }
             }

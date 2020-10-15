@@ -1443,16 +1443,10 @@ namespace lad
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
         apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
-        // cv::SparseMat     roi_sparse(roi_image);    // sparse version of ROI mask. Non-masked values are stored (255 in 8bits)
-        // SparseMatIterator it_end = roi_sparse.end();// pointer to last element of sparse matrix, faster for comparisons in the for loop
-        // size_t esz = roi_sparse.elemSize();         // element size, expected to match that of 8UC1 / unsigned char
-        // for (auto it = roi_sparse.begin(); it != it_end; ++it){
-        //     cv::SparseMat::Node *node = it.node();  //retrieve node ptr from the current sparse iterator 
-        //     ptrdiff_t ofs = roi_image.ptr(node->idx) - roi_image.ptr(); // substract pointer offset
-        //     int row = (int)(ofs/roi_image.step[0]);   // y/row as floor of integer division
-        //     int col = (int)((ofs - y*roi_image.step[0])/esz); // the x/col should be integer remain
-        // }
         double acumA = 0, acumB = 0, acumC = 0; 
+        double acumB1 = 0;
+        double acumB2 = 0;
+        double acumB3 = 0;
 
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
@@ -1483,9 +1477,6 @@ namespace lad
                     // apKernel contains and additional mask
                     // subMask.convertTo(subMask, CV_64FC1); //64FC1
                     roi_patch.convertTo(temp, CV_64FC1); //64FC1
-
-                    // cout << subImage << endl << endl << endl;
-                    // cout << "roi/img/mask: " << roi_patch.size() << " " << subImage.size() << " " << subMask.size() << endl;
                     temp = subImage.mul(temp)/255;  //64FC1
                     temp = subMask.mul(temp); //64FC1
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
@@ -1494,14 +1485,16 @@ namespace lad
                     timer.lap("----block A: mask/patch");
                     acumA += timer.last_lap;
                     double acum = 0;
+
                     std::vector<KPoint> pointList;
-                    pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
-                    timer.lap("----block B: convert2Vector");
-                    acumB += timer.last_lap;
+                    pointList       = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+
+                    timer.lap("----block B1: convert2Vector KP");
+                    acumB1 += timer.last_lap;
 
                     if (pointList.size() > 3){
                         if (filtertype == FILTER_SLOPE){
-                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds
+                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
                             timer.lap("----block C: FILTER_SLOPE");
@@ -1520,7 +1513,6 @@ namespace lad
                         }
                         else if (filtertype == FILTER_DISTANCE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
-
                             // Polyhedron_3 poly;
                             // CGAL::convex_hull_3(pointList.begin(), pointList.end(), poly);
 
@@ -1551,10 +1543,11 @@ namespace lad
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
-        // timer.lap("----block A: mask/patch + ALL");
 
         cout << "Block A - mask:\t" << acumA << endl;
-        cout << "Block B - convert:\t" << acumB << endl;
+        cout << "Block B1 - conv:\t" << acumB1 << endl;
+        cout << "Block B2 - conv:\t" << acumB2 << endl;
+        cout << "Block B3 - conv:\t" << acumB3 << endl;
         cout << "Block C - fit:\t" << acumC << endl;
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
