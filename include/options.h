@@ -25,6 +25,7 @@ args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file"
 args::ValueFlag	<int> 	        argVerbose(argParser,   "verbose",  "Define verbosity level",                                                   {"verbose"});
 args::ValueFlag	<int> 	        argNThreads(argParser,  "number",   "Define max number of threads",  {"nthreads"});
 args::ValueFlag <std::string>   argConfig(argParser,    "file.yaml","Provides path to file with user defied configuration", {"config"});
+args::ValueFlag	<double>        argMetacenter(argParser,  "ratio",   "Recompute metacenter distance from vehicle height",  {"meta"});
 
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha",  "Search radius for alpha Shape concave hull algorithm",                     {"alpharadius"});
 args::ValueFlag	<double>        argRotation(argParser,  "rotation", "Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW", {"rotation"});

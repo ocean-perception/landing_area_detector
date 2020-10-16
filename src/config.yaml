@@ -17,9 +17,9 @@ output:
 #pipeline
 
 vehicle:        # Landing AUV parameters
-  length: 1.4   # length [m] of AUV footprint
-  width:  0.6   # width [m] of AUV footprint
-  height: 0.8   # height [m] of AUV
+  length: 1.7   # length [m] of AUV footprint
+  width:  0.5   # width [m] of AUV footprint
+  height: 0.4   # height [m] of AUV
   forces:
     gravity:  637 # Gravity force (mass * gravity)
     buoyancy: 608 # Total buoyancy force (volume * density * gravity)
