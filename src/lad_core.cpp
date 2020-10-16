@@ -1664,7 +1664,6 @@ namespace lad
         // the destination mask will be retrieved from the first source layer
         cv::Mat tmp;
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
-
         
         cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 

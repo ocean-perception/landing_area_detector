@@ -312,6 +312,8 @@ int main(int argc, char *argv[])
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         string currentname = "M4_FinalMeasurability" + suffix;
+        if (params.exportRotated)
+            pipeline.saveImage(currentname, currentname + ".png");
         // cout << "\tName: " << currentname << endl;
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
