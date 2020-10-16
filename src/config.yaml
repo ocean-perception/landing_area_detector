@@ -20,6 +20,11 @@ vehicle:        # Landing AUV parameters
   length: 1.4   # length [m] of AUV footprint
   width:  0.6   # width [m] of AUV footprint
   height: 0.8   # height [m] of AUV
+  forces:
+    gravity:  637 # Gravity force (mass * gravity)
+    buoyancy: 608 # Total buoyancy force (volume * density * gravity)
+  height_cg:  0.25  # center of gravity height [m]
+  height_cb:  0.30  # center of buoyancy height [m]  
 
 rotation:       # LAUV heading angle [deg]
   # fixed_rotation: 40.0   # if defined, the algorithm will only use one value for the LAUV heading (orientation)

@@ -123,7 +123,6 @@ add_executable(mad_test   src/mad_test.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-
 #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
@@ -134,8 +133,6 @@ target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PCL_LIBRARIES} y
 #add_executable (gdal_write  src/gdal_write_test.cpp
 #                          ${PROJECT_HEADERS})
 # add_definitions($PCL_DEFINITIONS)
-add_executable(pcd_write_test src/write_pcd.cpp)
-target_link_libraries(pcd_write_test ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES})
 #target_compile_options(gdal_write PUBLIC -std=c++11)
 #target_link_libraries(gdal_write ${GDAL_LIBRARY})
 

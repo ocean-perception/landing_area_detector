@@ -25,6 +25,9 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\trobotWidth:     \t" << p->robotWidth << "\t[m]" << endl;
     cout << "\trobotDiagonal:  \t" << p->robotDiagonal << "\t[m]" << endl;
     cout << "\trobotHeight:    \t" << p->robotHeight << "\t[m]"<< endl;
+    cout << "\tCG Height:      \t" << p->robot_cg << "\t[m]"<< endl;
+    cout << "\tCB Height:      \t" << p->robot_cb << "\t[m]"<< endl;
+
     if (p->fixRotation){
         cout << "\trotation:       \t" << p->rotation  << "\t[deg]" << yellow << " [fixed]" << reset << endl;
     }
@@ -85,6 +88,15 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->robotWidth = config["vehicle"]["width"].as<double>();
         if (config["vehicle"]["height"])
             p->robotHeight = config["vehicle"]["height"].as<double>();
+        if (config["vehicle"]["height_cg"])
+            p->robot_cg = config["vehicle"]["height_cg"].as<double>();
+        if (config["vehicle"]["height_cb"])
+            p->robot_cb = config["vehicle"]["height_cb"].as<double>();
+        if (config["vehicle"]["forces"]){
+            p->gravityForce = config["vehicle"]["forces"]["gravity"].as<double>();
+            p->buoyancyForce = config["vehicle"]["forces"]["buoyancy"].as<double>();
+        }
+
     }
 
     if (config["threshold"]){
