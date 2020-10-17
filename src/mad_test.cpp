@@ -78,21 +78,19 @@ int main(int argc, char *argv[])
                             params.rotation         = args::get(argRotation);
                             params.fixRotation      = true;
     }   
-    if (argMetacenter){
-        // we recompute the height and slope thresholds based on the vehicle dimensions 
-        // lauv: meta = 1/8 * height, cg = 5/8 * height  , cb = 6/8 * height
-        // typ value for argMetacenter = 1/3
-        cout << "[main] Recomputing slope and height thresholds" << endl;
+    if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
+
+    if (params.updateThreshold){
+        // let's recompute the slope and height thresholds according to the vehicle geometry
+        cout << cyan << "[main] Recomputing slope and height thresholds" << reset << endl;
         cout << "Height" << yellow << params.robotHeight << reset << endl;
-        params.robot_cb         = (2.0/3.0) * params.robotHeight;    // Cb = 2/3:6/8 robot height
-        params.robot_cg         = params.robot_cb - (params.robotHeight * args::get(argMetacenter));
-        // Cg always below Cb
-        double meta_dist = params.robot_cb - params.robot_cg;
+        double dm = params.robotHeight * params.ratioMeta;
+        double dg = params.robotHeight * params.ratioCg;
+
         double Fb = params.buoyancyForce; // buoyancy force, vol * density * gravity [N]
         double Fg = params.gravityForce; // gravity force, mass*gravity [N]
         double Fr = Fg - Fb; //net force [N] (positive down)
-        double dm = params.robot_cb - params.robot_cg; // must be always positive
-        double dg = params.robot_cg;
+
         // recompute slopeCritical (Mehul2019, Eq[2])
         params.slopeThreshold = atan((0.5*params.robotWidth*Fr)/((dm*Fb) - (dg*Fr)));
         // recompute hCritical (Mehul2019, Eq[9])
@@ -111,6 +109,8 @@ int main(int argc, char *argv[])
     params.robotDiagonal = sqrt(params.robotWidth*params.robotWidth + params.robotLength*params.robotLength); 
     lad::printParams(&params);
     lad::tictac tt, tic;
+
+    return -1;
 
     lad::Pipeline pipeline;    
     cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    

@@ -26,8 +26,8 @@ namespace lad
         double robotWidth;      // robot width [m] 
         double robotLength;     // robot length [m]
         double robotDiagonal;   // locally computed robot diagonal dimension, used for lowPassFilter of the terrain
-        double robot_cg;        // center of gravity height [m]
-        double robot_cb;        // center of buoyancy height [m]
+        double ratioCg;        // center of gravity height [m]
+        double ratioMeta;      // metacenter/height ratio [m/m]
         double gravityForce;    // vehicle weight (air) [N]
         double buoyancyForce;   // vehicle buoyancy (water) [N]
         bool   fixRotation;     // flag indication if we are going to use a single LAUV heading [true]. If [false], pipeline operates in range mode
@@ -46,7 +46,7 @@ namespace lad
         int    verbosity;       // define verbosity level [0,3]
         bool   exportIntermediate; // indicate to export intermediate layers of the pipeline, useful for detailed analysis. Default: true
         bool   exportRotated;   // indicate to export every rotation independent intermediate and final layer. Warning: can take up a lot of disk space. Default: false
-
+        bool   updateThreshold; // recalculate slope and height thresholds based on vehicle dimensions
         double geotecThreshold; // distance threshold to consider a terrain point as measurable
     }parameterStruct;
 

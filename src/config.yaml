@@ -3,8 +3,9 @@
 version: 1
 
 general:
-  verbosity:  1      #verbosity level 0-3
-  showimages: true   # not implemented yet
+  verbosity:       1    # verbosity level 0-3
+  showimages:      true # not implemented yet
+  recomputethresh: true # recalculate slope and height threshold according to the vehicle geometry and Mehul2019-Eq[9]
 
 input:
   filepath:   /home/cappelletto/Desktop/LAD_Test/
@@ -23,19 +24,24 @@ vehicle:        # Landing AUV parameters
   forces:
     gravity:  637 # Gravity force (mass * gravity)
     buoyancy: 608 # Total buoyancy force (volume * density * gravity)
-  height_cg:  0.25  # center of gravity height [m]
-  height_cb:  0.30  # center of buoyancy height [m]  
+  cg_ratio:   0.5 # Ratio of Center of Gravity (Cg) divided by the Height (H)
+  meta_ratio: 0.2 # Ratio of distance between Center of buoyancy (Cb) & Gravity (Cg), divided by the Height (H)
+#  height_cg:  0.25  # center of gravity height [m]  , deprecated when cg_ratio is available
+#  height_cb:  0.30  # center of buoyancy height [m] , deprecated when meta_ratio is available
+
+
+
 
 rotation:       # LAUV heading angle [deg]
   # fixed_rotation: 40.0   # if defined, the algorithm will only use one value for the LAUV heading (orientation)
-  range_min:     -90.0  # minimum heading value [deg] to be tested 
-  range_max:      90.0  # maximum heading value [deg] to be tested
+  range_min:      0.0  # minimum heading value [deg] to be tested 
+  range_max:      180.0  # maximum heading value [deg] to be tested
   step:           5.0   # angle step size [deg]
 
 threshold:          # Exclusion map calculation parameters
-  slope:  17.7      # Slope [deg] threshold. Anything above this is considered as a potential obstacle
+  slope:  17.7      # Default Slope [deg] threshold. Anything above this is considered as a potential obstacle
   ground: 0.01      # Minimum height [m] for an obstacle to be considered as such
-  height: 0.085     # Critical height [m] employed to classify a Protrusion as HiProt
+  height: 0.085     # Default Critical height [m] employed to classify a Protrusion as HiProt
   protrusion: 0.04  # Minimum size [m] for a protrusion to be considered. This is used as size of structuring element during D2 maps MORPH_OPEN
   geosensor: 0.2    # Geotech distance threshold to consider a point as 'measurable'
 

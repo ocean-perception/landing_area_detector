@@ -1198,7 +1198,7 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::lowpassFilter (std::string src, std::string kernel, std::string mask, std::string dst){
-        applyWindowFilter(src, kernel, mask, dst, FILTER_MEAN);
+        return (applyWindowFilter(src, kernel, mask, dst, FILTER_MEAN));
     }
 
     /**
@@ -1445,9 +1445,6 @@ namespace lad
 
         double acumA = 0, acumB = 0, acumC = 0; 
         double acumB1 = 0;
-        double acumB2 = 0;
-        double acumB3 = 0;
-
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
                 if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
@@ -1487,9 +1484,9 @@ namespace lad
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
-                    pointList       = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+                    pointList = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
 
-                    timer.lap("----block B1: convert2Vector KP");
+                    timer.lap("----block B1: convert2Vector KPoint CGAL");
                     acumB1 += timer.last_lap;
 
                     if (pointList.size() > 3){
@@ -1515,14 +1512,16 @@ namespace lad
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
                             // Polyhedron_3 poly;
                             // CGAL::convex_hull_3(pointList.begin(), pointList.end(), poly);
-
+                            // DANGER
                             std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double count = 0;
                             for (auto it:distances){
-                                if (fabs(it) < 0.05) count++;   //TODO : globally defned threshold? arg pass? filter param structure?
+                                count = fabs(it);
+                                // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                 // count += fabs(it);
                             }
                             // computes the proportion of points within the range
+                            // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                             apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                             timer.lap("----block C: FILTER_MAD");
                             acumC += timer.last_lap;
@@ -1546,8 +1545,6 @@ namespace lad
 
         cout << "Block A - mask:\t" << acumA << endl;
         cout << "Block B1 - conv:\t" << acumB1 << endl;
-        cout << "Block B2 - conv:\t" << acumB2 << endl;
-        cout << "Block B3 - conv:\t" << acumB3 << endl;
         cout << "Block C - fit:\t" << acumC << endl;
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
@@ -1664,8 +1661,10 @@ namespace lad
         // the destination mask will be retrieved from the first source layer
         cv::Mat tmp;
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
-        
-        cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
+
+        // DANGER
+        apDst->rasterData = tmp.clone();        
+        // cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 
         apDst->setNoDataValue(apSrc1->getNoDataValue());
         apDst->copyGeoProperties(apSrc1);

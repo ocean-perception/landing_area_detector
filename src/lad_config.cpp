@@ -25,8 +25,8 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\trobotWidth:     \t" << p->robotWidth << "\t[m]" << endl;
     cout << "\trobotDiagonal:  \t" << p->robotDiagonal << "\t[m]" << endl;
     cout << "\trobotHeight:    \t" << p->robotHeight << "\t[m]"<< endl;
-    cout << "\tCG Height:      \t" << p->robot_cg << "\t[m]"<< endl;
-    cout << "\tCB Height:      \t" << p->robot_cb << "\t[m]"<< endl;
+    cout << "\tCG Ratio:       \t" << p->ratioCg << "\t[m/m]"<< endl;
+    cout << "\tMC Ratio:       \t" << p->ratioMeta << "\t[m/m]"<< endl;
 
     if (p->fixRotation){
         cout << "\trotation:       \t" << p->rotation  << "\t[deg]" << yellow << " [fixed]" << reset << endl;
@@ -38,9 +38,9 @@ void lad::printParams(parameterStruct_ *p){
         cout << "\tRotation step:  \t" << p->rotationStep  << "\t[deg]"<< endl;
         cout << reset;
     }
-
+    if (p->updateThreshold) cout << yellow;
     cout << "\theightThreshold:\t" << p->heightThreshold  << "\t[m]" << endl;
-    cout << "\tslopeThreshold: \t" <<  p->slopeThreshold  << "\t[deg]" << endl;
+    cout << "\tslopeThreshold: \t" <<  p->slopeThreshold  << "\t[deg]" << reset << endl;
     cout << "\tgroundThreshold:\t" << p->groundThreshold  << "\t[m]" << endl;
     cout << "\tprotrusionSize: \t" <<  p->protrusionSize  << "\t[m]" << endl;
 
@@ -76,6 +76,8 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->exportIntermediate = config["general"]["export"]["intermediate"].as<bool>();
         if (config["general"]["export"]["rotated"])
             p->exportRotated      = config["general"]["export"]["rotated"].as<bool>();
+        if (config["general"]["recomputethresh"])
+            p->updateThreshold = config["general"]["recomputethresh"].as<bool>();
 
     }
 
@@ -88,15 +90,15 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->robotWidth = config["vehicle"]["width"].as<double>();
         if (config["vehicle"]["height"])
             p->robotHeight = config["vehicle"]["height"].as<double>();
-        if (config["vehicle"]["height_cg"])
-            p->robot_cg = config["vehicle"]["height_cg"].as<double>();
-        if (config["vehicle"]["height_cb"])
-            p->robot_cb = config["vehicle"]["height_cb"].as<double>();
+        if (config["vehicle"]["cg_ratio"])
+            p->ratioCg = config["vehicle"]["cg_ratio"].as<double>();
+        if (config["vehicle"]["meta_ratio"])
+            p->ratioMeta = config["vehicle"]["meta_ratio"].as<double>();
+
         if (config["vehicle"]["forces"]){
             p->gravityForce = config["vehicle"]["forces"]["gravity"].as<double>();
             p->buoyancyForce = config["vehicle"]["forces"]["buoyancy"].as<double>();
         }
-
     }
 
     if (config["threshold"]){
@@ -158,6 +160,10 @@ lad::parameterStruct lad::getDefaultParams(){
     params.robotHeight      = 0.8;  //DEFAULT
     params.robotLength      = 1.4;
     params.robotWidth       = 0.5;
+    params.ratioMeta        = 0.2;
+    params.ratioCg          = 0.5;
+    params.updateThreshold  = false;
+
     params.protrusionSize   = 0.04;
     params.defaultNoData    = DEFAULT_NODATA_VALUE;
     params.maskBorder       = false;
