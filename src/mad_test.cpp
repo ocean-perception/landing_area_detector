@@ -87,9 +87,14 @@ int main(int argc, char *argv[])
         double dm = params.robotHeight * params.ratioMeta;
         double dg = params.robotHeight * params.ratioCg;
 
+        // approx vehicle volume to an ellipsoid with major axis: W, L, H
+        double volume = (M_PI/6.0) * params.robotHeight * params.robotLength * params.robotWidth;
+        double mass = volume * WATER_DENSITY;
+        params.gravityForce = mass * GRAVITY;
+        params.buoyancyForce = params.gravityForce * (1 - params.forceRatio); 
         double Fb = params.buoyancyForce; // buoyancy force, vol * density * gravity [N]
         double Fg = params.gravityForce; // gravity force, mass*gravity [N]
-        double Fr = Fg - Fb; //net force [N] (positive down)
+        double Fr = Fg - Fb; //net force [N] (positive down), should be equivalent to gravity_force * force_ratio
 
         // recompute slopeCritical (Mehul2019, Eq[2])
         params.slopeThreshold = atan((0.5*params.robotWidth*Fr)/((dm*Fb) - (dg*Fr)));
@@ -109,8 +114,6 @@ int main(int argc, char *argv[])
     params.robotDiagonal = sqrt(params.robotWidth*params.robotWidth + params.robotLength*params.robotLength); 
     lad::printParams(&params);
     lad::tictac tt, tic;
-
-    return -1;
 
     lad::Pipeline pipeline;    
     cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    
@@ -337,11 +340,10 @@ int main(int argc, char *argv[])
     cout << endl;    
 
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
-
     if (params.verbosity > 0)
         pipeline.showInfo();
-
-    cout << "... press any key to exit" << endl;
-    waitKey(0);
+    tt.stop();
+    tt.show();
+//    cout << "... press any key to exit" << endl;
     return NO_ERROR;
 }

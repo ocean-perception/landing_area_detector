@@ -27,6 +27,10 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\trobotHeight:    \t" << p->robotHeight << "\t[m]"<< endl;
     cout << "\tCG Ratio:       \t" << p->ratioCg << "\t[m/m]"<< endl;
     cout << "\tMC Ratio:       \t" << p->ratioMeta << "\t[m/m]"<< endl;
+    cout << "\tForce ratio:    \t" << p->forceRatio << "\t[N/N]"<< endl;
+    cout << "\tGravity force:  \t" << p->gravityForce << "\t[N]"<< endl;
+    cout << "\tBuoyancy force: \t" << p->buoyancyForce << "\t[N]"<< endl;
+    cout << "\tNet force:      \t" << (p->gravityForce - p->buoyancyForce) << "\t[N]"<< endl;
 
     if (p->fixRotation){
         cout << "\trotation:       \t" << p->rotation  << "\t[deg]" << yellow << " [fixed]" << reset << endl;
@@ -94,6 +98,8 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->ratioCg = config["vehicle"]["cg_ratio"].as<double>();
         if (config["vehicle"]["meta_ratio"])
             p->ratioMeta = config["vehicle"]["meta_ratio"].as<double>();
+        if (config["vehicle"]["force_ratio"])
+            p->forceRatio = config["vehicle"]["force_ratio"].as<double>();
 
         if (config["vehicle"]["forces"]){
             p->gravityForce = config["vehicle"]["forces"]["gravity"].as<double>();
@@ -162,6 +168,7 @@ lad::parameterStruct lad::getDefaultParams(){
     params.robotWidth       = 0.5;
     params.ratioMeta        = 0.2;
     params.ratioCg          = 0.5;
+    params.forceRatio       = 0.05;
     params.updateThreshold  = false;
 
     params.protrusionSize   = 0.04;

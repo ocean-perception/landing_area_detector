@@ -26,7 +26,8 @@ vehicle:        # Landing AUV parameters
     buoyancy: 608 # Total buoyancy force (volume * density * gravity)
   cg_ratio:   0.5 # Ratio of Center of Gravity (Cg) divided by the Height (H)
   meta_ratio: 0.2 # Ratio of distance between Center of buoyancy (Cb) & Gravity (Cg), divided by the Height (H)
-#  height_cg:  0.25  # center of gravity height [m]  , deprecated when cg_ratio is available
+  force_ratio:  0.05  # Ratio between net buoyancy force and gravity force. Used to scale mass & buoyancy with different sizes
+  #  height_cg:  0.25  # center of gravity height [m]  , deprecated when cg_ratio is available
 #  height_cb:  0.30  # center of buoyancy height [m] , deprecated when meta_ratio is available
 
 

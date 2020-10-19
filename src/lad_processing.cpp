@@ -190,7 +190,8 @@ namespace lad
         double d = plane.d();
         std::vector<double> distances;
         for (auto p:points){
-            double val = a*p.x() + b*p.y() + c*p.z() + d;
+            // double val = a*p.x() + b*p.y() + c*p.z() + d;
+            double val = a*p[0] + b*p[1] + c*p[2] + d;
             distances.push_back(val);
         }
         return distances;

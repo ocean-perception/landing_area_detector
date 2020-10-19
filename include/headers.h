@@ -51,6 +51,8 @@ const std::string highlight("\033[30;43m");
 #define DEFAULT_OUTPUT_FILE "LAD_output.tif"
 #define DEFAULT_WINDOW_WIDTH 800
 #define DEFAULT_WINDOW_HEIGHT 600
+#define WATER_DENSITY 1025 // kg / m3
+#define GRAVITY       9.81 // kg * m / s2
 
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/linear_least_squares_fitting_3.h>

@@ -30,6 +30,7 @@ namespace lad
         double ratioMeta;      // metacenter/height ratio [m/m]
         double gravityForce;    // vehicle weight (air) [N]
         double buoyancyForce;   // vehicle buoyancy (water) [N]
+        double forceRatio;      // ratio between net buoyancy force and gravity force (positive down)
         bool   fixRotation;     // flag indication if we are going to use a single LAUV heading [true]. If [false], pipeline operates in range mode
         double rotation;        // heading value [deg]
         double rotationMin;     // min heading value [deg] when in range mode
