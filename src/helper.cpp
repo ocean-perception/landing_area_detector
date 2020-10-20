@@ -57,4 +57,27 @@ std::string makeFixedLength(const int i, const int length)
     return ostr.str();
 }
 
+int ConsoleOutput::publish(MessageTypes type, std::string publisher, std::string message){
+  std::string out;
+
+  // thread_safe_log log = safe_cout();
+  this->mtx.lock();
+  switch(type){
+    case MSG_ERROR:
+      cout << red << "[error]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+      break;
+    case MSG_WARNING:
+      cout << yellow << "[warn]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+      break;
+    case MSG_INFO:
+      cout << reset << "[info]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+      break;
+    default:
+      cout << reset << "[-]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+      break;
+  }
+  this->mtx.unlock();
+  return 0;
+}
+
 #endif //_PROJECT_HELPER_CPP_

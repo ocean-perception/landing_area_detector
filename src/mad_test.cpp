@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     int retval = initParser(argc, argv);   // initial argument validation, populates arg parsing structure args
     if (retval != 0)  // some error ocurred, we have been signaled to stop
         return retval;
+    ConsoleOutput log;
     // Parameters hierarchy
     // ARGS > CONFIG > DEFAULT (this)
     parameterStruct params = getDefaultParams(); // structure to hold configuration (populated with defaults).
@@ -53,7 +54,8 @@ int main(int argc, char *argv[])
         if (config["input"]["filename"])
             inputFileName = config["input"]["filename"].as<std::string>();
         else{ // ERROR! We do not have any definition of the input file
-            cout << red << "[main] Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)";
+            log.publish (MSG_ERROR, "main", "Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)");
+            // cout << red << "[main] Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)";
             return -1;
         }
     }
