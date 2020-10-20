@@ -133,7 +133,7 @@ namespace lad
         public:
             int64 start_time;
             int64 stop_time;
-            double last_lap;
+            int64 last_lap;
             std::string message;
 
             /**
@@ -158,7 +158,7 @@ namespace lad
             void  stop();
             void  clear();
             void  show();
-            double elapsed();
+            int64 elapsed();
             void lap(std::string);
     };
 
