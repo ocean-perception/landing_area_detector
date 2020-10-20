@@ -1499,6 +1499,9 @@ namespace lad
                     acumB1 += timer.last_lap;
 =======
                     pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+<<<<<<< HEAD
+>>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
+=======
 >>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
 
                     if (pointList.size() > 3){
@@ -1540,10 +1543,13 @@ namespace lad
             }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         cout << "Block A - mask:\t" << acumA << endl;
         cout << "Block B1 - conv:\t" << acumB1 << endl;
         cout << "Block C - fit:\t" << acumC << endl;
+=======
+>>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
 =======
 >>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
 
