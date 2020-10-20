@@ -1443,21 +1443,11 @@ namespace lad
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
         apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
-<<<<<<< HEAD
         double acumA = 0, acumB = 0, acumC = 0; 
         double acumB1 = 0;
-=======
-        // cv::SparseMat     roi_sparse(roi_image);    // sparse version of ROI mask. Non-masked values are stored (255 in 8bits)
-        // SparseMatIterator it_end = roi_sparse.end();// pointer to last element of sparse matrix, faster for comparisons in the for loop
-        // size_t esz = roi_sparse.elemSize();         // element size, expected to match that of 8UC1 / unsigned char
-        // for (auto it = roi_sparse.begin(); it != it_end; ++it){
-        //     cv::SparseMat::Node *node = it.node();  //retrieve node ptr from the current sparse iterator 
-        //     ptrdiff_t ofs = roi_image.ptr(node->idx) - roi_image.ptr(); // substract pointer offset
-        //     int row = (int)(ofs/roi_image.step[0]);   // y/row as floor of integer division
-        //     int col = (int)((ofs - y*roi_image.step[0])/esz); // the x/col should be integer remain
-        // }
+        lad::tictac timer;
+        timer.start();
 
->>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
                 if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
@@ -1492,18 +1482,11 @@ namespace lad
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
-<<<<<<< HEAD
                     pointList = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
 
                     timer.lap("----block B1: convert2Vector KPoint CGAL");
                     acumB1 += timer.last_lap;
-=======
                     pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
-<<<<<<< HEAD
->>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
-=======
->>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
-
                     if (pointList.size() > 3){
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
@@ -1542,16 +1525,10 @@ namespace lad
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
         cout << "Block A - mask:\t" << acumA << endl;
         cout << "Block B1 - conv:\t" << acumB1 << endl;
         cout << "Block C - fit:\t" << acumC << endl;
-=======
->>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
-=======
->>>>>>> parent of 13a47bd... Verbose tracing for speed test before GPU/Eigen/PCL options
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
