@@ -14,7 +14,7 @@
 #include "lad_layer.hpp"
 
 #include <CGAL/Kernel/global_functions.h>
-#include <opencv2/core/eigen.hpp>
+// #include <opencv2/core/eigen.hpp>
 /**
  * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by Pipeline objects 
  * Valid data is assumed to be present in the layer containers involved
@@ -106,27 +106,27 @@ namespace lad
 //    std::vector<Eigen::Vector3f> points;
 //    best_plane_from_points(points);
 
-    std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum){
+    // std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
-        int cols = matrix->cols;
-        int rows = matrix->rows;
-        double px, py, pz;
-        std::vector<Eigen::Vector3f> output;
+    //     int cols = matrix->cols;
+    //     int rows = matrix->rows;
+    //     double px, py, pz;
+    //     std::vector<Eigen::Vector3f> output;
 
-        for (int x=0; x<cols; x++){
-            px = x * sx;
-            for (int y=0; y<rows; y++){
-                py = y * sy;
-                pz = matrix->at<double>(cv::Point(x,y));
-                // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
-                if (pz != 0){    //only non-NULL points are included (those are assumed to be invalid data points)
-                    output.push_back(Eigen::Vector3f(px,py,pz));
-                    *acum = *acum + pz;
-                }
-            }
-        }
-        return output;
-    }
+    //     for (int x=0; x<cols; x++){
+    //         px = x * sx;
+    //         for (int y=0; y<rows; y++){
+    //             py = y * sy;
+    //             pz = matrix->at<double>(cv::Point(x,y));
+    //             // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
+    //             if (pz != 0){    //only non-NULL points are included (those are assumed to be invalid data points)
+    //                 output.push_back(Eigen::Vector3f(px,py,pz));
+    //                 *acum = *acum + pz;
+    //             }
+    //         }
+    //     }
+    //     return output;
+    // }
 
     /**
      * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
@@ -136,27 +136,27 @@ namespace lad
      * @param sy Vertical pixel scale
      * @return std::vector<KPoint> 
      */
-    std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum){
+    // std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
-        int cols = matrix->cols;
-        int rows = matrix->rows;
-        double px, py, pz;
-        std::vector<pcl::PointXYZ> output;
+    //     int cols = matrix->cols;
+    //     int rows = matrix->rows;
+    //     double px, py, pz;
+    //     std::vector<pcl::PointXYZ> output;
 
-        for (int x=0; x<cols; x++){
-            px = x * sx;
-            for (int y=0; y<rows; y++){
-                py = y * sy;
-                pz = matrix->at<double>(cv::Point(x,y));
-                // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
-                if (pz != 0){    //only non-NULL points are included (those are assumed to be invalid data points)
-                    output.push_back(pcl::PointXYZ(px,py,pz));
-                    *acum = *acum + pz;
-                }
-            }
-        }
-        return output;
-    }
+    //     for (int x=0; x<cols; x++){
+    //         px = x * sx;
+    //         for (int y=0; y<rows; y++){
+    //             py = y * sy;
+    //             pz = matrix->at<double>(cv::Point(x,y));
+    //             // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
+    //             if (pz != 0){    //only non-NULL points are included (those are assumed to be invalid data points)
+    //                 output.push_back(pcl::PointXYZ(px,py,pz));
+    //                 *acum = *acum + pz;
+    //             }
+    //         }
+    //     }
+    //     return output;
+    // }
 
 
     /**

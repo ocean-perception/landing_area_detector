@@ -89,9 +89,7 @@ int main(int argc, char *argv[])
 
     if (params.updateThreshold){
         // let's recompute the slope and height thresholds according to the vehicle geometry
-        logc.info("main", "Recomputing slope and height thresholds");
-        s << "Height" << yellow << params.robotHeight;
-        logc.info("main", s);
+        logc.warn("main", "Recomputing slope and height thresholds");
         double dm = params.robotHeight * params.ratioMeta;
         double dg = params.robotHeight * params.ratioCg;
 
@@ -258,11 +256,11 @@ int main(int argc, char *argv[])
     }
 
     for (int w=0; w<nWorkers; w++){
-        s << "Waiting to finish worker ["<< green << w << reset << "]";
+        s << "Waiting to finish worker ["<< cyan << w << reset << "]";
         logc.info("main", s);
 
         workerThreads[w].join();
-        s << "Worker ["<< cyan << w << reset << "] finished!\t\t\t\t\t\t******";
+        s << "Worker ["<< green << w << reset << "] finished!\t\t\t\t\t\t" << green << "******";
         logc.info("main", s);
     }
 
@@ -364,7 +362,7 @@ int main(int argc, char *argv[])
     if (params.verbosity > 0)
         pipeline.showInfo();
     tt.stop();
-    tt.show();
+    // tt.show();
 //    cout << "... press any key to exit" << endl;
     return NO_ERROR;
 }

@@ -18,7 +18,7 @@
 #include "lad_config.hpp"
 #include "lad_core.hpp"
 
-#include <pcl/point_types.h>
+// #include <pcl/point_types.h>
 
 using namespace std; // STL
 using namespace cv;  // OpenCV
@@ -47,9 +47,9 @@ namespace lad
 
     KPlane computeFittingPlane (std::vector<KPoint> points);
 
-    std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum);
+    // std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum);
     std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
-    std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum);
+    // std::vector<Eigen::Vector3f> convertMatrix2Vector3 (cv::Mat *matrix, double sx, double sy, double *acum);
     // Own implementation for scale independant landability analysis
 
     // Own implementation of rotation invariant landability detector

@@ -1613,9 +1613,9 @@ namespace lad
             }
         }
 
-        cout << "Block A - mask:\t" << acumA << endl;
-        cout << "Block B1 - conv:\t" << acumB1 << endl;
-        cout << "Block C - fit:\t" << acumC << endl;
+        // cout << "Block A - mask:\t" << acumA << endl;
+        // cout << "Block B1 - conv:\t" << acumB1 << endl;
+        // cout << "Block C - fit:\t" << acumC << endl;
 
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);

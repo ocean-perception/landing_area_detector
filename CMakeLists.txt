@@ -55,7 +55,7 @@ message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 # include helper file
 include( ${CGAL_USE_FILE} )
 
-find_package(PCL REQUIRED COMPONENTS common io)
+#find_package(PCL REQUIRED COMPONENTS common io)
 
 # Boost and its components
 find_package( Boost REQUIRED )
@@ -75,8 +75,8 @@ include_directories(BEFORE ../include
                     include
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIR}
-                    ${GEOTIFF_MODULE}/include
-                    ${PCL_INCLUDE_DIRS})
+                    ${GEOTIFF_MODULE}/include)
+ #                   ${PCL_INCLUDE_DIRS})
 
 # Retrieve git commit information, forward it to compilation time
 exec_program(
@@ -85,32 +85,6 @@ exec_program(
     ARGS "describe --abbrev=4 --dirty --always --tags"
     OUTPUT_VARIABLE GIT_INFO )
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
-
-############################ LAD_TEST ####################
-#add_executable(cgal_test  src/cgal_test.cpp
-#                          ${PROJECT_HEADERS})
-#add_to_cached_list( CGAL_EXECUTABLE_TARGETS cgal_test )
-
-#target_compile_options(cgal_test PUBLIC -std=c++11)
-#target_link_libraries(cgal_test   ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} )
-
-############################ LAD_TEST ####################
-# add_executable(lad_test   src/lad_test.cpp
-#                           src/lad_analysis.cpp
-#                           ${GEOTIFF_MODULE}/src/geotiff.cpp
-#                           src/lad_core.cpp
-#                           src/lad_layer.cpp
-#                           src/lad_processing.cpp
-#                           src/lad_thread.cpp
-#                           src/lad_config.cpp
-#                           ${PROJECT_HEADERS})
-
-
-# #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
-# #message (${yaml-cpp_INCLUDE_DIRS})
-
-# target_compile_options(lad_test PUBLIC -std=c++11)
-# target_link_libraries(lad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 ############################ MAD_TEST ####################
 add_executable(mad_test   src/mad_test.cpp
@@ -127,17 +101,6 @@ add_executable(mad_test   src/mad_test.cpp
 #message (${yaml-cpp_INCLUDE_DIRS})
 
 target_compile_options(mad_test PUBLIC -std=c++14)
-target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PCL_LIBRARIES} yaml-cpp)
+target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
-############################ GDAL_WRITE_TEST ####################
-#add_executable (gdal_write  src/gdal_write_test.cpp
-#                          ${PROJECT_HEADERS})
-# add_definitions($PCL_DEFINITIONS)
-#target_compile_options(gdal_write PUBLIC -std=c++11)
-#target_link_libraries(gdal_write ${GDAL_LIBRARY})
-
-
-# Define install target for main testing module
-# install (TARGETS lad_test gdal_write DESTINATION $ENV{HOME}/bin)
-# install (TARGETS lad_test DESTINATION $ENV{HOME}/bin)
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
