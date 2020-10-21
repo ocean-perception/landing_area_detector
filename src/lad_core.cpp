@@ -987,12 +987,14 @@ namespace lad
         if (type == LAYER_KERNEL){
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
             if (apLayer == nullptr){
-                cout << red << "[saveImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+                logc.error("saveImage", s);
                 cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
                 return ERROR_WRONG_ARGUMENT;
             }
             if (apLayer->rasterData.empty()){
-                cout << "[saveImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                s << "rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show";
+                logc.warn("saveImage", s);
                 return NO_ERROR;                
             }
             cv::imwrite(filename, apLayer->rasterData);
@@ -1010,18 +1012,22 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::setTemplate (std::string reference){
+        ostringstream s;
         if (isAvailable(reference)){
-            cout << red << "[setTemplate] Template layer does not exist: [" << reference << "]" << endl;
+            s << "Template layer does not exist: [" << reference << "]";
+            logc.error("p:setTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
         auto ap = dynamic_pointer_cast<RasterLayer> (getLayer(reference));
         if (ap == nullptr){
-            cout << red << "[setTemplate] Provided layer [" << reference << "] must be of type LAYER_RASTER" << endl;
+            s << "Provided layer [" << reference << "] must be of type LAYER_RASTER";
+            logc.error("p:setTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
         // Now we start copying the parameters from the raster layer to the stack
         for (int i=0; i<6; i++)
             geoTransform[i] = ap->transformMatrix[i];
+
         geoProjection = ap->layerProjection;     // copy the WKT projection string
         return NO_ERROR;
     }
@@ -1051,17 +1057,21 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::maskLayer(std::string src, std::string mask, std::string dst, int useRotated){
+        ostringstream s;
         // check that both src and mask layers exist. If not, return with error
         if (isAvailable(src)){
-            cout << red << "[maskLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            s << "source layer ["  << src << "] does not exist";
+            logc.error ("maskLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(mask)){
-            cout << red << "[maskLayer] mask layer ["  << mask << "] does not exist" << reset << endl;
+            s << "mask layer ["  << mask << "] does not exist" ;
+            logc.error ("maskLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[maskLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.info ("maskLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1086,12 +1096,11 @@ namespace lad
                 apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData);
         }
         else{
-            cout << red << "[maskLayer] mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel" << reset << endl;
+            s << "mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel";
+            logc.error ("maskLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
-
         apDst->updateMask();
-
         return NO_ERROR;
     } 
 
@@ -1105,12 +1114,15 @@ namespace lad
      */
     int Pipeline::compareLayer(std::string src, std::string dst, double threshold, int cmp){
         // check that both src and mask layers exist. If not, return with error
+        ostringstream s;
         if (isAvailable(src)){
-            cout << red << "[compareLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            s << "source layer ["  << src << "] does not exist";
+            logc.error ("compareLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[compareLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.info ("compareLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1133,18 +1145,22 @@ namespace lad
      * @return int Error code, if any.
      */
     int Pipeline::rotateLayer(std::string src, double angle){
+        ostringstream s;
         // first we check if the layer exist in the stack
         if (isAvailable(src)){
-            cout << red << "[rotateLayer] Error layer [" << src << "] not found" << reset << endl;
+            s << "layer [" << src << "] not found";
+            logc.error("p.rotateLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (getLayer(src)->getType() != LAYER_KERNEL){
-            cout << red << "[rotateLayer] Error layer [" << src << "] is not of type KERNEL" << reset << endl;
+            s << "layer [" << src << "] is not of type KERNEL";
+            logc.error("p.rotateLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
         shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(src));
         if (apLayer == nullptr){
-            cout << red << "[rotateLayer] Unknown error retrieving [" << src << "] from the stack. Returned a nullptr" << reset << endl;
+            s << "Unknown error retrieving [" << src << "] from the stack. Returned a nullptr.";
+            logc.error("p.rotateLayer", s);
             return LAYER_INVALID;
         }
         apLayer->setRotation(angle);
