@@ -22,7 +22,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
 
     for (int r=0; r<=nRot; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
-        s << "Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
+        s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
         logc.info("processRotationWorker",s);
         params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
