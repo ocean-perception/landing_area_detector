@@ -216,10 +216,12 @@ namespace lad
  */
     int Pipeline::createLayer(std::string name, int type)
     {
+        std::ostringstream s;
         // Let's check name
         if (isValidName(name) != LAYER_OK)
         {
-            cout << "[Pipeline] Invalid layer name: " << name << endl;
+            s << "Invalid layer name: " << name;
+            logc.error("p::createLayer", s);
             return LAYER_INVALID_NAME;
         }
         int newid = getValidID();
@@ -265,13 +267,15 @@ namespace lad
             cout << red << "[exportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
             return ERROR_MISSING_ARGUMENT;
         }
+        std::ostringstream s;
         std::string exportName;
         //now, we pull the Layer from the stack
         shared_ptr<Layer> apLayer = getLayer(name);
         // getlayer()
         if (apLayer == nullptr)
         { // failed to retrieve Layer "name" from the stack
-            cout << red << "[exportLayer] Failed to retrieve Layer [" << name << "] from stack" << reset << endl;
+            s << "Failed to retrieve Layer [" << name << "] from stack";
+            logc.error("p::exportLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
 
@@ -298,28 +302,34 @@ namespace lad
         switch (type)
         {
         case LAYER_RASTER:
-            if (verbosity > VERBOSITY_0)
-                cout << "[exportLayer] Exporting RasterLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]" << endl; 
+            if (verbosity > VERBOSITY_0){
+                s << "Exporting RasterLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]"; 
+                logc.debug ("exportLayer", s);
+            }
+
             apRaster = dynamic_pointer_cast<RasterLayer>(apLayer);
             apRaster->writeLayer(exportName, format, coord_sys);
             break;
 
         case LAYER_VECTOR:
-            if (verbosity > VERBOSITY_0)
-                cout << "[exportLayer] Exporting VectorLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]" << endl; 
+            if (verbosity > VERBOSITY_0){
+                s << "Exporting VectorLayer [" << yellow << name << reset << "] to file [" << yellow << outfile << reset << "]"; 
+                logc.debug ("exportLayer", s);
+            }
             // cout << "Export VECTOR" << endl;
             apVector = dynamic_pointer_cast<VectorLayer>(apLayer);
             apVector->writeLayer(exportName, format, geoProjection.c_str(), coord_sys, geoTransform);
             break;
 
         case LAYER_KERNEL:
-            cout << "Export RASTER" << endl;
-            cout << yellow << "KERNEL_RASTER export feature not implemented yet from stack pipeline" << reset << endl;
+            logc.info ("exportLayer", "Export RASTER");
+            logc.info ("exportLayer", "KERNEL_RASTER export feature not implemented yet from stack pipeline");
             // apKernel = dynamic_pointer_cast<KernelLayer>(apLayer);
             break;
 
         default:
-            cout << red << "[exportLayer] Error layer [" << name << " is of unknown type [" << type << "]" << reset << endl;
+            s << "Layer [" << name << " is of unknown type [" << type << "]";
+            logc.error ("exportLayer", s);
             return ERROR_WRONG_ARGUMENT;
             break;
         }
@@ -346,7 +356,7 @@ namespace lad
     {
         if (!mapLayers.size())
         {
-            cout << "No layer to show" << endl;
+            logc.warn("p.showLayers",  "No layer to show");
             return LAYER_NONE;
         }
         for (auto it : mapLayers)
@@ -386,25 +396,30 @@ namespace lad
      */
     int Pipeline::createKernelTemplate (std::string name, double width, double length, double sx, double sy, int morphtype){
         // first, we verify that the layer name is available
+        std::ostringstream s;
         if (!isValid(name)){
-            cout << red << "[createKernelTemplate] Error when creating new layer, name [" << name << "] invalid" << reset << endl; 
+            s << "Error when creating new layer, name [" << name << "] invalid"; 
+            logc.error("createKernelTemplate", s);
             return LAYER_INVALID_NAME;
         }
         auto layer = mapLayers.find(name);
         if (layer != mapLayers.end()){ //we had a match! we exit
-            cout << red << "[createKernelTemplate] Error when creating new layer, name [" << name << "] is already taken" << reset << endl; 
+            s << "Error when creating new layer, name [" << name << "] is already taken"; 
+            logc.error("createKernelTemplate", s);
             return LAYER_DUPLICATED_NAME;
         }
         // now, we check that the input arguments are valid (basically, they must be positive)
         // Pixel resolution can be negative is inherited from the geoTIFF metadata, we can correct that
         if ((width <= 0) || (length <= 0)){
-            cout << red << "[createKernelTemplate] Invalid dimensions: [" << width << " x " << length << "]. They must positive." << reset << endl; 
+            s << "Invalid dimensions: [" << width << " x " << length << "]. They must positive."; 
+            logc.error("createKernelTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
         sx = fabs(sx);
         sy = fabs(sy);
         if ((sx * sy) == 0){
-            cout << red << "[createKernelTemplate] Invalid pixel resolution: [" << sx << " x " << sy << "]. They must non-zero." << reset << endl; 
+            s << "Invalid pixel resolution: [" << sx << " x " << sy << "]. They must non-zero."; 
+            logc.error("createKernelTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
 
@@ -461,14 +476,15 @@ namespace lad
  */
     int Pipeline::uploadData(std::string name, void *data)
     {
+        std::ostringstream s;
         // Check if we the name is valid (non-empty)
         if (name.empty())
             return LAYER_INVALID_NAME;
         int retval = NO_ERROR;        
         auto layer = getLayer(name);
         if (layer == nullptr){
-            cout << red << "[uploadData] Error when getting layer: [" << name << "]" << reset << endl;
-            // showInfo();
+            s << "Error when getting layer: [" << name << "]";
+            logc.error("uploadData", s);
             return LAYER_NOT_FOUND;
         }
         
@@ -532,23 +548,28 @@ namespace lad
      */
     int Pipeline::readTIFF(std::string inputFile, std::string rasterLayer, std::string maskLayer){
         // first we create the destination layers, if missing
+        std::ostringstream s;
         if (isAvailable(rasterLayer)){
             createLayer(rasterLayer, LAYER_RASTER);
         }
         if (isAvailable(maskLayer)){
             createLayer(maskLayer, LAYER_RASTER);
+
         }
         auto apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterLayer));
         if (apRaster == nullptr){
-            cout << red << "[readTIFF] Error retrieving layer [" << rasterLayer << "]" << endl;
+            s << "Error retrieving layer [" << rasterLayer << "]";
+            logc.error ("readTIFF", s); 
         }
         auto apMask = dynamic_pointer_cast<RasterLayer>(getLayer(maskLayer));
         if (apMask == nullptr){
-            cout << red << "[readTIFF] Error retrieving layer [" << maskLayer << "]" << endl;
+            s << "Error retrieving layer [" << maskLayer << "]";
+            logc.error ("readTIFF", s); 
         }
 
         if (apRaster->readTIFF(inputFile) != NO_ERROR){
-            cout << red << "[readTIFF] Error reading file [" << inputFile << "]" << endl;
+            s << "Error reading file [" << inputFile << "]";
+            logc.error ("readTIFF", s); 
             return ERROR_GDAL_FAILOPEN;
         }
         // transfer the recently computed mask layer from the source raster layer
@@ -574,17 +595,19 @@ namespace lad
  */
     int Pipeline::extractContours(std::string rasterName, std::string contourName, int showImage)
     {
-
+        ostringstream s;
         vector<vector<Point>> contours; // find contours of the DataMask layer
         //pull access to rasterMask
         std::shared_ptr<RasterLayer> apRaster;
         apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterName));
 
         cv::findContours(apRaster->rasterData, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE); // obtaining only 1st level contours, no children
-        cout << "[extractContours] #contours detected: " << contours.size() << endl;
+        s << "#contours detected: " << contours.size();
+        logc.info ("extractContours", s); 
         if (contours.empty())
         {
-            cout << red << "No contour line was detected!" << endl;
+            s << "No contour line was detected!";
+            logc.error ("extractContours", s); 
             return ERROR_CONTOURS_NOTFOUND;
         }
 
@@ -603,8 +626,9 @@ namespace lad
                 good_contours.push_back(it); // hack to keep it at a single element
             }
         }
-        cout << "[extractContours] Largest contour: " << yellow << largest << reset << endl;
-
+        s << "Largest contour: " << yellow << largest;
+        logc.info ("extractContours", s); 
+ 
         // WARNING: contours may provide false shapes when valid data mask reaches any image edge.
         // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
         // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
@@ -758,49 +782,59 @@ namespace lad
     int Pipeline::computeExclusionMap(std::string raster, std::string kernel, std::string dstLayer){
         // *****************************************
         // Validating input raster layer
+        ostringstream s;
         if (raster.empty()){
-            cout << red << "[computeExclusionMap] Input raster layer name is empty" << reset << endl;
+            s << "Input raster layer name is empty";
+            logc.error ("computeExclusionMap", s);
             return ERROR_WRONG_ARGUMENT;
         }
         auto apBase = mapLayers.find(raster);
         if (apBase == mapLayers.end()){
-            cout << "[computeExclusionMap] Input raster [" << raster << "] not found in the stack" << endl;
+            s << "Input raster [" << raster << "] not found in the stack";
+            logc.error ("computeExclusionMap", s);
             return LAYER_NOT_FOUND;
         }
         if (apBase->second->getType() != LAYER_RASTER){
-            cout << "[computeExclusionMap] Input layer [" << raster << "] must be of type LAYER_RASTER" << endl;
+            s << "Input layer [" << raster << "] must be of type LAYER_RASTER";
+            logc.error ("computeExclusionMap", s);
             return LAYER_NOT_FOUND;
         }
         // *****************************************
         // Validating input kernel layer
         if (kernel.empty()){
-            cout << red << "[computeExclusionMap] Input kernel layer name is empty" << reset << endl;
+            s << "Input kernel layer name is empty";
+            logc.error ("computeExclusionMap", s);
             return ERROR_WRONG_ARGUMENT;
         }
         auto apKernel = mapLayers.find(kernel);
         if (apKernel == mapLayers.end()){
-            cout << "[computeExclusionMap] Input raster [" << kernel << "] not found in the stack" << endl;
+            s << "Input raster [" << kernel << "] not found in the stack";
+            logc.error ("computeExclusionMap", s);
             return LAYER_NOT_FOUND;
         }
         if (apKernel->second->getType() != LAYER_KERNEL){
-            cout << "[computeExclusionMap] Input layer [" << kernel << "] must be of type LAYER_RASTER" << endl;
+            s << "Input layer [" << kernel << "] must be of type LAYER_RASTER";
+            logc.error ("computeExclusionMap", s);
             return LAYER_NOT_FOUND;
         }
         // *****************************************
         // Validating output raster (exclusion map) layer
         if (dstLayer.empty()){
-            cout << red << "[computeExclusionMap] Output raster layer name is empty" << reset << endl;
+            s << "Output raster layer name is empty";
+            logc.error ("computeExclusionMap", s);
             return ERROR_WRONG_ARGUMENT;
         }
         // cout << "Searching [" << dstLayer << "] +++++++++++++++++++++" << endl; 
         auto apOutput = mapLayers.find(dstLayer); // not found? let's create it
         if (apOutput == mapLayers.end()){
-            cout << "[computeExclusionMap] Output raster [" << yellow << dstLayer << reset << "] not found in the stack. Creating..."  << endl;
+            s << "Output raster [" << yellow << dstLayer << reset << "] not found in the stack. Creating...";
+            logc.warn ("computeExclusionMap", s);
             createLayer(dstLayer, LAYER_RASTER);
             apOutput =  mapLayers.find(dstLayer);    //we get the pointer, it should appear now in the stack!
         }
         else if (apOutput->second->getType() != LAYER_RASTER){
-            cout << "[computeExclusionMap] Output layer [" << dstLayer << "] must be of type LAYER_RASTER" << endl;
+            s << "Output layer [" << dstLayer << "] must be of type LAYER_RASTER";
+            logc.error ("computeExclusionMap", s);
             return ERROR_WRONG_ARGUMENT;
         }
         
@@ -835,14 +869,17 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::showImage(std::string layer, int colormap){
+        ostringstream s;
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
         if (getLayer(layer) == nullptr){
-            cout << "[showImage] layer [" << yellow << layer << reset << "] not found..." << endl;
+            s << "layer [" << yellow << layer << reset << "] not found...";
+            logc.error("showImage", s);
             return LAYER_NOT_FOUND;
         }
         int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
         if (type == LAYER_VECTOR){
-            cout << "[showImage] layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Visualization mode not supported yet." << endl;
+            s << "layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Visualization mode not supported yet.";
+            logc.error("showImage", s);
             return ERROR_WRONG_ARGUMENT;
         }
         // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
@@ -851,12 +888,14 @@ namespace lad
         if (type == LAYER_RASTER){
             shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (getLayer(layer));
             if (apLayer == nullptr){
-                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+                logc.error("showImage", s);
                 cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
                 return ERROR_WRONG_ARGUMENT;
             }
             if (apLayer->rasterData.empty()){
-                cout << "[showImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                s << "rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to show";
+                logc.warn("showImage", s);
                 return NO_ERROR;                
             }
             // correct data range to improv
@@ -878,12 +917,14 @@ namespace lad
         if (type == LAYER_KERNEL){
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
             if (apLayer == nullptr){
-                cout << red << "[showImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+                logc.error("showImage", s);
                 cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
                 return ERROR_WRONG_ARGUMENT;
             }
             if (apLayer->rasterData.empty()){
-                cout << "[showImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                s << "rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show";
+                logc.warn("showImage", s);
                 return NO_ERROR;                
             }
             namedWindow(apLayer->layerName);
@@ -900,14 +941,17 @@ namespace lad
     }
 
     int Pipeline::saveImage(std::string layer, std::string filename, int colormap){
+        ostringstream s;
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
         if (getLayer(layer) == nullptr){
-            cout << "[saveImage] layer [" << yellow << layer << reset << "] not found..." << endl;
+            s << "layer [" << yellow << layer << reset << "] not found...";
+            logc.error("saveImage", s);
             return LAYER_NOT_FOUND;
         }
         int type = getLayer(layer)->getType();  // being virtual, every derived class must provide a run-time solution for getType
         if (type == LAYER_VECTOR){
-            cout << "[saveImage] layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Image export method not supported yet." << endl;
+            s << "layer [" << yellow << layer << reset << "] is of type LAYER_VECTOR. Image export method not supported yet.";
+            logc.error("saveImage", s);
             return ERROR_WRONG_ARGUMENT;
         }
         // no we operate according to the layer type. Both RASTER and KERNEL layer have the rasterData matrix as basic container.
@@ -916,12 +960,14 @@ namespace lad
         if (type == LAYER_RASTER){
             shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (getLayer(layer));
             if (apLayer == nullptr){
-                cout << red << "[saveImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+                logc.error("saveImage", s);
                 cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
                 return ERROR_WRONG_ARGUMENT;
             }
             if (apLayer->rasterData.empty()){
-                cout << "[saveImage] rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save" << endl;
+                s << "rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save";
+                logc.warn("saveImage", s);
                 return NO_ERROR;                
             }
             // correct data range to improv
@@ -941,12 +987,14 @@ namespace lad
         if (type == LAYER_KERNEL){
             shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer> (getLayer(layer));
             if (apLayer == nullptr){
-                cout << red << "[saveImage] Unexpected error when downcasting RASTER layer [" << yellow << layer << "]" << reset << endl;
+                s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+                logc.error("saveImage", s);
                 cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
                 return ERROR_WRONG_ARGUMENT;
             }
             if (apLayer->rasterData.empty()){
-                cout << "[saveImage] rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show" << endl;
+                s << "rasterData in kernel layer [" << yellow << layer << reset << "] is empty. Nothing to show";
+                logc.warn("saveImage", s);
                 return NO_ERROR;                
             }
             cv::imwrite(filename, apLayer->rasterData);
@@ -964,18 +1012,22 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::setTemplate (std::string reference){
+        ostringstream s;
         if (isAvailable(reference)){
-            cout << red << "[setTemplate] Template layer does not exist: [" << reference << "]" << endl;
+            s << "Template layer does not exist: [" << reference << "]";
+            logc.error("p:setTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
         auto ap = dynamic_pointer_cast<RasterLayer> (getLayer(reference));
         if (ap == nullptr){
-            cout << red << "[setTemplate] Provided layer [" << reference << "] must be of type LAYER_RASTER" << endl;
+            s << "Provided layer [" << reference << "] must be of type LAYER_RASTER";
+            logc.error("p:setTemplate", s);
             return ERROR_WRONG_ARGUMENT;
         }
         // Now we start copying the parameters from the raster layer to the stack
         for (int i=0; i<6; i++)
             geoTransform[i] = ap->transformMatrix[i];
+
         geoProjection = ap->layerProjection;     // copy the WKT projection string
         return NO_ERROR;
     }
@@ -1005,17 +1057,21 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::maskLayer(std::string src, std::string mask, std::string dst, int useRotated){
+        ostringstream s;
         // check that both src and mask layers exist. If not, return with error
         if (isAvailable(src)){
-            cout << red << "[maskLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            s << "source layer ["  << src << "] does not exist";
+            logc.error ("maskLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(mask)){
-            cout << red << "[maskLayer] mask layer ["  << mask << "] does not exist" << reset << endl;
+            s << "mask layer ["  << mask << "] does not exist" ;
+            logc.error ("maskLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[maskLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.info ("maskLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1040,12 +1096,11 @@ namespace lad
                 apSrc->rasterData.copyTo(apDst->rasterData, apMask->rasterData);
         }
         else{
-            cout << red << "[maskLayer] mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel" << reset << endl;
+            s << "mask layer [" << getLayer(mask)->layerName << "] must be either raster or kernel";
+            logc.error ("maskLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
-
         apDst->updateMask();
-
         return NO_ERROR;
     } 
 
@@ -1059,12 +1114,15 @@ namespace lad
      */
     int Pipeline::compareLayer(std::string src, std::string dst, double threshold, int cmp){
         // check that both src and mask layers exist. If not, return with error
+        ostringstream s;
         if (isAvailable(src)){
-            cout << red << "[compareLayer] source layer ["  << src << "] does not exist" << reset << endl;
+            s << "source layer ["  << src << "] does not exist";
+            logc.error ("compareLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[compareLayer] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.info ("compareLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1087,18 +1145,22 @@ namespace lad
      * @return int Error code, if any.
      */
     int Pipeline::rotateLayer(std::string src, double angle){
+        ostringstream s;
         // first we check if the layer exist in the stack
         if (isAvailable(src)){
-            cout << red << "[rotateLayer] Error layer [" << src << "] not found" << reset << endl;
+            s << "layer [" << src << "] not found";
+            logc.error("p.rotateLayer", s);
             return LAYER_NOT_FOUND;
         }
         if (getLayer(src)->getType() != LAYER_KERNEL){
-            cout << red << "[rotateLayer] Error layer [" << src << "] is not of type KERNEL" << reset << endl;
+            s << "layer [" << src << "] is not of type KERNEL";
+            logc.error("p.rotateLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
         shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(src));
         if (apLayer == nullptr){
-            cout << red << "[rotateLayer] Unknown error retrieving [" << src << "] from the stack. Returned a nullptr" << reset << endl;
+            s << "Unknown error retrieving [" << src << "] from the stack. Returned a nullptr.";
+            logc.error("p.rotateLayer", s);
             return LAYER_INVALID;
         }
         apLayer->setRotation(angle);
@@ -1698,7 +1760,7 @@ namespace lad
         stop();
         // cout << str << endl;
         last_lap = elapsed();
-        show();
+        // show();
         start();
     }
 
