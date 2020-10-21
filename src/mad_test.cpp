@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
     int retval = initParser(argc, argv);   // initial argument validation, populates arg parsing structure args
     if (retval != 0)  // some error ocurred, we have been signaled to stop
         return retval;
-    ConsoleOutput log;
+    logger::ConsoleOutput log;
+    std::ostringstream s;
     // Parameters hierarchy
     // ARGS > CONFIG > DEFAULT (this)
     parameterStruct params = getDefaultParams(); // structure to hold configuration (populated with defaults).
@@ -54,11 +55,11 @@ int main(int argc, char *argv[])
         if (config["input"]["filename"])
             inputFileName = config["input"]["filename"].as<std::string>();
         else{ // ERROR! We do not have any definition of the input file
-            log.publish (MSG_ERROR, "main", "Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)");
-            // cout << red << "[main] Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)";
+            log.error ("main", "Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)");
             return -1;
         }
     }
+
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
         if (argFloatParam) fParam = args::get(argFloatParam);
@@ -66,7 +67,10 @@ int main(int argc, char *argv[])
         if (argIntParam)   iParam = args::get(argIntParam);
     int nThreads = DEFAULT_NTHREADS;
         if (argNThreads)   nThreads = args::get(argNThreads);
-        if (nThreads < 3)  cout << "[main] Info: number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+        if (nThreads < 3) {
+            s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+            log.warn("main", s);
+        }
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
     if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
@@ -84,8 +88,9 @@ int main(int argc, char *argv[])
 
     if (params.updateThreshold){
         // let's recompute the slope and height thresholds according to the vehicle geometry
-        cout << cyan << "[main] Recomputing slope and height thresholds" << reset << endl;
-        cout << "Height" << yellow << params.robotHeight << reset << endl;
+        log.info("main", "Recomputing slope and height thresholds");
+        s << "Height" << yellow << params.robotHeight;
+        log.info("main", s);
         double dm = params.robotHeight * params.ratioMeta;
         double dg = params.robotHeight * params.ratioCg;
 
@@ -202,7 +207,8 @@ int main(int argc, char *argv[])
             pipeline.showInfo(); // show detailed information if asked for
 
         tic.lap("***\tBase pipeline completed");
-        cout << endl << green << "Press any key to exit..." << endl;
+
+        log.info("main", "Press any key to exit...");
         waitKey(0);
         return NO_ERROR;
     }

@@ -57,27 +57,77 @@ std::string makeFixedLength(const int i, const int length)
     return ostr.str();
 }
 
-int ConsoleOutput::publish(MessageTypes type, std::string publisher, std::string message){
-  std::string out;
+namespace logger{
+  string ConsoleOutput::publish(LogLevel type, std::string publisher, std::string message){
+    std::ostringstream out;
 
-  // thread_safe_log log = safe_cout();
-  this->mtx.lock();
-  switch(type){
-    case MSG_ERROR:
-      cout << red << "[error]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
-      break;
-    case MSG_WARNING:
-      cout << yellow << "[warn]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
-      break;
-    case MSG_INFO:
-      cout << reset << "[info]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
-      break;
-    default:
-      cout << reset << "[-]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
-      break;
+    // thread_safe_log log = safe_cout();
+    this->mtx.lock();
+    switch(type){
+      case logger::LogLevel::MSG_ERROR:
+        out << red << "[error]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        break;
+      case logger::LogLevel::MSG_DEBUG:
+        out << green << "[debug]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        break;
+      case logger::LogLevel::MSG_WARNING:
+        out << yellow << "[warn] " << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        break;
+      case logger::LogLevel::MSG_INFO:
+        out << reset << "[info] " << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        break;
+      default:
+        out << reset << "[-]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        break;
+    }
+    cout << out.str();
+    this->mtx.unlock();
+    return out.str();
   }
-  this->mtx.unlock();
-  return 0;
+
+  string ConsoleOutput::error(string publisher, string message){
+    return ConsoleOutput::publish(LogLevel::MSG_ERROR, publisher, message);
+  }
+
+  string ConsoleOutput::debug(string publisher, string message){
+    return ConsoleOutput::publish(LogLevel::MSG_DEBUG, publisher, message);
+  }
+
+  string ConsoleOutput::warn(string publisher, string message){
+    return ConsoleOutput::publish(LogLevel::MSG_WARNING, publisher, message);
+  }
+
+  string ConsoleOutput::info(string publisher, string message){
+    return ConsoleOutput::publish(LogLevel::MSG_INFO, publisher, message);
+  }
+
+  string ConsoleOutput::error(string publisher, ostringstream &message){
+    string r = ConsoleOutput::publish(LogLevel::MSG_ERROR, publisher, message.str());
+    message.str("");
+    return r;
+  }
+
+  string ConsoleOutput::debug(string publisher, ostringstream &message){
+    string r = ConsoleOutput::publish(LogLevel::MSG_DEBUG, publisher, message.str());
+    message.str("");
+    return r;
+  }
+
+  string ConsoleOutput::warn(string publisher, ostringstream &message){
+    string r =  ConsoleOutput::publish(LogLevel::MSG_WARNING, publisher, message.str());
+    message.str("");
+    return r;
+  }
+
+  string ConsoleOutput::info(string publisher, ostringstream &message){
+    string r =  ConsoleOutput::publish(LogLevel::MSG_INFO, publisher, message.str());
+    message.str("");
+    return r;
+  }
+
+
+
 }
+
 
 #endif //_PROJECT_HELPER_CPP_

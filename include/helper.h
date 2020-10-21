@@ -12,6 +12,9 @@
 #define _PROJECT_HELPER_H_
 
 #include <mutex>
+#include <sstream>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -22,31 +25,55 @@ std::string makeFixedLength(const int i, const int length);
  * @brief 
  * 
  */
-enum MessageTypes{
-    MSG_INFO    = 1,    // Standard informative message
-    MSG_WARNING = 2,    // non-critical warning message
-    MSG_ERROR   = 3     // critical error message
-};
 
-class ConsoleOutput{
-    private:
-        std::vector<std::string> logHistory; // history of all received messages
-        int counter; //number of calls to publish. It should match logHistory size
-        std::mutex mtx;
-    protected:
-    public:
-        ConsoleOutput(){
-            counter = 0; //
-        };
-        ~ConsoleOutput(){
-            this->logHistory.clear();
-        };
+namespace logger{
+    enum class LogLevel : unsigned int{
+        MSG_INFO    = 1,    // Standard informative message
+        MSG_WARNING = 2,    // non-critical warning message
+        MSG_DEBUG   = 3,    // debug (verbose) message
+        MSG_ERROR   = 4     // critical error message
+    };
 
-        int publish(MessageTypes type, std::string owner, std::string message);
-        void clear(); // clear the history log
-        int  size();  // return the number of log entries
-        void dump();  // dump (on screen or file) the log
+    class ConsoleOutput{
+        private:
+            // std::vector<std::string> logHistory; // history of all received messages
+            // int counter; //number of calls to publish. It should match logHistory size
+            std::mutex mtx;
+        protected:
+        public:
+            ConsoleOutput(){
+                // counter = 0; //
+            };
+            ~ConsoleOutput(){
+                // this->logHistory.clear();
+            };
+
+            string publish(logger::LogLevel type, std::string owner, std::string message);
+    
+            string error(string owner, string message);
+            string warn (string owner, string message);
+            string debug(string owner, string message);
+            string info (string owner, string message);
+
+            string error(string owner, ostringstream &message);
+            string warn (string owner, ostringstream &message);
+            string debug(string owner, ostringstream &message);
+            string info (string owner, ostringstream &message);
+
+            void clear(); // clear the history log
+            int  size();  // return the number of log entries
+            void dump();  // dump (on screen or file) the log
+    };
+
 };
 
 
 #endif // _PROJECT_HELPER_H_
+
+
+/*
+Check: 
+#include <syncstream> // C++20
+https://en.cppreference.com/w/cpp/io/basic_osyncstream
+
+*/
