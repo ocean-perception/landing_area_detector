@@ -262,12 +262,12 @@ namespace lad
  */
     int Pipeline::exportLayer(std::string name, std::string outfile, int format, int coord_sys)
     { // Export a given layer in the stack identified by its name, to
+        ostringstream s;
         if (name.empty())
         {
-            cout << red << "[exportLayer] Error when trying to export layer, no valid name was provided" << reset << endl;
+            s << "Error when trying to export layer, no valid name was provided";
             return ERROR_MISSING_ARGUMENT;
         }
-        std::ostringstream s;
         std::string exportName;
         //now, we pull the Layer from the stack
         shared_ptr<Layer> apLayer = getLayer(name);
@@ -294,7 +294,7 @@ namespace lad
         // adfGeoTransform = apInputGeotiff->GetGeoTransform();
         // if (adfGeoTransform == nullptr)
         // {
-        //     cout << red << "[exportLayer] some error ocurred while calling GetGeoTransform() " << reset << endl;
+        //     cout << red << "[exportLayer] some error ocurred while calling GetGeoTransform() ";
         //     return ERROR_WRONG_ARGUMENT;
         // }
 
@@ -1175,25 +1175,28 @@ namespace lad
      * @return int 
      */
     int Pipeline::lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType){
+        ostringstream s;
         // we ignore filter type for the preliminary implementation. Future dev may include bilateral, box, user-defined, or raster defined kernel for filtering purposes
         // first we check if the layer exist in the stack
         if (isAvailable(src)){
-            cout << red << "[lowpassFilter] Error layer [" << src << "] not found" << reset << endl;
+            s << "layer [" << src << "] not found";
+            logc.error ("p::lowpassFilter", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[lowpassFilter] destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.info ("p::lowpassFilter", s);
             createLayer(dst, LAYER_RASTER);
         }
         
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apSrc == nullptr){
-            cout << "ApSrc error" << endl;
+            logc.info ("p::lowpassFilter", "apSrc error");
             return -1;
         }
         if (apDst == nullptr){
-            cout << "ApDst error" << endl;
+            logc.info ("p::lowpassFilter", "apDst error");
             return -1;
         }
         int cols = apSrc->rasterData.cols;
@@ -1204,10 +1207,14 @@ namespace lad
         double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
         apDst->setNoDataValue(srcNoData);
         if (verbosity > VERBOSITY_0){
-            cout << "[p.lowpassFilter] Source NoData value: " << srcNoData << endl;
-            cout << "[p.lowpassFilter] Target NoData value: " << apDst->getNoDataValue() << endl;
-            cout << "[lowpassFilter] Input raster size: " << apSrc->rasterData.size() << endl; 
-            cout << "[lowpassFilter] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
+            s << "Source NoData value: " << srcNoData;
+            logc.debug ("p::lowpassFilter", s);
+            s << "Target NoData value: " << apDst->getNoDataValue();
+            logc.debug ("p::lowpassFilter", s);
+            s << "Input raster size: " << apSrc->rasterData.size(); 
+            logc.debug ("p::lowpassFilter", s);
+            s << "Filter size: " << filterSize.width << " x " << filterSize. height; 
+            logc.debug ("p::lowpassFilter", s);
         }
         apDst->copyGeoProperties(apSrc);
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, srcNoData); 
@@ -1272,9 +1279,11 @@ namespace lad
      * @return int 
      */
     int Pipeline::computeHeight (std::string src, std::string filt, std::string dst){
+        ostringstream s;
         // src contains the RAW bathymetry. We substract the filtered map from it to obtain the height
         if (isAvailable(dst)){
-            cout << "[computeHeight] Destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating...";
+            logc.info ("p::computeHeight", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apSrc  = dynamic_pointer_cast<RasterLayer> (getLayer(src));
@@ -1282,15 +1291,15 @@ namespace lad
         auto apDst  = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
         if (apSrc == nullptr){
-            cout << "apSrc error" << endl;
+            logc.error("computeHeight", "apSrc error");
             return -1;
         }
         if (apFilt == nullptr){
-            cout << "apSrc error" << endl;
+            logc.error("computeHeight", "apFilt error");
             return -1;
         }
         if (apDst == nullptr){
-            cout << "apDst error" << endl;
+            logc.error("computeHeight", "apDst error");
             return -1;
         }
 
@@ -1325,19 +1334,21 @@ namespace lad
      * @return int Error code, if any.
      */
     int Pipeline::computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType){
+        ostringstream s;
         int retval = lowpassFilter(src, dst, filterSize, filterType);
         if (retval != NO_ERROR){
-            cout << red << "[computeHeight] error when calling lowpassFilter" << reset << endl;
+            s << "error when calling lowpassFilter";
+            logc.error ("computeHeight", s);
             return retval;
         }
         auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apSrc == nullptr){
-            cout << "apSrc error" << endl;
+            logc.error("computeHeight", "apSrc error");
             return -1;
         }
         if (apDst == nullptr){
-            cout << "apDst error" << endl;
+            logc.error("computeHeight", "apDst error");
             return -1;
         }
         // cv::Mat dest(apSrc->rasterData.size(), CV_64FC1);
@@ -1375,23 +1386,26 @@ namespace lad
      * @return int 
      */
     int Pipeline::generatePlaneMap (std::string dst, KPlane plane, std::string templ){
+        ostringstream s;
         if (isAvailable(templ)){
-            cout << red << "[generatePlaneMap] Error, template layer [" << templ << "] not found" << reset << endl;
+            s << "template layer [" << templ << "] not found";
+            logc.error ("p::generatePlaneMap", s);
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            cout << "[generatePlaneMap] Destination layer ["  << yellow << dst << reset << "] does not exist. Creating..." << reset << endl;
+            s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            logc.warn ("p::generatePlaneMap", s);
             createLayer(dst, LAYER_RASTER);
         }
         
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         auto apTemp = dynamic_pointer_cast<RasterLayer> (getLayer(templ));
         if (apDst == nullptr){
-            cout << "Template layer must be of type: Raster" << endl;
+            logc.error ("p::generatePlaneMap", "Template layer must be of type: Raster");
             return -1;
         }
         if (apTemp == nullptr){
-            cout << "Destination layer must be of type: Raster" << endl;
+            logc.error ("p::generatePlaneMap", "Destination layer must be of type: Raster");
             return -1;
         }
 
@@ -1409,16 +1423,19 @@ namespace lad
         double planeC = plane.c();
         double planeD = plane.d();
 
-        cout << cyan << "[planeEquation] " << plane << reset << endl;
+        s << "(planeEquation) " << plane;
+        logc.info ("p::generatePlaneMap", s);
 
         if (planeC == 0){
-            cout << red << "[generatePlaneMap] provided plane [" << plane << "] contains NULL c() parameter" << reset << endl;
+            s << "provided plane [" << plane << "] contains NULL c() parameter";
+            logc.error ("p::generatePlaneMap", s);
             return ERROR_WRONG_ARGUMENT;
         }
 
         if (verbosity > VERBOSITY_0){
-            cout << "[.generatePlaneMap] Populating the target raster layer" << endl;
-            cout << "\tPlane parameters: " << plane << endl;
+            logc.debug ("p::generatePlaneMap", "Populating the target raster layer");
+            s << "\tPlane parameters: " << plane;
+            logc.debug ("p::generatePlaneMap", s);
         }
 
         for (int c=0; c<apDst->rasterData.cols; c++){
@@ -1444,24 +1461,29 @@ namespace lad
      */
     int Pipeline::applyWindowFilter(std::string raster, std::string kernel, std::string mask, std::string dst, int filtertype){
         // first, we retrieve the raster Layer
+        ostringstream s;
         auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(raster));
         if (apSrc == nullptr){
-            cout << red << "[applyWindowFilter] Base bathymetry Layer [" << yellow << raster << red << "] not found..." << reset << endl;
+            s << "Base bathymetry Layer [" << yellow << raster << red << "] not found...";
+            logc.error ("p::applyWindowFilter", s);
             return LAYER_NOT_FOUND;
         }
         auto apMask = dynamic_pointer_cast<RasterLayer> (getLayer(mask));
         if (apMask == nullptr){
-            cout << red << "[applyWindowFilter] Base valid mask Layer [" << yellow << mask << red << "] not found..." << reset << endl;
+            s << "Base valid mask Layer [" << yellow << mask << red << "] not found...";
+            logc.error ("p::applyWindowFilter", s);
             return LAYER_NOT_FOUND;
         }
         auto apKernel = dynamic_pointer_cast<KernelLayer> (getLayer(kernel));
         if (apKernel == nullptr){
-            cout << red << "[applyWindowFilter] Kernel layer [" << yellow << kernel << red << "] not found..." << reset << endl;
+            s << "Kernel layer [" << yellow << kernel << red << "] not found...";
+            logc.error ("p::applyWindowFilter", s);
             return LAYER_NOT_FOUND;
         }
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apDst == nullptr){
-            cout << "[applyWindowFilter] Destination layer [" << yellow << dst << reset << "] not found. Creating it.." << endl;
+            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ...";
+            logc.info ("p::applyWindowFilter", s);
             createLayer(dst, LAYER_RASTER);
             apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         }
@@ -1479,17 +1501,20 @@ namespace lad
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
         if (verbosity > VERBOSITY_0){
-            cout << "[p.applyWindowFilter] Layers created, now defining container elements" << endl;
-            cout << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel << endl;
+            logc.debug ("p::applyWindowFilter", "Layers created, now defining container elements");
+            s << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel;
+            logc.debug ("p::applyWindowFilter", s);
         }
 
         // WARNING: we asume that the output range of the filter is within the input range of the bathymetry values
         // as we are removing the non validad data point (not -defined)
         if (verbosity > VERBOSITY_0){
-            cout << "[p.applyWindowFilter] Source NoData value: " << srcNoData << endl;
-            cout << "[p.applyWindowFilter] Target NoData value: " << apDst->getNoDataValue() << endl;
-            cout << "[p.applyWindowFilter] Input raster size: " << apSrc->rasterData.size() << endl; 
-            // cout << "[p,computeMeanSlopeMap] Filter size: " << filterSize.width << " x " << filterSize. height << endl; 
+            s << "Source NoData value: " << srcNoData;
+            logc.debug ("p::applyWindowFilter", s);
+            s << "Target NoData value: " << apDst->getNoDataValue();
+            logc.debug ("p::applyWindowFilter", s);
+            s << "Input raster size: " << apSrc->rasterData.size(); 
+            logc.debug ("p::applyWindowFilter", s);
         }
         // we create a matrix with NOVALID data
         cv::Mat  roi_image;// = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
@@ -1616,7 +1641,7 @@ namespace lad
      */
     int Pipeline::computeMeanSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst){
         if (verbosity > VERBOSITY_0){
-            cout << "[computeMeanSlopeMap] Calling applyWindowFilter" << endl;
+            logc.debug ("computeMeanSlopeMap", "Calling applyWindowFilter");
         }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
     }
@@ -1631,7 +1656,7 @@ namespace lad
      */
     int Pipeline::computeMeasurabilityMap(std::string raster, std::string kernel, std::string mask, std::string dst){
         if (verbosity > VERBOSITY_0){
-            cout << "[computeMeasurabilityMap] Calling applyWindowFilter" << endl;
+            logc.debug ("computeMeasurabilityMap", "Calling applyWindowFilter");
         }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_DISTANCE);
     }
@@ -1647,24 +1672,29 @@ namespace lad
      */
     int Pipeline::computeLandabilityMap(std::string src1, std::string src2, std::string src3, std::string dst){
         // verifying source layers exist
+        ostringstream s;
         auto apSrc1 = dynamic_pointer_cast<RasterLayer> (getLayer(src1));
         if (apSrc1 == nullptr){
-            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src1 << "]." << endl;
+            s << "Error retrieving pointer to source layer [" << src1 << "]";
+            logc.error ("computeLandability", s);
             return LAYER_NOT_FOUND;
         }
         auto apSrc2 = dynamic_pointer_cast<RasterLayer> (getLayer(src2));
         if (apSrc2 == nullptr){
-            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src2 << "]." << endl;
+            s << "Error retrieving pointer to source layer [" << src2 << "]";
+            logc.error ("computeLandability", s);
             return LAYER_NOT_FOUND;
         }
         auto apSrc3 = dynamic_pointer_cast<RasterLayer> (getLayer(src3));
         if (apSrc3 == nullptr){
-            cout << red << "[computeLandability] Error retrieving pointer to source layer [" << src3 << "]." << endl;
+            s << "Error retrieving pointer to source layer [" << src3 << "]";
+            logc.error ("computeLandability", s);
             return LAYER_NOT_FOUND;
         }
         // if destination layer doesn't exist, let's create it.
         if (isAvailable(dst)){
-            cout << "[computeLandability] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
+            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
+            logc.info ("computeLandability", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
@@ -1685,23 +1715,26 @@ namespace lad
 
     int Pipeline::computeBlendMeasurability(std::string src1, std::string src2, std::string dst){
         // verifying source layers exist
+        ostringstream s;
         auto apSrc1 = dynamic_pointer_cast<RasterLayer> (getLayer(src1));
         if (apSrc1 == nullptr){
-            cout << red << "[computeBlendMeasurability] Error retrieving pointer to source layer [" << src1 << "]." << endl;
+            s << "Error retrieving pointer to source layer [" << src1 << "]";
+            logc.error ("computeBlendMeasurability", s);
             return LAYER_NOT_FOUND;
         }
         auto apSrc2 = dynamic_pointer_cast<RasterLayer> (getLayer(src2));
         if (apSrc2 == nullptr){
-            cout << red << "[computeBlendMeasurability] Error retrieving pointer to source layer [" << src2 << "]." << endl;
+            s << "Error retrieving pointer to source layer [" << src2 << "]";
+            logc.error ("computeBlendMeasurability", s);
             return LAYER_NOT_FOUND;
         }
         // if destination layer doesn't exist, let's create it.
         if (isAvailable(dst)){
-            cout << "[computeBlendMeasurability] Destination layer [" << yellow << dst << reset << "] not found. Creating it..." << endl; 
+            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
+            logc.info ("computeBlendMeasurability", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
-
         // pixelwise arithmetic multiplication
         // the destination mask will be retrieved from the first source layer
         cv::Mat tmp;
@@ -1748,7 +1781,7 @@ namespace lad
      * 
      */
     void tictac::show(){
-        cout << highlight << "Elapsed time: " << elapsed() << " ms " << reset << endl;
+        cout << highlight << "Elapsed time: " << elapsed() << " ms ";
     }
 
     /**
