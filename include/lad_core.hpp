@@ -19,11 +19,14 @@
 #include "lad_processing.hpp"
 #include "lad_enum.hpp"
 #include "lad_config.hpp"
+#include "helper.h"
 
 #include <regex>
 
 using namespace std; // STL
 using namespace cv;  // OpenCV
+
+extern logger::ConsoleOutput logc;
 
 /**
  * @brief Prototype definition of base namespace <lad>

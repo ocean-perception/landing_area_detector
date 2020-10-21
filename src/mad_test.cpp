@@ -25,6 +25,8 @@ using namespace std;
 using namespace cv;
 using namespace lad;
 
+logger::ConsoleOutput logc;
+
 /*!
 	@fn		int main(int argc, char* argv[])
 	@brief	Main function
@@ -34,7 +36,6 @@ int main(int argc, char *argv[])
     int retval = initParser(argc, argv);   // initial argument validation, populates arg parsing structure args
     if (retval != 0)  // some error ocurred, we have been signaled to stop
         return retval;
-    logger::ConsoleOutput log;
     std::ostringstream s;
     // Parameters hierarchy
     // ARGS > CONFIG > DEFAULT (this)
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
         if (config["input"]["filename"])
             inputFileName = config["input"]["filename"].as<std::string>();
         else{ // ERROR! We do not have any definition of the input file
-            log.error ("main", "Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)");
+            logc.error ("main", "Input file missing. Please define it using --input='filename' or inside a YAML configuration file (see --config option)");
             return -1;
         }
     }
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
         if (argNThreads)   nThreads = args::get(argNThreads);
         if (nThreads < 3) {
             s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
-            log.warn("main", s);
+            logc.warn("main", s);
         }
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
@@ -88,9 +89,9 @@ int main(int argc, char *argv[])
 
     if (params.updateThreshold){
         // let's recompute the slope and height thresholds according to the vehicle geometry
-        log.info("main", "Recomputing slope and height thresholds");
+        logc.info("main", "Recomputing slope and height thresholds");
         s << "Height" << yellow << params.robotHeight;
-        log.info("main", s);
+        logc.info("main", s);
         double dm = params.robotHeight * params.ratioMeta;
         double dg = params.robotHeight * params.ratioCg;
 
@@ -208,14 +209,15 @@ int main(int argc, char *argv[])
 
         tic.lap("***\tBase pipeline completed");
 
-        log.info("main", "Press any key to exit...");
+        logc.info("main", "Press any key to exit...");
         waitKey(0);
         return NO_ERROR;
     }
 
     // if fixRotation = false, we iterate from rotationMin to rotationMax
-    cout << cyan << "[main] Calculating landability maps for every rotation:" << reset << endl;
-    cout << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep << endl;
+    logc.info("main", "Calculating landability maps for every rotation:");
+    s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
+    logc.info("main", s);
     int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
 
     // let's define the set of rotation values to be tested 
@@ -230,8 +232,12 @@ int main(int argc, char *argv[])
     int nSteps = ceil((params.rotationMax - params.rotationMin) / params.rotationStep); // user defined range/step should match
     int blockSize = nSteps / nWorkers;
     int blockRemain = nSteps % nWorkers;
-    cout << "[main] Iterating for [" << yellow << (nSteps) << reset << "] orientation combinations" << endl;
-    cout << "[main] nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset << endl;
+
+    s << "Iterating for [" << yellow << (nSteps) << reset << "] orientation combinations";
+    logc.info("main", s);
+    s << "nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset;
+    logc.info("main", s);
+
     // cout << "[main] blockSize: " << yellow << blockSize << reset << endl;
     // cout << "[main] blockRemain: " << yellow << blockRemain << reset << endl;
     for (int w=0; w<nWorkers; w++){
@@ -239,20 +245,25 @@ int main(int argc, char *argv[])
         double maxR = params.rotationMin + ((w+1) * blockSize - 1) * params.rotationStep;// - params.rotationStep;
         if (w == nWorkers-1) maxR = params.rotationMax;
 
-        cout << "[main] Dispatching range: [" << minR << "," << maxR << "]" << endl; 
+        s << "Dispatching range: [" << minR << "," << maxR << "]"; 
+        logc.info("main", s);
         workerParam[w] = params;
         workerParam[w].rotationMin = minR;
         workerParam[w].rotationMax = maxR;
 
         workerThreads[w] = std::thread (lad::processRotationWorker, &pipeline, &workerParam[w], "");
         // sleep(10);
-        cout << cyan << "[main] Dispatched for execution: [" << yellow << w << cyan << "]" << reset << endl;
+        s << "Dispatched for execution: [" << yellow << w << cyan << "]" << reset;
+        logc.info("main", s);
     }
 
     for (int w=0; w<nWorkers; w++){
-        cout << "[main] Waiting to finish worker ["<< green << w << reset << "]" << endl;
+        s << "Waiting to finish worker ["<< green << w << reset << "]";
+        logc.info("main", s);
+
         workerThreads[w].join();
-        cout << "[main] Worker ["<< cyan << w << reset << "] finished!\t\t\t\t\t\t******" << endl;
+        s << "Worker ["<< cyan << w << reset << "] finished!\t\t\t\t\t\t******";
+        logc.info("main", s);
     }
 
     // now we need to merge all the intermediate rotated binary layers (M3) into a single M3_Final layer
@@ -264,7 +275,7 @@ int main(int argc, char *argv[])
 
     // Step 1: Create base empty container that will hold the final value
     // pipeline.showInfo();
-    cout << endl << red <<  "*************************************************" << reset << endl;
+    logc.warn("main", "*************************************************");
 
     pipeline.createLayer("M3_LandabilityMap_BLEND", LAYER_RASTER);
     pipeline.copyMask("M1_RAW_Bathymetry", "M3_LandabilityMap_BLEND");
@@ -286,11 +297,12 @@ int main(int argc, char *argv[])
     // pipeline.showInfo();
     // Step 2: iterate through every  
     // Layer name: "M3_LandabilityMap" + suffix
-    cout << "[main] Blending all rotation-depending maps (M3)..." << endl;
+    logc.info("main", "Blending all rotation-depending maps (M3)...");
 
     for (int r=0; r<=nIter; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
-        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]" << endl;
+        s << "Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]";
+        logc.info("main",s);
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         string currentname = "M3_LandabilityMap" + suffix;
@@ -303,23 +315,24 @@ int main(int argc, char *argv[])
 
         acum = acum + currentmat; // sum to the acum
     }
-    cout << "[main] Normalizing..." << endl;
+    logc.info("main", "Normalizing ...");
     // normalizing
     acum = acum / (nIter+1);
-    cout << "[main] Exporting M3_LandabilityMap_BLEND" << endl;
+
+    logc.info("main","Exporting M3_LandabilityMap_BLEND");
     // transfer, via mask
     acum.copyTo(apFinal->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
     pipeline.saveImage("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.png");
     pipeline.exportLayer("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
     pipeline.showImage("M3_LandabilityMap_BLEND");
-    cout << endl;    
 
 //*******************************************************//
     acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
     for (int r=0; r<=nIter; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
-        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]" << endl;
+        s <<  "Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]";
+        logc.info("main",s);
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         string currentname = "M4_FinalMeasurability" + suffix;
@@ -334,18 +347,18 @@ int main(int argc, char *argv[])
 
         acum = acum + currentmat; // sum to the acum
     }
-    cout << "[main] Blending all rotation-depending MAD-maps (M4)..." << endl;
-    cout << "[main] Normalizing..." << endl;
+
+    logc.info("main", "Blending all rotation-depending MAD-maps (M4)...");
+    logc.info("main", "Normalizing...");
     // normalizing
     acum = acum / (nIter+1);
-    cout << "[main] Exporting M4_FinalMeasurability" << endl;
+    logc.info("main", "Exporting M4_FinalMeasurability");
     // transfer, via mask
     acum.copyTo(apMeasure->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
     pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
     pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
     pipeline.showImage("M4_FinalMeasurability");
-    cout << endl;    
 
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
     if (params.verbosity > 0)

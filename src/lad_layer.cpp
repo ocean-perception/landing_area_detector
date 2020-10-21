@@ -133,6 +133,7 @@ namespace lad
     int Layer::setType(int newType)
     {
         layerType = newType;
+        return newType;
     }
     /**
  * @brief Prints summary information of the layer
@@ -205,11 +206,13 @@ namespace lad
      */
     int RasterLayer::readTIFF(std::string name){
 
+    std::ostringstream s;
     // create the container and the open input file
     Geotiff inputGeotiff(name.c_str());
     if (!inputGeotiff.isValid())
     { // check if nothing wrong happened with the constructor
-        cout << red << "[readTIFF] Error opening Geotiff file: " << reset << name << endl;
+        s << "Error opening geoTIFF file: " << yellow << name;
+        logc.error("rl::readTIFF", s);
         return lad::ERROR_GDAL_FAILOPEN;
     }
     //**************************************
@@ -225,7 +228,8 @@ namespace lad
     apData = inputGeotiff.GetRasterBand(1);
     if (apData == nullptr)
     {
-        cout << red << "[processGeotiff]: Error reading input geoTIFF data: NULL" << reset << endl;
+        s << "Error opening Geotiff file: " << yellow << name;
+        logc.error("rl::readTIFF", "Error reading input geoTIFF data: NULL");
         return ERROR_GDAL_FAILOPEN;
     }
 
@@ -286,15 +290,18 @@ namespace lad
  */
     int VectorLayer::convertSpace(int newSpace, double *apTransform)
     {
-        if (newSpace = coordinateSpace)
+        std::ostringstream s;
+        if (newSpace == coordinateSpace)
         {
-            cout << yellow << "[convertSpace] Source and target coordinate space are the same when trying to convert [" << layerName << "]. No operation was performed" << reset << endl;
+            s << "Source and target coordinate space are the same when trying to convert [" << layerName << "]. No operation was performed";
+            logc.info("vl::convertSpace", s);
             // it is the same space! nothing to change
             return 0;
         }
         if (apTransform == nullptr)
         {
-            cout << red << "[convertSpace] Wrong 6D transforation matrix when trying to convert [" << layerName << "]. No operation was performed" << endl;
+            s << "Wrong 6D transforation matrix when trying to convert [" << layerName << "]. No operation was performed";
+            logc.error("vl::convertSpace", s);
             return -1;
         }
         // ok we have a valid 6D transformation (somewhat...)
@@ -313,10 +320,12 @@ namespace lad
  */
     int VectorLayer::writeLayer(std::string exportName, int fileFmt, std::string strWKTSpatialRef, int outputCoordinate, double *apGeoTransform)
     {
+        std::ostringstream s;
         //*************************************************************
         if (fileFmt == FMT_TIFF)
         {
-            cout << red << "[v.writeLayer] Error, vector layer [" << layerName << "] cannot be exported as TIFF. Please convert it to raster first" << reset << endl;
+            s << "vector layer [" << layerName << "] cannot be exported as TIFF. Please convert it to raster first";
+            logc.error("vl::writeLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
         //*************************************************************
@@ -327,18 +336,20 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                cout << "[v.writeLayer] Converting coordinate space of [" << exportName << "] to [";
+                s << "Converting coordinate space of [" << exportName << "] to [";
                 if (outputCoordinate == PIXEL_COORDINATE)
-                    cout << yellow << "PIXEL" << reset << "]" << endl;
+                    s << yellow << "PIXEL" << reset << "]";
                 else
-                    cout << yellow << "WORLD" << reset << "]" << endl;
+                    s << yellow << "WORLD" << reset << "]";
+                logc.warn("vl::writeLayer", s);
                 convertDataSpace(&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
             }
             //vectorData
             int i = exportShapefile(exportName, layerName, transformedData, strWKTSpatialRef);
             if (i != NO_ERROR)
             {
-                cout << "\tSome error ocurred while exporting [" << yellow << layerName << reset << "] to [" << yellow << exportName << "]" << reset << endl;
+                s << "\tSome error ocurred while exporting [" << yellow << layerName << reset << "] to [" << yellow << exportName << "]";
+                logc.error ("vl::writeLayer", s);
                 return ERROR_GDAL_FAILOPEN;
             }
             return NO_ERROR;
@@ -354,15 +365,16 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                cout << "[v.writeLayer] Converting coordinate space of [" << exportName << "] to [";
+                s << "Converting coordinate space of [" << exportName << "] to [";
                 if (outputCoordinate == PIXEL_COORDINATE)
                 {
-                    cout << yellow << "PIXEL" << reset << "]" << endl;
+                    s << yellow << "PIXEL" << reset << "]";
                 }
                 else
                 {
-                    cout << yellow << "WORLD" << reset << "]" << endl;
+                    s << yellow << "WORLD" << reset << "]";
                 }
+                logc.warn("vl::writeLayer", s);
                 convertDataSpace(&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
             }
 
@@ -370,22 +382,25 @@ namespace lad
             {
                 if (fileName.empty())
                 {
-                    cout << "[writeLayer] " << yellow << "Layer filename not defined, will try to use layer name as export file" << reset << endl;
+                    logc.warn("vl::writeLayer", "Layer filename not defined, will try to use layer name as export file");
                     if (layerName.empty())
                     {
-                        cout << "[writeLayer] " << red << "ERROR: Layer name not defined. Won't export layer" << reset << endl;
+                        logc.error("vl::writeLayer", "Layer name not defined. Won't export layer");
                         return ERROR_MISSING_ARGUMENT;
                     }
                     exportName = layerName;
                 }
             }
-            cout << reset << "[writeLayer] Exporting " << yellow << layerName << reset << " as CSV file: " << yellow << exportName << reset << endl;
-            cout << "\tVector layer size: " << vectorData.size() << endl;
+            s <<"Exporting " << yellow << layerName << reset << " as CSV file: " << yellow << exportName;
+            logc.info ("vl::writeLayer", s);
+            s << "\tVector layer size: " << vectorData.size();
+            logc.info ("vl::writeLayer", s);
 
             ofstream outfile(exportName, ios::out);
             if (!outfile.good())
             {
-                cout << "[writeLayer] " << red << "Error creating output file: " << exportName << reset << endl;
+                s << "Error creating output file: " << exportName;
+                logc.error ("vl::writeLayer", s);
                 return ERROR_WRONG_ARGUMENT;
             }
             std::string separator = ", ";
@@ -395,21 +410,24 @@ namespace lad
             {
                 outfile << element.x << separator << element.y << endl;
             }
-            cout << "\tVector layer exported to: " << exportName << endl;
+            s << "\tVector layer exported to: " << exportName;
+            logc.info ("vl::writeLayer", s);
             outfile.close();
             return EXPORT_OK;
         }
         //*************************************************************
         else
         {
-            cout << yellow << "[writeLayer] Unknown format: " << fileFmt << reset << endl;
+            s << "[writeLayer] Unknown format: " << fileFmt;
+            logc.error ("vl::writeLayer", s);
             return ERROR_WRONG_ARGUMENT;
         }
     }
 
     int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, int outputCoordinate){
+        std::ostringstream s;
         if (outputFilename.empty()){
-            cout << red <<"[writeLayer] Empty output filename provided" << reset << endl;
+            logc.error ("rl::writeLayer", "Empty output filename provided");
             return ERROR_WRONG_ARGUMENT;
         }
         double noData = getNoDataValue();
@@ -420,7 +438,8 @@ namespace lad
         if (rasterData.depth() != CV_64F){
             cv::Mat raster64;
             rasterData.convertTo(raster64, CV_64F);
-            cout << "[r.writeLayer] Converted [" << yellow << layerName << reset << "] to CV_64F" << endl; 
+            s <<  "Converted [" << yellow << layerName << reset << "] to CV_64F"; 
+            logc.info ("rl::writeLayer", s);
             raster64.copyTo(tempData, rasterMask);
         }
         else{
@@ -429,7 +448,9 @@ namespace lad
 
         // exporting as CSV in the pixel domain
         if (fileFmt == FMT_CSV){
-            cout << "[r.writeLayer] exporting [" << yellow << layerName << reset << "] as CSV" << endl;
+            s <<  "exporting [" << yellow << layerName << reset << "] as CSV";
+            logc.info ("rl::writeLayer", s);
+
             std::ofstream ofs;
             ofs.open(outputFilename, std::ofstream::out); //overwrite if exist            
             for (int row = 0; row < tempData.rows; row++){
@@ -552,6 +573,7 @@ namespace lad
     {
         input->copyTo(rasterData); // deep copy of the Mat content and header to avoid original owner to accidentally overwrite the data
         setStatus(LAYER_OK);
+        return LAYER_OK;
     }
 
     /**
@@ -575,7 +597,7 @@ namespace lad
  */
     int exportShapefile(string filename, string layerName, vector<Point2d> data, std::string strWKTSpatialRef)
     {
-
+        std::ostringstream s;
         const char *pszDriverName = "ESRI Shapefile";
         GDALDriver *poDriver;
         GDALAllRegister();
@@ -583,7 +605,8 @@ namespace lad
         poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName);
         if (poDriver == NULL)
         {
-            cout << red << "Error w/GDAL: " << pszDriverName << " not available" << endl;
+            s << "GDAL: " << pszDriverName << " not available";
+            logc.error ("exportShapefile", s);
             return ERROR_GDAL_FAILOPEN;
         }
 
@@ -591,7 +614,8 @@ namespace lad
         poDS = poDriver->Create(filename.c_str(), 0, 0, 0, GDT_Unknown, NULL);
         if (poDS == NULL)
         {
-            cout << red << "Error creating output file: [" << filename << "]" << reset << endl;
+            s <<  "Error creating output file: [" << filename << "]";
+            logc.error ("exportShapefile", s);
             return ERROR_GDAL_FAILOPEN;
         }
 
@@ -630,7 +654,7 @@ namespace lad
 
             if (poLayer->CreateFeature(poFeature) != OGRERR_NONE)
             {
-                cout << yellow << "Error GDAL: Failed to create feature in shapefile." << endl;
+                logc.error("exportShapefile", "GDAL: Failed to create feature in shapefile.");
                 return ERROR_GDAL_FAILOPEN;
             }
 

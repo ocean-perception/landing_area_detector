@@ -16,12 +16,14 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
 
     parameterStruct params = *p;    // local copy, to avoid accident
     // lad::Pipeline pipeline = *ap;
+    std::ostringstream s;
 
     int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
 
     for (int r=0; r<=nRot; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
-        cout << "[main] Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
+        s << "Current orientation [" << cyan << currRotation << reset << "] degrees" << endl;
+        logc.info("processRotationWorker",s);
         params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
@@ -35,7 +37,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         threadLaneD.join();
 
         // TODO: Add validation for copyemask when src is missing
-        cout << green << "[main] Recomputing lanes C & D done" << reset << endl;
+        logc.info("processRotationWorker", "Recomputing lanes C & D done");
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
         ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
         ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);

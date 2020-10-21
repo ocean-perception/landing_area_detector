@@ -1,9 +1,9 @@
 /**
- * @file helper.h
- * @author Jose Cappelletto (cappelletto@gmail.com)
- * @brief Collection of general helper functions
+ * @file    helper.h
+ * @author  Jose Cappelletto (cappelletto@gmail.com)
+ * @brief   Collection of general helper functions
  * @version 0.2
- * @date 2020-07-03
+ * @date    2020-07-03
  * 
  * @copyright Copyright (c) 2020
  * 
@@ -49,7 +49,8 @@ namespace logger{
             };
 
             string publish(logger::LogLevel type, std::string owner, std::string message);
-    
+            string publisher(string name);
+
             string error(string owner, string message);
             string warn (string owner, string message);
             string debug(string owner, string message);
@@ -66,10 +67,7 @@ namespace logger{
     };
 
 };
-
-
 #endif // _PROJECT_HELPER_H_
-
 
 /*
 Check: 
