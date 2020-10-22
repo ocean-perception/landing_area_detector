@@ -190,6 +190,8 @@ int main(int argc, char *argv[])
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     if (params.fixRotation == true){
+        s << "Calculating maps for fixed rotation [" << blue << params.rotation << reset << "]";
+        logc.debug("main", s);
         pipeline.computeLandabilityMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_LandabilityMap");
         pipeline.copyMask("C1_ExclusionMap","M3_LandabilityMap");
         pipeline.showImage("M3_LandabilityMap");
@@ -213,7 +215,7 @@ int main(int argc, char *argv[])
     }
 
     // if fixRotation = false, we iterate from rotationMin to rotationMax
-    logc.info("main", "Calculating landability maps for every rotation:");
+    logc.info("main", "Calculating landability maps for every rotation ...");
     s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
     logc.info("main", s);
     int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
@@ -334,8 +336,8 @@ int main(int argc, char *argv[])
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         string currentname = "M4_FinalMeasurability" + suffix;
-        if (params.exportRotated)
-            pipeline.saveImage(currentname, currentname + ".png");
+        // if (params.exportRotated)
+        //     pipeline.saveImage(currentname, currentname + ".png");
         // cout << "\tName: " << currentname << endl;
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));

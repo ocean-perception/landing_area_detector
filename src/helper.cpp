@@ -65,19 +65,19 @@ namespace logger{
     this->mtx.lock();
     switch(type){
       case logger::LogLevel::MSG_ERROR:
-        out << red << "[error]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        out << red << "[error]" << light_cyan << " <" << publisher << "> " << reset << message << reset << endl;
         break;
       case logger::LogLevel::MSG_DEBUG:
-        out << green << "[debug]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        out << green << "[debug]" << light_cyan << " <" << publisher << "> " << reset << message << reset << endl;
         break;
       case logger::LogLevel::MSG_WARNING:
-        out << yellow << "[warn] " << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        out << yellow << "[warn] " << light_cyan << " <" << publisher << "> " << reset << message << reset << endl;
         break;
       case logger::LogLevel::MSG_INFO:
-        out << reset << "[info] " << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        out << reset << "[info] " << light_cyan << " <" << publisher << "> " << reset << message << reset << endl;
         break;
       default:
-        out << reset << "[-]" << cyan << " <" << publisher << "> " << reset << message << reset << endl;
+        out << reset << "[-]" << light_cyan << " <" << publisher << "> " << reset << message << reset << endl;
         break;
     }
     cout << out.str();

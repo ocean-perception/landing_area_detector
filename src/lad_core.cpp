@@ -433,10 +433,11 @@ namespace lad
         uploadData(name, (void *) &A);
         // apLayer->setRotation(apLayer->getRotation()); // DIRTY HACK TO FORCE RECOMPUTING THE INTERNAL rotatedData rasterLayer;
         if (verbosity > 0){
-            shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
-            namedWindow(name);
-            imshow(name, apLayer->rasterData * 255);
-            resizeWindow(name, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            showImage(name);
+            // shared_ptr<KernelLayer> apLayer = dynamic_pointer_cast<KernelLayer>(getLayer(name));
+            // namedWindow(name);
+            // imshow(name, apLayer->rasterData * 255);
+            // resizeWindow(name, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         }
         return NO_ERROR;
     }
@@ -590,10 +591,10 @@ namespace lad
  * 
  * @param rasterName Input binary raster layer to be analized 
  * @param contourName Output vector layer that will contain the largest found contour
- * @param showImage flag indicating if we need to show the images
+ * @param showImage flag indicating if we need to show the images (to be deprecated. we can use pipeline to show result)
  * @return int Error code - if any.
  */
-    int Pipeline::extractContours(std::string rasterName, std::string contourName, int showImage)
+    int Pipeline::extractContours(std::string rasterName, std::string contourName, int showImg)
     {
         ostringstream s;
         vector<vector<Point>> contours; // find contours of the DataMask layer
@@ -632,19 +633,19 @@ namespace lad
         // WARNING: contours may provide false shapes when valid data mask reaches any image edge.
         // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
         // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
-        if (showImage)
-        {
-            Mat boundingLayer = Mat::zeros(apRaster->rasterData.size(), CV_8UC1); // empty mask
-            int n = 1;
-            for (const auto &contour : good_contours)
-            {
-                drawContours(boundingLayer, contours, -1, Scalar(255 * n / good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
-                n++;
-            }
-            namedWindow(contourName, WINDOW_NORMAL);
-            imshow(contourName, boundingLayer);
-            resizeWindow(contourName, 800, 800);
-        }
+        // if (showImg)
+        // {
+        //     Mat boundingLayer = Mat::zeros(apRaster->rasterData.size(), CV_8UC1); // empty mask
+        //     int n = 1;
+        //     for (const auto &contour : good_contours)
+        //     {
+        //         drawContours(boundingLayer, contours, -1, Scalar(255 * n / good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
+        //         n++;
+        //     }
+        //     namedWindow(contourName, WINDOW_NORMAL);
+        //     imshow(contourName, boundingLayer);
+        //     resizeWindow(contourName, 800, 800);
+        // }
 
         // COMPLETE: now we export the data to the target vector layer contourName
         // if it already exist, overwrite data?
@@ -1571,8 +1572,8 @@ namespace lad
                     std::vector<KPoint> pointList;
                     pointList = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
 
-                    timer.lap("----block B1: convert2Vector KPoint CGAL");
-                    acumB1 += timer.last_lap;
+                    // timer.lap("----block B1: convert2Vector KPoint CGAL");
+                    // acumB1 += timer.last_lap;
                     pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
                     if (pointList.size() > 3){
                         if (filtertype == FILTER_SLOPE){
@@ -1620,14 +1621,14 @@ namespace lad
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
 
-        if (verbosity > VERBOSITY_1){
-            cv::normalize(apDst->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
-            // // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(sout, sout, COLORMAP_JET);
-            namedWindow(apDst->layerName + "_verbose");
-            imshow(apDst->layerName + "_verbose", sout); // this will show nothing, as imshow needs remapped images
-            resizeWindow(apDst->layerName + "_verbose", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-        }
+        // if (verbosity > VERBOSITY_1){
+        //     cv::normalize(apDst->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
+        //     // // apply colormap for enhanced visualization purposes
+        //     cv::applyColorMap(sout, sout, COLORMAP_JET);
+        //     namedWindow(apDst->layerName + "_verbose");
+        //     imshow(apDst->layerName + "_verbose", sout); // this will show nothing, as imshow needs remapped images
+        //     resizeWindow(apDst->layerName + "_verbose", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+        // }
         return NO_ERROR;
     }
 
@@ -1781,7 +1782,7 @@ namespace lad
      * 
      */
     void tictac::show(){
-        cout << highlight << "Elapsed time: " << elapsed() << " ms ";
+        cout << light_yellow << "Elapsed time: " << highlight << elapsed() << " ms " << reset << endl;
     }
 
     /**
@@ -1791,9 +1792,9 @@ namespace lad
      */
     void tictac::lap(std::string str){
         stop();
-        // cout << str << endl;
+        cout << str << endl;
         last_lap = elapsed();
-        // show();
+        show();
         start();
     }
 

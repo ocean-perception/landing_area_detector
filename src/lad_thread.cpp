@@ -48,6 +48,8 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         if (p->exportRotated){
             ap->saveImage("M3_LandabilityMap" + suffix, "M3_LandabilityMap" + suffix + ".png");
             ap->exportLayer("M3_LandabilityMap" + suffix, "M3_LandabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+            ap->saveImage("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".png");
+            ap->exportLayer("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
         }
     } 
     return NO_ERROR;
@@ -153,13 +155,14 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     lad::tictac tt;
     tt.start();
     // we create an unique name using the rotation angle
-
+    logc.debug("laneC", "computeMeanSlopeMap -> C2_MeanSlopeMap");
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
         ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
         ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
+    logc.debug("laneC", "compareLayer -> C2_MeanSlopeMapExcl");
     ap->compareLayer("C2_MeanSlopeMap" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
     if (p->exportRotated){
@@ -167,14 +170,18 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
     // tt.lap("Lane C: C2_MeanSlopeMap");
+    logc.debug("laneC", "computeMeasurability -> X1_MeasurabilityMap");
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
+    ostringstream s;
+    s << "processLaneC for suffix: [" << blue << suffix << reset << "]";
+    logc.debug("laneC", s);
 
-    tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl");
+    tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl, X1_Measurability");
     return 0;
 }
 
