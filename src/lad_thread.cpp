@@ -33,15 +33,21 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
         //D2_LoProtExcl & D4_HiProtExcl
         std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
+        // X1_Measurability map
+        std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
         threadLaneC.join();
         threadLaneD.join();
 
         // TODO: Add validation for copyemask when src is missing
         logc.info("processRotationWorker", "Recomputing lanes C & D done");
+        logc.debug("processRotationWorker", "Computing M3_LandabilityMap");
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
         ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
         ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
 
+        logc.debug("processRotationWorker", "Waiting for thread X");
+        threadLaneX.join();
+        logc.debug("processRotationWorker", "Waiting for thread X... done\ncomputeBlendMeasurability");
         ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);
 
         // here we should ask if we need to export every intermediate layer (rotated)
@@ -55,6 +61,26 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
     return NO_ERROR;
 
 }
+
+int lad::processLaneX(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
+
+    lad::tictac tt;
+    tt.start();
+    // we create an unique name using the rotation angle
+    logc.debug("laneX", "computeMeasurability -> X1_MeasurabilityMap");
+    ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
+    // ap->showImage("C2_MeanSlopeMap");
+    if (p->exportRotated){
+        ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
+        ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    }
+    ostringstream s;
+    s << "processLaneX for suffix: [" << blue << suffix << reset << "]";
+    logc.debug("laneX", s);
+    tt.lap("\tLane X: X1_Measurability");
+    return 0;
+}
+
 
 int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix){
 

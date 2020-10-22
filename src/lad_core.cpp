@@ -853,7 +853,7 @@ namespace lad
         apLayerR->rasterMask.copyTo(apLayerO->rasterMask);  //transfer mask
 
         //  = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
-        if (verbosity > 0){
+        if (verbosity > 1){
             namedWindow (dstLayer);
             imshow (dstLayer, apLayerO->rasterData);
             resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
@@ -871,6 +871,8 @@ namespace lad
      */
     int Pipeline::showImage(std::string layer, int colormap){
         ostringstream s;
+        s << light_blue << "**************** _ call from [" << yellow << layer << light_blue << "]";
+        logc.debug("p:showImage", s);
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
         if (getLayer(layer) == nullptr){
             s << "layer [" << yellow << layer << reset << "] not found...";
@@ -1742,8 +1744,8 @@ namespace lad
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
 
         // DANGER
-        apDst->rasterData = tmp.clone();        
-        // cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
+        // apDst->rasterData = tmp.clone();        
+        cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 
         apDst->setNoDataValue(apSrc1->getNoDataValue());
         apDst->copyGeoProperties(apSrc1);
@@ -1782,7 +1784,7 @@ namespace lad
      * 
      */
     void tictac::show(){
-        cout << light_yellow << "Elapsed time: " << highlight << elapsed() << " ms " << reset << endl;
+        cout << yellow << "Elapsed time: " << highlight << elapsed() << " ms " << reset << endl;
     }
 
     /**

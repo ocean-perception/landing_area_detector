@@ -61,6 +61,15 @@ namespace lad{
     int processLaneD(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
     /**
+     * @brief Computes the maps correspondnig to lane (X): Geotech measurability  map
+     * 
+     * @param ap Pointer to Pipeline object containing a valid stack for processing
+     * @param param Pointer to structure containing all the parameters (geotech params and LAUV footprint)
+     * @return int error code, if any
+     */
+    int processLaneX(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
+
+    /**
      * @brief 
      * 
      * @param ap Pointer to Pipeline object containing a valid stack for processing

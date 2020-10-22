@@ -473,6 +473,9 @@ namespace lad
 
         // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
  
+        s <<  "Exporting [" << light_yellow << layerName << reset << "] to disk"; 
+        logc.info ("rl::writeLayer", s);
+
         char **optionsForTIFF = NULL;
         optionsForTIFF = CSLSetNameValue(optionsForTIFF, "COMPRESS", "LZW");
         driverGeotiff = GetGDALDriverManager()->GetDriverByName("GTiff");
