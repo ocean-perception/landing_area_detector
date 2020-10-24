@@ -242,22 +242,22 @@ int main(int argc, char *argv[])
     s << "nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset;
     logc.info("main", s);
 
-    // cout << "[main] blockSize: " << yellow << blockSize << reset << endl;
-    // cout << "[main] blockRemain: " << yellow << blockRemain << reset << endl;
     for (int w=0; w<nWorkers; w++){
         double minR = params.rotationMin + w * blockSize * params.rotationStep;
         double maxR = params.rotationMin + ((w+1) * blockSize - 1) * params.rotationStep;// - params.rotationStep;
         if (w == nWorkers-1) maxR = params.rotationMax;
 
-        s << "Dispatching range: [" << minR << "," << maxR << "]"; 
-        logc.info("main", s);
         workerParam[w] = params;
+
         workerParam[w].rotationMin = minR;
         workerParam[w].rotationMax = maxR;
+        // workerParam[w].rotationMin = params.rotationMin + w * params.rotationStep;
+        // workerParam[w].rotationMax = params.rotationMin + w * params.rotationStep;
 
         workerThreads[w] = std::thread (lad::processRotationWorker, &pipeline, &workerParam[w], "");
+
         // sleep(10);
-        s << "Dispatched for execution: [" << yellow << w << cyan << "]" << reset;
+        s << "Dispatched for execution: [" << yellow << w << reset << "] ---------------------------------> range: [" << green << minR << "," << maxR << reset << "]";
         logc.info("main", s);
     }
 

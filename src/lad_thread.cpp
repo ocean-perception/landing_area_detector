@@ -20,6 +20,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
 
     int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
 
+    #pragma omp for nowait 
     for (int r=0; r<=nRot; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
         s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
