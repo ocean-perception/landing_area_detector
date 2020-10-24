@@ -79,6 +79,8 @@ namespace lad{
      */
     int processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::string suffix);
 
+    int processRotationWorker (lad::Pipeline *ap, parameterStruct *p); //fixed rotation worker
+
 }
 
 

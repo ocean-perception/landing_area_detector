@@ -439,7 +439,7 @@ namespace lad
             cv::Mat raster64;
             rasterData.convertTo(raster64, CV_64F);
             s <<  "Converted [" << yellow << layerName << reset << "] to CV_64F"; 
-            logc.info ("rl::writeLayer", s);
+            // logc.info ("rl::writeLayer", s);
             raster64.copyTo(tempData, rasterMask);
         }
         else{
@@ -449,7 +449,7 @@ namespace lad
         // exporting as CSV in the pixel domain
         if (fileFmt == FMT_CSV){
             s <<  "exporting [" << yellow << layerName << reset << "] as CSV";
-            logc.info ("rl::writeLayer", s);
+            // logc.info ("rl::writeLayer", s);
 
             std::ofstream ofs;
             ofs.open(outputFilename, std::ofstream::out); //overwrite if exist            
@@ -474,7 +474,7 @@ namespace lad
         // cout << "[r.writeLayer] Dataset dimensions (COL x ROW): [" << ncols << "] x [" << nrows << "]\tNoData = [" << noData << "]" << endl; 
  
         s <<  "Exporting [" << light_yellow << layerName << reset << "] to disk"; 
-        logc.info ("rl::writeLayer", s);
+        // logc.info ("rl::writeLayer", s);
 
         char **optionsForTIFF = NULL;
         optionsForTIFF = CSLSetNameValue(optionsForTIFF, "COMPRESS", "LZW");

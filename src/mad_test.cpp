@@ -222,8 +222,8 @@ int main(int argc, char *argv[])
     logc.info("main", "Calculating landability maps for every rotation ...");
     s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
     logc.info("main", s);
-    int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
 
+    int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
     // let's define the set of rotation values to be tested 
     // TODO: STEP MUST BE POSITIVE
     // TODO: MIN MUST BE LOWER THAN MAX
@@ -243,33 +243,26 @@ int main(int argc, char *argv[])
     s << "nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset;
     logc.info("main", s);
 
-    for (int w=0; w<nWorkers; w++){
-        double minR = params.rotationMin + w * blockSize * params.rotationStep;
-        double maxR = params.rotationMin + ((w+1) * blockSize - 1) * params.rotationStep;// - params.rotationStep;
-        if (w == nWorkers-1) maxR = params.rotationMax;
+    #pragma omp parallel for
+    for (int nK = 0; nK <= nIter; nK++){
+        ostringstream xs;
+        parameterStruct localParam = params;
+        localParam.rotation = params.rotationMin + nK * params.rotationStep;
 
-        workerParam[w] = params;
-
-        workerParam[w].rotationMin = minR;
-        workerParam[w].rotationMax = maxR;
-        // workerParam[w].rotationMin = params.rotationMin + w * params.rotationStep;
-        // workerParam[w].rotationMax = params.rotationMin + w * params.rotationStep;
-
-        workerThreads[w] = std::thread (lad::processRotationWorker, &pipeline, &workerParam[w], "");
-
-        // sleep(10);
-        s << "Dispatched for execution: [" << yellow << w << reset << "] ---------------------------------> range: [" << green << minR << "," << maxR << reset << "]";
-        logc.info("main", s);
+        xs << "Dispatched for execution: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+        logc.info("main", xs);
+        lad::processRotationWorker (&pipeline, &localParam);
+        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+        logc.info("main", xs);
     }
+    // for (int w=0; w<nWorkers; w++){
+    //     s << "Waiting to finish worker ["<< cyan << w << reset << "]";
+    //     logc.info("main", s);
 
-    for (int w=0; w<nWorkers; w++){
-        s << "Waiting to finish worker ["<< cyan << w << reset << "]";
-        logc.info("main", s);
-
-        workerThreads[w].join();
-        s << "Worker ["<< green << w << reset << "] finished!\t\t\t\t\t\t" << green << "******";
-        logc.info("main", s);
-    }
+    //     workerThreads[w].join();
+    //     s << "Worker ["<< green << w << reset << "] finished!\t\t\t\t\t\t" << green << "******";
+    //     logc.info("main", s);
+    // }
 
     // now we need to merge all the intermediate rotated binary layers (M3) into a single M3_Final layer
     // every landability rotation map is a binary map indicating "landable or no-landable"
@@ -314,6 +307,9 @@ int main(int argc, char *argv[])
         // cout << "\tName: " << currentname << endl;
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
+        if (apCurrent == nullptr){
+            logc.error("blend", "Failed to retrieve layer");
+        }
         // let's convert to a CV64FC1 normalized matrix
         cv::Mat currentmat;
         apCurrent->rasterData.convertTo(currentmat, CV_64FC1,(double) 1.0/255.0);
