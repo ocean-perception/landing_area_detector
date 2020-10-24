@@ -159,11 +159,11 @@ int main(int argc, char *argv[])
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
     pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
-    if (params.verbosity > 1){
-        pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-        pipeline.showImage("A1_DetailedSlope");
-        pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    }
+//    if (params.verbosity > 1){
+//        pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+//        pipeline.showImage("A1_DetailedSlope");
+ //       pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+//    }
 
     tt.lap("** Lanes A,B & C completed -> M2_Protrusions map done");
 
@@ -187,10 +187,10 @@ int main(int argc, char *argv[])
     pipeline.saveImage("D3_HiProtMask", "D3_HiProtMask.png");
     pipeline.exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
 
-    if (params.verbosity> 0){
-        pipeline.showImage("D2_LoProtExcl");
-        pipeline.showImage("D4_HiProtExcl");
-    }
+//    if (params.verbosity> 0){
+//        pipeline.showImage("D2_LoProtExcl");
+//        pipeline.showImage("D4_HiProtExcl");
+//    }
     
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     if (params.fixRotation == true){
@@ -198,13 +198,13 @@ int main(int argc, char *argv[])
         logc.debug("main", s);
         pipeline.computeLandabilityMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_LandabilityMap");
         pipeline.copyMask("C1_ExclusionMap","M3_LandabilityMap");
-        pipeline.showImage("M3_LandabilityMap");
+//        pipeline.showImage("M3_LandabilityMap");
         pipeline.saveImage("M3_LandabilityMap", "M3_LandabilityMap.png");
         pipeline.exportLayer("M3_LandabilityMap", "M3_LandabilityMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
         pipeline.computeBlendMeasurability("M3_LandabilityMap", "X1_MeasurabilityMap", "M4_FinalMeasurability");
         pipeline.copyMask("C1_ExclusionMap","M4_FinalMeasurability");
-        pipeline.showImage("M4_FinalMeasurability");
+//        pipeline.showImage("M4_FinalMeasurability");
         pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
         pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
 
@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
 
     pipeline.saveImage("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.png");
     pipeline.exportLayer("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
-    pipeline.showImage("M3_LandabilityMap_BLEND");
+//    pipeline.showImage("M3_LandabilityMap_BLEND");
 
 //*******************************************************//
     acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
@@ -362,7 +362,7 @@ int main(int argc, char *argv[])
 
     pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
     pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
-    pipeline.showImage("M4_FinalMeasurability");
+//    pipeline.showImage("M4_FinalMeasurability");
 
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
     if (params.verbosity > 0)
