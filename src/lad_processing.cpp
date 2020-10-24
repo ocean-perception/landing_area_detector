@@ -89,11 +89,11 @@ namespace lad
 
         size_t total_elem = cols*rows; // expected input vector size
 
-        #pragma omp parallel
+        // #pragma omp parallel
         {
 
             std::vector<KPoint> slave; //preallocating space does not improve it
-            #pragma omp for nowait
+            // #pragma omp for nowait
             for (int i=0; i < total_elem; i++)
             {
                 double px, py, pz;
@@ -106,19 +106,18 @@ namespace lad
                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
                     px = col * sx;
                     py = row * sy;
-                    slave.push_back(KPoint(px,py,pz));
-                    // *acum = *acum + pz;
+                    master.push_back(KPoint(px,py,pz));
+                    *acum = *acum + pz;
                 }
             }
-
-            #pragma omp critical
-            {
-                master.insert(master.end(), 
-                                    std::make_move_iterator(slave.begin()), 
-                                    std::make_move_iterator(slave.end()));
-            }
+            // #pragma omp critical
+            // {
+            //     master.insert(master.end(), 
+            //                         std::make_move_iterator(slave.begin()), 
+            //                         std::make_move_iterator(slave.end()));
+            // }
         }
-        *acum = 1;
+        // *acum = 1;
         return master;
     }
 
