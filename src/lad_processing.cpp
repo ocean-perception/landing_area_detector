@@ -85,40 +85,46 @@ namespace lad
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix->cols;
         int rows = matrix->rows;
-        double px, py, pz;
-        std::vector<KPoint> output; //preallocating space does not improve it
+        std::vector<KPoint> master; //preallocating space does not improve it
+
+        size_t total_elem = cols*rows; // expected input vector size
 
 
-// #pragma omp declare reduction (merge : std::vector<int> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
+        // #pragma omp parallel for
+        for (int i=0; i < total_elem; i++)
+        {
+            double px, py, pz;
+            //let's calculate the index
+            register int row, col;
+            row = i / cols;
+            col = (i % cols);
 
-// std::vector<int> vec;
-// #pragma omp parallel for reduction(merge: vec)
-// for(int i=0; i<100; i++) vec.push_back(i);
-
-        // #pragma omp parallel for 
-        for (int y=0; y<rows; y++){
-            py = y * sy;
-            std::vector<KPoint> slave; //preallocating space does not improve it
-            for (int x=0; x<cols; x++){
-                px = x * sx;
-
-                pz = matrix->at<double>(cv::Point(x,y));
-                // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
-                // #pragma omp critical  <- locking threads, 18X penalty
-                    if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
-                        output.push_back(KPoint(px,py,pz));
-                        *acum = *acum + pz;
-                    }
+            // now, let's retrieve the pixel value and its spatial coordinates            
+            pz = matrix->at<double>(cv::Point(col,row));
+            if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
+                px = col * sx;
+                py = row * sy;
+                output.push_back(KPoint(px,py,pz));
+                *acum = *acum + pz;
             }
 
-            // #pragma omp critical
-            // {
-            //     output.insert(output.end(), 
-            //             std::make_move_iterator(slave.begin()), 
-            //             std::make_move_iterator(slave.end()));
-            // }
         }
 
+        // double px, py, pz;
+        // for (int y=0; y<rows; y++){
+        //     py = y * sy;
+        //     // std::vector<KPoint> slave; //preallocating space does not improve it
+        //     for (int x=0; x<cols; x++){
+        //         px = x * sx;
+
+        //         pz = matrix->at<double>(cv::Point(x,y));
+        //         // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
+        //                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
+        //                     output.push_back(KPoint(px,py,pz));
+        //                     *acum = *acum + pz;
+        //                 }
+        //     }
+        // }
         return output;
     }
 
