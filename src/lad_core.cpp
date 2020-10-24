@@ -1526,19 +1526,19 @@ namespace lad
         double cy = geoTransform[3];
         double sx = geoTransform[1];
         double sy = geoTransform[5];
-        cv::Mat kernelMask, kernelMaskBin;
-        cv::Mat temp, sout;
+        cv::Mat kernelMask;
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
-        apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
+        // apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
-        double acumA = 0, acumB = 0, acumC = 0; 
-        double acumB1 = 0;
         lad::tictac timer;
         timer.start();
         double acum_timer_mp = 0;
+        double acum_timer_process = 0;
 
-        // #pragma omp parallel for
+        auto start_ = std::chrono::high_resolution_clock::now();
+
         for (int row=0; row<nRows; row++){
+            #pragma omp parallel for
             for (int col=0; col<nCols; col++){
                 if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
                     int cl = col - wKernel/2;
@@ -1555,6 +1555,8 @@ namespace lad
                     int yi = hKernel/2 - (row - rt);
                     int xf = cr - col + wKernel/2;
                     int yf = rb - row + hKernel/2;
+
+                    cv::Mat temp, sout;
 
                     cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1
                     //subImage contains the raw data patch
@@ -1574,15 +1576,15 @@ namespace lad
                     std::vector<KPoint> pointList;
 
                     // start time 
-                    auto start_map = std::chrono::high_resolution_clock::now();
+                    // auto start_map = std::chrono::high_resolution_clock::now();
                     pointList = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
-                    auto stop_map = std::chrono::high_resolution_clock::now();
-                    std::chrono::duration< double > duration = stop_map - start_map;
-                    acum_timer_mp = acum_timer_mp + duration.count();
+                    // auto stop_map = std::chrono::high_resolution_clock::now();
+                    // std::chrono::duration< double > duration = stop_map - start_map;
+                    // acum_timer_mp = acum_timer_mp + duration.count();
 
-                    // timer.lap("----block B1: convert2Vector KPoint CGAL");
-                    // acumB1 += timer.last_lap;
-                    if (pointList.size() > 11){
+                    // start_map = std::chrono::high_resolution_clock::now();
+
+                    if (pointList.size() > 5){
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
@@ -1612,13 +1614,24 @@ namespace lad
                     else{ // we do not have enough points to compute a valid plane
                         apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
                     }//*/
-                }
+
+                    // stop_map = std::chrono::high_resolution_clock::now();
+                    // duration = stop_map - start_map;
+                    // acum_timer_process = acum_timer_process + duration.count();
+                    }
                 else
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
-        s << " ----------------------------------------------------------------- Ellapsed: " << yellow << acum_timer_mp << reset;
-        logc.debug("\t>> filter_loop", s);
+
+        auto stop_ = std::chrono::high_resolution_clock::now();
+        std::chrono::duration< double > duration_all = stop_ - start_;
+        // acum_timer_mp = acum_timer_mp + duration_all.count();
+
+        s << " ----------------------------------------------------------------- Ellapsed: " << yellow << duration_all.count() << reset;
+        logc.debug("\t>> combined loop", s);
+        // s << " ----------------------------------------------------------------- Ellapsed: " << green << acum_timer_process << reset;
+        // logc.debug("\t>> computePxlVal.", s);
         // cout << "Block A - mask:\t" << acumA << endl;
         // cout << "Block B1 - conv:\t" << acumB1 << endl;
         // cout << "Block C - fit:\t" << acumC << endl;
@@ -1626,14 +1639,6 @@ namespace lad
         apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
 
-        // if (verbosity > VERBOSITY_1){
-        //     cv::normalize(apDst->rasterData, sout, 0, 255, NORM_MINMAX, CV_8UC1, apMask->rasterData); // normalize within the expected range 0-255 for imshow
-        //     // // apply colormap for enhanced visualization purposes
-        //     cv::applyColorMap(sout, sout, COLORMAP_JET);
-        //     namedWindow(apDst->layerName + "_verbose");
-        //     imshow(apDst->layerName + "_verbose", sout); // this will show nothing, as imshow needs remapped images
-        //     resizeWindow(apDst->layerName + "_verbose", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-        // }
         return NO_ERROR;
     }
 

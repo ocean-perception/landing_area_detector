@@ -207,11 +207,32 @@ namespace lad
         double c = plane.c();
         double d = plane.d();
         std::vector<double> distances;
-        for (auto p:points){
-            // double val = a*p.x() + b*p.y() + c*p.z() + d;
-            double val = a*p[0] + b*p[1] + c*p[2] + d;
-            distances.push_back(val);
+
+        size_t total = points.size();
+        #pragma omp parallel
+        {
+            std::vector<double> slave; // thread local copy
+
+            #pragma omp for nowait
+
+            // for (auto p:points){
+            for (int i=0; i < total; i++){
+                auto p = points[i];
+                // double val = a*p.x() + b*p.y() + c*p.z() + d;
+                double val = a*p[0] + b*p[1] + c*p[2] + d;
+                slave.push_back(val);
+            }
+
+            #pragma omp critical
+            {
+                // collector / merge
+                distances.insert(distances.end(), 
+                            std::make_move_iterator(slave.begin()), 
+                            std::make_move_iterator(slave.end()));
+            }
+
         }
+
         return distances;
     }
 
