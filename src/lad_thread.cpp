@@ -24,11 +24,11 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
     for (int r=0; r<=nRot; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
         s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
-        logc.info("processRotationWorker",s);
-        params.rotation = currRotation;
+        logc.info("processRotationWorker", s);
+        // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(params.rotation);
+        dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
         // compute the rotation dependent layers
         // C3_MeanSlopeExcl
         std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
@@ -38,7 +38,16 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
         threadLaneC.join();
         threadLaneD.join();
+        threadLaneX.join();
+    }
 
+    #pragma omp for nowait 
+    for (int r=0; r<=nRot; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        // s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
+        // logc.info("processRotationWorker", s);
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
         // TODO: Add validation for copyemask when src is missing
         logc.info("processRotationWorker", "Recomputing lanes C & D done");
         logc.debug("processRotationWorker", "Computing M3_LandabilityMap");
@@ -47,7 +56,6 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
 
         logc.debug("processRotationWorker", "Waiting for thread X");
-        threadLaneX.join();
         logc.debug("processRotationWorker", "Waiting for thread X... done\ncomputeBlendMeasurability");
         ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);
 
@@ -58,7 +66,8 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
             ap->saveImage("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".png");
             ap->exportLayer("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
         }
-    } 
+    }
+    
     return NO_ERROR;
 
 }
