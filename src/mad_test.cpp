@@ -230,6 +230,7 @@ int main(int argc, char *argv[])
     // TODO: nRot should result as a positive number
     // split the workload in nThreads (nWorkers)
     int    nWorkers = (nThreads > 3)? nThreads : 4;
+    // nWorkers = 1;
     vector <parameterStruct> workerParam(nWorkers);
     vector <thread>          workerThreads(nWorkers);
     // define job for each worker

@@ -703,8 +703,12 @@ namespace lad
     std::shared_ptr<Layer> Pipeline::getLayer(std::string name)
     {
         auto layer = mapLayers.find(name);
-        if (layer == mapLayers.end())
+        if (layer == mapLayers.end()){
+            // ostringstream s;
+            // s << "Layer [" << name << "] not found";
+            // logc.error ("getLayer", s);
             return nullptr;
+        }
 
         return (layer->second); //now we search it by ID
     }

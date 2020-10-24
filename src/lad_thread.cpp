@@ -16,29 +16,60 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
 
     parameterStruct params = *p;    // local copy, to avoid accident
     // lad::Pipeline pipeline = *ap;
-    std::ostringstream s;
 
     int nRot = (params.rotationMax - params.rotationMin) / params.rotationStep;
 
     #pragma omp for nowait 
     for (int r=0; r<=nRot; r++){
+        std::ostringstream s;
         double currRotation = params.rotationMin + r*params.rotationStep;
         s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
         logc.info("processRotationWorker", s);
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        // s << "creating KernelAUV" << suffix;
+        // logc.debug ("forLaneD", s);
         ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
         dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
         // compute the rotation dependent layers
         // C3_MeanSlopeExcl
-        std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
+        lad::processLaneD(ap, &params, suffix);
+        // std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
         //D2_LoProtExcl & D4_HiProtExcl
-        std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
+        // threadLaneD.join();
+    }
+
+    #pragma omp for nowait 
+    for (int r=0; r<=nRot; r++){
+        std::ostringstream s;
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
+        logc.info("processRotationWorker", s);
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        // ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
+        // dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
+        // compute the rotation dependent layers
+        // C3_MeanSlopeExcl
+        lad::processLaneC(ap, &params, suffix);
+        // std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
+        // threadLaneC.join();
+    }
+
+    #pragma omp for nowait 
+    for (int r=0; r<=nRot; r++){
+        std::ostringstream s;
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
+        logc.info("processRotationWorker", s);
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        // ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
+        // dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
         // X1_Measurability map
-        std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
-        threadLaneC.join();
-        threadLaneD.join();
-        threadLaneX.join();
+        lad::processLaneX(ap, &params, suffix);
+        // std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
+        // threadLaneX.join();
     }
 
     #pragma omp for nowait 
@@ -96,6 +127,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
 
     lad::tictac tt;
     tt.start();
+    ostringstream s;
 
     auto apSrc  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("M2_Protrusions"));
     //first step is to create the LoProt map (h < hcrit)
@@ -106,14 +138,21 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     ap->compareLayer("M2_Protrusions", "D1_tempGR" + suffix, p->groundThreshold, CMP_GE);
     // need a logical op: D1_tempLT AND D1_tempGT
     ap->maskLayer("D1_tempLO" + suffix, "D1_tempGR" + suffix, "D1_LoProtMask" + suffix);
+    s << "lpElev try for " << suffix;
     ap->maskLayer("M2_Protrusions", "D1_LoProtMask" + suffix, "D1_LoProtElev" + suffix);
-    ap->removeLayer("D1_tempGR" + suffix);
-    ap->removeLayer("D1_tempLO" + suffix);
+    s << "lpElev done for " << suffix;
+    logc.debug("laneD", s);
+    // ap->removeLayer("D1_tempGR" + suffix);
+    // ap->removeLayer("D1_tempLO" + suffix);
 
     // Final step, iterate through different LO obstacle heights and compute correpsonding exlusion area (disk) 
     // we need a vector containing the partitioned thresholds/disk size pairs.
     // Starting from ground_threshold (lowest) to height_threshold (highest) LoProt elevation value
     auto apElev = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtElev" + suffix));
+    if (apElev == nullptr){
+        s << "Nullptr when casting for " << "D1_LoProtElev" << suffix;
+        logc.error("laneD", s);
+    }
     cv::Mat D3_Excl = cv::Mat::zeros(apElev->rasterData.size(), CV_8UC1); // empty mask
     cv::Mat D3_layers[LO_NPART], temp;
     int diskSize[LO_NPART];
