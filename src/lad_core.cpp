@@ -1075,8 +1075,8 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
-            logc.info ("maskLayer", s);
+            // s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            // logc.info ("maskLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1126,8 +1126,8 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
-            logc.info ("compareLayer", s);
+            // s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            // logc.info ("compareLayer", s);
             createLayer(dst, LAYER_RASTER);
         }
 
@@ -1189,8 +1189,8 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
-            logc.info ("p::lowpassFilter", s);
+            // s << "destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            // logc.info ("p::lowpassFilter", s);
             createLayer(dst, LAYER_RASTER);
         }
         
@@ -1398,8 +1398,8 @@ namespace lad
             return LAYER_NOT_FOUND;
         }
         if (isAvailable(dst)){
-            s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
-            logc.warn ("p::generatePlaneMap", s);
+            // s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating ...";
+            // logc.warn ("p::generatePlaneMap", s);
             createLayer(dst, LAYER_RASTER);
         }
         

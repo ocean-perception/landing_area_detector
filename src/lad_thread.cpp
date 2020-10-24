@@ -16,12 +16,15 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
 
     parameterStruct params = *p;    // local copy, to avoid accident
     // lad::Pipeline pipeline = *ap;
-    ostringstream s;
+    ostringstream sx;
     double currRotation = params.rotation;
     string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-    ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-    dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
-    logc.info("processRotationWorker", s);
+    #pragma omp critical
+    {
+        ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
+        dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
+    }
+    logc.info("processRotationWorker", sx);
 
     #pragma omp parallel sections
     {

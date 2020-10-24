@@ -228,22 +228,9 @@ int main(int argc, char *argv[])
     // TODO: STEP MUST BE POSITIVE
     // TODO: MIN MUST BE LOWER THAN MAX
     // TODO: nRot should result as a positive number
-    // split the workload in nThreads (nWorkers)
-    int    nWorkers = (nThreads > 3)? nThreads : 4;
-    // nWorkers = 1;
-    vector <parameterStruct> workerParam(nWorkers);
-    vector <thread>          workerThreads(nWorkers);
-    // define job for each worker
-    int nSteps = ceil((params.rotationMax - params.rotationMin) / params.rotationStep); // user defined range/step should match
-    int blockSize = nSteps / nWorkers;
-    int blockRemain = nSteps % nWorkers;
+    int finished = 0;
 
-    s << "Iterating for [" << yellow << (nSteps) << reset << "] orientation combinations";
-    logc.info("main", s);
-    s << "nSteps/nWorkers: " << yellow << nSteps << "/" << nWorkers << reset;
-    logc.info("main", s);
-
-    #pragma omp parallel for
+    #pragma omp parallel for shared(finished) num_threads(nThreads)
     for (int nK = 0; nK <= nIter; nK++){
         ostringstream xs;
         parameterStruct localParam = params;
@@ -252,18 +239,14 @@ int main(int argc, char *argv[])
         xs << "Dispatched for execution: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
         logc.info("main", xs);
         lad::processRotationWorker (&pipeline, &localParam);
-        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+        
+        #pragma omp atomic
+        finished++;
+
+        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)finished / (float)nIter;
         logc.info("main", xs);
+
     }
-    // for (int w=0; w<nWorkers; w++){
-    //     s << "Waiting to finish worker ["<< cyan << w << reset << "]";
-    //     logc.info("main", s);
-
-    //     workerThreads[w].join();
-    //     s << "Worker ["<< green << w << reset << "] finished!\t\t\t\t\t\t" << green << "******";
-    //     logc.info("main", s);
-    // }
-
     // now we need to merge all the intermediate rotated binary layers (M3) into a single M3_Final layer
     // every landability rotation map is a binary map indicating "landable or no-landable"
     // This can be used to describe the landing process as a Bernoulli one (binary distribution). However, as it is rotation dependent
