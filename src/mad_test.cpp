@@ -149,17 +149,21 @@ int main(int argc, char *argv[])
     std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
     std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
     std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, ""); //no suffix, nill-rotation sample
+    std::thread threadLaneX (&lad::processLaneX, &pipeline, &params, "");
 
     threadLaneA.join();
     threadLaneB.join();
     threadLaneC.join();
+    threadLaneX.join();
 
-    pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-    pipeline.showImage("A1_DetailedSlope");
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
-    pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-        pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
-        pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
+    pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+    if (params.verbosity > 1){
+        pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.showImage("A1_DetailedSlope");
+        pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
+    }
 
     tt.lap("** Lanes A,B & C completed -> M2_Protrusions map done");
 

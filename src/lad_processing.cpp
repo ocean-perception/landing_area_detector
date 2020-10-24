@@ -86,20 +86,39 @@ namespace lad
         int cols = matrix->cols;
         int rows = matrix->rows;
         double px, py, pz;
-        std::vector<KPoint> output;
+        std::vector<KPoint> output; //preallocating space does not improve it
 
-        for (int x=0; x<cols; x++){
-            px = x * sx;
-            for (int y=0; y<rows; y++){
-                py = y * sy;
+
+// #pragma omp declare reduction (merge : std::vector<int> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
+
+// std::vector<int> vec;
+// #pragma omp parallel for reduction(merge: vec)
+// for(int i=0; i<100; i++) vec.push_back(i);
+
+        // #pragma omp parallel for 
+        for (int y=0; y<rows; y++){
+            py = y * sy;
+            std::vector<KPoint> slave; //preallocating space does not improve it
+            for (int x=0; x<cols; x++){
+                px = x * sx;
+
                 pz = matrix->at<double>(cv::Point(x,y));
                 // TODO: check against cv:SparseMatrix for faster iterations and removeing the necessity to check non-NULL data
-                if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
-                    output.push_back(KPoint(px,py,pz));
-                    *acum = *acum + pz;
-                }
+                // #pragma omp critical  <- locking threads, 18X penalty
+                    if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
+                        output.push_back(KPoint(px,py,pz));
+                        *acum = *acum + pz;
+                    }
             }
+
+            // #pragma omp critical
+            // {
+            //     output.insert(output.end(), 
+            //             std::make_move_iterator(slave.begin()), 
+            //             std::make_move_iterator(slave.end()));
+            // }
         }
+
         return output;
     }
 
@@ -212,20 +231,6 @@ namespace lad
         return plane;
     }
 
-    /**
-     * @brief 
-     * 
-     * @param points Vector of 3D points to be fitted in a plane
-     * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
-     */
-    KPlane computeFittingPlane2 (std::vector<KPoint> points){
-        KPlane plane(0,0,1,0);
-        if (points.empty()) // early exit
-            return plane;
-        // fit plane to whole triangles
-        linear_least_squares_fitting_3(points.begin(), points.end(), plane, CGAL::Dimension_tag<0>());
-        return plane;
-    }
 
     /**
      * @brief Converts vector of 2D points from one coordinate space to another. The valid spaces are PIXEL and WORLD coordinates 
@@ -309,12 +314,10 @@ namespace lad
     // 0.225	0.131133872530442
     // 0.25	0.152020086896598
         // Curve fitting eq:
-        // f(x) = -3.948793 x*x + 2.16931 + 0.0094463
+        // f(x) = -3.948793 x*x + 2.16931*x + 0.0094463
         // R2 = 0.9994
         return (-3.948793*x*x + 2.16931*x + 0.0094463);
     }
-
-
 } // namespace lad
 
 /*
@@ -374,7 +377,6 @@ std::pair<Vector3, Vector3> best_plane_from_points(const std::vector<Vector3> & 
     Vector3 plane_normal = svd.matrixU().rightCols<1>();
     std::cout << plane_normal << std::endl;
 
-
     return std::make_pair(centroid, plane_normal);
 
 }
@@ -385,7 +387,6 @@ void main()
     Eigen::Vector3f point2(4, 2, 3);
     Eigen::Vector3f point3(4, 2,1);
     Eigen::Vector3f point4(2, 2,3);
-
     std::vector<Eigen::Vector3f> points;
 
     points.push_back(point1);
@@ -393,9 +394,7 @@ void main()
     points.push_back(point3);
     points.push_back(point4);
 
-
     best_plane_from_points(points);
-
     std::cin.get();
 }
 */

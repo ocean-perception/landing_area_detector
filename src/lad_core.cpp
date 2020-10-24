@@ -871,8 +871,6 @@ namespace lad
      */
     int Pipeline::showImage(std::string layer, int colormap){
         ostringstream s;
-        s << light_blue << "**************** _ call from [" << yellow << layer << light_blue << "]";
-        logc.debug("p:showImage", s);
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
         if (getLayer(layer) == nullptr){
             s << "layer [" << yellow << layer << reset << "] not found...";
@@ -1537,7 +1535,9 @@ namespace lad
         double acumB1 = 0;
         lad::tictac timer;
         timer.start();
+        double acum_timer_mp = 0;
 
+        // #pragma omp parallel for
         for (int row=0; row<nRows; row++){
             for (int col=0; col<nCols; col++){
                 if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
@@ -1572,12 +1572,17 @@ namespace lad
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
+
+                    // start time 
+                    auto start_map = std::chrono::high_resolution_clock::now();
                     pointList = convertMatrix2Vector  (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+                    auto stop_map = std::chrono::high_resolution_clock::now();
+                    std::chrono::duration< double > duration = stop_map - start_map;
+                    acum_timer_mp = acum_timer_mp + duration.count();
 
                     // timer.lap("----block B1: convert2Vector KPoint CGAL");
                     // acumB1 += timer.last_lap;
-                    pointList = convertMatrix2Vector (&temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
-                    if (pointList.size() > 3){
+                    if (pointList.size() > 11){
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
@@ -1592,15 +1597,12 @@ namespace lad
                         }
                         else if (filtertype == FILTER_DISTANCE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
-                            // Polyhedron_3 poly;
-                            // CGAL::convex_hull_3(pointList.begin(), pointList.end(), poly);
-                            // DANGER
-                            std::vector<double> distances = computePlaneDistance(plane, pointList);
+                           std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double count = 0;
                             for (auto it:distances){
-                                count = fabs(it);
+                                // count = fabs(it);
                                 // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
-                                // count += fabs(it);
+                                count += fabs(it);
                             }
                             // computes the proportion of points within the range
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
@@ -1615,7 +1617,8 @@ namespace lad
                     apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
-
+        s << " ----------------------------------------------------------------- Ellapsed: " << yellow << acum_timer_mp << reset;
+        logc.debug("\t>> filter_loop", s);
         // cout << "Block A - mask:\t" << acumA << endl;
         // cout << "Block B1 - conv:\t" << acumB1 << endl;
         // cout << "Block C - fit:\t" << acumC << endl;
@@ -1744,7 +1747,6 @@ namespace lad
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
 
         // DANGER
-        // apDst->rasterData = tmp.clone();        
         cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
 
         apDst->setNoDataValue(apSrc1->getNoDataValue());
@@ -1784,7 +1786,11 @@ namespace lad
      * 
      */
     void tictac::show(){
-        cout << yellow << "Elapsed time: " << highlight << elapsed() << " ms " << reset << endl;
+        int64 e = elapsed();
+        if (e < 1000)
+            cout << yellow << "Elapsed time: " << highlight << e << " ms " << reset << endl;
+        else 
+            cout << yellow << "Elapsed time: " << highlight << (e/1000.0) << " s " << reset << endl;
     }
 
     /**
