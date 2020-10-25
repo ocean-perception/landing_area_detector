@@ -39,6 +39,9 @@ namespace lad
         std::string layerName;     //  Layer name (mandatory)
         std::string fileName; // Name of associated output file (optional)
         std::string filePath; // Name of associated output filepath (optional)
+        double  transformMatrix[6];
+        int     layerDimensions[3];
+        std::string layerProjection;
 
         /**
          * @brief Base empty constructor. Other case-specific constructors are available
@@ -50,6 +53,7 @@ namespace lad
             layerType = LAYER_ANYTYPE;
             layerStatus = LAYER_INVALID;
             noDataValue = 0.0;
+            layerProjection = "";
         }
 
         /**
@@ -63,6 +67,7 @@ namespace lad
             layerType = src->layerType;
             layerStatus = src->layerStatus;
             layerName = src->layerName;
+            layerProjection = src->layerProjection;
             fileName = src->fileName;
             filePath = src->filePath;
             noDataValue = src->getNoDataValue();
@@ -80,6 +85,7 @@ namespace lad
             layerID = id;
             layerType = type;
             layerStatus = LAYER_INVALID;
+            layerProjection = "INVALID";
         }
         /**
              * @brief Virtual destructor of the Layer object. 
@@ -124,9 +130,6 @@ namespace lad
         // \todo check if size/type must/can be updated at construction time
         cv::Mat rasterData; //OpenCV matrix that will hold the data
         cv::Mat rasterMask; //OpenCV matrix with valida data mask (0=invalid, 255=valid)
-        double  transformMatrix[6];
-        int     layerDimensions[3];
-        std::string layerProjection;
 
         RasterLayer(std::string name, int id) : Layer(name, id)
         {

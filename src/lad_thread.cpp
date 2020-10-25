@@ -24,7 +24,12 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     s << "Creating KernelAUV" << suffix;
     logc.debug("prW", s);
     ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-    dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
+    auto ptrLayer = dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix));
+    if (ptrLayer ==nullptr){
+        s << blue << "+++++++++++++++++++++++++++++++++++++++++++++ nullptr when dyncast KernelAUV" << suffix;
+        logc.error("pRW", s); 
+    }
+    ptrLayer->setRotation(currRotation);
     // }
     // logc.info("processRotationWorker", s);
 
@@ -194,15 +199,16 @@ int lad::processLaneX(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
 
     lad::tictac tt;
     tt.start();
+    ostringstream s;
     // we create an unique name using the rotation angle
-    logc.debug("laneX", "computeMeasurability -> X1_MeasurabilityMap");
+    s << "computeMeasurability -> X1_MeasurabilityMap for " << blue << suffix; 
+    logc.debug("laneX", s);
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    ostringstream s;
     s << "processLaneX for suffix: [" << blue << suffix << reset << "]";
     logc.debug("laneX", s);
     tt.lap("\tLane X: X1_Measurability");
@@ -328,8 +334,10 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
 
     lad::tictac tt;
     tt.start();
+    ostringstream s;
+    s << "computeMeanSlopeMap -> C2_MeanSlopeMap for " << blue << suffix;
     // we create an unique name using the rotation angle
-    logc.debug("laneC", "computeMeanSlopeMap -> C2_MeanSlopeMap");
+    logc.debug("laneC", s);
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
@@ -351,7 +359,6 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    ostringstream s;
     s << "processLaneC for suffix: [" << blue << suffix << reset << "]";
     logc.debug("laneC", s);
 

@@ -581,6 +581,7 @@ namespace lad
         // \todo use actual size from the raster container?
         apMask->layerDimensions[1] = apMask->rasterData.rows;
         apMask->layerDimensions[0] = apMask->rasterData.cols;
+        logc.debug("p:readTIFF", maskLayer);
         apMask->copyGeoProperties(apRaster);
         apMask->setNoDataValue(DEFAULT_NODATA_VALUE);
         return NO_ERROR;
@@ -852,6 +853,8 @@ namespace lad
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
+        logc.debug("p:comExcl", dstLayer);
+
         apLayerO->copyGeoProperties(apLayerR); //let's copy the geoproperties
         apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
         apLayerR->rasterMask.copyTo(apLayerO->rasterMask);  //transfer mask
@@ -1133,6 +1136,15 @@ namespace lad
 
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+
+        if (apSrc == nullptr){
+            logc.error("compareLayer", src);
+        }
+        if (apDst == nullptr){
+            logc.error("compareLayer", dst);
+        }
+
+        logc.debug("p:comExcl", dst);
 
         apDst->copyGeoProperties(apSrc);
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -1491,13 +1503,23 @@ namespace lad
             logc.info ("p::applyWindowFilter", s);
             createLayer(dst, LAYER_RASTER);
             apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+            if (apDst == nullptr){
+                s << "could not create <RasterLayer>: " << dst;
+                logc.error("filter", s);
+            }
+            else{
+                s << "Created ok RasterLayer:" << dst;
+                logc.info("filter", s);
+            }
         }
         // we create the empty container for the destination layer
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         // apDst->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apSrc->rasterData.size(), CV_64FC1); 
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
+        logc.debug ("filter", "apDst->copyGeoProperties(apSrc)");
         apDst->copyGeoProperties(apSrc);
+        logc.debug ("filter", "apSrc->rasterMask.copyTo(apDst->rasterMask)");
         apSrc->rasterMask.copyTo(apDst->rasterMask);
         // second, we iterate over the source image
         int nRows = apSrc->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
@@ -1613,7 +1635,10 @@ namespace lad
                             }
                             // computes the proportion of points within the range
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                            #pragma omp critical
+                            {
                             apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                            }
                         }
                     }
                     else{ // we do not have enough points to compute a valid plane
@@ -1640,9 +1665,6 @@ namespace lad
         // cout << "Block A - mask:\t" << acumA << endl;
         // cout << "Block B1 - conv:\t" << acumB1 << endl;
         // cout << "Block C - fit:\t" << acumC << endl;
-
-        apDst->copyGeoProperties(apSrc); //let's copy the geoproperties
-        apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
 
         return NO_ERROR;
     }

@@ -193,7 +193,9 @@ namespace lad
      * @param src Pointer to the source layer to be copied
      */
     void RasterLayer::copyGeoProperties(shared_ptr<RasterLayer> src){
-        layerProjection = src->layerProjection;
+        std::string intermediate = std::string(src->layerProjection);
+
+        this->layerProjection = intermediate;
         // also, let's clone transformMatrix which contains pixel size and origin
         for (int i=0; i<6; i++)
             transformMatrix[i] = src->transformMatrix[i];
