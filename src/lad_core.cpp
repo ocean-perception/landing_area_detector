@@ -1630,8 +1630,8 @@ namespace lad
                             double count = 0;
                             for (auto it:distances){
                                 // count = fabs(it);
-                                // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
-                                count += fabs(it);
+                                if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
+                                // count += fabs(it);
                             }
                             // computes the proportion of points within the range
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
