@@ -214,8 +214,7 @@ namespace lad
             std::vector<double> slave; // thread local copy
 
             #pragma omp parallel for num_threads(8)
-
-            // for (auto p:points){
+            // #pragma omp parallel for num_threads(8)
             for (int i=0; i < total; i++){
                 auto p = points[i];
                 // double val = a*p.x() + b*p.y() + c*p.z() + d;
