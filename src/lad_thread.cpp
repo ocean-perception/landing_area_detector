@@ -25,7 +25,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     logc.debug("prW", s);
     ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
     auto ptrLayer = dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix));
-    if (ptrLayer ==nullptr){
+    if (ptrLayer == nullptr){
         s << blue << "+++++++++++++++++++++++++++++++++++++++++++++ nullptr when dyncast KernelAUV" << suffix;
         logc.error("pRW", s); 
     }
@@ -275,6 +275,11 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
 
     ap->createLayer("D2_LoProtExcl" + suffix, LAYER_RASTER);
     auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl" + suffix));
+    if (apLoProtExcl == nullptr)
+    {
+        s << "Failed to retrieve RasterLayer: D2_LoProtExcl" << suffix;
+        logc.error("laneD", s);
+    }
     D3_Excl.copyTo(apLoProtExcl->rasterData); // transfer the data, now the config & georef
     // TODO: use Pipeline method uploadData
     apLoProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);

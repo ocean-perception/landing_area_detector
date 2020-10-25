@@ -16,6 +16,8 @@
 #ifndef _LAD_ENUM_HPP_
 #define _LAD_ENUM_HPP_
 
+#define SENSOR_RANGE 0.1
+
 #include "headers.h"
 
 namespace lad{

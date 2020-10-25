@@ -225,13 +225,17 @@ namespace lad
             return LAYER_INVALID_NAME;
         }
         int newid = getValidID();
+
+        std::pair<std::map<std::string, std::shared_ptr<Layer>>::iterator,bool> ret;
+
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_VECTOR)
         {
             // cout << "[Pipeline] Creating VECTOR layer: " << name << endl;
             std::shared_ptr<lad::VectorLayer> newLayer = std::make_shared<lad::VectorLayer>(name, newid);
             // Layers.push_back(newLayer);
-            mapLayers.insert(make_pair(name, newLayer));
+            #pragma omp critical
+            ret = mapLayers.insert(make_pair(name, newLayer));
         }
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_RASTER)
@@ -239,7 +243,8 @@ namespace lad
             // cout << "[Pipeline] Creating RASTER layer" << endl;
             std::shared_ptr<lad::RasterLayer> newLayer = std::make_shared<lad::RasterLayer>(name, newid);
             // Layers.push_back(newLayer);
-            mapLayers.insert(make_pair(name, newLayer));
+            #pragma omp critical
+            ret = mapLayers.insert(make_pair(name, newLayer));
         }
         // Type can be any of enumerated types, or any user defined
         if (type == LAYER_KERNEL)
@@ -247,8 +252,16 @@ namespace lad
             // cout << "[Pipeline] Creating KERNEL layer" << endl;
             std::shared_ptr<lad::KernelLayer> newLayer = std::make_shared<lad::KernelLayer>(name, newid);
             // Layers.push_back(newLayer);
-            mapLayers.insert(make_pair(name, newLayer));
+            #pragma omp critical
+            ret = mapLayers.insert(make_pair(name, newLayer));
         }
+
+        if (ret.second==false) {
+            s << "Failed to insert layer into stack: " << blue << name << endl;
+            // s << "Existed ins stack with id" << ret.first->second->layerID;
+            logc.error ("createLayer", s);
+        }
+
         return newid;
     }
 
@@ -376,6 +389,10 @@ namespace lad
      * @return int Error code, if any
      */
     int Pipeline::createKernelTemplate (std::string name, double width, double length, int morphtype){
+        
+        ostringstream s;
+        s << "Creating kernelTemplate for: " << name; 
+        logc.debug ("createKernelTemplate", s);
         double sx = geoTransform[GEOTIFF_PARAM_SX];
         if (sx == 0) sx = 1;
         double sy = geoTransform[GEOTIFF_PARAM_SY];
@@ -705,9 +722,9 @@ namespace lad
     {
         auto layer = mapLayers.find(name);
         if (layer == mapLayers.end()){
-            // ostringstream s;
-            // s << "Layer [" << name << "] not found";
-            // logc.error ("getLayer", s);
+            ostringstream s;
+            s << "Layer [" << name << "] not found";
+            logc.error ("getLayer", s);
             return nullptr;
         }
 
@@ -1134,13 +1151,13 @@ namespace lad
             createLayer(dst, LAYER_RASTER);
         }
 
-        shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
-        shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+        auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
+        auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
-        if (apSrc == nullptr){
+        if (!apSrc){
             logc.error("compareLayer", src);
         }
-        if (apDst == nullptr){
+        if (!apDst){
             logc.error("compareLayer", dst);
         }
 
@@ -1630,7 +1647,8 @@ namespace lad
                             double count = 0;
                             for (auto it:distances){
                                 // count = fabs(it);
-                                if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
+                                // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
+                                count += 1/(1 + fabs(it)/SENSOR_RANGE);
                                 // count += fabs(it);
                             }
                             // computes the proportion of points within the range
