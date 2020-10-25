@@ -225,6 +225,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // need a logical op: D1_tempLT AND D1_tempGT
     ap->maskLayer("D1_tempLO" + suffix, "D1_tempGR" + suffix, "D1_LoProtMask" + suffix);
     s << "lpElev try for " << suffix;
+    logc.debug("laneD", s);
     ap->maskLayer("M2_Protrusions", "D1_LoProtMask" + suffix, "D1_LoProtElev" + suffix);
     s << "lpElev done for " << suffix;
     logc.debug("laneD", s);
@@ -263,12 +264,18 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         D3_Excl = D3_Excl | D3_layers[i];
     }
 
+    s << "Creating D2_LoProtExcl " << suffix;
+    logc.debug("laneD", s);
+
     ap->createLayer("D2_LoProtExcl" + suffix, LAYER_RASTER);
     auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl" + suffix));
     D3_Excl.copyTo(apLoProtExcl->rasterData); // transfer the data, now the config & georef
     // TODO: use Pipeline method uploadData
     apLoProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
     apLoProtExcl->copyGeoProperties(apSrc);
+
+    s << "Created D2_LoProtExcl " << suffix;
+    logc.debug("laneD", s);
 
     //*******************************
     auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtMask" + suffix));
@@ -278,6 +285,10 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     cv::Mat excl(apHiProt->rasterData.size(), CV_8UC1); //same size and type as original mask
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
     ap->createLayer("D4_HiProtExcl" + suffix, LAYER_RASTER);
+
+    s << "Created D4_HiProtExcl " << suffix;
+    logc.debug("laneD", s);
+
     auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl" + suffix));
     // construction time upload method?
     excl.copyTo(apHiProtExcl->rasterData); // transfer the data, now the config & georef
@@ -301,6 +312,8 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // ap->copyMask("C1_ExclusionMap", "D3_HiProtMask" + suffix);
     // ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
     // ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+    s << "Lane D for " << blue << suffix << reset << " completed";
+    logc.debug("laneD", s);
 
     ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl" + suffix);
     if (p->exportRotated){
