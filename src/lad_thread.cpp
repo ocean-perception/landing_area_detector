@@ -16,44 +16,58 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
 
     parameterStruct params = *p;    // local copy, to avoid accident
     // lad::Pipeline pipeline = *ap;
-    ostringstream sx;
+    ostringstream s;
     double currRotation = params.rotation;
     string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-    #pragma omp critical
-    {
-        ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
-    }
-    logc.info("processRotationWorker", sx);
+    // #pragma omp critical
+    // {
+    s << "Creating KernelAUV" << suffix;
+    logc.debug("prW", s);
+    ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
+    dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
+    // }
+    // logc.info("processRotationWorker", s);
 
-    #pragma omp parallel sections
-    {
-        #pragma omp section
-        {
-            ostringstream s;
-            s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
-            logc.info("laneD-worker", s);
-            lad::processLaneD(ap, &params, suffix);
-            logc.info("laneD-worker", "------------------> done");
-        }
+    std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
+    s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
 
-        #pragma omp section
-        {
-            ostringstream s;
-            s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
-            logc.info("laneC-worker", s);
-            lad::processLaneC(ap, &params, suffix);
-            logc.info("laneC-worker", "------------------> done");
-        }
+    std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
+    s << "Lane C dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
 
-        #pragma omp section
-        {
-            ostringstream s;
-            s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
-            logc.info("laneX-worker", s);
-            lad::processLaneX(ap, &params, suffix);
-            logc.info("laneX-worker", "------------------> done");
-        }
+    std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
+    s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
+
+    // #pragma omp sections
+    // {
+    //     #pragma omp section
+    //     {
+    //         ostringstream s;
+    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees";
+    //         logc.info("laneD-worker", s);
+    //         lad::processLaneD(ap, &params, suffix);
+    //         logc.info("laneD-worker", "------------------> done");
+    //     }
+
+    //     #pragma omp section
+    //     {
+    //         ostringstream s;
+    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees";
+    //         logc.info("laneC-worker", s);
+    //         lad::processLaneC(ap, &params, suffix);
+    //         logc.info("laneC-worker", "------------------> done");
+    //     }
+
+    //     #pragma omp section
+    //     {
+    //         ostringstream s;
+    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
+    //         logc.info("laneX-worker", s);
+    //         lad::processLaneX(ap, &params, suffix);
+    //         logc.info("laneX-worker", "------------------> done");
+    //     }
 
         // TODO: Add validation for copyemask when src is missing
         // logc.info("processRotationWorker", "Recomputing lanes C & D done");
@@ -62,9 +76,16 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
 
         // logc.debug("processRotationWorker", "Waiting for thread X");
         // logc.debug("processRotationWorker", "Waiting for thread X... done\ncomputeBlendMeasurability");
-    }
+    // }
+    threadLaneC.join();
+    threadLaneD.join();
+    s << "Lane C & D done for orientation [" << green << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
     ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
     ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
+    threadLaneX.join();
+    s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
     ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);
 
     // here we should ask if we need to export every intermediate layer (rotated)

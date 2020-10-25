@@ -1541,6 +1541,7 @@ namespace lad
 
         auto start_ = std::chrono::high_resolution_clock::now();
 
+        #pragma omp parallel for
         for (int row=0; row<nRows; row++){
             #pragma omp parallel for
             for (int col=0; col<nCols; col++){

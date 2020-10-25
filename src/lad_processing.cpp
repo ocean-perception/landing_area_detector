@@ -213,7 +213,7 @@ namespace lad
         {
             std::vector<double> slave; // thread local copy
 
-            #pragma omp for nowait
+            #pragma omp parallel for num_threads(8)
 
             // for (auto p:points){
             for (int i=0; i < total; i++){
