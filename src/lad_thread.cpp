@@ -201,8 +201,8 @@ int lad::processLaneX(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     tt.start();
     ostringstream s;
     // we create an unique name using the rotation angle
-    s << "computeMeasurability -> X1_MeasurabilityMap for " << blue << suffix; 
-    logc.debug("laneX", s);
+    // s << "computeMeasurability -> X1_MeasurabilityMap for " << blue << suffix; 
+    // logc.debug("laneX", s);
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
@@ -230,13 +230,13 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     ap->compareLayer("M2_Protrusions", "D1_tempGR" + suffix, p->groundThreshold, CMP_GE);
     // need a logical op: D1_tempLT AND D1_tempGT
     ap->maskLayer("D1_tempLO" + suffix, "D1_tempGR" + suffix, "D1_LoProtMask" + suffix);
-    s << "lpElev try for " << suffix;
-    logc.debug("laneD", s);
+    // s << "lpElev try for " << suffix;
+    // logc.debug("laneD", s);
     ap->maskLayer("M2_Protrusions", "D1_LoProtMask" + suffix, "D1_LoProtElev" + suffix);
-    s << "lpElev done for " << suffix;
-    logc.debug("laneD", s);
-    // ap->removeLayer("D1_tempGR" + suffix);
-    // ap->removeLayer("D1_tempLO" + suffix);
+    // s << "lpElev done for " << suffix;
+    // logc.debug("laneD", s);
+    ap->removeLayer("D1_tempGR" + suffix);
+    ap->removeLayer("D1_tempLO" + suffix);
 
     // Final step, iterate through different LO obstacle heights and compute correpsonding exlusion area (disk) 
     // we need a vector containing the partitioned thresholds/disk size pairs.
@@ -260,7 +260,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     }
     // we filter (remove) small protrusion clusters
    // warning: filter size cannot be zero (ceiling to 1)
-   cv::Mat open_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(ceil(p->protrusionSize/sx), ceil(p->protrusionSize/sy)));
+    cv::Mat open_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(ceil(p->protrusionSize/sx), ceil(p->protrusionSize/sy)));
     for (int i=0; i<LO_NPART-1; i++){
         temp = D3_layers[i] - D3_layers[i+1];
         cv::morphologyEx(temp, temp, MORPH_OPEN, open_disk); //remove the small protrusions
@@ -270,8 +270,8 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         D3_Excl = D3_Excl | D3_layers[i];
     }
 
-    s << "Creating D2_LoProtExcl " << suffix;
-    logc.debug("laneD", s);
+    // s << "Creating D2_LoProtExcl " << suffix;
+    // logc.debug("laneD", s);
 
     ap->createLayer("D2_LoProtExcl" + suffix, LAYER_RASTER);
     auto apLoProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D2_LoProtExcl" + suffix));
@@ -285,8 +285,8 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     apLoProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);
     apLoProtExcl->copyGeoProperties(apSrc);
 
-    s << "Created D2_LoProtExcl " << suffix;
-    logc.debug("laneD", s);
+    // s << "Created D2_LoProtExcl " << suffix;
+    // logc.debug("laneD", s);
 
     //*******************************
     auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtMask" + suffix));
@@ -297,8 +297,8 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
     ap->createLayer("D4_HiProtExcl" + suffix, LAYER_RASTER);
 
-    s << "Created D4_HiProtExcl " << suffix;
-    logc.debug("laneD", s);
+    // s << "Created D4_HiProtExcl " << suffix;
+    // logc.debug("laneD", s);
 
     auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl" + suffix));
     // construction time upload method?
@@ -340,16 +340,16 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     lad::tictac tt;
     tt.start();
     ostringstream s;
-    s << "computeMeanSlopeMap -> C2_MeanSlopeMap for " << blue << suffix;
+    // s << "computeMeanSlopeMap -> C2_MeanSlopeMap for " << blue << suffix;
+    // logc.debug("laneC", s);
     // we create an unique name using the rotation angle
-    logc.debug("laneC", s);
     ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
         ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
         ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    logc.debug("laneC", "compareLayer -> C2_MeanSlopeMapExcl");
+    // logc.debug("laneC", "compareLayer -> C2_MeanSlopeMapExcl");
     ap->compareLayer("C2_MeanSlopeMap" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
     if (p->exportRotated){
@@ -357,7 +357,7 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
     // tt.lap("Lane C: C2_MeanSlopeMap");
-    logc.debug("laneC", "computeMeasurability -> X1_MeasurabilityMap");
+    // logc.debug("laneC", "computeMeasurability -> X1_MeasurabilityMap");
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){

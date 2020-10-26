@@ -174,7 +174,10 @@ namespace lad
         if (mapLayers.empty())
             return LAYER_EMPTY;
         //then we go through each layer
-        mapLayers.erase(name);
+        #pragma omp critical
+        {
+            mapLayers.erase(name);
+        }
 
         return NO_ERROR;
     }
@@ -185,7 +188,7 @@ namespace lad
  * @param name name of the layer to be removed
  * @return int returns success if layer was found and removed. Otherwise, it will send the error code
  */
-    int Pipeline::removeLayer(int id)
+    int Pipeline::removeLayer(int id) // to be deprecated
     {
         // First we verify the ID
         if (id < 0)
@@ -198,8 +201,10 @@ namespace lad
         {
             if (it.second->getID() == id)
             { // found it!
-                // LUT_ID.at(it.second->getID()) = ID_AVAILABLE;
-                mapLayers.erase(it.first);
+                #pragma omp critical
+                {
+                    mapLayers.erase(it.first);
+                }
                 break; // if we don't break now we will get a segfault (the vector iterator is broken)
             }
         }
@@ -722,9 +727,9 @@ namespace lad
     {
         auto layer = mapLayers.find(name);
         if (layer == mapLayers.end()){
-            ostringstream s;
-            s << "Layer [" << name << "] not found";
-            logc.error ("getLayer", s);
+            // ostringstream s;
+            // s << "Layer [" << name << "] not found";
+            // logc.error ("getLayer", s);
             return nullptr;
         }
 
@@ -1524,19 +1529,19 @@ namespace lad
                 s << "could not create <RasterLayer>: " << dst;
                 logc.error("filter", s);
             }
-            else{
-                s << "Created ok RasterLayer:" << dst;
-                logc.info("filter", s);
-            }
+            // else{
+            //     s << "Created ok RasterLayer:" << dst;
+            //     logc.info("filter", s);
+            // }
         }
         // we create the empty container for the destination layer
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE);
         // apDst->rasterData = DEFAULT_NODATA_VALUE * cv::Mat::ones(apSrc->rasterData.size(), CV_64FC1); 
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
         double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
-        logc.debug ("filter", "apDst->copyGeoProperties(apSrc)");
+        // logc.debug ("filter", "apDst->copyGeoProperties(apSrc)");
         apDst->copyGeoProperties(apSrc);
-        logc.debug ("filter", "apSrc->rasterMask.copyTo(apDst->rasterMask)");
+        // logc.debug ("filter", "apSrc->rasterMask.copyTo(apDst->rasterMask)");
         apSrc->rasterMask.copyTo(apDst->rasterMask);
         // second, we iterate over the source image
         int nRows = apSrc->rasterData.rows; // faster to have a local copy rather than reading it multiple times inside the for/loop
@@ -1655,7 +1660,20 @@ namespace lad
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                             #pragma omp critical
                             {
-                            apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                                try
+                                {
+                                    apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                                }
+                                catch(const std::exception& e)
+                                {
+                                    std::cerr << e.what() << '\n';
+                                    s << "Pixel [" << col << "," << row << "]" << red << "\tpoints: " << pointList.size() << green << "\tAcum: " << count;
+                                    logc.debug("filter-debug", s);
+                                    s << "rasterData cvMat size: " << cyan << apDst->rasterData.size();
+                                    logc.debug("filter-debug", s);
+                                     
+                                }
+                                
                             }
                         }
                     }
