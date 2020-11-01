@@ -176,7 +176,6 @@ namespace lad
     //     return output;
     // }
 
-
     /**
      * @brief Returns the angle (slope) of a plane by measuring the minimium angle between its normal and a reference vector 
      * 
@@ -201,6 +200,13 @@ namespace lad
         // return acos(p/(normal*normal));
     }
 
+    /**
+     * @brief Computes the normal distance (minimum) of every KPoint provided in the vector <point> to the KPlane <plane>
+     * 
+     * @param plane Reference plane. The distance to points is using the closest (normal) projection onto this plane
+     * @param points vector containing the 3D points to be projected against the plane
+     * @return std::vector<double> vector containing the distance of <points> against <plane>. It keeps the same input <points> order
+     */
     std::vector<double> computePlaneDistance(KPlane plane, std::vector<KPoint> points){
         double a = plane.a();   //for faster access, less overhead calling the methods
         double b = plane.b();
@@ -249,7 +255,6 @@ namespace lad
         linear_least_squares_fitting_3(points.begin(), points.end(), plane, CGAL::Dimension_tag<0>());
         return plane;
     }
-
 
     /**
      * @brief Converts vector of 2D points from one coordinate space to another. The valid spaces are PIXEL and WORLD coordinates 

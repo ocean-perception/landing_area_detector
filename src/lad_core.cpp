@@ -57,6 +57,13 @@ namespace lad
         return LAYER_NOT_FOUND;
     }
 
+    /**
+     * @brief Updates the layer <name> assigned unique ID. In case of duplicate, the corresponding error message will be returned 
+     * 
+     * @param name name of the layer to be updated
+     * @param id desired new ID for the layer
+     * @return int error code, if any.
+     */
     int Pipeline::setLayerID(std::string name, int id)
     {
         if (mapLayers.empty())
@@ -65,7 +72,6 @@ namespace lad
             return LAYER_INVALID_NAME;
         if (isAvailable(id) == false)
             return ID_TAKEN;
-
         // Check each raster in the array, compare its ID against search index
         auto layer = mapLayers.find(name);
         if (layer != mapLayers.end())
@@ -404,7 +410,6 @@ namespace lad
         if (sy == 0) sy = 1;
         return (createKernelTemplate (name, width, length, sx, sy, morphtype));
     }
-
 
     /**
      * @brief Creates and insert a new Kernel layer which contains a rectangular shape as template in the image container
@@ -806,7 +811,6 @@ namespace lad
      * @param dst Name of the resulting raster layer that will containg the exclusion map. If not present in the stack, it wil be created
      * @return int 
      */
-
     int Pipeline::computeExclusionMap(std::string raster, std::string kernel, std::string dstLayer){
         // *****************************************
         // Validating input raster layer
@@ -970,6 +974,14 @@ namespace lad
         return NO_ERROR;
     }
 
+    /**
+     * @brief Export the layer <name> as a raster image to <filename> using the given colormap. Pixel value is normalized to remap onto 8-bit levels
+     * 
+     * @param layer name of the layer to be exported
+     * @param filename name of the file where image will be exported
+     * @param colormap colormap scheme to employ to remap normalized grayscale value onto RGB colour space
+     * @return int error code, if any
+     */
     int Pipeline::saveImage(std::string layer, std::string filename, int colormap){
         ostringstream s;
         // first, we check the layer is available and is of Raster or Kernel type (vector plot not available yet)
@@ -1787,6 +1799,15 @@ namespace lad
         return NO_ERROR;
     }
 
+    /**
+     * @brief Computes the blended measurability map by masking (pixel-wise multiplication) of measurability map (X1) with landability map (M3). As landability map is 
+     * binary mask, it acts as a stop-pass filter for those pixels [x,y] no-landability is possible (M3[x,y]=0). If pixel is landable (M3[x,y] = 1), then the resulting 
+     * value is just the same compute value for its measurability (X1[x,y]) 
+     * @param src1 name of the 1st source layer. Typically, the measurability map X1
+     * @param src2 name of the 2nd source layer. Typically, the landability binary map M3
+     * @param dst destination layer name. It will contain the multiplication of src1*src2
+     * @return int erro code, if any
+     */
     int Pipeline::computeBlendMeasurability(std::string src1, std::string src2, std::string dst){
         // verifying source layers exist
         ostringstream s;
@@ -1815,14 +1836,13 @@ namespace lad
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
 
         // DANGER
-        cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);           // now, no landability means no measure can be taken!
+        cv::multiply(tmp, apSrc2->rasterData, apDst->rasterData);   // now, no landability means no measure can be taken!
 
         apDst->setNoDataValue(apSrc1->getNoDataValue());
         apDst->copyGeoProperties(apSrc1);
         copyMask(src1, dst);
         return NO_ERROR;
     }
-
 
     /**
      * @brief Starts tictac counter

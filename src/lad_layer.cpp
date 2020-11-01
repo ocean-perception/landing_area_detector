@@ -425,6 +425,14 @@ namespace lad
         }
     }
 
+    /**
+     * @brief Export raster layer data as a file. CSV and geoTIFF formats are implemented. Currently SHP format is not supported
+     * 
+     * @param outputFilename desired output filename
+     * @param fileFmt  export file format. Supported formats: FMT_CSV and FMT_TIFF
+     * @param outputCoordinate ignored for raster layers. It is always defined as world coordinate system, defined by the corresponding PROJ4 string
+     * @return int error code, if any
+     */
     int RasterLayer::writeLayer(std::string outputFilename, int fileFmt, int outputCoordinate){
         std::ostringstream s;
         if (outputFilename.empty()){
@@ -669,6 +677,12 @@ namespace lad
         return NO_ERROR;
     }
  
+    /**
+     * @brief Operator definition for quick merging (sum) of two raster layers. No implicit data conversion is performed
+     * 
+     * @param b layer to be added to <this> layer
+     * @return RasterLayer newly created layer containing the sum of the input layers (this + b)
+     */
     RasterLayer RasterLayer::operator+(const RasterLayer& b){
          RasterLayer r(this->layerName, this->getID());
          r.rasterData = this->rasterData + b.rasterData;

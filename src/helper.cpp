@@ -45,18 +45,27 @@ std::string type2str(int type) {
   return r;
 }
 
+/**
+ * @brief Format integer argument into a fixed size string
+ * 
+ * @param i value to be formatted
+ * @param length desired string lenght
+ * @return std::string resulting zero-padded string
+ */
 std::string makeFixedLength(const int i, const int length)
 {
     std::ostringstream ostr;
-
     if (i < 0)
         ostr << '-';
 
     ostr << std::setfill('0') << std::setw(length) << (i < 0 ? -i : i);
-
     return ostr.str();
 }
 
+/**
+ * @brief small formatted console logger
+ * 
+ */
 namespace logger{
   string ConsoleOutput::publish(LogLevel type, std::string publisher, std::string message){
     std::ostringstream out;
@@ -124,10 +133,6 @@ namespace logger{
     message.str("");
     return r;
   }
-
-
-
 }
-
 
 #endif //_PROJECT_HELPER_CPP_
