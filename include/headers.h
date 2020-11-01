@@ -76,6 +76,4 @@ typedef K::Plane_3                      KPlane;
 typedef K::Point_3                      KPoint;
 typedef K::Triangle_3                   KTriangle;
 
-
-
 #endif // _PROJECT_HEADERS_H_
