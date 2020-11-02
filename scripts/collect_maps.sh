@@ -7,7 +7,7 @@
 # if no argument is provided, the print basic usage
 if [ -z "$1" ]; then 
 	echo Usage: \n
-	echo batch_process -i input
+	echo collect_maps -i input -u uuid
 	echo "************************************************************************************************"
 	echo -e "Missing mandatory input argument: path to folder containing the maps to be processed"
     echo -e "Example: collect_maps -i /directory/with/maps"
@@ -18,22 +18,54 @@ if [ -z "$1" ]; then
 	exit
 fi
 
+# List of maps (standard pipeline with multiple rotation)
+# A1_DetailedSlope.tif
+# A2_HiSlopeExcl.tif
+# B0_FILT_Bathymetry.tif
+# B1_HEIGHT_Bathymetry.tif
+# C1_ExclusionMap.tif
+# C2_MeanSlopeMap_r000.tif
+# C2_MeanSlopeMap_r180.tif
+# C2_MeanSlopeMap.tif
+# C3_MeanSlopeExcl_r000.tif
+# C3_MeanSlopeExcl_r180.tif
+# C3_MeanSlopeExcl.tif
+# D1_LoProtElev.tif
+# D1_LoProtMask.tif
+# D2_LoProtExcl.tif
+# D3_HiProtMask.tif
+# D4_HiProtExcl_r000.tif
+# D4_HiProtExcl_r180.tif
+# D4_HiProtExcl.tif
+# M1_RAW_Bathymetry.tif
+# M2_Protrusions.tif
+# M3_LandabilityMap_BLEND.tif
+# M3_LandabilityMap_r000.tif
+# M3_LandabilityMap_r180.tif
+# M4_FinalMeasurability_r000.tif
+# M4_FinalMeasurability_r180.tif
+# M4_FinalMeasurability.tif
+# X1_MeasurabilityMap_r000.tif
+# X1_MeasurabilityMap_r180.tif
+# X1_MeasurabilityMap.tif
+
+# The root folder will contain the analysis results, animation, summary reports and main datafiles
+# All the intermediate rotation-specific layers are moved into their own directories
+
+
 #######################################################################################################################
 # Parsing method extracted from http://wiki.bash-hackers.org/howto/getopts_tutorial
 #######################################################################################################################
 PATH_BASE='.'
-IMG_FMT='jpg'
-#NUM_FOLDERS=1
-OUTPUT_FMT='jpg'
-NAME_PREFIX="CC_"
+UUID="UUID_0000_"
 
-while getopts "i:v:p" opt; do
+while getopts "i:u:p" opt; do
   case $opt in
     i)
 	PATH_BASE=$OPTARG 
 	;;
-    v)
-	IMG_FMT=$OPTARG 
+    u)
+	UUID=$OPTARG 
 	;;
     p)
 	echo "NAME PREFIX ARG PROVIDED"
@@ -51,37 +83,41 @@ while getopts "i:v:p" opt; do
 done
 
 echo -e "Input path:\t $PATH_BASE" >&2
-echo -e "File format:\t $FILE_FMT" >&2
-#echo -e "Subfolders:\t $NUM_FOLDERS" >&2
-#echo -e "Output format:\t $OUTPUT_FMT" >&2
-echo -e "Output prefix:\t $NAME_PREFIX" >&2
-
-# Retrieves the list of all video files with $VIDEO_FMT extension
+echo -e "Unique identifier:\t $UUID" >&2
 
 shopt -s nullglob
 
-FILE_LIST=$(find $PATH_BASE -name '*.'$IMG_FMT)
+# 1) Create subdirectories
+mkdir C2_MeanSlopeMap C3_MeanSlopeExcl D4_HiProtExcl M3_LandabilityMap M4_FinalMeasurability X1_MeasurabilityMap
+# 1.1) Create subdirectory for main base maps
+mkdir BaseMaps
 
-#echo $FILE_LIST
+# 2) For each subset, we move the corresponding rotation specific images
+mv C2_MeanSlopeMap_r* C2_MeanSlopeMap/
+mv C3_MeanSlopeExcl_r* C3_MeanSlopeExcl/
+mv D4_HiProtExcl_r* D4_HiProtExcl/
+mv M3_LandabilityMap_r* M3_LandabilityMap/
+mv M4_FinalMeasurability_r* M4_FinalMeasurability/
+mv X1_MeasurabilityMap_r* X1_MeasurabilityMap/
+mv *.tif BaseMaps
+mv *.png BaseMaps
+mv M1_* BaseMaps
 
-for file in $FILE_LIST; do
-	filename=$(basename "$file")	#extract file name with extension
-	DIR_PATH=$(dirname "$file")	#extract directory path
-	ID=${filename%.$IMG_FMT}		#strip extension for file name, and use it as ID
-	FULL_PATH=$DIR_PATH		#construct absolute path
-	echo "File found -> $ID.$IMG_FMT"
-#	echo "Absolute path -> $FULL_PATH"
-#	echo "**************************************************"
-	INPUT=$file
+# 3) Create the GIFs for each subset using ffmpeg
+ffmpeg -pattern_type glob -i 'C2_MeanSlopeMap/*.png' C2_MeanSlopeMap.gif
+ffmpeg -pattern_type glob -i 'C2_MeanSlopeExcl/*.png' C2_MeanSlopeExcl.gif
+ffmpeg -pattern_type glob -i 'D4_HiProtExcl/*.png' D4_HiProtExcl.gif
+ffmpeg -pattern_type glob -i 'M3_LandabilityMap/*.png' M3_LandabilityMap.gif
+ffmpeg -pattern_type glob -i 'M4_FinalMeasurability/*.png' M4_FinalMeasurability.gif
+ffmpeg -pattern_type glob -i 'X1_MeasurabilityMap/*.png' X1_MeasurabilityMap.gif
 
-	# Now, we check for the '-c' flag, in order to create the required folder
-#	OUTPUT=$FULL_PATH"/"$NAME_PREFIX$ID"."$OUTPUT_FMT	
-	OUTPUT=$NAME_PREFIX$ID"."$OUTPUT_FMT	
-	# TODO: maybe we could check if ffmpeg is installed instead of avconv. Or provide a feature with smart selection between both 	
-	COMMAND_LINE="ccorrect -m=L -show=0 -cuda=0 -time=0 $INPUT $OUTPUT"
-#	echo $COMMAND_LINE
-#	$($COMMAND_LINE)
-	
-	ccorrect -m=L -show=0 -cuda=0 -time=0 $INPUT $OUTPUT
-	
-done
+# 4) Next, let's compute the stats & histograms for the resulting fixed and blended maps
+
+# Fixed layers
+# A1
+# B0
+
+# Blened layers
+# M4
+# M3
+# X1

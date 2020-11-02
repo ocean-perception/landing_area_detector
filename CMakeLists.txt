@@ -112,3 +112,4 @@ target_compile_options(mad_test PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
+configure_file(scripts/collect_maps.sh $ENV{HOME}/bin)
