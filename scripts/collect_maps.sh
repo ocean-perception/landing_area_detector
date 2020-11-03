@@ -112,12 +112,18 @@ ffmpeg -pattern_type glob -i 'M4_FinalMeasurability/*.png' M4_FinalMeasurability
 ffmpeg -pattern_type glob -i 'X1_MeasurabilityMap/*.png' X1_MeasurabilityMap.gif
 
 # 4) Next, let's compute the stats & histograms for the resulting fixed and blended maps
+#### Fixed layers
+# A1_DetailedSlope: 0 , 90
+statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'_A1_DetailedSlope.txt'
+# B1_HEIGHT_Bathymetry: -0.5 +0.5
+statiff --hmin -0.5 --hmax 0.5 --nbins 100 --input BaseMaps/B1_HEIGHT_Bathymetry.tif --output $UUID'_B1_HEIGHT_Bathymetry.txt'
+# C2_MeanSlopeMap: 0 , 90
+statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'_A1_DetailedSlope.txt'
 
-# Fixed layers
-# A1
-# B0
-
-# Blened layers
-# M4
-# M3
-# X1
+#### Blended layers
+# M3_LandabilityMap_BLEND: 0 , 1
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M3_LandabilityMap_BLEND.tif --output $UUID'_M3_LandabilityMap_BLEND.txt'
+# M4_FinalMeasurability: 0 , 1
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M4_FinalMeasurability.tif --output $UUID'_M4_FinalMeasurability.txt'
+# X1_MeasurabilityMap: 0 , 1
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/X1_MeasurabilityMap.tif --output $UUID'_X1_MeasurabilityMap.txt'
