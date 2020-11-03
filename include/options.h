@@ -84,17 +84,9 @@ int initParser(int argc, char *argv[]){
         std::cerr << "Use -h, --help command to see usage" << std::endl;
         return lad::ERROR_WRONG_ARGUMENT;
     }
-    // Start parsing mandatory arguments
-    // if (!argInput)
-    // {
-    //     cerr << "Mandatory <input> file name missing" << endl;
-    //     cerr << "Use -h, --help command to see usage" << endl;
-    //     return lad::ERROR_MISSING_ARGUMENT;
-    // }
     cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
-    cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl
-         << endl;
+    cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
     return 0;
 }

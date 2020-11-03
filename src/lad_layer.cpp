@@ -135,6 +135,7 @@ namespace lad
         layerType = newType;
         return newType;
     }
+
     /**
  * @brief Prints summary information of the layer
  */
@@ -587,17 +588,6 @@ namespace lad
         setStatus(LAYER_OK);
         return LAYER_OK;
     }
-
-    /**
- * @brief Empty definition of virtual prototype. In theory, there is no need to do anything with the data when using the basic container
- * 
- * @param data pointer to data that should be stored in the internal container
- * @return int return generic error code
- */
-    /*int Layer::loadData(void *data){
-    // cout << cyan << "Layer::loadData(void *data) called" << reset << endl;
-    return LAYER_UNDEFINED;
-}*/
 
     /**
  * @brief Export Point2d vector as single layer ESRI Shapefile

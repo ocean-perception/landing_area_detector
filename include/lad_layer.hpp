@@ -48,11 +48,11 @@ namespace lad
          * 
          */
         Layer(){
-            layerName = "";
-            layerID = 0;
-            layerType = LAYER_ANYTYPE;
-            layerStatus = LAYER_INVALID;
-            noDataValue = 0.0;
+            layerName       = "";
+            layerID         = 0;
+            layerType       = LAYER_ANYTYPE;
+            layerStatus     = LAYER_INVALID;
+            noDataValue     = 0.0;
             layerProjection = "";
         }
 
@@ -62,14 +62,14 @@ namespace lad
          * @param src 
          */
         Layer(Layer *src){
-            layerName = src->layerName;
-            layerID = src->layerID;
-            layerType = src->layerType;
+            layerName   = src->layerName;
+            layerID     = src->layerID;
+            layerType   = src->layerType;
             layerStatus = src->layerStatus;
-            layerName = src->layerName;
+            layerName   = src->layerName;
             layerProjection = src->layerProjection;
-            fileName = src->fileName;
-            filePath = src->filePath;
+            fileName    = src->fileName;
+            filePath    = src->filePath;
             noDataValue = src->getNoDataValue();
         }
 
@@ -81,12 +81,13 @@ namespace lad
         Layer(std::string newName = DEFAULT_LAYER_NAME, int id = LAYER_INVALID_ID, int type = LAYER_UNDEFINED)
         {
             // \todo Create empty constructors were no value is defined
-            layerName = newName;
-            layerID = id;
-            layerType = type;
-            layerStatus = LAYER_INVALID;
+            layerName       = newName;
+            layerID         = id;
+            layerType       = type;
+            layerStatus     = LAYER_INVALID;
             layerProjection = "INVALID";
         }
+
         /**
              * @brief Virtual destructor of the Layer object. 
              * @details  Depending on the type of container in the inherited instances, a type specific cleanup may be required
@@ -94,8 +95,6 @@ namespace lad
         virtual ~Layer()
         {
         }
-
-        // operator = (shared_ptr<Layer>);
 
         int getID();                    // Return the layer ID
         int setID(int newID);           // set the new layer ID. It must be a valid ID
@@ -123,7 +122,7 @@ namespace lad
     {
     private:
         double rasterStats[4];
-        // double dfNoData;
+        // double dfNoData; -> promoted to pipeline level, no longer defined per raster
 
     public:
         // this should interface with OpenCV Mat and 2D matrix (vector style)
@@ -177,6 +176,11 @@ namespace lad
         int convertSpace(int newSpace, double *apTransformMatrix);                                                                                                                        // Convert vectorData content to new coordinate space
     };
 
+    /**
+     * @brief Derived class that contains double raster map. It is used to describe the vehicle footprint as a raster map, so it can represent any arbitrary geometry. 
+     * The additional raster layer is a rotated version of the main raster image, and it is used to speed-up the calculation of the rotation-specific maps
+     * 
+     */
     class KernelLayer : public virtual RasterLayer
     {
     private:
@@ -185,10 +189,17 @@ namespace lad
     public:
         cv::Mat rotatedData; //OpenCV matrix that will hold the data
 
-        void showInformation();
-        void setRotation(double);
+        void showInformation(); // redefinition of the method for KernelLayer class
+        void setRotation(double); //set-get pair for dRotation parameter
         double getRotation();
 
+        /**
+         * @brief Construct a new Kernel Layer object
+         * 
+         * @param name desired name of the new layer
+         * @param id desired id of the new layer
+         * @param rot initial rotation value, default = 0 degrees
+         */
         KernelLayer(std::string name, int id, double rot = 0) : RasterLayer(name, id)
         {
             dRotation = rot;

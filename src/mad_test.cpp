@@ -28,13 +28,13 @@ using namespace lad;
 logger::ConsoleOutput logc;
 
 /*!
-	@fn		int main(int argc, char* argv[])
-	@brief	Main function
+    @fn     int main(int argc, char* argv[])
+    @brief  Main function
 */
 int main(int argc, char *argv[])
 {
-    int retval = initParser(argc, argv);   // initial argument validation, populates arg parsing structure args
-    if (retval != 0)  // some error ocurred, we have been signaled to stop
+    int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
+    if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
     std::ostringstream s;
     // Parameters hierarchy
@@ -63,15 +63,15 @@ int main(int argc, char *argv[])
 
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
-        if (argFloatParam) fParam = args::get(argFloatParam);
+    if (argFloatParam) fParam = args::get(argFloatParam);
     int  iParam = 1;
-        if (argIntParam)   iParam = args::get(argIntParam);
+    if (argIntParam)   iParam = args::get(argIntParam);
     int nThreads = DEFAULT_NTHREADS;
-        if (argNThreads)   nThreads = args::get(argNThreads);
-        if (nThreads < 3) {
-            s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
-            logc.warn("main", s);
-        }
+    if (argNThreads)   nThreads = args::get(argNThreads);
+    if (nThreads < 3) {
+        s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+        logc.warn("main", s);
+    }
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
     if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     pipeline.saveImage("D3_HiProtMask", "D3_HiProtMask.png");
     pipeline.exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
 
-//    if (params.verbosity> 0){
+//    if (params.verbosity> 1){
 //        pipeline.showImage("D2_LoProtExcl");
 //        pipeline.showImage("D4_HiProtExcl");
 //    }
@@ -224,10 +224,6 @@ int main(int argc, char *argv[])
     logc.info("main", s);
 
     int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
-    // let's define the set of rotation values to be tested 
-    // TODO: STEP MUST BE POSITIVE
-    // TODO: MIN MUST BE LOWER THAN MAX
-    // TODO: nRot should result as a positive number
     int finished = 0;
 
     #pragma omp parallel for shared(finished) num_threads(nThreads)
@@ -243,7 +239,7 @@ int main(int argc, char *argv[])
         #pragma omp atomic
         finished++;
 
-        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)finished / (float)nIter;
+        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
         logc.info("main", xs);
 
     }
@@ -348,7 +344,5 @@ int main(int argc, char *argv[])
     if (params.verbosity > 0)
         pipeline.showInfo();
     tt.stop();
-    // tt.show();
-//    cout << "... press any key to exit" << endl;
     return NO_ERROR;
 }

@@ -129,7 +129,10 @@ namespace lad
         int generatePlaneMap (std::string src, KPlane plane, std::string templ);
     };
 
-
+    /**
+     * @brief Small timer class employed for benchmarking purposes
+     * 
+     */
     class tictac{
         private:
         protected:

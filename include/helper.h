@@ -22,7 +22,7 @@ std::string type2str(int type);
 std::string makeFixedLength(const int i, const int length);
 
 /**
- * @brief 
+ * @brief logger class that provides thread safe cout output to the console, with additional colour-coded formatting
  * 
  */
 
@@ -68,10 +68,3 @@ namespace logger{
 
 };
 #endif // _PROJECT_HELPER_H_
-
-/*
-Check: 
-#include <syncstream> // C++20
-https://en.cppreference.com/w/cpp/io/basic_osyncstream
-
-*/

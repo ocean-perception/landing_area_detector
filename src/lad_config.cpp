@@ -56,7 +56,7 @@ void lad::printParams(parameterStruct_ *p){
 
     cout << "Export options" << endl;
     cout << "\texportIntermediate:\t" << (p->exportIntermediate ? "true" : "false") << endl;
-    cout << "\texportRotated:  \t" << (p->exportRotated ? "true" : "false") << endl;
+    cout << "\texportRotated:     \t" << (p->exportRotated ? "true" : "false") << endl;
 }
 
 /**
@@ -70,7 +70,6 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
     cout << "Processing user defined configuration: [" << cyan << file << reset << "]" << endl;
 
     YAML::Node config = YAML::LoadFile(file);
-
     int verb = 0;
 
     if (config["general"]) {
@@ -82,7 +81,6 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->exportRotated      = config["general"]["export"]["rotated"].as<bool>();
         if (config["general"]["recomputethresh"])
             p->updateThreshold = config["general"]["recomputethresh"].as<bool>();
-
     }
 
     if (config["vehicle"]){
@@ -100,7 +98,6 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->ratioMeta = config["vehicle"]["meta_ratio"].as<double>();
         if (config["vehicle"]["force_ratio"])
             p->forceRatio = config["vehicle"]["force_ratio"].as<double>();
-
         if (config["vehicle"]["forces"]){
             p->gravityForce = config["vehicle"]["forces"]["gravity"].as<double>();
             p->buoyancyForce = config["vehicle"]["forces"]["buoyancy"].as<double>();
@@ -121,6 +118,7 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["threshold"]["geosensor"])
             p->geotecThreshold = config["threshold"]["geosensor"].as<double>();
     }
+
     if (config["map"]){
         if (verb > 0)
             cout << "[readConfiguration] Map section present" << endl;

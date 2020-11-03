@@ -9,12 +9,10 @@
  * 
  */
 #include "lad_core.hpp"
-// #include "headers.h"
 #include "helper.cpp"
 
 namespace lad
 {
-
     /**
  * @brief Returns (if present) the name of the vector layer that matches provided ID
  * 

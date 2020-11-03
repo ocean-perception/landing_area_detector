@@ -39,6 +39,7 @@
 // #endif
 #include "geotiff.hpp"
 
+// escape based colour codes for console output
 const std::string red("\033[1;31m");
 const std::string green("\033[1;32m");
 const std::string yellow("\033[1;33m");
@@ -56,7 +57,7 @@ const std::string light_cyan("\033[0;36m");
 const std::string reset("\033[0m");
 const std::string highlight("\033[30;43m");
 
-#define LO_NPART  5
+#define LO_NPART  5 //number of partitions of LO_PROTRUSION height map
 #define DEFAULT_NTHREADS 12
 
 #define DEFAULT_OUTPUT_FILE "LAD_output.tif"
