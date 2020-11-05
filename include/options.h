@@ -23,6 +23,8 @@ args::ValueFlag <std::string> 	argInput(argParser, "input", "Input bathymetry ma
 // args::Positional<std::string> 	argInput(argParser,     "input",    "Input bathymetry map. TIFF file or XYZ point collection");
 args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file",{'o',"output"});
 args::ValueFlag	<int> 	        argVerbose(argParser,   "verbose",  "Define verbosity level",                                                   {"verbose"});
+
+args::Flag	         	        argTerrainOnly(argParser,   "",  "Run terrain only calculations (maps for Lane A & B which are AUV independent)", {"terrainonly"});
 args::ValueFlag	<int> 	        argNThreads(argParser,  "number",   "Define max number of threads",  {"nthreads"});
 args::ValueFlag <std::string>   argConfig(argParser,    "file.yaml","Provides path to file with user defied configuration", {"config"});
 args::ValueFlag	<double>        argMetacenter(argParser,  "ratio",   "Recompute metacenter distance from vehicle height",  {"meta"});

@@ -146,26 +146,32 @@ int main(int argc, char *argv[])
 
     tt.lap("Load M1, C1");
 
-    std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
-    std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
     std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, ""); //no suffix, nill-rotation sample
-    std::thread threadLaneX (&lad::processLaneX, &pipeline, &params, "");
+    std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
 
     threadLaneA.join();
     threadLaneB.join();
+    if (argTerrainOnly){ 
+        // we will only generate terrain-specific maps for their external analysis. Lanes A&B. The other lanes C, D & X depend on geometrical parameters of the AUV
+        logc.debug("main", "Completed terrain specific maps: Lanes A & B. Finishing ...");
+        tt.lap("** Lanes A & B");
+        return NO_ERROR;
+    }
+    else{
+        logc.debug("main", "Lanes A & B completed -> M2_Protrusions map done. Joining queue for Lane C & X");
+        tt.lap("** Lanes A & B");
+    }
+
+    std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
+    std::thread threadLaneX (&lad::processLaneX, &pipeline, &params, "");
     threadLaneC.join();
     threadLaneX.join();
 
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
     pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
     pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
-//    if (params.verbosity > 1){
-//        pipeline.showImage("M1_RAW_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-//        pipeline.showImage("A1_DetailedSlope");
- //       pipeline.showImage("B1_HEIGHT_Bathymetry", COLORMAP_TWILIGHT_SHIFTED);
-//    }
 
-    tt.lap("** Lanes A,B & C completed -> M2_Protrusions map done");
+    tt.lap("** Lanes C & X completed...");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
@@ -187,11 +193,7 @@ int main(int argc, char *argv[])
     pipeline.saveImage("D3_HiProtMask", "D3_HiProtMask.png");
     pipeline.exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
 
-//    if (params.verbosity> 1){
-//        pipeline.showImage("D2_LoProtExcl");
-//        pipeline.showImage("D4_HiProtExcl");
-//    }
-    
+  
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     if (params.fixRotation == true){
         s << "Calculating maps for fixed rotation [" << blue << params.rotation << reset << "]";
