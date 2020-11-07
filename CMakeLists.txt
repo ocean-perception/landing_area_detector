@@ -105,11 +105,24 @@ add_executable(mad_test   src/mad_test.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
+############################ MAD_TEST ####################
+add_executable(tiff2png   src/tiff2png.cpp
+                          src/lad_analysis.cpp
+                          ${GEOTIFF_MODULE}/src/geotiff.cpp
+                          src/lad_core.cpp
+                          src/lad_layer.cpp
+                          src/lad_processing.cpp
+                          src/lad_thread.cpp
+                          src/lad_config.cpp
+                          ${PROJECT_HEADERS})
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
 target_compile_options(mad_test PUBLIC -std=c++14)
+target_compile_options(tiff2png PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
+install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)
 configure_file(scripts/collect_maps.sh $ENV{HOME}/bin)

@@ -57,7 +57,7 @@ fi
 # Parsing method extracted from http://wiki.bash-hackers.org/howto/getopts_tutorial
 #######################################################################################################################
 PATH_BASE='.'
-UUID="UUID_0000_"
+UUID=""
 
 while getopts "i:u:p" opt; do
   case $opt in
@@ -114,16 +114,16 @@ ffmpeg -pattern_type glob -i 'X1_MeasurabilityMap/*.png' X1_MeasurabilityMap.gif
 # 4) Next, let's compute the stats & histograms for the resulting fixed and blended maps
 #### Fixed layers
 # A1_DetailedSlope: 0 , 90
-statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'_A1_DetailedSlope.txt'
+statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'A1_DetailedSlope.csv'
 # B1_HEIGHT_Bathymetry: -0.5 +0.5
-statiff --hmin -0.5 --hmax 0.5 --nbins 100 --input BaseMaps/B1_HEIGHT_Bathymetry.tif --output $UUID'_B1_HEIGHT_Bathymetry.txt'
+statiff --hmin -0.5 --hmax 0.5 --nbins 100 --input BaseMaps/B1_HEIGHT_Bathymetry.tif --output $UUID'B1_HEIGHT_Bathymetry.csv'
 # C2_MeanSlopeMap: 0 , 90
-statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'_A1_DetailedSlope.txt'
+statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --output $UUID'A1_DetailedSlope.csv'
 
 #### Blended layers
 # M3_LandabilityMap_BLEND: 0 , 1
-statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M3_LandabilityMap_BLEND.tif --output $UUID'_M3_LandabilityMap_BLEND.txt'
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M3_LandabilityMap_BLEND.tif --output $UUID'M3_LandabilityMap_BLEND.csv'
 # M4_FinalMeasurability: 0 , 1
-statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M4_FinalMeasurability.tif --output $UUID'_M4_FinalMeasurability.txt'
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M4_FinalMeasurability.tif --output $UUID'M4_FinalMeasurability.csv'
 # X1_MeasurabilityMap: 0 , 1
-statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/X1_MeasurabilityMap.tif --output $UUID'_X1_MeasurabilityMap.txt'
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/X1_MeasurabilityMap.tif --output $UUID'X1_MeasurabilityMap.csv'

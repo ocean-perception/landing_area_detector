@@ -1,10 +1,10 @@
 /**
- * @file mad_test.cpp
+ * @file tif2png.cpp
  * @author Jose Cappelletto (cappelletto@gmail.com)
- * @brief Measurability Area Detector, extended version of LAD test
- *        Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL & GDAL
+ * @brief geoTIFF to PNG converter. Part of the data preparation pipeline to generate the PNG training dataset for LG Autoencoder
+ *        and Bayesian Neural Network inference framework
  * @version 0.1
- * @date 2020-10-03
+ * @date 2020-11-09
  * 
  * @copyright Copyright (c) 2020
  * 
