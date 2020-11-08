@@ -48,7 +48,7 @@ while getopts "i:o:s:p:x:l:h" opt; do
 	PREFIX=$OPTARG 
 	;;
     h)
-	echo -e "Usage: tiff.convert2png.sh -i INPUT -o OUTPUT -s SCALE -p PREFIX -l OUTPUT_LIST"
+	echo -e "Usage: tiff.convert2png.sh -i INPUT -o OUTPUT -s SCALE -p PREFIX -l OUTPUT_LIST "
 	echo -e "\tConvert TIFF images contained in INPUT into grayscale PNG images after rescaling up to SCALE [meters]"
 	echo -e "\tInput images filename will be propagated to destination filename with the given PREFIX added"
 	echo -e "\tThe list of filenames and coordinates for each image will be exported to OUTPUT_LIST as csv/tsv"
@@ -70,6 +70,7 @@ echo -e "Output prefix:\t $PREFIX" >&2
 echo -e "Output sufix:\t $SUFIX" >&2
 echo -e "Output scale:\t $SCALE" >&2
 echo -e "Exported list:\t $OUTPUT_LIST" >&2
+echo -e "Min file size:\t $BLOCK_SIZE blocks" >&2
 
 shopt -s nullglob
 
