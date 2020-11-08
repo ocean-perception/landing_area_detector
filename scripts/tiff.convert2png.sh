@@ -7,7 +7,7 @@
 # if no argument is provided, the print basic usage
 if [ -z "$1" ]; then 
 	echo Usage: \n
-	echo collect_maps -i input -o output -p prefix
+	echo collect_maps -i input -o output -p prefix -s sufix -x scale
 	echo "************************************************************************************************"
 	echo -e "Missing mandatory input argument: path to folder containing the maps to be processed"
     echo -e "Example: tiff.convert2png -i /directory/with/maps"
@@ -22,15 +22,12 @@ fi
 #######################################################################################################################
 INPUT_PATH="."
 OUTPUT_PATH=$(pwd)
-OUTPUT_LIST="png_filelist.csv"
+OUTPUT_LIST="tiff2png_filelist.csv"
+PREFIX=""
+SUFIX=""
 SCALE="1.0"			# bathymery range scale (default 1.0 m) It is passed as scaling factor when calling tiff2png
 
-echo -e "INPUT_PATH: "$INPUT_PATH
-echo -e "OUTPUT_PATH: "$OUTPUT_PATH
-echo -e "ScaleX: "$SCALE
-
-while getopts "i:o:s:p:l:h" opt; do
-	echo "OPT:"$opt
+while getopts "i:o:s:p:x:l:h" opt; do
   case $opt in
     i)
 	INPUT_PATH=$OPTARG 
@@ -38,8 +35,11 @@ while getopts "i:o:s:p:l:h" opt; do
     o)
 	OUTPUT_PATH=$OPTARG 
 	;;
-    s)
+    x)
 	SCALE=$OPTARG
+	;;
+    s)
+	SUFIX=$OPTARG
 	;;
     l)
 	OUTPUT_LIST=$OPTARG
@@ -67,9 +67,33 @@ done
 echo -e "Input path:\t $INPUT_PATH" >&2
 echo -e "Output path:\t $OUTPUT_PATH" >&2
 echo -e "Output prefix:\t $PREFIX" >&2
+echo -e "Output sufix:\t $SUFIX" >&2
 echo -e "Output scale:\t $SCALE" >&2
 echo -e "Exported list:\t $OUTPUT_LIST" >&2
 
 shopt -s nullglob
 
 # STEP 1: find all tif/tiff files in the input path
+FILE_LIST=$(find $INPUT_PATH -name '*.tif*') ## careful, should case insensitive
+echo -e "FILENAME\tXPOS\tYPOS" > $OUTPUT_LIST
+
+light_red="\e[0;31m"
+light_green="\e[0;32m"
+light_yellow="\e[0;33m"
+light_blue="\e[0;34m"
+light_purple="\e[0;35m"
+light_cyan="\e[0;36m"
+colour_reset="\e[0m"
+i=0
+for file in $FILE_LIST; do
+	echo -e "$colour_reset Converting: $light_green" $file 
+	# let's generate the desired output filename: $output_path + prefix + original filename + .png
+	filename=$(basename "$file")	#extract file name with extension
+	onlyname=$(basename "$filename" | sed 's/\(.*\)\..*/\1/')
+	fullname=$OUTPUT_PATH/$PREFIX$onlyname$SUFIX".png"
+	RESULT=$(tiff2png --input $file --output $fullname --float $SCALE --verbose 0 | awk -F'[][]' '{print $2}')
+	# use sed to retrieve what is inside of the brackets []
+	echo -e "$fullname\t$RESULT" >> $OUTPUT_LIST
+	i=$((i+1))
+done
+echo -e "$colour_reset Exported [$light_blue$i$colour_reset] images" 
