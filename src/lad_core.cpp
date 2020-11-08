@@ -606,7 +606,7 @@ namespace lad
         // \todo use actual size from the raster container?
         apMask->layerDimensions[1] = apMask->rasterData.rows;
         apMask->layerDimensions[0] = apMask->rasterData.cols;
-        logc.debug("p:readTIFF", maskLayer);
+        // logc.debug("p:readTIFF", maskLayer);
         apMask->copyGeoProperties(apRaster);
         apMask->setNoDataValue(DEFAULT_NODATA_VALUE);
         return NO_ERROR;

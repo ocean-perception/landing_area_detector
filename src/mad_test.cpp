@@ -33,6 +33,10 @@ logger::ConsoleOutput logc;
 */
 int main(int argc, char *argv[])
 {
+    cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
+    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
+    cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
+
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
@@ -131,8 +135,6 @@ int main(int argc, char *argv[])
     
     pipeline.useNodataMask = true;//params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
-
-    return -1;
 
     pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
