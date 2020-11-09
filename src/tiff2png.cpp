@@ -98,34 +98,44 @@ int main(int argc, char *argv[])
         return NO_ERROR;                
     }
     // correct data range to improv
-    cv::Mat dst = apLayer->rasterData.clone();
+    cv::Mat dst;// = apLayer->rasterData.clone();
+    cv::Mat mask = apLayer->rasterMask.clone();
 
-    // how do we deal with NO-DATA parts of the image?
-    // we could use IMREAD_LOAD_GDAL from OpenCV imread: https://docs.opencv.org/3.4/d7/d73/tutorial_raster_io_gdal.html
+    double _min, _max, _mean, _sum;
+    apLayer->rasterData.copyTo(dst, mask); //copy only valid pixels, the rest should be zero
+
+    // 2.1) Compute the mean of the valid pixels. We need the number of valid pixels
+    int totalPixels = mask.rows * mask.cols;
+    int totalValids = countNonZero(mask);
+    int totalZeroes = totalPixels - totalValids;
+
+    cv::minMaxLoc (dst, &_min, &_max, 0, 0, mask); //masked min max of the input bathymetry
+    _sum  = cv::sum(dst).val[0]; // checked in QGIS< ok
+    _mean = _sum / (float)totalValids;
+
+    // 2.2) Shift the whole map to the mean (=0)
+    dst = dst - _mean; // MEAN centering: As a consequence, non-valid data points (converted to ZERO) have been shifted. Let's erase them
+
+    // 2.3) Mask invalid pixels 
+    // For this, we copy a masked matrix containing zeros
+    cv::Mat zero_mask = cv::Mat::zeros(mask.size(), CV_64FC1);
+    zero_mask.copyTo(dst, ~mask); // we copy zeros to the invalid points (negated mask)
     
-    double _min, _max;
-    cv::minMaxLoc (dst, &_min, &_max, 0, 0, apLayer->rasterMask);
-    if (verbosity>0)
-        cout << "TIF Min/Max: [" << _min << "\t" << _max << "]" << endl;
-    dst = dst - _min;   // shift by _min, now every value must be positive
-    _max = _max - _min; // shift also the _max
-
-    // now, we must replace NODATA pixels with ZERO. We use the rasterMask, as the actual pixels have been modified
-    cv::Mat zz = cv::Mat::zeros(dst.size(), CV_64FC1); // zeros of 64b float (same as loaded image)
-    zz.copyTo(dst,~apLayer->rasterMask);
-
-    // Step 3: rescale accordingly. The min must match zero, and the max must be clipped if exceeds the (pre)defined expected max for (relative) bathymetry
-    // e.g.: if raw bathymetry range is [12 .. 20]m, and the expect max diff is 4 meters then,
-    // z = z - min(z) // shift to zero  [12..20] --> [0..8]
-    // z = alfa * z (alfa = 255/z_max)  [0..8]   --> [0..2], in this case the depth/atitude range of 8.0 exceed the expected norm for 4.0m. 
-    // Typ the output range should fall within [0..1] 
-    double alfa = 255.0 / fParam;
+    if (verbosity > 0){
+        cout << yellow << "RAW bathymetry -     " << reset << "MIN / MEAN / MAX = [" << _min << " / " << _mean << " / " << _max << endl;
+        cout << green  << "Adjusted bathymetry - " << reset << "MIN / MEAN / MAX = [" << _min - _mean << " / " << _mean - _mean << " / " << _max  - _mean<< endl;
+    }
+    
+    // 2.4) Scale to 128/max_value
+    double alfa = 128.0 / fParam; //fParam is the expected max value (higher, will be clipped)
     dst = dst * alfa;   // we rescale the bathymetry onto 0-255, where 255 is reached when height = fParam
+    
+    // 2.5) Shift (up) to 127.0
+    dst = dst + 127.0; // 1-bit bias. The new ZERO should be in 127
     cv::minMaxLoc (dst, &_min, &_max, 0, 0, apLayer->rasterMask); //debug
     if (verbosity>0)
         cout << "PNG Min/Max: [" << _min << "\t" << _max << "]" << endl;
     
-    // cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
     cv::imwrite(outputFileName, dst);
     if (verbosity>1){
         cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
@@ -143,7 +153,6 @@ int main(int argc, char *argv[])
     double cx = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2;
     double cy = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2;
 
-    cout << "cx/cy: [" << cx << "\t" << cy << "]" << endl;
-
+    cout << "cx/cy: [" << cx << "\t" << cy << "\t" << _mean << "]" << endl; // we export de CX/CY coordinates, and also teh MEAN val of raw bathymetry
     return NO_ERROR;
 }
