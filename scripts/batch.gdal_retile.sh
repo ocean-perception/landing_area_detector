@@ -3,6 +3,22 @@
 # Batch processing
 # Based on extract_frames.sh v0.5 original script
 
+light_red="\e[0;31m"
+light_green="\e[0;32m"
+light_yellow="\e[0;33m"
+light_blue="\e[0;34m"
+light_purple="\e[0;35m"
+light_cyan="\e[0;36m"
+colour_reset="\e[0m"
+
+fn_retile_file (){
+    filename=$(basename "$2")    #extract file name with extension
+    echo -e "Processing "$light_blue $filename $colour_reset
+    gdal_retile.py -ps 227 227 -overlap 20 -levels 1 -r near -ot Float32 -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -targetDir $1 $2
+}
+export -f fn_retile_file
+
+
 # if no argument is provided, the print basic usage
 if [ -z "$1" ]; then 
 	echo Usage: \n
@@ -63,17 +79,5 @@ FILE_LIST=$(find $INPUT_FOLDER -type f -iname '*.tif*')
 NUM_FILES=$(echo $FILE_LIST | wc -w)
 echo -e "Total files found:"$NUM_FILES
 
-#// for each file
-#// paralel job dispatcher? max of instances?
-
-for file in $FILE_LIST; do
-	filename=$(basename "$file")	#extract file name with extension
-
-#	call gdal with def params, just change input argument and output folder
-    echo -e "Processing "$filename
-    gdal_retile.py -ps 227 227 -overlap 20 -levels 1 -r near -ot Float32 -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 -pyramidOnly -csv "gdal_retile.filelist.csv" -csvDelim ";" -targetDir $OUTPUT_FOLDER $file
-
-    # list of generated tiles exported as CSV:
-    # 0004000_depth_map_01_01.tif;16.456370;20.996370;-165.705434;-161.165434
-    # filename;  COORDINATES OF UTM LOCAL EXTENT <- not useful for oplab-pipeline
-done
+# sudo apt install parallel
+parallel --bar --jobs 8  fn_retile_file $OUTPUT_FOLDER {} ::: $FILE_LIST
