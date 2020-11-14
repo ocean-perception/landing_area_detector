@@ -7,7 +7,7 @@
 # if no argument is provided, the print basic usage
 if [ -z "$1" ]; then 
 	echo Usage: \n
-	echo collect_maps -i input -o output -p prefix -s sufix -x scale
+	echo tiff.convert2png.sh -i input -o output -p prefix -s sufix -x scale
 	echo "************************************************************************************************"
 	echo -e "Missing mandatory input argument: path to folder containing the maps to be processed"
     echo -e "Example: tiff.convert2png -i /directory/with/maps"

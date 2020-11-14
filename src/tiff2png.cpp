@@ -153,6 +153,32 @@ int main(int argc, char *argv[])
     double cx = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2;
     double cy = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2;
 
-    cout << "cx/cy: [" << cx << "\t" << cy << "\t" << _mean << "]" << endl; // we export de CX/CY coordinates, and also teh MEAN val of raw bathymetry
+    // Also we need the LAT LON in decimale degree to match oplab-pipeline and LGA input format
+    //Target HEADER (CSV)
+    // relative_path	northing [m]	easting [m]	depth [m]	roll [deg]	pitch [deg]	heading [deg]	altitude [m]	timestamp [s]	latitude [deg]	longitude [deg]	x_velocity [m/s]	y_velocity [m/s]	z_velocity [m/s]
+    // relative_path    ABSOLUT OR RELATIVE URI
+    // northing [m]     UTM northing (easy to retrieve from geoTIFF)
+    // easting [m]      UTM easting (easy to retrieve from geoTIFF)
+    // depth [m]        Mean B0 bathymetry patch depth
+    // roll [deg]       zero, orthografically projected depthmap
+    // pitch [deg]      zero, same as roll
+    // heading [deg]    default zero, can be modified by rotating the croping window during gdal_retile.py
+    // altitude [m]     fixed to some typ posituve value (e.g. 6). Orthographic projection doesn't need image-like treatment
+    // timestamp [s]    faked data
+    // latitude [deg]   decimal degree latitude, calculated from geotiff metadata
+    // longitude [deg]  decimal degree longitude, calculated from geotiff metadata
+    // x_velocity [m/s] faked data
+    // y_velocity [m/s] faked data
+    // z_velocity [m/s] faked data
+    // **********************************************************************************
+    // This is the format required by LGA as raw input for 'lga sampling'
+    // This first step will produce a prefiltered file list with this header (CSV)
+    // <ID>,relative_path,altitude [m],roll [deg],pitch [deg],northing [m],easting [m],depth [m],heading [deg],timestamp [s],latitude [deg],longitude [deg]
+    // >> filename: [sampled_images.csv] let's create a similar file using the exported data from this file, and merged in the bash caller
+
+
+    cout << "cx/cy: [" << cx << "\t" << cy << "\t" << _mean << "]" << endl; // we export de CX/CY coordinates, and also the MEAN val of raw bathymetry
+
+    
     return NO_ERROR;
 }
