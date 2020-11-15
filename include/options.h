@@ -46,6 +46,7 @@ args::ValueFlag	<double> argProtrusionSize (argParser,"size", "Size threshold [c
 args::ValueFlag	<double> argHeightThreshold(argParser,"height", "Height threshold [m] to determine high obstacles",    {"height_th"});
 args::ValueFlag	<double> argSlopeThreshold (argParser,"slope",  "Slope threshold [deg] to determine high slope areas", {"slope_th"});
 args::ValueFlag	<double> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
+args::ValueFlag	<double> argValidThreshold(argParser,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
 int initParser(int argc, char *argv[]){
         //*********************************************************************************

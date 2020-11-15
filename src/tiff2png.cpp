@@ -3,7 +3,7 @@
  * @author Jose Cappelletto (cappelletto@gmail.com)
  * @brief geoTIFF to PNG converter. Part of the data preparation pipeline to generate the PNG training dataset for LG Autoencoder
  *        and Bayesian Neural Network inference framework
- * @version 0.1
+ * @version 0.2
  * @date 2020-11-09
  * 
  * @copyright Copyright (c) 2020
@@ -59,6 +59,14 @@ int main(int argc, char *argv[])
             return -1;
     }
 
+    double validThreshold = 0.0; // default, we export any image regardless the proportion of valid pixels
+    if (argValidThreshold) validThreshold = args::get(argValidThreshold);
+    // let's validate
+    if (validThreshold < 0.0 || validThreshold > 1.0){
+        s << "Invalid value for validThreshold [" << red << validThreshold << reset << "]. Valid range [0.0, 1.0]. Check --valid_th argument";
+        logc.error("main",  s);
+        return -1;
+    }
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
     if (argFloatParam) fParam = args::get(argFloatParam);
@@ -66,13 +74,14 @@ int main(int argc, char *argv[])
     if (argIntParam)   iParam = args::get(argIntParam);
 
     /* Summary list parameters */
-    if (verbosity>0){
+    if (verbosity >= 2){
         cout << yellow << "****** Summary **********************************" << reset << endl;
-        cout << "Input file:   \t" << inputFileName << endl;
-        cout << "Output file:  \t" << outputFileName << endl;
-        cout << "fParam:       \t" << fParam << endl;
-
+        cout << "Input file:    \t" << inputFileName << endl;
+        cout << "Output file:   \t" << outputFileName << endl;
+        cout << "fParam:        \t" << fParam << endl;
+        cout << "validThreshold:\t" << validThreshold << endl;
     }
+
     lad::tictac tic;
     tic.start();
 
@@ -83,18 +92,18 @@ int main(int argc, char *argv[])
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 
     // Step 2: Determine bathymetry range for the loaded image before rescaling
-    // We know the bathymetry map is stored as 64 bit float 
+    // We know the bathymetry map is stored as 32/64 bit float 
     String layer = "M1_RAW_Bathymetry";
-    shared_ptr<RasterLayer> apLayer = dynamic_pointer_cast<RasterLayer> (pipeline.getLayer(layer));
+    auto apLayer = dynamic_pointer_cast<RasterLayer> (pipeline.getLayer(layer));
     if (apLayer == nullptr){
         s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
-        logc.error("saveImage", s);
+        logc.error("main:getLayer", s);
         cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
         return ERROR_WRONG_ARGUMENT;
     }
     if (apLayer->rasterData.empty()){
         s << "rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save";
-        logc.error("saveImage", s);
+        logc.error("main:getLayer", s);
         return NO_ERROR;                
     }
     // correct data range to improv
@@ -102,28 +111,29 @@ int main(int argc, char *argv[])
     cv::Mat mask = apLayer->rasterMask.clone();
 
     double _min, _max, _mean, _sum;
-    apLayer->rasterData.copyTo(dst, mask); //copy only valid pixels, the rest should be zero
+    apLayer->rasterData.copyTo(dst, mask); //copy only valid pixels, the rest should remain zero
 
     // 2.1) Compute the mean of the valid pixels. We need the number of valid pixels
-    int totalPixels = mask.rows * mask.cols;
-    int totalValids = countNonZero(mask);
-    int totalZeroes = totalPixels - totalValids;
+    int totalPixels = mask.rows * mask.cols;    // max total pixels
+    int totalValids = countNonZero(mask);       // total valid pixels = non zero pixels
+    int totalZeroes = totalPixels - totalValids;// total invalid pxls = total - valids
+    double proportion = (double)totalValids/(double)totalPixels;
 
-    cv::minMaxLoc (dst, &_min, &_max, 0, 0, mask); //masked min max of the input bathymetry
-    _sum  = cv::sum(dst).val[0]; // checked in QGIS< ok
-    _mean = _sum / (float)totalValids;
-
+    if (verbosity >= 2){
+        cv::minMaxLoc (dst, &_min, &_max, 0, 0, mask); //masked min max of the input bathymetry
+        cout << light_yellow << "RAW bathymetry - \t" << reset << "MIN / MEAN / MAX = [" << _min << " / " << _mean << " / " << _max << "]" << endl;
+    }
     // 2.2) Shift the whole map to the mean (=0)
+    _sum  = cv::sum(dst).val[0]; // checked in QGIS< ok. Sum all pixels including the invalid ones, which have been already converted to zero
+    _mean = _sum / (float)totalValids;
     dst = dst - _mean; // MEAN centering: As a consequence, non-valid data points (converted to ZERO) have been shifted. Let's erase them
 
     // 2.3) Mask invalid pixels 
     // For this, we copy a masked matrix containing zeros
     cv::Mat zero_mask = cv::Mat::zeros(mask.size(), CV_64FC1);
-    zero_mask.copyTo(dst, ~mask); // we copy zeros to the invalid points (negated mask)
-    
-    if (verbosity > 0){
-        cout << yellow << "RAW bathymetry -     " << reset << "MIN / MEAN / MAX = [" << _min << " / " << _mean << " / " << _max << endl;
-        cout << green  << "Adjusted bathymetry - " << reset << "MIN / MEAN / MAX = [" << _min - _mean << " / " << _mean - _mean << " / " << _max  - _mean<< endl;
+    zero_mask.copyTo(dst, ~mask); // we copy zeros to the invalid points (negated mask). Cheaper to peform memory copy than multiplying by the mask 
+    if (verbosity >= 2){
+        cout << light_green  << "Adjusted bathymetry - \t" << reset << "MIN / MEAN / MAX = [" << _min - _mean << " / " << _mean - _mean << " / " << _max  - _mean << "]" << endl;
     }
     
     // 2.4) Scale to 128/max_value
@@ -132,29 +142,31 @@ int main(int argc, char *argv[])
     
     // 2.5) Shift (up) to 127.0
     dst = dst + 127.0; // 1-bit bias. The new ZERO should be in 127
-    cv::minMaxLoc (dst, &_min, &_max, 0, 0, apLayer->rasterMask); //debug
-    if (verbosity>0)
-        cout << "PNG Min/Max: [" << _min << "\t" << _max << "]" << endl;
-    
-    cv::imwrite(outputFileName, dst);
-    if (verbosity>1){
-        cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
-        namedWindow("test");
-        imshow("test", dst);
-        tic.lap("");
-        waitKey(0);
+    if (verbosity >= 2){
+        double png_mean = (double) cv::sum(dst).val[0] / (double) (dst.cols * dst.rows); 
+        cv::minMaxLoc (dst, &_min, &_max, 0, 0, apLayer->rasterMask); //debug
+        // fancy colour to indicate if out of range [0, 255]. his is a symptom of depth range saturation for the lcoal bathymetry patch
+        cout << light_blue << "Exported PNG image - \t" << reset << "MIN / MEAN / MAX = [" << ((_min < 0.0) ? red : green) << _min << reset << " / " << png_mean;
+        cout << " / " << ((_min > 255.0) ? red : green) << _max << reset << "]" << endl;
     }
-        // todo correct normalization to given fparam
+    
+    if (proportion >= validThreshold){  // export inly if we satisfy the minimum proportion of valid pixels 
+        cv::imwrite(outputFileName, dst);
+    }
+
     // Step 3: use geoTransform matrix to retrieve center of map image
     // let's use the stored transformMatrix coefficients retrieved by GDAL
     // coordinates are given as North-East positive. Vertical resolution sy (coeff[5]) can be negative
     // as long as the whole dataset is self-consistent, any offset can be ignored, as the LGA autoencoder uses the relative distance 
     // between image centers (it could also be for any corner)
-    double cx = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2;
-    double cy = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2;
+    double cx = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2; // easting
+    double cy = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2; // northing
 
-    // Also we need the LAT LON in decimale degree to match oplab-pipeline and LGA input format
-    //Target HEADER (CSV)
+    // Also we need the LAT LON in decimal degree to match oplab-pipeline and LGA input format
+    double latitude;
+    double longitude;
+
+    // Target HEADER (CSV)
     // relative_path	northing [m]	easting [m]	depth [m]	roll [deg]	pitch [deg]	heading [deg]	altitude [m]	timestamp [s]	latitude [deg]	longitude [deg]	x_velocity [m/s]	y_velocity [m/s]	z_velocity [m/s]
     // relative_path    ABSOLUT OR RELATIVE URI
     // northing [m]     UTM northing (easy to retrieve from geoTIFF)
@@ -167,18 +179,42 @@ int main(int argc, char *argv[])
     // timestamp [s]    faked data
     // latitude [deg]   decimal degree latitude, calculated from geotiff metadata
     // longitude [deg]  decimal degree longitude, calculated from geotiff metadata
-    // x_velocity [m/s] faked data
-    // y_velocity [m/s] faked data
-    // z_velocity [m/s] faked data
+    // x_velocity [m/s] faked data - optional
+    // y_velocity [m/s] faked data - optional
+    // z_velocity [m/s] faked data - optional
     // **********************************************************************************
     // This is the format required by LGA as raw input for 'lga sampling'
     // This first step will produce a prefiltered file list with this header (CSV)
     // <ID>,relative_path,altitude [m],roll [deg],pitch [deg],northing [m],easting [m],depth [m],heading [deg],timestamp [s],latitude [deg],longitude [deg]
     // >> filename: [sampled_images.csv] let's create a similar file using the exported data from this file, and merged in the bash caller
 
+    String separator = "\t";
+    if (verbosity >= 1){
+        // export header, TSV
+        cout << "valid_ratio"        << separator;
+        // cout << "relative_path"     << separator; // this information is know by the caller
+        cout << "northing [m]"      << separator;
+        cout << "easting [m]"       << separator;
+        cout << "depth [m]"         << separator;
+        cout << "latitude [deg]"    << separator;
+        cout << "longitude [deg]"   << endl;
+    }
+    // export data columns (always)
+    cout << proportion  << separator;   // proportion of valid pixels, can be used by the caller to postprocessing culling
+    cout << cy          << separator;   // northing [m]
+    cout << cx          << separator;   // easting [m]
+    cout << _mean       << separator;   // mean depth for the current bathymety patch
+    cout << endl;
 
-    cout << "cx/cy: [" << cx << "\t" << cy << "\t" << _mean << "]" << endl; // we export de CX/CY coordinates, and also the MEAN val of raw bathymetry
 
-    
+    if (verbosity > 0)
+        tic.lap("");
+    if (verbosity >= 3){
+        cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1, apLayer->rasterMask); // normalize within the expected range 0-255 for imshow
+        namedWindow("test");
+        imshow("test", dst);
+        waitKey(0);
+    }
+
     return NO_ERROR;
 }
