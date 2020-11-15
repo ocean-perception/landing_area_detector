@@ -1,6 +1,6 @@
 /**
  * @file tif2png.cpp
- * @author Jose Cappelletto (cappelletto@gmail.com)
+ * @author Jose Cappelletto (cappelletto@gmail.com / j.cappelletto@soton.ac.uk)
  * @brief geoTIFF to PNG converter. Part of the data preparation pipeline to generate the PNG training dataset for LG Autoencoder
  *        and Bayesian Neural Network inference framework
  * @version 0.2
@@ -20,6 +20,7 @@
 #include "lad_enum.hpp"
 // #include "lad_processing.hpp"
 // #include "lad_thread.hpp"
+#include <limits>
 
 using namespace std;
 using namespace cv;
@@ -159,13 +160,30 @@ int main(int argc, char *argv[])
     // coordinates are given as North-East positive. Vertical resolution sy (coeff[5]) can be negative
     // as long as the whole dataset is self-consistent, any offset can be ignored, as the LGA autoencoder uses the relative distance 
     // between image centers (it could also be for any corner)
-    double cx = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2; // easting
-    double cy = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2; // northing
+    double easting  = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2; // easting
+    double northing = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2; // northing
 
     // Also we need the LAT LON in decimal degree to match oplab-pipeline and LGA input format
     double latitude;
     double longitude;
+    // we need to transform from northing easting to WGS84 lat lon
 
+    OGRSpatialReference refUtm;
+    refUtm.importFromProj4(apLayer->layerProjection.c_str());
+    OGRSpatialReference refGeo;
+    refGeo.SetWellKnownGeogCS("WGS84");
+    OGRCoordinateTransformation* coordTrans = OGRCreateCoordinateTransformation(&refUtm, &refGeo);
+
+    double x = easting;
+    double y = northing;
+    
+    cout.precision(std::numeric_limits<double>::digits10);    
+    // cout << "east/north: " << x << " / " << y << endl;
+    int reprojected = coordTrans->Transform(1, &x, &y);
+    latitude  = x;
+    longitude = y;
+    // cout << "lon/lat: " << longitude << " / " << latitude << endl;
+    delete coordTrans;
     // Target HEADER (CSV)
     // relative_path	northing [m]	easting [m]	depth [m]	roll [deg]	pitch [deg]	heading [deg]	altitude [m]	timestamp [s]	latitude [deg]	longitude [deg]	x_velocity [m/s]	y_velocity [m/s]	z_velocity [m/s]
     // relative_path    ABSOLUT OR RELATIVE URI
@@ -201,9 +219,11 @@ int main(int argc, char *argv[])
     }
     // export data columns (always)
     cout << proportion  << separator;   // proportion of valid pixels, can be used by the caller to postprocessing culling
-    cout << cy          << separator;   // northing [m]
-    cout << cx          << separator;   // easting [m]
+    cout << northing    << separator;   // northing [m]
+    cout << easting     << separator;   // easting [m]
     cout << _mean       << separator;   // mean depth for the current bathymety patch
+    cout << latitude    << separator;   // mean depth for the current bathymety patch
+    cout << longitude   << separator;   // mean depth for the current bathymety patch
     cout << endl;
 
 

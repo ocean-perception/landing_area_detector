@@ -125,4 +125,5 @@ target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)
-configure_file(scripts/collect_maps.sh $ENV{HOME}/bin)
+configure_file(scripts/tiff.convert2png.sh $ENV{HOME}/bin/scripts)
+configure_file(scripts/collect_maps.sh $ENV{HOME}/bin/scripts)
