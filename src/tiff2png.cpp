@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
         logc.error("main:getLayer", s);
         return NO_ERROR;                
     }
-    // correct data range to improv
-    cv::Mat dst;// = apLayer->rasterData.clone();
+    // correct data range to improve
+    cv::Mat dst;
     cv::Mat mask = apLayer->rasterMask.clone();
 
     double _min, _max, _mean, _sum;
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
         cout << " / " << ((_min > 255.0) ? red : green) << _max << reset << "]" << endl;
     }
     
-    if (proportion >= validThreshold){  // export inly if we satisfy the minimum proportion of valid pixels 
+    if (proportion >= validThreshold){  // export inly if it satisfies the minimum proportion of valid pixels. Set threshold to 0.0 to esport all images 
         cv::imwrite(outputFileName, dst);
     }
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
     // let's use the stored transformMatrix coefficients retrieved by GDAL
     // coordinates are given as North-East positive. Vertical resolution sy (coeff[5]) can be negative
     // as long as the whole dataset is self-consistent, any offset can be ignored, as the LGA autoencoder uses the relative distance 
-    // between image centers (it could also be for any corner)
+    // between image centers (it could also be for any corner when rotation is neglected)
     double easting  = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*apLayer->rasterData.cols/2; // easting
     double northing = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*apLayer->rasterData.rows/2; // northing
 
@@ -167,23 +167,20 @@ int main(int argc, char *argv[])
     double latitude;
     double longitude;
     // we need to transform from northing easting to WGS84 lat lon
-
     OGRSpatialReference refUtm;
-    refUtm.importFromProj4(apLayer->layerProjection.c_str());
+    refUtm.importFromProj4(apLayer->layerProjection.c_str());   // original SRS
     OGRSpatialReference refGeo;
-    refGeo.SetWellKnownGeogCS("WGS84");
-    OGRCoordinateTransformation* coordTrans = OGRCreateCoordinateTransformation(&refUtm, &refGeo);
+    refGeo.SetWellKnownGeogCS("WGS84"); // target SRS
+    OGRCoordinateTransformation* coordTrans = OGRCreateCoordinateTransformation(&refUtm, &refGeo); // ask for a SRS transforming object
 
     double x = easting;
     double y = northing;
     
-    cout.precision(std::numeric_limits<double>::digits10);    
-    // cout << "east/north: " << x << " / " << y << endl;
+    cout.precision(std::numeric_limits<double>::digits10);    // maybe it's an overkill. Just in case
     int reprojected = coordTrans->Transform(1, &x, &y);
-    latitude  = x;
+    latitude  = x; // yes, this is not a bug, they are swapped 
     longitude = y;
-    // cout << "lon/lat: " << longitude << " / " << latitude << endl;
-    delete coordTrans;
+    delete coordTrans; // maybe can be removed as destructor and garbage collector will take care of this after return
     // Target HEADER (CSV)
     // relative_path	northing [m]	easting [m]	depth [m]	roll [deg]	pitch [deg]	heading [deg]	altitude [m]	timestamp [s]	latitude [deg]	longitude [deg]	x_velocity [m/s]	y_velocity [m/s]	z_velocity [m/s]
     // relative_path    ABSOLUT OR RELATIVE URI
@@ -206,9 +203,9 @@ int main(int argc, char *argv[])
     // <ID>,relative_path,altitude [m],roll [deg],pitch [deg],northing [m],easting [m],depth [m],heading [deg],timestamp [s],latitude [deg],longitude [deg]
     // >> filename: [sampled_images.csv] let's create a similar file using the exported data from this file, and merged in the bash caller
 
-    String separator = "\t";
+    String separator = "\t"; // TODO: user defined separator (for more general compatibility)
     if (verbosity >= 1){
-        // export header, TSV
+        // export header colums
         cout << "valid_ratio"        << separator;
         // cout << "relative_path"     << separator; // this information is know by the caller
         cout << "northing [m]"      << separator;
@@ -226,7 +223,6 @@ int main(int argc, char *argv[])
     cout << longitude   << separator;   // mean depth for the current bathymety patch
     cout << endl;
 
-
     if (verbosity > 0)
         tic.lap("");
     if (verbosity >= 3){
@@ -235,6 +231,5 @@ int main(int argc, char *argv[])
         imshow("test", dst);
         waitKey(0);
     }
-
     return NO_ERROR;
 }

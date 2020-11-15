@@ -4,7 +4,7 @@
 # It also generates merged gif for rotation dependant layers. Statistics are computed from the resulting merged layers usin statiff
 # separate module. Optional configuration.yaml can be parsed to generate UUID paths and summary files. 
 
-# if no argument is provided, the print basic usage
+# if no argument is provided, then print basic usage
 if [ -z "$1" ]; then 
 	echo Usage: \n
 	echo tiff.convert2png.sh -i input -o output -p prefix -s sufix -x scale
@@ -101,18 +101,17 @@ fn_convert_file (){
 export -f fn_convert_file
 
 shopt -s nullglob
-
 mkdir -p $OUTPUT_PATH
 
 # STEP 1: find all tif/tiff files in the input path
 FILE_LIST=$(find $INPUT_PATH -name '*.tif*') ## careful, should case insensitive
 echo -e "relative_path\tvalid_ratio\tnorthing [m]\teasting [m]\tdepth [m]\tlatitude [deg]\tlongitude [deg]" > $OUTPUT_LIST
 
-# i=0
-
+# TODO: add UUID counter per row (fully compatible with Takaki's LGA)
 # dispatch for each file in FILE_LIST
 parallel --bar --jobs 8  	 fn_convert_file {} $OUTPUT_LIST $SCALE $OUTPUT_PATH $PREFIX $SUFIX ::: $FILE_LIST
 
+# Old for-loop serial format
 # for file in $FILE_LIST; do
 # 	fn_convert_file $file
 # done
