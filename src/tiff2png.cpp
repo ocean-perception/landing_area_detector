@@ -34,7 +34,7 @@ logger::ConsoleOutput logc;
 */
 int main(int argc, char *argv[])
 {
-    int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
+    int retval = initParserT2P(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
     std::ostringstream s;
@@ -42,26 +42,26 @@ int main(int argc, char *argv[])
     // ARGS > CONFIG > DEFAULT (this)
 
     int verbosity=0; // default: no verbose output
-    if (argVerbose) verbosity = args::get(argVerbose); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argVerboseT2P) verbosity = args::get(argVerboseT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
     // Input file priority: must be defined either by the config.yaml or --input argument
     string inputFileName    = ""; // command arg or config defined
     string outputFileName    = ""; // command arg or config defined
 
-    if (argInput) inputFileName = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argInputT2P) inputFileName = args::get(argInputT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
             logc.error ("main", "Input file missing. Please define it using --input='filename'");
             return -1;
     }
 
-    if (argInput) outputFileName = args::get(argOutput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argInputT2P) outputFileName = args::get(argOutputT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
     if (outputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
             logc.error ("main", "Output file missing. Please define it using --output='filename'");
             return -1;
     }
 
     double validThreshold = 0.0; // default, we export any image regardless the proportion of valid pixels
-    if (argValidThreshold) validThreshold = args::get(argValidThreshold);
+    if (argValidThresholdT2P) validThreshold = args::get(argValidThresholdT2P);
     // let's validate
     if (validThreshold < 0.0 || validThreshold > 1.0){
         s << "Invalid value for validThreshold [" << red << validThreshold << reset << "]. Valid range [0.0, 1.0]. Check --valid_th argument";
@@ -70,9 +70,9 @@ int main(int argc, char *argv[])
     }
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
-    if (argFloatParam) fParam = args::get(argFloatParam);
+    if (argFloatParamT2P) fParam = args::get(argFloatParamT2P);
     int  iParam = 1;
-    if (argIntParam)   iParam = args::get(argIntParam);
+    if (argIntParamT2P)   iParam = args::get(argIntParamT2P);
 
     /* Summary list parameters */
     if (verbosity >= 2){

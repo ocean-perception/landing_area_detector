@@ -1,6 +1,6 @@
 /**
  * @file options.h
- * @brief Argument parser options based on args.hxx
+ * @brief Argument parser options based on args.hxx. Extended to accomodate multiple modules using similar parsers
  * @version 1.1
  * @date 18/06/2020
  * @author Jose Cappelletto
@@ -48,6 +48,24 @@ args::ValueFlag	<double> argSlopeThreshold (argParser,"slope",  "Slope threshold
 args::ValueFlag	<double> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
 args::ValueFlag	<double> argValidThreshold(argParser,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
+args::ArgumentParser argParserT2P("","");
+args::HelpFlag 	     argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
+args::CompletionFlag completionT2P(argParserT2P, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
+
+args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map", {"input"});
+args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "output",   "Output file",{'o',"output"});
+args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define verbosity level",                                                   {"verbose"});
+
+// Free parameters for debugging
+args::ValueFlag	<int> 	argIntParamT2P(argParserT2P,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
+args::ValueFlag	<float> argFloatParamT2P(argParserT2P,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
+// Sampling parameters
+args::ValueFlag	<int> argRotationT2P(argParserT2P,"angle",  "Rotation angle of the ROI to be exported [degrees]",    {"rotation"});
+args::ValueFlag	<int> argXOffsetT2P(argParserT2P,"pixels", "ROI horizontal offset from the input image center",    {"offset_x"});
+args::ValueFlag	<int> argYOffsetT2P(argParserT2P,"pixels", "ROI vertical offset from the input image center",    {"offset_y"});
+// Thresholds
+args::ValueFlag	<double> argValidThresholdT2P(argParserT2P,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
+
 int initParser(int argc, char *argv[]){
         //*********************************************************************************
     /* PARSER section */
@@ -73,6 +91,49 @@ int initParser(int argc, char *argv[]){
     catch (args::Help)
     { // if argument asking for help, show this message
         cout << argParser;
+        return lad::ERROR_MISSING_ARGUMENT;
+    }
+    catch (args::ParseError e)
+    { //if some error ocurr while parsing, show summary
+        std::cerr << e.what() << std::endl;
+        std::cerr << "Use -h, --help command to see usage" << std::endl;
+        return lad::ERROR_WRONG_ARGUMENT;
+    }
+    catch (args::ValidationError e)
+    { // if some error at argument validation, show
+        std::cerr << "Bad input commands" << std::endl;
+        std::cerr << "Use -h, --help command to see usage" << std::endl;
+        return lad::ERROR_WRONG_ARGUMENT;
+    }
+    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
+    return 0;
+}
+
+int initParserT2P(int argc, char *argv[]){
+        //*********************************************************************************
+    /* PARSER section */
+    std::string descriptionString =
+        "tiff2png - image preprocessing tool for LGA + BNN based seafloor measurability predictot \
+    Compatible interface with geoTIFF bathymetry datasets via GDAL + OpenCV";
+
+    argParserT2P.Description(descriptionString);
+    argParserT2P.Epilog("Author: J. Cappelletto (GitHub: @cappelletto)\n");
+    argParserT2P.Prog(argv[0]);
+    argParserT2P.helpParams.width = 120;
+
+    try
+    {
+        argParserT2P.ParseCLI(argc, argv);
+    }
+    catch (const args::Completion &e)
+    {
+        cout << e.what();
+        return 0;
+    }
+
+    catch (args::Help)
+    { // if argument asking for help, show this message
+        cout << argParserT2P;
         return lad::ERROR_MISSING_ARGUMENT;
     }
     catch (args::ParseError e)
