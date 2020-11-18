@@ -52,17 +52,21 @@ args::ArgumentParser argParserT2P("","");
 args::HelpFlag 	     argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
 args::CompletionFlag completionT2P(argParserT2P, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
-args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map", {"input"});
-args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "output",   "Output file",{'o',"output"});
-args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define verbosity level",                                                   {"verbose"});
+args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map",       {'i', "input"});
+args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "output",   "Output file",                            {'o', "output"});
+args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define verbosity level",                 {'v', "verbose"});
 
 // Free parameters for debugging
 args::ValueFlag	<int> 	argIntParamT2P(argParserT2P,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
 args::ValueFlag	<float> argFloatParamT2P(argParserT2P,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
 // Sampling parameters
-args::ValueFlag	<int> argRotationT2P(argParserT2P,"angle",  "Rotation angle of the ROI to be exported [degrees]",    {"rotation"});
-args::ValueFlag	<int> argXOffsetT2P(argParserT2P,"pixels", "ROI horizontal offset from the input image center",    {"offset_x"});
-args::ValueFlag	<int> argYOffsetT2P(argParserT2P,"pixels", "ROI vertical offset from the input image center",    {"offset_y"});
+args::ValueFlag	<int> argRotationT2P(argParserT2P,"angle",  "Rotation angle of the ROI to be exported [degrees]",   {"rotation"});
+args::ValueFlag	<int> argXOffsetT2P(argParserT2P,"pixels", "ROI horizontal (X) offset from the input image center", {"offset_x"});
+args::ValueFlag	<int> argYOffsetT2P(argParserT2P,"pixels", "ROI vertical (Y) offset from the input image center",   {"offset_y"});
+args::ValueFlag	<int> argXSizeT2P(argParserT2P,"pixels", "ROI width (X) in pixels",                                 {"size_x"});
+args::ValueFlag	<int> argYSizeT2P(argParserT2P,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
+args::ValueFlag	<int> argZMinT2P(argParserT2P,"pixels", "Minimum input value (Z). It wil be mapped to 0",           {"min_z"});
+args::ValueFlag	<int> argZMaxT2P(argParserT2P,"pixels", "Maximum input value (Z). It wil be mapped to 255",         {"max_z"});
 // Thresholds
 args::ValueFlag	<double> argValidThresholdT2P(argParserT2P,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
@@ -113,7 +117,9 @@ int initParserT2P(int argc, char *argv[]){
         //*********************************************************************************
     /* PARSER section */
     std::string descriptionString =
-        "tiff2png - image preprocessing tool for LGA + BNN based seafloor measurability predictot \
+        "tiff2png - image preprocessing tool for LGA + BNN based seafloor measurability predictor \
+        Partial data augmentation on demand by resampling input image, via traslation and rotation \
+        Data range linear remapping with (clip-limit) is performed beore exporting as PNG image \
     Compatible interface with geoTIFF bathymetry datasets via GDAL + OpenCV";
 
     argParserT2P.Description(descriptionString);

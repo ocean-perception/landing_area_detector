@@ -38,27 +38,36 @@ int main(int argc, char *argv[])
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
     std::ostringstream s;
-    // Parameters hierarchy
-    // ARGS > CONFIG > DEFAULT (this)
-
     int verbosity=0; // default: no verbose output
     if (argVerboseT2P) verbosity = args::get(argVerboseT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
     // Input file priority: must be defined either by the config.yaml or --input argument
     string inputFileName    = ""; // command arg or config defined
     string outputFileName    = ""; // command arg or config defined
-
-    if (argInputT2P) inputFileName = args::get(argInputT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    // Mandatory arguments
+    if (argInputT2P) inputFileName = args::get(argInputT2P); //input file is mandatory positional argument.
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
             logc.error ("main", "Input file missing. Please define it using --input='filename'");
             return -1;
     }
 
-    if (argInputT2P) outputFileName = args::get(argOutputT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
-    if (outputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
+    if (argInputT2P) outputFileName = args::get(argOutputT2P); //input file is mandatory positional argument
+    if (outputFileName.empty()){
             logc.error ("main", "Output file missing. Please define it using --output='filename'");
             return -1;
     }
+
+    //Optional arguments
+    //validity threshold. Default pass all (th=0)
+    //rotation, default = 0 degress
+    // min depth range, default = -1.0
+    // max depth range, default = +1.0
+    // horizontal offset, default = 0
+    // vertcial offset, default = 0
+    // output size, default same as input
+
+
+
 
     double validThreshold = 0.0; // default, we export any image regardless the proportion of valid pixels
     if (argValidThresholdT2P) validThreshold = args::get(argValidThresholdT2P);
@@ -71,8 +80,6 @@ int main(int argc, char *argv[])
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
     if (argFloatParamT2P) fParam = args::get(argFloatParamT2P);
-    int  iParam = 1;
-    if (argIntParamT2P)   iParam = args::get(argIntParamT2P);
 
     /* Summary list parameters */
     if (verbosity >= 2){
