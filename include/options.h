@@ -60,13 +60,12 @@ args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define
 args::ValueFlag	<int> 	argIntParamT2P(argParserT2P,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
 args::ValueFlag	<float> argFloatParamT2P(argParserT2P,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
 // Sampling parameters
-args::ValueFlag	<int> argRotationT2P(argParserT2P,"angle",  "Rotation angle of the ROI to be exported [degrees]",   {"rotation"});
-args::ValueFlag	<int> argXOffsetT2P(argParserT2P,"pixels", "ROI horizontal (X) offset from the input image center", {"offset_x"});
-args::ValueFlag	<int> argYOffsetT2P(argParserT2P,"pixels", "ROI vertical (Y) offset from the input image center",   {"offset_y"});
-args::ValueFlag	<int> argXSizeT2P(argParserT2P,"pixels", "ROI width (X) in pixels",                                 {"size_x"});
-args::ValueFlag	<int> argYSizeT2P(argParserT2P,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
-args::ValueFlag	<int> argZMinT2P(argParserT2P,"pixels", "Minimum input value (Z). It wil be mapped to 0",           {"min_z"});
-args::ValueFlag	<int> argZMaxT2P(argParserT2P,"pixels", "Maximum input value (Z). It wil be mapped to 255",         {"max_z"});
+args::ValueFlag	<double>        argRotationT2P(argParserT2P,"angle",  "Rotation angle of the ROI to be exported [degrees]",{"rotation"});
+args::ValueFlag	<int>           argXOffsetT2P(argParserT2P,"pixels", "ROI horizontal (X) offset from the input image center", {"offset_x"});
+args::ValueFlag	<int>           argYOffsetT2P(argParserT2P,"pixels", "ROI vertical (Y) offset from the input image center",   {"offset_y"});
+args::ValueFlag	<unsigned int>  argXSizeT2P(argParserT2P,"pixels", "ROI width (X) in pixels",                                 {"size_x"});
+args::ValueFlag	<unsigned int>  argYSizeT2P(argParserT2P,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
+args::ValueFlag	<double>        argZMaxT2P(argParserT2P,"meters", "Maximum input value (Z). It wil be mapped to 255",      {"max_z"});
 // Thresholds
 args::ValueFlag	<double> argValidThresholdT2P(argParserT2P,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
