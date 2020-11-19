@@ -48,13 +48,15 @@ args::ValueFlag	<double> argSlopeThreshold (argParser,"slope",  "Slope threshold
 args::ValueFlag	<double> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
 args::ValueFlag	<double> argValidThreshold(argParser,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
+//*************************************** tiff2png specific parser
 args::ArgumentParser argParserT2P("","");
 args::HelpFlag 	     argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
 args::CompletionFlag completionT2P(argParserT2P, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
-args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map",       {'i', "input"});
-args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "output",   "Output file",                            {'o', "output"});
-args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define verbosity level",                 {'v', "verbose"});
+args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map",   {'i', "input"});
+args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "filename", "Output file",                         {'o', "output"});
+args::ValueFlag	<int> 	        argVerboseT2P(argParserT2P,   "verbose",  "Define verbosity level",              {'v', "verbose"});
+args::ValueFlag	<std::string> 	argExportTiffT2P(argParserT2P,"filename", "GeoTIFF copy of the exported image",  {'e', "export_tiff"});
 
 // Free parameters for debugging
 args::ValueFlag	<int> 	argIntParamT2P(argParserT2P,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});

@@ -40,8 +40,9 @@ int main(int argc, char *argv[])
     if (argVerboseT2P) verbosity = args::get(argVerboseT2P); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
     // Input file priority: must be defined either by the config.yaml or --input argument
-    string inputFileName    = ""; // command arg or config defined
-    string outputFileName    = ""; // command arg or config defined
+    string inputFileName  = ""; // command arg or config defined
+    string outputFileName = ""; // command arg or config defined
+    string outputTIFF     = ""; // command arg or config defined
     // Mandatory arguments
     if (argInputT2P) inputFileName = args::get(argInputT2P); //input file is mandatory positional argument.
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
@@ -54,6 +55,8 @@ int main(int argc, char *argv[])
             logc.error ("main", "Output file missing. Please define it using --output='filename'");
             return -1;
     }
+
+    if (argExportTiffT2P) outputTIFF = args::get(argExportTiffT2P); //extra geotiff copy to be exported
 
     //Optional arguments
     //validity threshold. Default pass all (th=0)
@@ -91,8 +94,10 @@ int main(int argc, char *argv[])
     /* Summary list parameters */
     if (verbosity >= 1){
         cout << yellow << "****** Summary **********************************" << reset << endl;
-        cout << "Input file:    \t" << green << inputFileName << reset << endl;
+        cout << "Input file:    \t" << yellow << inputFileName << reset << endl;
         cout << "Output file:   \t" << green << outputFileName << reset << endl;
+        if (argExportTiffT2P) 
+            cout << "outputTIFF    \t:" << green << outputTIFF << reset << endl;; //extra geotiff copy to be exported
         cout << "validThreshold:\t" << yellow << validThreshold << reset << endl;
         cout << "ROI Offset:    \t(" << xOffset << ", " << yOffset << ")\tRotation: \t" << rotationAngle << "deg" << endl; 
         if (xSize * ySize > 0)
@@ -124,7 +129,6 @@ int main(int argc, char *argv[])
         logc.error("main:getLayer", s);
         return NO_ERROR;                
     }
-    // correct data range to improve
     cv::Mat original;
     cv::Mat mask = apLayer->rasterMask.clone();
     apLayer->rasterData.copyTo(original, mask); //copy only valid pixels, the rest should remain zero
@@ -198,10 +202,10 @@ int main(int argc, char *argv[])
     cv::Mat rotatedROI;
     cv::warpAffine(large_crop, rotatedROI, r, bbox.size(), cv::INTER_NEAREST); // using nearest: faster and we avoid interpolation of nodata field
     // 5/crop small extent (xSize, ySize)
-    tlx = rotatedROI.cols/2 - xSize/2; 
-    tly = rotatedROI.rows/2 - ySize/2; 
+    tlx = rotatedROI.cols/2 - xSize/2; // center - width 
+    tly = rotatedROI.rows/2 - ySize/2; // center - height
     bbox = cv::Rect2d(tlx, tly, xSize, ySize);
-    cv::Mat final = rotatedROI(bbox);
+    cv::Mat final = rotatedROI(bbox); // crop the final size image, already rotated
     
     // 6/update mask: compare against nodata field
     double nodata = apLayer->getNoDataValue();
@@ -210,14 +214,12 @@ int main(int argc, char *argv[])
     final_mask = ~final_mask; //invert mask
     // 7/normalize the mask. The actual PNG output must be scaled according to the bathymetry range param
     cv::normalize(final_mask, final_mask, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
-//    cv::normalize(final, final, 0, 255, NORM_MINMAX, CV_8UC1, final_mask); // normalize within the expected range 0-255 for imshow
 
     if (verbosity>=2){
-        namedWindow ("src");
+        namedWindow ("original");
         cv::normalize(original, original, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
-        imshow("src", original);
-        namedWindow ("final_mask");
-        // cv::normalize(final_mask, final_mask, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
+        imshow("original", original);
+        namedWindow ("final_mask");// already normalized
         imshow("final_mask", final_mask);
     }
 
@@ -228,7 +230,7 @@ int main(int argc, char *argv[])
     int totalZeroes = totalPixels - totalValids;// total invalid pxls = total - valids
     double proportion = (double)totalValids/(double)totalPixels;
 
-    cv::Mat zero_mask = cv::Mat::zeros(final_mask.size(), CV_64FC1);
+    cv::Mat zero_mask = cv::Mat::zeros(final_mask.size(), CV_64FC1); // float zero mask
     zero_mask.copyTo(final, ~final_mask); // we copy zeros to the invalid points (negated mask). Cheaper to peform memory copy than multiplying by the mask 
     _sum  = cv::sum(final).val[0]; // checked in QGIS< ok. Sum all pixels including the invalid ones, which have been already converted to zero
     _mean = _sum / (float)totalValids;
@@ -246,10 +248,6 @@ int main(int argc, char *argv[])
         cv::Mat temp;
         cv::normalize(final, temp, 0, 255, NORM_MINMAX, CV_8UC1, final_mask); // normalize within the expected range 0-255 for imshow
         imshow("final", temp);
-        waitKey(0);
-    }
-    // show debug
-    if (verbosity >= 2){
         // recompute min/max
         cv::minMaxLoc (final, &_min, &_max, 0, 0, final_mask); //masked min max of the input bathymetry
         _sum  = cv::sum(final).val[0]; // checked in QGIS< ok. Sum all pixels including the invalid ones, which have been already converted to zero
@@ -273,8 +271,6 @@ int main(int argc, char *argv[])
     
     if (proportion >= validThreshold){  // export inly if it satisfies the minimum proportion of valid pixels. Set threshold to 0.0 to esport all images 
         cv::imwrite(outputFileName, final_png);
-        // TODO: add tiff export flag
-        cv::imwrite(outputFileName + ".tif", final);
     }
 
     // Step 3: use geoTransform matrix to retrieve center of map image
@@ -282,8 +278,25 @@ int main(int argc, char *argv[])
     // coordinates are given as North-East positive. Vertical resolution sy (coeff[5]) can be negative
     // as long as the whole dataset is self-consistent, any offset can be ignored, as the LGA autoencoder uses the relative distance 
     // between image centers (it could also be for any corner when rotation is neglected)
+
+    // before exporting the geoTIFF, we need to correct the geotransformation matrix to reflect the x/y offset
+    // it should be mapped as a northing/easting displacemen (scaled by the resolution)
+    // easting_offset -> transforMatrix[0]
+    // northing_offset -> transforMatrix[3]
+
+    // this is the northing/easting in the original reference system
     double easting  = apLayer->transformMatrix[0] + apLayer->transformMatrix[1]*nx_east; // easting
     double northing = apLayer->transformMatrix[3] + apLayer->transformMatrix[5]*ny_north; // northing
+    // easily, we can add those UTM coordinates as the new offset (careful: center ref vs corner ref)
+    apLayer->transformMatrix[0] = easting - (final.cols/2)*apLayer->transformMatrix[1];
+    apLayer->transformMatrix[3] = northing - (final.rows/2)*apLayer->transformMatrix[5];
+    final.copyTo(apLayer->rasterData); //update layer with extracted patch
+    final_mask.copyTo(apLayer->rasterMask); //update layer mask with extracted patch
+    pipeline.exportLayer("M1_RAW_Bathymetry", outputTIFF, FMT_TIFF);
+
+    // if (proportion >= validThreshold){  // export inly if it satisfies the minimum proportion of valid pixels. Set threshold to 0.0 to esport all images 
+    //     cv::imwrite(outputTIFF, final);
+    // }
 
     // Also we need the LAT LON in decimal degree to match oplab-pipeline and LGA input format
     double latitude;
