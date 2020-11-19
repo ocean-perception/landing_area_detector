@@ -78,9 +78,9 @@ int main(int argc, char *argv[])
     int yOffset = 0; // vertical, column wise (positive down)
     if (argYOffsetT2P) yOffset = args::get(argYOffsetT2P); // any value is valid. No validation is required
     // output size, default same as input
-    unsigned int xSize = 0; // width of output image (columns), 0 means use the same as input
+    unsigned int xSize = 227; // width of output image (columns), 0 means use the same as input
     if (argXSizeT2P) xSize = args::get(argXSizeT2P); // any value is valid. No validation is required
-    unsigned int ySize = 0; // vertical, column wise (positive down)
+    unsigned int ySize = 227; // vertical, column wise (positive down)
     if (argYSizeT2P) ySize = args::get(argYSizeT2P); // any value is valid. No validation is required
 
     // exported image size can be any positive value. if zero any of the dimensions, the it is assumed it will inherit the input image size for that dimension
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
     // roll [deg]       zero, orthografically projected depthmap
     // pitch [deg]      zero, same as roll
     // heading [deg]    default zero, can be modified by rotating the croping window during gdal_retile.py
-    // altitude [m]     fixed to some typ posituve value (e.g. 6). Orthographic projection doesn't need image-like treatment
+    // altitude [m]     fixed to some typ. positive value (e.g. 6). Orthographic projection doesn't need image-like treatment
     // timestamp [s]    faked data
     // latitude [deg]   decimal degree latitude, calculated from geotiff metadata
     // longitude [deg]  decimal degree longitude, calculated from geotiff metadata
