@@ -5,7 +5,7 @@
 # separate module. Optional configuration.yaml can be parsed to generate UUID paths and summary files. 
 function show_usage(){
 	echo -e Usage: \n
-	echo tiff.convert2png.sh -i input [-o output] [-l output_list] [-p prefix] [-s sufix] [-x scale] [-r] 
+	echo tiff.convert2png.sh -i input [-o output] [-l output_list] [-p prefix] [-u sufix] [-x scale] [-r] 
 	echo "************************************************************************************************"
     echo -e "Example: tiff.convert2png -i /directory/with/tiffs -o "
 	echo -e '\t' "Converts all the TIFF images contained in the given directory into grayscale PNG. It uses tiff2png tool" 
@@ -32,16 +32,17 @@ export colour_reset="\e[0m"
 #######################################################################################################################
 # Parsing method extracted from http://wiki.bash-hackers.org/howto/getopts_tutorial
 #######################################################################################################################
+RANDOM=$(date +%N | cut -b4-9)
 INPUT_PATH="."
 OUTPUT_PATH=$(pwd)
 OUTPUT_LIST="t2p_filelist.csv"
-PREFIX=""
-SUFIX=""
+export PREFIX=""
+export SUFIX=""
 export SCALE=1.0			# bathymery range scale (default 1.0 m) It is passed as scaling factor when calling tiff2png
 BLOCK_SIZE="4"
 export RANDOM_SAMPLE="0"
-RANDOM=$(date +%N | cut -b4-9)
-while getopts "i:o:s:p:x:l:rh" opt; do
+export SEP=','
+while getopts "i:o:u:p:x:l:rh" opt; do
   case $opt in
     i)
 	INPUT_PATH=$OPTARG 
@@ -52,7 +53,7 @@ while getopts "i:o:s:p:x:l:rh" opt; do
     x)
 	SCALE=$OPTARG
 	;;
-    s)
+    u)
 	SUFIX=$OPTARG
 	;;
     l)
@@ -93,8 +94,8 @@ fn_convert_file (){
 	# let's generate the desired output filename: $output_path + prefix + original filename + .png
 	filename=$(basename "$file")	#extract file name with extension
 	onlyname=$(basename "$filename" | sed 's/\(.*\)\..*/\1/')
-	fullname_png=$4/$5$onlyname$6".png"
-	fullname_tiff=$4/$5$onlyname$6".tif"
+	fullname_png=$4/$onlyname$SUFIX".png"
+	fullname_tiff=$4/$onlyname$SUFIX".tif"
 	echo -e "$colour_reset to PNG: $light_yellow $fullname_png" 
 	echo -e "$colour_reset to TIF: $light_yellow $fullname_tiff"
 	# fullname=$OUTPUT_PATH/$PREFIX$onlyname$SUFIX".png"
@@ -108,10 +109,10 @@ fn_convert_file (){
 		y_offset=$(($RANDOM%20-10))
 	fi
 	echo -e "$colour_reset Rotation: $local_rotation \tOffset: $x_offset / $y_offset"
-	RESULT=$(tiff2png --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.8 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
+	RESULT=$(tiff2png --csv --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.8 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
 	# RESULT=$(  --valid_th=0.9 --rotation=$local_rotation)
 	# use sed to retrieve what is inside of the brackets []
-	echo -e "$fullname_png\t$fullname_tiff\t$RESULT" >> $2
+	echo -e "$fullname_png,$fullname_tiff,$RESULT" >> $2
 }
 export -f fn_convert_file
 
@@ -120,8 +121,8 @@ mkdir -p $OUTPUT_PATH
 
 # STEP 1: find all tif/tiff files in the input path
 FILE_LIST=$(find $INPUT_PATH -name '*.tif*') ## careful, should case insensitive
-echo -e "relative_path\trelative_path_tiff\tvalid_ratio\tnorthing [m]\teasting [m]\tdepth [m]\tlatitude [deg]\tlongitude [deg]" > $OUTPUT_LIST
+echo -e "relative_path$SEP relative_path_tiff${SEP}valid_ratio${SEP}northing [m]${SEP}easting [m]${SEP}depth [m]${SEP}latitude [deg]${SEP}longitude [deg]" > $OUTPUT_LIST
 
 # TODO: add UUID counter per row (fully compatible with Takaki's LGA)
 # dispatch for each file in FILE_LIST
-parallel --bar --jobs 8  	 fn_convert_file {} $OUTPUT_LIST $SCALE $OUTPUT_PATH $PREFIX $SUFIX ::: $FILE_LIST
+parallel --bar --jobs 8  	 fn_convert_file {} $OUTPUT_LIST $SCALE $OUTPUT_PATH $PREFIX ::: $FILE_LIST

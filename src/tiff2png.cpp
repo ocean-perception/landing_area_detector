@@ -272,7 +272,14 @@ int main(int argc, char *argv[])
     apLayer->transformMatrix[0] = easting - (final.cols/2)*apLayer->transformMatrix[1];
     apLayer->transformMatrix[3] = northing - (final.rows/2)*apLayer->transformMatrix[5];
 
+
     if (proportion >= validThreshold){  // export inly if it satisfies the minimum proportion of valid pixels. Set threshold to 0.0 to esport all images 
+        // before exporting, we check the desired number of image channels (grayscale or RGB)
+        if (!argGrayscaleT2P){ // we need to convert to RGB
+            final_png.convertTo(final_png, CV_8UC3);
+            cv::cvtColor(final_png,final_png, COLOR_GRAY2RGB);
+
+        }
         cv::imwrite(outputFileName, final_png);
         final.copyTo(apLayer->rasterData); //update layer with extracted patch
         final_mask.copyTo(apLayer->rasterMask); //update layer mask with extracted patch
@@ -320,6 +327,8 @@ int main(int argc, char *argv[])
     // >> filename: [sampled_images.csv] let's create a similar file using the exported data from this file, and merged in the bash caller
 
     String separator = "\t"; // TODO: user defined separator (for more general compatibility)
+    if (argCsvT2P) separator = ",";
+
     if (verbosity >= 1){
         // export header colums
         cout << "valid_ratio"        << separator;

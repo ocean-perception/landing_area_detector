@@ -69,7 +69,9 @@ args::ValueFlag	<unsigned int>  argXSizeT2P(argParserT2P,"pixels", "ROI width (X
 args::ValueFlag	<unsigned int>  argYSizeT2P(argParserT2P,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
 args::ValueFlag	<double>        argZMaxT2P(argParserT2P,"meters", "Maximum input value (Z). It wil be mapped to 255",      {"max_z"});
 // Thresholds
-args::ValueFlag	<double> argValidThresholdT2P(argParserT2P,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
+args::ValueFlag	<double>        argValidThresholdT2P(argParserT2P,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
+args::Flag	         	        argGrayscaleT2P(argParserT2P,   "",  "Export single channel 8-bit PNG instead of RGB", {"grayscale"});
+args::Flag	         	        argCsvT2P(argParserT2P,   "",  "Use comma ',' as column separator rather than TAB", {"csv"});
 
 int initParser(int argc, char *argv[]){
         //*********************************************************************************
