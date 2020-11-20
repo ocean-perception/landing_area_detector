@@ -112,7 +112,9 @@ fn_convert_file (){
 	RESULT=$(tiff2png --csv --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.8 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
 	# RESULT=$(  --valid_th=0.9 --rotation=$local_rotation)
 	# use sed to retrieve what is inside of the brackets []
-	echo -e "$fullname_png,$fullname_tiff,$RESULT" >> $2
+	echo -e -n "$fullname_png${SEP}$fullname_tiff${SEP}$RESULT" >> $2
+	# "${SEP}altitude [m]${SEP}roll [deg]${SEP}pitch [deg]${SEP}heading [deg]${SEP}timestamp [s]" >> $OUTPUT_LIST
+	echo -e "6.0${SEP}0.0${SEP}0.0${SEP}0.0${SEP}1" >> $2
 }
 export -f fn_convert_file
 
@@ -121,8 +123,8 @@ mkdir -p $OUTPUT_PATH
 
 # STEP 1: find all tif/tiff files in the input path
 FILE_LIST=$(find $INPUT_PATH -name '*.tif*') ## careful, should case insensitive
-echo -e "relative_path$SEP relative_path_tiff${SEP}valid_ratio${SEP}northing [m]${SEP}easting [m]${SEP}depth [m]${SEP}latitude [deg]${SEP}longitude [deg]" > $OUTPUT_LIST
-
+echo -n -e "relative_path${SEP}relative_path_tiff${SEP}valid_ratio${SEP}northing [m]${SEP}easting [m]${SEP}depth [m]${SEP}latitude [deg]${SEP}longitude [deg]" > $OUTPUT_LIST
+echo -e "${SEP}altitude [m]${SEP}roll [deg]${SEP}pitch [deg]${SEP}heading [deg]${SEP}timestamp [s]" >> $OUTPUT_LIST
 # TODO: add UUID counter per row (fully compatible with Takaki's LGA)
 # dispatch for each file in FILE_LIST
 parallel --bar --jobs 8  	 fn_convert_file {} $OUTPUT_LIST $SCALE $OUTPUT_PATH $PREFIX ::: $FILE_LIST
