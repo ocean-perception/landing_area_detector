@@ -87,6 +87,7 @@ echo -e "Output scale:\t $SCALE" >&2
 echo -e "Exported list:\t $OUTPUT_LIST" >&2
 echo -e "Random sampling:\t $RANDOM_ROT" >&2
 echo -e "Min file size:\t $BLOCK_SIZE blocks" >&2
+export NUM_ERROR=0
 
 fn_convert_file (){
 	file=$1
@@ -110,11 +111,9 @@ fn_convert_file (){
 	fi
 	echo -e "$colour_reset Rotation: $local_rotation \tOffset: $x_offset / $y_offset"
 	RESULT=$(tiff2png --csv --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.8 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
-	# RESULT=$(  --valid_th=0.9 --rotation=$local_rotation)
-	# use sed to retrieve what is inside of the brackets []
-	echo -e -n "$fullname_png${SEP}$fullname_tiff${SEP}$RESULT" >> $2
-	# "${SEP}altitude [m]${SEP}roll [deg]${SEP}pitch [deg]${SEP}heading [deg]${SEP}timestamp [s]" >> $OUTPUT_LIST
-	echo -e "6.0${SEP}0.0${SEP}0.0${SEP}0.0${SEP}1" >> $2
+
+	TOTAL_STRING="${fullname_png}${SEP}${fullname_tiff}${SEP}$RESULT${SEP}6.0${SEP}0.0${SEP}0.0${SEP}0.0${SEP}1"
+	echo -e $TOTAL_STRING | grep -v error >> $2
 }
 export -f fn_convert_file
 
