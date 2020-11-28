@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
             if ((a.z==nd) || (b.z==nd) || (c.z==nd) || (d.z==nd)){ // nodata, invalidate calculation
                 dst.at<double>(Point2i(i,j)) = nd; //
             }
-            else{
+            else{ // else, let's compute the 3D surface for the 2xpx windo
                 vector<Point3d> v;
                 // now we must compute the total area for the 4 triangles around the center point 
                 v.push_back(a);
@@ -161,9 +161,12 @@ int main(int argc, char *argv[])
                 totalArea += area;
             }                
         }
-        // for the last column we repeat our value (mirror-edge)
-        dst.at<double>(Point2i(dst.cols,j)) = rugosity;
+        dst.at<double>(Point2i(dst.cols-1,j)) = dst.at<double>(Point2i(dst.cols-2,j)); // repeat last column
     }
+    for (int k=0; k<dst.cols; k++)
+        dst.at<double>(Point2i(k,dst.rows-1)) = dst.at<double>(Point2i(k,dst.rows-2)); //repeat last row 
+
+
     // also, we have the totalArea (non-scaled). We can extract the rugosiry value for the whole image
     double meanRugosity = totalArea / (validPixels*sx*sy);
     cout << meanRugosity << endl; // this is the value that can be used by the caller
