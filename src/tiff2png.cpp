@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             logc.error ("main", "Input file missing. Please define it using --input='filename'");
             return -1;
     }
-    if (argInputT2P) outputFileName = args::get(argOutputT2P); //input file is mandatory positional argument
+    if (argOutputT2P) outputFileName = args::get(argOutputT2P); //input file is mandatory positional argument
     if (outputFileName.empty()){
             logc.error ("main", "Output file missing. Please define it using --output='filename'");
             return -1;
