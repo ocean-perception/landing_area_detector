@@ -105,8 +105,19 @@ add_executable(mad_test   src/mad_test.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-############################ MAD_TEST ####################
+############################ TIFF2PNG ####################
 add_executable(tiff2png   src/tiff2png.cpp
+                          src/lad_analysis.cpp
+                          ${GEOTIFF_MODULE}/src/geotiff.cpp
+                          src/lad_core.cpp
+                          src/lad_layer.cpp
+                          src/lad_processing.cpp
+                          src/lad_thread.cpp
+                          src/lad_config.cpp
+                          ${PROJECT_HEADERS})
+
+############################ TIFF2PNG ####################
+add_executable(tiff2rugosity   src/tiff2rugosity.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
                           src/lad_core.cpp
@@ -133,10 +144,12 @@ target_compile_options(mad_test PUBLIC -std=c++14)
 target_compile_options(tiff2png PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(img.resample ${OpenCV_LIBS} yaml-cpp)
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)
+install (TARGETS tiff2rugosity DESTINATION $ENV{HOME}/bin)
 install (TARGETS img.resample DESTINATION $ENV{HOME}/bin)
 configure_file(scripts/tiff.convert2png.sh $ENV{HOME}/bin/scripts)
 configure_file(scripts/collect_maps.sh $ENV{HOME}/bin/scripts)

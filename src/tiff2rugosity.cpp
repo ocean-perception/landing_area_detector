@@ -91,13 +91,13 @@ int main(int argc, char *argv[])
         logc.error("main:getLayer", s);
         return 0;                
     }
-    if (verbosity>=2){
-        namedWindow ("original");
-        cv::normalize(original, original, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
-        imshow("original", original);
-        namedWindow ("final_mask");// already normalized
-        imshow("final_mask", final_mask);
-    }
+    // if (verbosity>=2){
+    //     namedWindow ("original");
+    //     cv::normalize(original, original, 0, 255, NORM_MINMAX, CV_8UC1, mask); // normalize within the expected range 0-255 for imshow
+    //     imshow("original", original);
+    //     namedWindow ("final_mask");// already normalized
+    //     imshow("final_mask", final_mask);
+    // }
 
     // if (proportion >= validThreshold){  // export inly if it satisfies the minimum proportion of valid pixels. Set threshold to 0.0 to esport all images 
     //     // before exporting, we check the desired number of image channels (grayscale or RGB)
@@ -112,24 +112,6 @@ int main(int argc, char *argv[])
     //     pipeline.exportLayer("M1_RAW_Bathymetry", outputTIFF, FMT_TIFF);
     // }
 
-    // Also we need the LAT LON in decimal degree to match oplab-pipeline and LGA input format
-    double latitude;
-    double longitude;
-    // we need to transform from northing easting to WGS84 lat lon
-    OGRSpatialReference refUtm;
-    refUtm.importFromProj4(apLayer->layerProjection.c_str());   // original SRS
-    OGRSpatialReference refGeo;
-    refGeo.SetWellKnownGeogCS("WGS84"); // target SRS
-    OGRCoordinateTransformation* coordTrans = OGRCreateCoordinateTransformation(&refUtm, &refGeo); // ask for a SRS transforming object
-
-    double x = easting;
-    double y = northing;
-    
-    cout.precision(std::numeric_limits<double>::digits10);    // maybe it's an overkill. Just in case
-    int reprojected = coordTrans->Transform(1, &x, &y);
-    latitude  = x; // yes, this is not a bug, they are swapped 
-    longitude = y;
-    delete coordTrans; // maybe can be removed as destructor and garbage collector will take care of this after return
     if (verbosity > 0)
         tic.lap("");
     return NO_ERROR;

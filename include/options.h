@@ -116,7 +116,7 @@ int initParser(int argc, char *argv[]){
     return 0;
 }
 
-int initParserT2P(int argc, char *argv[]){
+int initParserT2P(int argc, char *argv[], string newDescription = ""){
         //*********************************************************************************
     /* PARSER section */
     std::string descriptionString =
@@ -125,7 +125,11 @@ int initParserT2P(int argc, char *argv[]){
         Data range linear remapping with (clip-limit) is performed beore exporting as PNG image \
     Compatible interface with geoTIFF bathymetry datasets via GDAL + OpenCV";
 
-    argParserT2P.Description(descriptionString);
+    if (!newDescription.empty())
+        argParserT2P.Description(newDescription);
+    else
+        argParserT2P.Description(descriptionString);
+    
     argParserT2P.Epilog("Author: J. Cappelletto (GitHub: @cappelletto)\n");
     argParserT2P.Prog(argv[0]);
     argParserT2P.helpParams.width = 120;
