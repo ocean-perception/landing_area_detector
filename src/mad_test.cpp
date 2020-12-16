@@ -33,7 +33,7 @@ logger::ConsoleOutput logc;
 */
 int main(int argc, char *argv[])
 {
-    cout << cyan << "lad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
+    cout << cyan << "mad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
 
@@ -50,11 +50,12 @@ int main(int argc, char *argv[])
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
     // Input file priority: must be defined either by the config.yaml or --input argument
     string inputFileName    = ""; // command arg or config defined
-    string inputFilePath    = ""; // can be retrieved from the fully qualified inputFileName 
-    string outputFilePrefix = ""; // none, output filenames will be the same as the standard
+    // string inputFilePath    = ""; // can be retrieved from the fully qualified inputFileName 
+    string outputFileName   = ""; // if none, output filenames will be the same as the standard. If non-null, will be used as prefix
     string outputFilePath   = ""; // same relative folder
 
-    if (argInput) inputFileName = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argInput) inputFileName   = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argOutput) outputFileName = args::get(argOutput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
 
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
         if (config["input"]["filename"])
@@ -64,7 +65,6 @@ int main(int argc, char *argv[])
             return -1;
         }
     }
-
     // Now we proceed to optional parameters. When a variable is defined, we override the default value.
     float fParam = 1.0;
     if (argFloatParam) fParam = args::get(argFloatParam);
@@ -73,8 +73,11 @@ int main(int argc, char *argv[])
     int nThreads = DEFAULT_NTHREADS;
     if (argNThreads)   nThreads = args::get(argNThreads);
     if (nThreads < 3) {
-        s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
-        logc.warn("main", s);
+        if (params.verbosity > VERBOSITY_0)
+        {
+            s << "Number of used threads will be always 3 or higher. Asked for [" << yellow << nThreads << reset << "]" << endl;
+            logc.warn("main", s);
+        }
     }
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
@@ -93,7 +96,8 @@ int main(int argc, char *argv[])
 
     if (params.updateThreshold){
         // let's recompute the slope and height thresholds according to the vehicle geometry
-        logc.warn("main", "Recomputing slope and height thresholds");
+        if (params.verbosity > VERBOSITY_0)
+            logc.warn("main", "Recomputing slope and height thresholds");
         double dm = params.robotHeight * params.ratioMeta;
         double dg = params.robotHeight * params.ratioCg;
 
@@ -116,8 +120,9 @@ int main(int argc, char *argv[])
     /* Summary list parameters */
     cout << yellow << "****** Summary **********************************" << reset << endl;
     cout << "Input file:   \t" << inputFileName << endl;
-    cout << "Input path:   \t" << inputFilePath << endl;
-    cout << "Output prefix:\t" << outputFilePrefix << endl;
+    // cout << "Input path:   \t" << inputFilePath << endl;
+    // cout << "Output prefix:\t" << outputFilePrefix << endl;
+    cout << "Output name:  \t" << outputFileName << endl;
     cout << "Output path:  \t" << outputFilePath << endl;
     cout << "fParam:       \t" << fParam << endl;
     cout << "iParam:       \t" << iParam << endl;
@@ -126,7 +131,7 @@ int main(int argc, char *argv[])
     lad::tictac tt, tic;
 
     lad::Pipeline pipeline;    
-    cout << "Verbose level:\t\t" << pipeline.verbosity << endl;    
+    cout << "Verbose level:\t\t" << params.verbosity << endl;    
     cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
     cout << yellow << "*************************************************" << reset << endl << endl;
 
@@ -138,17 +143,19 @@ int main(int argc, char *argv[])
 
     pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
     pipeline.extractContours("M1_VALID_DataMask", "M1_CONTOUR_Mask", params.verbosity);
-        pipeline.exportLayer("M1_RAW_Bathymetry", "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-        pipeline.exportLayer("M1_CONTOUR_Mask", "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.exportLayer("M1_RAW_Bathymetry", outputFileName + "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+        pipeline.exportLayer("M1_CONTOUR_Mask", outputFileName + "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
+    }
     pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
     pipeline.createKernelTemplate("KernelDiag",  params.robotDiagonal, params.robotDiagonal, cv::MORPH_ELLIPSE);
     dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
 
     pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
-        pipeline.exportLayer("C1_ExclusionMap", "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.exportLayer("C1_ExclusionMap", outputFileName + "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     tt.lap("Load M1, C1");
 
     std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, ""); //no suffix, nill-rotation sample
@@ -173,9 +180,10 @@ int main(int argc, char *argv[])
     threadLaneX.join();
 
     pipeline.maskLayer("B1_HEIGHT_Bathymetry", "A2_HiSlopeExcl", "M2_Protrusions");
-    pipeline.saveImage("M2_Protrusions", "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
-    pipeline.exportLayer("M2_Protrusions", "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.saveImage("M2_Protrusions", outputFileName + "M2_Protrusions.png", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.exportLayer("M2_Protrusions", outputFileName + "M2_Protrusions.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     tt.lap("** Lanes C & X completed...");
 
     //now we proceed with final LoProt/HiProt exclusion calculation
@@ -183,22 +191,27 @@ int main(int argc, char *argv[])
     threadLaneD.join();
 
     pipeline.copyMask("C1_ExclusionMap", "D1_LoProtMask");
-    pipeline.saveImage("D1_LoProtMask", "D1_LoProtMask.png");
-    pipeline.exportLayer("D1_LoProtMask", "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.saveImage("D1_LoProtMask", outputFileName + "D1_LoProtMask.png");
+        pipeline.exportLayer("D1_LoProtMask", outputFileName + "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     pipeline.copyMask("C1_ExclusionMap", "D2_LoProtExcl");
-    pipeline.saveImage("D2_LoProtExcl", "D2_LoProtExcl.png");
-    pipeline.exportLayer("D2_LoProtExcl", "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
-
-    pipeline.copyMask("C1_ExclusionMap", "D1_LoProtElev");
-    pipeline.saveImage("D1_LoProtElev", "D1_LoProtElev.png");
-    pipeline.exportLayer("D1_LoProtElev", "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.saveImage("D2_LoProtExcl", outputFileName + "D2_LoProtExcl.png");
+        pipeline.exportLayer("D2_LoProtExcl", outputFileName + "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
+    pipeline.copyMask("C1_ExclusionMap", outputFileName + "D1_LoProtElev");
+    if (argSaveIntermediate){
+        pipeline.saveImage("D1_LoProtElev", outputFileName + "D1_LoProtElev.png");
+        pipeline.exportLayer("D1_LoProtElev", outputFileName + "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
     pipeline.copyMask("C1_ExclusionMap", "D3_HiProtMask");
-    pipeline.saveImage("D3_HiProtMask", "D3_HiProtMask.png");
-    pipeline.exportLayer("D3_HiProtMask", "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
-
+    if (argSaveIntermediate){
+        pipeline.saveImage("D3_HiProtMask", outputFileName + "D3_HiProtMask.png");
+        pipeline.exportLayer("D3_HiProtMask", outputFileName + "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
+    }
   
+    //TODO: use outputfilename as prefix when exporting final layers
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     if (params.fixRotation == true){
         s << "Calculating maps for fixed rotation [" << blue << params.rotation << reset << "]";
@@ -206,26 +219,31 @@ int main(int argc, char *argv[])
         pipeline.computeLandabilityMap ("C3_MeanSlopeExcl", "D2_LoProtExcl", "D4_HiProtExcl", "M3_LandabilityMap");
         pipeline.copyMask("C1_ExclusionMap","M3_LandabilityMap");
 //        pipeline.showImage("M3_LandabilityMap");
-        pipeline.saveImage("M3_LandabilityMap", "M3_LandabilityMap.png");
-        pipeline.exportLayer("M3_LandabilityMap", "M3_LandabilityMap.tif", FMT_TIFF, WORLD_COORDINATE);
+        pipeline.saveImage("M3_LandabilityMap", outputFileName + "M3_LandabilityMap.png");
+        pipeline.exportLayer("M3_LandabilityMap", outputFileName + "M3_LandabilityMap.tif", FMT_TIFF, WORLD_COORDINATE);
 
         pipeline.computeBlendMeasurability("M3_LandabilityMap", "X1_MeasurabilityMap", "M4_FinalMeasurability");
         pipeline.copyMask("C1_ExclusionMap","M4_FinalMeasurability");
 //        pipeline.showImage("M4_FinalMeasurability");
-        pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
-        pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
+        pipeline.saveImage("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.png");
+        pipeline.exportLayer("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
 
         if (argVerbose)
             pipeline.showInfo(); // show detailed information if asked for
 
         tic.lap("***\tBase pipeline completed");
 
-        logc.info("main", "Press any key to exit...");
-        waitKey(0);
+        if (!argNoWait){
+            logc.info("main", "Press any key to exit...");
+            waitKey(0);
+        }
         return NO_ERROR;
     }
 
     // if fixRotation = false, we iterate from rotationMin to rotationMax
+    // TODO: Add verbosity check for intermediate steps (when proc. small files, it's not necessary)
+    // TODO: figure out if we need to export rot-merged lo-slope
+    //  hi-slope can be exported directly as it is rot-independent 
     logc.info("main", "Calculating landability maps for every rotation ...");
     s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
     logc.info("main", s);
@@ -239,16 +257,19 @@ int main(int argc, char *argv[])
         parameterStruct localParam = params;
         localParam.rotation = params.rotationMin + nK * params.rotationStep;
 
-        xs << "Dispatched for execution: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
-        logc.info("main", xs);
+        if (params.verbosity > VERBOSITY_0){
+            xs << "Dispatched for execution: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+            logc.info("main", xs);
+        }
         lad::processRotationWorker (&pipeline, &localParam);
         
         #pragma omp atomic
         finished++;
 
-        xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
-        logc.info("main", xs);
-
+        if (params.verbosity > VERBOSITY_0){
+            xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
+            logc.info("main", xs);
+        }
     }
     // now we need to merge all the intermediate rotated binary layers (M3) into a single M3_Final layer
     // every landability rotation map is a binary map indicating "landable or no-landable"
@@ -310,8 +331,8 @@ int main(int argc, char *argv[])
     // transfer, via mask
     acum.copyTo(apFinal->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
-    pipeline.saveImage("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.png");
-    pipeline.exportLayer("M3_LandabilityMap_BLEND", "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.saveImage("M3_LandabilityMap_BLEND", outputFileName + "M3_LandabilityMap_BLEND.png");
+    pipeline.exportLayer("M3_LandabilityMap_BLEND", outputFileName + "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
 //    pipeline.showImage("M3_LandabilityMap_BLEND");
 
 //*******************************************************//
@@ -343,8 +364,8 @@ int main(int argc, char *argv[])
     // transfer, via mask
     acum.copyTo(apMeasure->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
-    pipeline.saveImage("M4_FinalMeasurability", "M4_FinalMeasurability.png");
-    pipeline.exportLayer("M4_FinalMeasurability", "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.saveImage("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.png");
+    pipeline.exportLayer("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
 //    pipeline.showImage("M4_FinalMeasurability");
 
     tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");

@@ -32,7 +32,7 @@ fn_compute_derivatives (){
     gdaldem TPI ${input_file} ${output_tpi} -b 1 -compute_edges -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9
 
     echo -e "> Exporting SLO to "$light_blue $output_slo $colour_reset
-    gdaldem slope ${input_file} ${output_slo} -of GTiff -b 1 -s 1.0 -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9
+    gdaldem slope ${input_file} ${output_slo} -of GTiff -b 1 -compute_edges -s 1.0 -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9
 
     echo -e "> Exporting ROU to "$light_blue     $output_rou $colour_reset
     gdaldem roughness ${input_file} ${output_rou} -of GTiff -b 1 -compute_edges -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9

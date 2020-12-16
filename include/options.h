@@ -21,13 +21,16 @@ args::CompletionFlag completion(argParser, {"complete"});	//TODO: figure out why
 
 args::ValueFlag <std::string> 	argInput(argParser, "input", "Input bathymetry map. TIFF file or XYZ point collection", {"input"});
 // args::Positional<std::string> 	argInput(argParser,     "input",    "Input bathymetry map. TIFF file or XYZ point collection");
-args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file",{'o',"output"});
+args::ValueFlag	<std::string> 	argOutput(argParser,    "output",   "Output file basename",{'o',"output"});
+args::ValueFlag	<std::string> 	argOutputPath(argParser,"path",   "Output folder path wher all files will be exported",{'p',"outpath"});
 args::ValueFlag	<int> 	        argVerbose(argParser,   "verbose",  "Define verbosity level",                                                   {"verbose"});
 
-args::Flag	         	        argTerrainOnly(argParser,   "",  "Run terrain only calculations (maps for Lane A & B which are AUV independent)", {"terrainonly"});
+args::Flag	         	        argNoWait(argParser,   "Disable wait for user input when finishing. Use when batch-processing single images","", {"nowait"});
+args::Flag	         	        argSaveIntermediate(argParser,   "","Export (save) intermediate rotation-identependent maps (Lane A & B)", {"saveintermediate"});
+args::Flag	         	        argTerrainOnly(argParser,   "",     "Run terrain only calculations (maps for Lane A & B which are AUV independent)", {"terrainonly"});
 args::ValueFlag	<int> 	        argNThreads(argParser,  "number",   "Define max number of threads",  {"nthreads"});
 args::ValueFlag <std::string>   argConfig(argParser,    "file.yaml","Provides path to file with user defied configuration", {"config"});
-args::ValueFlag	<double>        argMetacenter(argParser,  "ratio",   "Recompute metacenter distance from vehicle height",  {"meta"});
+args::ValueFlag	<double>        argMetacenter(argParser,"ratio",    "Recompute metacenter distance from vehicle height",  {"meta"});
 
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha",  "Search radius for alpha Shape concave hull algorithm",                     {"alpharadius"});
 args::ValueFlag	<double>        argRotation(argParser,  "rotation", "Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW", {"rotation"});
