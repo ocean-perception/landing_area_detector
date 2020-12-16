@@ -67,7 +67,7 @@ void lad::printParams(parameterStruct_ *p){
  * @return YAML::Node copy of base YAML node containing all the parsed parameters 
  */
 YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
-    cout << "Processing user defined configuration: [" << cyan << file << reset << "]" << endl;
+    // cout << "Processing user defined configuration: [" << cyan << file << reset << "]" << endl;
 
     YAML::Node config = YAML::LoadFile(file);
     int verb = 0;

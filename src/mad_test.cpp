@@ -116,25 +116,27 @@ int main(int argc, char *argv[])
         params.heightThreshold = params.robotWidth * sin (params.slopeThreshold);
         params.slopeThreshold *= 180.0/M_PI;
     }   
-    //**************************************************************************
-    /* Summary list parameters */
-    cout << yellow << "****** Summary **********************************" << reset << endl;
-    cout << "Input file:   \t" << inputFileName << endl;
-    // cout << "Input path:   \t" << inputFilePath << endl;
-    // cout << "Output prefix:\t" << outputFilePrefix << endl;
-    cout << "Output name:  \t" << outputFileName << endl;
-    cout << "Output path:  \t" << outputFilePath << endl;
-    cout << "fParam:       \t" << fParam << endl;
-    cout << "iParam:       \t" << iParam << endl;
     params.robotDiagonal = sqrt(params.robotWidth*params.robotWidth + params.robotLength*params.robotLength); 
-    lad::printParams(&params);
+
+    if (params.verbosity > 0){
+        //**************************************************************************
+        /* Summary list parameters */
+        cout << yellow << "****** Summary **********************************" << reset << endl;
+        cout << "Input file:   \t" << inputFileName << endl;
+        // cout << "Input path:   \t" << inputFilePath << endl;
+        // cout << "Output prefix:\t" << outputFilePrefix << endl;
+        cout << "Output name:  \t" << outputFileName << endl;
+        cout << "Output path:  \t" << outputFilePath << endl;
+        // cout << "fParam:       \t" << fParam << endl;
+        // cout << "iParam:       \t" << iParam << endl;
+        lad::printParams(&params);
+        cout << "Verbose level:\t\t" << params.verbosity << endl;    
+        cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
+        cout << yellow << "*************************************************" << reset << endl << endl;
+    }
+
     lad::tictac tt, tic;
-
     lad::Pipeline pipeline;    
-    cout << "Verbose level:\t\t" << params.verbosity << endl;    
-    cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
-    cout << yellow << "*************************************************" << reset << endl << endl;
-
     tic.start();
     tt.start();
     
@@ -163,15 +165,17 @@ int main(int argc, char *argv[])
 
     threadLaneA.join();
     threadLaneB.join();
-    if (argTerrainOnly){ 
-        // we will only generate terrain-specific maps for their external analysis. Lanes A&B. The other lanes C, D & X depend on geometrical parameters of the AUV
-        logc.debug("main", "Completed terrain specific maps: Lanes A & B. Finishing ...");
-        tt.lap("** Lanes A & B");
-        return NO_ERROR;
-    }
-    else{
-        logc.debug("main", "Lanes A & B completed -> M2_Protrusions map done. Joining queue for Lane C & X");
-        tt.lap("** Lanes A & B");
+    if (params.verbosity > 0){
+        if (argTerrainOnly){ 
+            // we will only generate terrain-specific maps for their external analysis. Lanes A&B. The other lanes C, D & X depend on geometrical parameters of the AUV
+            logc.debug("main", "Completed terrain specific maps: Lanes A & B. Finishing ...");
+            tt.lap("** Lanes A & B");
+            return NO_ERROR;
+        }
+        else{
+            logc.debug("main", "Lanes A & B completed -> M2_Protrusions map done. Joining queue for Lane C & X");
+            tt.lap("** Lanes A & B");
+        }
     }
 
     std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
@@ -190,23 +194,21 @@ int main(int argc, char *argv[])
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
     threadLaneD.join();
 
-    pipeline.copyMask("C1_ExclusionMap", "D1_LoProtMask");
-    if (argSaveIntermediate){
+
+    if (params.exportIntermediate){
+        pipeline.copyMask("C1_ExclusionMap", "D1_LoProtMask");
         pipeline.saveImage("D1_LoProtMask", outputFileName + "D1_LoProtMask.png");
         pipeline.exportLayer("D1_LoProtMask", outputFileName + "D1_LoProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
-    }
-    pipeline.copyMask("C1_ExclusionMap", "D2_LoProtExcl");
-    if (argSaveIntermediate){
+
+        pipeline.copyMask("C1_ExclusionMap", "D2_LoProtExcl");
         pipeline.saveImage("D2_LoProtExcl", outputFileName + "D2_LoProtExcl.png");
         pipeline.exportLayer("D2_LoProtExcl", outputFileName + "D2_LoProtExcl.tif", FMT_TIFF, WORLD_COORDINATE);
-    }
-    pipeline.copyMask("C1_ExclusionMap", outputFileName + "D1_LoProtElev");
-    if (argSaveIntermediate){
+
+        pipeline.copyMask("C1_ExclusionMap", outputFileName + "D1_LoProtElev");
         pipeline.saveImage("D1_LoProtElev", outputFileName + "D1_LoProtElev.png");
         pipeline.exportLayer("D1_LoProtElev", outputFileName + "D1_LoProtElev.tif", FMT_TIFF, WORLD_COORDINATE);
-    }
-    pipeline.copyMask("C1_ExclusionMap", "D3_HiProtMask");
-    if (argSaveIntermediate){
+    
+        pipeline.copyMask("C1_ExclusionMap", "D3_HiProtMask");
         pipeline.saveImage("D3_HiProtMask", outputFileName + "D3_HiProtMask.png");
         pipeline.exportLayer("D3_HiProtMask", outputFileName + "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
     }

@@ -131,6 +131,8 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // threadLaneD.join();
     }
 
+    cout << "PHASE 2" << endl;
+
     #pragma omp for nowait 
     for (int r=0; r<=nRot; r++){
         std::ostringstream s;

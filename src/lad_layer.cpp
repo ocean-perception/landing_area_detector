@@ -295,8 +295,8 @@ namespace lad
         std::ostringstream s;
         if (newSpace == coordinateSpace)
         {
-            s << "Source and target coordinate space are the same when trying to convert [" << layerName << "]. No operation was performed";
-            logc.info("vl::convertSpace", s);
+            // s << "Source and target coordinate space are the same when trying to convert [" << layerName << "]. No operation was performed";
+            // logc.info("vl::convertSpace", s);
             // it is the same space! nothing to change
             return 0;
         }
@@ -338,12 +338,12 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                s << "Converting coordinate space of [" << exportName << "] to [";
-                if (outputCoordinate == PIXEL_COORDINATE)
-                    s << yellow << "PIXEL" << reset << "]";
-                else
-                    s << yellow << "WORLD" << reset << "]";
-                logc.warn("vl::writeLayer", s);
+                // s << "Converting coordinate space of [" << exportName << "] to [";
+                // if (outputCoordinate == PIXEL_COORDINATE)
+                //     s << yellow << "PIXEL" << reset << "]";
+                // else
+                //     s << yellow << "WORLD" << reset << "]";
+                // logc.warn("vl::writeLayer", s);
                 convertDataSpace(&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
             }
             //vectorData
@@ -367,16 +367,16 @@ namespace lad
             //we need to check if the data points need a space transformation
             if (coordinateSpace != outputCoordinate)
             {
-                s << "Converting coordinate space of [" << exportName << "] to [";
-                if (outputCoordinate == PIXEL_COORDINATE)
-                {
-                    s << yellow << "PIXEL" << reset << "]";
-                }
-                else
-                {
-                    s << yellow << "WORLD" << reset << "]";
-                }
-                logc.warn("vl::writeLayer", s);
+                // s << "Converting coordinate space of [" << exportName << "] to [";
+                // if (outputCoordinate == PIXEL_COORDINATE)
+                // {
+                //     s << yellow << "PIXEL" << reset << "]";
+                // }
+                // else
+                // {
+                //     s << yellow << "WORLD" << reset << "]";
+                // }
+                // logc.warn("vl::writeLayer", s);
                 convertDataSpace(&vectorData, &transformedData, coordinateSpace, outputCoordinate, apGeoTransform);
             }
 
@@ -384,7 +384,7 @@ namespace lad
             {
                 if (fileName.empty())
                 {
-                    logc.warn("vl::writeLayer", "Layer filename not defined, will try to use layer name as export file");
+                    // logc.warn("vl::writeLayer", "Layer filename not defined, will try to use layer name as export file");
                     if (layerName.empty())
                     {
                         logc.error("vl::writeLayer", "Layer name not defined. Won't export layer");
@@ -393,10 +393,10 @@ namespace lad
                     exportName = layerName;
                 }
             }
-            s <<"Exporting " << yellow << layerName << reset << " as CSV file: " << yellow << exportName;
-            logc.info ("vl::writeLayer", s);
-            s << "\tVector layer size: " << vectorData.size();
-            logc.info ("vl::writeLayer", s);
+            // s <<"Exporting " << yellow << layerName << reset << " as CSV file: " << yellow << exportName;
+            // logc.info ("vl::writeLayer", s);
+            // s << "\tVector layer size: " << vectorData.size();
+            // logc.info ("vl::writeLayer", s);
 
             ofstream outfile(exportName, ios::out);
             if (!outfile.good())
@@ -412,8 +412,8 @@ namespace lad
             {
                 outfile << element.x << separator << element.y << endl;
             }
-            s << "\tVector layer exported to: " << exportName;
-            logc.info ("vl::writeLayer", s);
+            // s << "\tVector layer exported to: " << exportName;
+            // logc.info ("vl::writeLayer", s);
             outfile.close();
             return EXPORT_OK;
         }

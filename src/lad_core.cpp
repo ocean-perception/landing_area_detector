@@ -400,8 +400,8 @@ namespace lad
     int Pipeline::createKernelTemplate (std::string name, double width, double length, int morphtype){
         
         ostringstream s;
-        s << "Creating kernelTemplate for: " << name; 
-        logc.debug ("createKernelTemplate", s);
+        // s << "Creating kernelTemplate for: " << name; 
+        // logc.debug ("createKernelTemplate", s);
         double sx = geoTransform[GEOTIFF_PARAM_SX];
         if (sx == 0) sx = 1;
         double sy = geoTransform[GEOTIFF_PARAM_SY];
@@ -629,8 +629,8 @@ namespace lad
         apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterName));
 
         cv::findContours(apRaster->rasterData, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE); // obtaining only 1st level contours, no children
-        s << "#contours detected: " << contours.size();
-        logc.info ("extractContours", s); 
+        // s << "#contours detected: " << contours.size();
+        // logc.info ("extractContours", s); 
         if (contours.empty())
         {
             s << "No contour line was detected!";
@@ -653,8 +653,8 @@ namespace lad
                 good_contours.push_back(it); // hack to keep it at a single element
             }
         }
-        s << "Largest contour: " << yellow << largest;
-        logc.info ("extractContours", s); 
+        // s << "Largest contour: " << yellow << largest;
+        // logc.info ("extractContours", s); 
  
         // WARNING: contours may provide false shapes when valid data mask reaches any image edge.
         // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
@@ -857,8 +857,8 @@ namespace lad
         // cout << "Searching [" << dstLayer << "] +++++++++++++++++++++" << endl; 
         auto apOutput = mapLayers.find(dstLayer); // not found? let's create it
         if (apOutput == mapLayers.end()){
-            s << "Output raster [" << yellow << dstLayer << reset << "] not found in the stack. Creating...";
-            logc.warn ("computeExclusionMap", s);
+            // s << "Output raster [" << yellow << dstLayer << reset << "] not found in the stack. Creating...";
+            // logc.warn ("computeExclusionMap", s);
             createLayer(dstLayer, LAYER_RASTER);
             apOutput =  mapLayers.find(dstLayer);    //we get the pointer, it should appear now in the stack!
         }
@@ -877,7 +877,7 @@ namespace lad
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
-        logc.debug("p:comExcl", dstLayer);
+        // logc.debug("p:comExcl", dstLayer);
 
         apLayerO->copyGeoProperties(apLayerR); //let's copy the geoproperties
         apLayerO->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -1176,7 +1176,7 @@ namespace lad
             logc.error("compareLayer", dst);
         }
 
-        logc.debug("p:comExcl", dst);
+        // logc.debug("p:comExcl", dst);
 
         apDst->copyGeoProperties(apSrc);
         apDst->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -1256,14 +1256,14 @@ namespace lad
         double srcNoData = apSrc->getNoDataValue(); //we inherit ource no valid data value
         apDst->setNoDataValue(srcNoData);
         if (verbosity > VERBOSITY_0){
-            s << "Source NoData value: " << srcNoData;
-            logc.debug ("p::lowpassFilter", s);
-            s << "Target NoData value: " << apDst->getNoDataValue();
-            logc.debug ("p::lowpassFilter", s);
-            s << "Input raster size: " << apSrc->rasterData.size(); 
-            logc.debug ("p::lowpassFilter", s);
-            s << "Filter size: " << filterSize.width << " x " << filterSize. height; 
-            logc.debug ("p::lowpassFilter", s);
+            // s << "Source NoData value: " << srcNoData;
+            // logc.debug ("p::lowpassFilter", s);
+            // s << "Target NoData value: " << apDst->getNoDataValue();
+            // logc.debug ("p::lowpassFilter", s);
+            // s << "Input raster size: " << apSrc->rasterData.size(); 
+            // logc.debug ("p::lowpassFilter", s);
+            // s << "Filter size: " << filterSize.width << " x " << filterSize. height; 
+            // logc.debug ("p::lowpassFilter", s);
         }
         apDst->copyGeoProperties(apSrc);
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, srcNoData); 
@@ -1331,8 +1331,8 @@ namespace lad
         ostringstream s;
         // src contains the RAW bathymetry. We substract the filtered map from it to obtain the height
         if (isAvailable(dst)){
-            s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating...";
-            logc.info ("p::computeHeight", s);
+            // s << "Destination layer ["  << yellow << dst << reset << "] does not exist. Creating...";
+            // logc.info ("p::computeHeight", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apSrc  = dynamic_pointer_cast<RasterLayer> (getLayer(src));
@@ -1531,8 +1531,8 @@ namespace lad
         }
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         if (apDst == nullptr){
-            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ...";
-            logc.info ("p::applyWindowFilter", s);
+            // s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ...";
+            // logc.info ("p::applyWindowFilter", s);
             createLayer(dst, LAYER_RASTER);
             apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
             if (apDst == nullptr){
@@ -1777,8 +1777,8 @@ namespace lad
         }
         // if destination layer doesn't exist, let's create it.
         if (isAvailable(dst)){
-            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
-            logc.info ("computeLandability", s);
+            // s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
+            // logc.info ("computeLandability", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
@@ -1823,8 +1823,8 @@ namespace lad
         }
         // if destination layer doesn't exist, let's create it.
         if (isAvailable(dst)){
-            s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
-            logc.info ("computeBlendMeasurability", s);
+            // s << "Destination layer [" << yellow << dst << reset << "] not found. Creating it ..."; 
+            // logc.info ("computeBlendMeasurability", s);
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
