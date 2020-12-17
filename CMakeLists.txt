@@ -116,7 +116,7 @@ add_executable(tiff2png   src/tiff2png.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-############################ TIFF2PNG ####################
+############################ TIFFRUGOSITY#################
 add_executable(tiff2rugosity   src/tiff2rugosity.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
@@ -129,23 +129,24 @@ add_executable(tiff2rugosity   src/tiff2rugosity.cpp
 
 ############################ IMG_RESAMPLE ####################
 add_executable(img.resample   src/img.resample.cpp
-                          # src/lad_analysis.cpp
-                          # ${GEOTIFF_MODULE}/src/geotiff.cpp
-                          # src/lad_core.cpp
-                          # src/lad_layer.cpp
-                          # src/lad_processing.cpp
-                          # src/lad_thread.cpp
-                          src/helper.cpp
+                          src/lad_analysis.cpp
+                          ${GEOTIFF_MODULE}/src/geotiff.cpp
+                          src/lad_core.cpp
+                          src/lad_layer.cpp
+                          src/lad_processing.cpp
+                          src/lad_thread.cpp
+                          # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
 target_compile_options(mad_test PUBLIC -std=c++14)
 target_compile_options(tiff2png PUBLIC -std=c++14)
+target_compile_options(img.resample PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-target_link_libraries(img.resample ${OpenCV_LIBS} yaml-cpp)
+target_link_libraries(img.resample ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)

@@ -12,19 +12,19 @@
  * 
  */
 #include "headers.h"
-#include "helper.h"
+// #include "helper.h"
 
 #include "options.h"
-// #include "geotiff.hpp" // Geotiff class definitions
-// #include "lad_core.hpp"
-// #include "lad_config.hpp"
+#include "geotiff.hpp" // Geotiff class definitions
+#include "lad_core.hpp"
+#include "lad_config.hpp"
 // // #include "lad_analysis.h"
-// #include "lad_enum.hpp"
+#include "lad_enum.hpp"
 #include <limits>
 
 using namespace std;
 using namespace cv;
-
+using namespace lad;
 //we recycle the backbone code from tiff2png module
 logger::ConsoleOutput logc;
 
@@ -70,8 +70,35 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+
+    lad::Pipeline pipeline;    
+    // Step 1: Read input TIFF file
+    pipeline.useNodataMask = true;//params.useNoDataMask;
+    pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
+
+        // Step 2: Determine bathymetry range for the loaded image before rescaling
+    // We know the bathymetry map is stored as 32/64 bit float 
+    String layer = "M1_RAW_Bathymetry";
+    auto apLayer = dynamic_pointer_cast<RasterLayer> (pipeline.getLayer(layer));
+    if (apLayer == nullptr){
+        s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
+        logc.error("main:getLayer", s);
+        cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
+        return ERROR_WRONG_ARGUMENT;
+    }
+    if (apLayer->rasterData.empty()){
+        s << "rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save";
+        logc.error("main:getLayer", s);
+        return NO_ERROR;                
+    }
+    cv::Mat original;
+    cv::Mat mask = apLayer->rasterMask.clone();
+    apLayer->rasterData.copyTo(original, mask); //copy only valid pixels, the rest should remain zero
+
     // let's open the input image
-    cv::Mat input = imread(inputFileName, IMREAD_ANYCOLOR);
+    // cv::Mat input = imread(inputFileName, IMREAD_ANYCOLOR);
+    cv::Mat input = original.clone();
+
     cv::Mat output;
     /* Summary list parameters */
     if (verbosity >= 1){
@@ -91,7 +118,11 @@ int main(int argc, char *argv[])
         imshow("output", output);
         waitKey(0);
     }
-    imwrite(outputFileName, output);
+
+    double nodata = apLayer->getNoDataValue();
+    // imwrite(outputFileName, output);
+    output.copyTo(apLayer->rasterData, mask);
+    pipeline.exportLayer("M1_RAW_Bathymetry", outputFileName, FMT_TIFF);
 
     if (verbosity >= 1){
         s << "[" << yellow << inputFileName << reset << "] resampled to [" << blue << outputFileName << reset << "]. Size: " << output.size();
