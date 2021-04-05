@@ -1653,10 +1653,6 @@ namespace lad
                             apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
                         }
                         else if (filtertype == FILTER_MEAN){
-                            // for (auto it:pointList){
-                            //     acum = acum + it.hz();
-                            // }
-                            // if (acum < 0) acum = 0;
                             apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
                         else if (filtertype == FILTER_DISTANCE){
