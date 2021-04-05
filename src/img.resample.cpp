@@ -28,13 +28,18 @@ using namespace lad;
 //we recycle the backbone code from tiff2png module
 logger::ConsoleOutput logc;
 
+//TODO CORRECT ACCORDING TO INPUT IMAGE TYPE (PNG VS TIFF)
+
 /*!
     @fn     int main(int argc, char* argv[])
     @brief  Main function
 */
 int main(int argc, char *argv[])
 {
-    int retval = initParserT2P(argc, argv);    // initial argument validation, populates arg parsing structure args
+    string newDescription =
+        "image.resample - Module for image resampling using and intermediate image size. \
+        Expected input image can be TIFF or PNG. Cubic interpolation algorithm is employed";
+    int retval = initParserT2P(argc, argv, newDescription);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
     std::ostringstream s;
@@ -70,7 +75,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-
+/*
     lad::Pipeline pipeline;    
     // Step 1: Read input TIFF file
     pipeline.useNodataMask = true;//params.useNoDataMask;
@@ -94,10 +99,10 @@ int main(int argc, char *argv[])
     cv::Mat original;
     cv::Mat mask = apLayer->rasterMask.clone();
     apLayer->rasterData.copyTo(original, mask); //copy only valid pixels, the rest should remain zero
-
+*/
     // let's open the input image
-    // cv::Mat input = imread(inputFileName, IMREAD_ANYCOLOR);
-    cv::Mat input = original.clone();
+    cv::Mat input = imread(inputFileName, IMREAD_ANYCOLOR);
+    // cv::Mat input = original.clone();
 
     cv::Mat output;
     /* Summary list parameters */
@@ -119,14 +124,14 @@ int main(int argc, char *argv[])
         waitKey(0);
     }
 
-    double nodata = apLayer->getNoDataValue();
-    // imwrite(outputFileName, output);
-    output.copyTo(apLayer->rasterData, mask);
+  //  double nodata = apLayer->getNoDataValue();
+    imwrite(outputFileName, output);
+/*    output.copyTo(apLayer->rasterData, mask);
     pipeline.exportLayer("M1_RAW_Bathymetry", outputFileName, FMT_TIFF);
 
     if (verbosity >= 1){
         s << "[" << yellow << inputFileName << reset << "] resampled to [" << blue << outputFileName << reset << "]. Size: " << output.size();
         logc.info ("img.resample", s);
     }
-    return 0;
+*/    return 0;
 }

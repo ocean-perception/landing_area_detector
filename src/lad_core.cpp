@@ -11,6 +11,9 @@
 #include "lad_core.hpp"
 #include "helper.cpp"
 
+#define Z_OPT 0.01  // range for optimal sampling f_m(z)
+#define Z_SUB 0.02  // transition range, sub-optimal sampling f_m(z)
+
 namespace lad
 {
     /**
@@ -1663,7 +1666,11 @@ namespace lad
                             for (auto it:distances){
                                 // count = fabs(it);
                                 // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
-                                count += 1/(1 + fabs(it)/SENSOR_RANGE);
+                                double zit = fabs(it);
+                                if (zit < Z_OPT) count += 1.0;
+                                else
+                                    count += 1/(1 + (zit - Z_OPT)/Z_SUB);
+                                    // count += 1/(1 + (zit - Z_OPT)/SENSOR_RANGE);
                                 // count += fabs(it);
                             }
                             // computes the proportion of points within the range
