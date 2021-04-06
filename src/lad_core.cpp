@@ -1618,21 +1618,15 @@ namespace lad
                     int xf = cr - col + wKernel/2;
                     int yf = rb - row + hKernel/2;
 
-                    cv::Mat temp, sout;
+                    cv::Mat temp, mask;
 
-                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1
-                    //subImage contains the raw data patch
-                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1
-                    // roi_patch contains a binary mask of valid data
-                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1
-                    // apKernel contains and additional mask
-                    subMask.convertTo(subMask, CV_64FC1); //64FC1
+                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1 subImage contains the raw data patch
+                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 roi_patch contains a binary mask of valid data
+                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1 apKernel contains and additional mask
                     roi_patch.convertTo(temp, CV_64FC1); //64FC1
-                    temp = subImage.mul(temp)/255;  //64FC1
+                    temp = subImage.mul(temp)/255.0f;  //64FC1
                     temp = subMask.mul(temp); //64FC1
-                    // WARNING: as we need a minimum set of valid 3D points for the plane fitting
-                    // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
-                    // is n > K/2, being K = 3x3 = 9 ---> n = 5
+
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
@@ -1643,8 +1637,11 @@ namespace lad
                     // auto stop_map = std::chrono::high_resolution_clock::now();
                     // std::chrono::duration< double > duration = stop_map - start_map;
                     // acum_timer_mp = acum_timer_mp + duration.count();
-
                     // start_map = std::chrono::high_resolution_clock::now();
+
+                    // WARNING: as we need a minimum set of valid 3D points for the plane fitting
+                    // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
+                    // is n > K/2, being K = 3x3 = 9 ---> n = 5
 
                     if (pointList.size() > 5){
                         if (filtertype == FILTER_SLOPE){
