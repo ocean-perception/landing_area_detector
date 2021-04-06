@@ -140,6 +140,8 @@ int main(int argc, char *argv[])
     tic.start();
     tt.start();
     
+    cout << "Threshold slope: " << params.slopeThreshold << endl;
+    
     pipeline.useNodataMask = true;//params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 
