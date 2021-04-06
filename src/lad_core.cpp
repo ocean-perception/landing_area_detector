@@ -1578,18 +1578,19 @@ namespace lad
             s << "Input raster size: " << apSrc->rasterData.size(); 
             logc.debug ("p::applyWindowFilter", s);
         }
-        // we create a matrix with NOVALID data
-        cv::Mat  roi_image;// = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
-        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
-
         int rt, lt, rb, lb;
         double cx = geoTransform[0];
         double cy = geoTransform[3];
         double sx = geoTransform[1];
         double sy = geoTransform[5];
-        cv::Mat kernelMask;
+
+        // we create a matrix with NOVALID data
+        cv::Mat  roi_image;// = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
+        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
+
+        cv::Mat kernelMask, kernelMaskBin;
         apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
-        // apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
+        apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
         lad::tictac timer;
         timer.start();
@@ -1620,12 +1621,21 @@ namespace lad
 
                     cv::Mat temp, mask;
 
-                    cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1 subImage contains the raw data patch
-                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 roi_patch contains a binary mask of valid data
-                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1 apKernel contains and additional mask
-                    roi_patch.convertTo(temp, CV_64FC1); //64FC1
-                    temp = subImage.mul(temp)/255.0f;  //64FC1
-                    temp = subMask.mul(temp); //64FC1
+                    // cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1 subImage contains the raw data patch
+                    // cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 roi_patch contains a binary mask of valid data
+                    // cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1 apKernel contains and additional mask
+                    // roi_patch.convertTo(temp, CV_64FC1); //64FC1
+                    // temp = subImage.mul(temp)/255.0f;  //64FC1
+                    // temp = subMask.mul(temp); //64FC1
+
+                    cv::Mat subMask = kernelMaskBin(cv::Range(yi,yf), cv::Range(xi,xf)); //8UC1 subImage contains the raw data patch
+                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
+
+                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
+
+                    cv::bitwise_and(subMask, roi_patch, mask);
+
+                    subImage.copyTo(temp, mask);
 
                     double acum = 0;
 
