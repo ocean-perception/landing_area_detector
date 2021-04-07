@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
     cout << cyan << "mad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
+    cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
 
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 set(CMAKE_COLOR_MAKEFILE ON)  # For fancy colouring scheme
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -93,6 +97,7 @@ exec_program(
     ARGS "describe --abbrev=4 --dirty --always --tags"
     OUTPUT_VARIABLE GIT_INFO )
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
+add_definitions( -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" ) # Forward current git info as a single string
 
 ############################ MAD_TEST ####################
 add_executable(mad_test   src/mad_test.cpp
