@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+   set(CMAKE_BUILD_TYPE Release CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebug RelWithDebInfo MinSizeRel."
+      FORCE)
 endif()
 
 set(CMAKE_COLOR_MAKEFILE ON)  # For fancy colouring scheme
@@ -15,7 +17,7 @@ endif ()
 
 # Define project name
 project(lad_project)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -145,9 +147,9 @@ add_executable(img.resample   src/img.resample.cpp
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(mad_test PUBLIC -std=c++14 )
-target_compile_options(tiff2png PUBLIC -std=c++14)
-target_compile_options(img.resample PUBLIC -std=c++14)
+target_compile_options(mad_test PUBLIC -std=c++14 -mavx)
+target_compile_options(tiff2png PUBLIC -std=c++14 -mavx)
+target_compile_options(img.resample PUBLIC -std=c++14 -mavx)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)

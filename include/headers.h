@@ -21,6 +21,7 @@
 #include <vector>
 #include <chrono>
 #include <omp.h>
+#include <immintrin.h>
 /// OpenCV libraries. May need review for the final release
 #include <opencv2/core.hpp>
 #include "opencv2/core/ocl.hpp"

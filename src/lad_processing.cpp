@@ -13,7 +13,7 @@
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
 
-#include <immintrin.h>
+
 #include <CGAL/Kernel/global_functions.h>
 // #include <opencv2/core/eigen.hpp>
 /**
@@ -154,24 +154,24 @@ namespace lad
         std::vector<double> distances;
 
         size_t total = points.size();
-        #pragma omp parallel
+        // #pragma omp parallel            // OMP parallel for vector<double>
         {
-            std::vector<double> slave; // thread local copy
+            // std::vector<double> slave; // thread local copy
 
-            __m256d _c;            
-            _c = _mm256_set_pd(a,b,c,0.0f); // define coefficient vector for the constant plane coeff
+            // __m256d _c;            
+            // _c = _mm256_set_pd(a,b,c,0.0f); // define coefficient vector for the constant plane coeff
 
-            #pragma omp parallel for num_threads(8)
-/*
+            // #pragma omp parallel for num_threads(8)  // thread allocation overhead appears to reduce performance
+///*
             for (int i=0; i < total; i++){
                 double outdata[4], val;
                 auto p = points[i];                                         // can we exploit having points[i] memory aligned?
                 val = a*p[0] + b*p[1] + c*p[2] + d;
-                slave.push_back(val);
+                distances.push_back(val);
             }
-*/
-
-            for (int i=0; i < total; i++){
+//*/
+    // AVX optimization available, but it is not the bottleneck
+/*            for (int i=0; i < total; i++){
                 // 64-bit double "registers"
                 __m256d _p, _d, _v, _r;
                 __m256d _ymm0, _ymm1, _ymm2, _ymm3, _ymm4;
@@ -182,8 +182,10 @@ namespace lad
             // val = a*p[0] + b*p[1] + c*p[2] + d;
                 _p = _mm256_set_pd(p[0],p[1],p[2],0.0f); // vector for 3D point
                 _d = _mm256_set_pd(0.0,0.0,0.0, d); // vector for 'd' plane constant
-                _r = _mm256_fmadd_pd(_c, _p, _d); // C * P + D
-                // now we need to sum all the elements of the vector '_r' (horizontal add)
+                _r = _mm256_mul_pd(_c, _p); // C * P + D
+                _r = _mm256_add_pd(_r, _d);
+                // _r = _mm256_fmadd_pd(_c, _p, _d); // C * P + D
+                // // now we need to sum all the elements of the vector '_r' (horizontal add)
 
                 _ymm0 = _r;
                 _ymm1 = _mm256_permute_pd(_ymm0, 0x05);
@@ -191,31 +193,18 @@ namespace lad
                 _ymm3 = _mm256_permute2f128_pd(_ymm2, _ymm2, 0x01);
                 _ymm4 = _mm256_add_pd(_ymm2, _ymm3);
                 _mm256_storeu_pd(outdata, _ymm4);
-                val   = outdata[0];
+                // val   = outdata[0];
 
-                slave.push_back(val);
+                distances.push_back(outdata[0]);
             }
-
-                // ymm2 = _mm256_permute2f128_pd(ymm , ymm , 1);
-                // ymm = _mm256_add_pd(ymm, ymm2);
-                // ymm = _mm256_hadd_pd(ymm, ymm);
-                // ymm = _mm256_hadd_pd(ymm, ymm);
-
-                // ymm0 = _mm256_loadu_pd(indata);
-                // ymm1 = _mm256_permute_pd(ymm0, 0x05);
-                // ymm2 = _mm256_add_pd(ymm0, ymm1);
-                // ymm3 = _mm256_permute2f128_pd(ymm2, ymm2, 0x01);
-                // ymm4 = _mm256_add_pd(ymm2, ymm3);
-                // _mm256_storeu_pd(outdata, ymm4);
-
-
-            #pragma omp critical
-            {
-                // collector / merge
-                distances.insert(distances.end(), 
-                            std::make_move_iterator(slave.begin()), 
-                            std::make_move_iterator(slave.end()));
-            }
+*/
+            // #pragma omp critical
+            // {
+            //     // collector / merge
+            //     distances.insert(distances.end(), 
+            //                 std::make_move_iterator(slave.begin()), 
+            //                 std::make_move_iterator(slave.end()));
+            // }
 
         }
 
