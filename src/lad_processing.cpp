@@ -164,12 +164,23 @@ namespace lad
             // #pragma omp parallel for num_threads(8)
 
             for (int i=0; i < total; i++){
+                double outdata[4], val;
+                auto p = points[i];                                         // can we exploit having points[i] memory aligned?
+                val = a*p[0] + b*p[1] + c*p[2] + d;
+                slave.push_back(val);
+            }
+
+/*            for (int i=0; i < total; i++){
                 // 64-bit double "registers"
                 // __m256d _p, _d, _val;
                 // __m256d _ymm0, _ymm1, _ymm2, _ymm3, _ymm4;
                 double outdata[4], val;
-
                 auto p = points[i];                                         // can we exploit having points[i] memory aligned?
+                val = a*p[0] + b*p[1] + c*p[2] + d;
+                slave.push_back(val);
+            }
+*/
+
                 // _p = _mm256_set_pd(points[i],points[i+1],points[i+2],0.0f); // vector for 3D point
                 // _d = _mm256_set_pd(      0.0,        0.0,        0.0,   d); // vector for 'd' plane constant
                 // double val = a*p.x() + b*p.y() + c*p.z() + d;            // original equation
@@ -184,21 +195,18 @@ namespace lad
                 // _mm256_storeu_pd(outdata, _ymm4);
                 // val   = outdata[0];
 
-// ymm2 = _mm256_permute2f128_pd(ymm , ymm , 1);
-// ymm = _mm256_add_pd(ymm, ymm2);
-// ymm = _mm256_hadd_pd(ymm, ymm);
-// ymm = _mm256_hadd_pd(ymm, ymm);
+                // ymm2 = _mm256_permute2f128_pd(ymm , ymm , 1);
+                // ymm = _mm256_add_pd(ymm, ymm2);
+                // ymm = _mm256_hadd_pd(ymm, ymm);
+                // ymm = _mm256_hadd_pd(ymm, ymm);
 
-// ymm0 = _mm256_loadu_pd(indata);
-// ymm1 = _mm256_permute_pd(ymm0, 0x05);
-// ymm2 = _mm256_add_pd(ymm0, ymm1);
-// ymm3 = _mm256_permute2f128_pd(ymm2, ymm2, 0x01);
-// ymm4 = _mm256_add_pd(ymm2, ymm3);
-// _mm256_storeu_pd(outdata, ymm4);
+                // ymm0 = _mm256_loadu_pd(indata);
+                // ymm1 = _mm256_permute_pd(ymm0, 0x05);
+                // ymm2 = _mm256_add_pd(ymm0, ymm1);
+                // ymm3 = _mm256_permute2f128_pd(ymm2, ymm2, 0x01);
+                // ymm4 = _mm256_add_pd(ymm2, ymm3);
+                // _mm256_storeu_pd(outdata, ymm4);
 
-                val = a*p[0] + b*p[1] + c*p[2] + d;
-                slave.push_back(val);
-            }
 
             #pragma omp critical
             {
