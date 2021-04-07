@@ -1628,11 +1628,9 @@ namespace lad
                     // temp = subImage.mul(temp)/255.0f;  //64FC1
                     // temp = subMask.mul(temp); //64FC1
 
-                    cv::Mat subMask = kernelMaskBin(cv::Range(yi,yf), cv::Range(xi,xf)); //8UC1 subImage contains the raw data patch
-                    cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
-
-                    cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
-
+                    cv::Mat subMask   = kernelMaskBin    (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
+                    cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
+                    cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
                     cv::bitwise_and(subMask, roi_patch, mask);
 
                     subImage.copyTo(temp, mask);

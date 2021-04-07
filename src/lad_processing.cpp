@@ -13,6 +13,7 @@
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
 
+#include <immintrin.h>
 #include <CGAL/Kernel/global_functions.h>
 // #include <opencv2/core/eigen.hpp>
 /**
@@ -77,18 +78,19 @@ namespace lad
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix->cols;
         int rows = matrix->rows;
-        std::vector<KPoint> master; //preallocating space does not improve it
+        std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
 
         size_t total_elem = cols*rows; // expected input vector size
 
         // #pragma omp parallel
         {
-
-            std::vector<KPoint> slave; //preallocating space does not improve it
+            // TODO: rollback to for x,y or use contiguous pointer format (row,col) to SIMD px,py calculation
+            // Also, it will remove the i->row,col modulo and division operation
+            // std::vector<KPoint> slave; //preallocating space does not improve it
             // #pragma omp for nowait
             for (int i=0; i < total_elem; i++)
             {
-                double px, py, pz;
+                register double px, py, pz;
                 //let's calculate the index
                 register int row, col;
                 row = i / cols;
@@ -98,7 +100,7 @@ namespace lad
                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
                     px = col * sx;
                     py = row * sy;
-                    master.push_back(KPoint(px,py,pz));
+                    master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
                     *acum = *acum + pz;
                 }
             }
@@ -155,13 +157,46 @@ namespace lad
         #pragma omp parallel
         {
             std::vector<double> slave; // thread local copy
+            // __m256d _c;            
+            // _c = _mm256_set_pd(a,b,c,0.0f); // define coefficient vector for the constant plane coeff
 
             #pragma omp parallel for num_threads(8)
             // #pragma omp parallel for num_threads(8)
+
             for (int i=0; i < total; i++){
-                auto p = points[i];
-                // double val = a*p.x() + b*p.y() + c*p.z() + d;
-                double val = a*p[0] + b*p[1] + c*p[2] + d;
+                // 64-bit double "registers"
+                // __m256d _p, _d, _val;
+                // __m256d _ymm0, _ymm1, _ymm2, _ymm3, _ymm4;
+                double outdata[4], val;
+
+                auto p = points[i];                                         // can we exploit having points[i] memory aligned?
+                // _p = _mm256_set_pd(points[i],points[i+1],points[i+2],0.0f); // vector for 3D point
+                // _d = _mm256_set_pd(      0.0,        0.0,        0.0,   d); // vector for 'd' plane constant
+                // double val = a*p.x() + b*p.y() + c*p.z() + d;            // original equation
+                // _val = _mm256_fmadd_pd(_c, _p, _d); // C * P + D
+                // now we need to sum all the elements of the vector (horizontal add)
+
+                // _ymm0 = _val;
+                // _ymm1 = _mm256_permute_pd(_ymm0, 0x05);
+                // _ymm2 = _mm256_add_pd(_ymm0, _ymm1);
+                // _ymm3 = _mm256_permute2f128_pd(_ymm2, _ymm2, 0x01);
+                // _ymm4 = _mm256_add_pd(_ymm2, _ymm3);
+                // _mm256_storeu_pd(outdata, _ymm4);
+                // val   = outdata[0];
+
+// ymm2 = _mm256_permute2f128_pd(ymm , ymm , 1);
+// ymm = _mm256_add_pd(ymm, ymm2);
+// ymm = _mm256_hadd_pd(ymm, ymm);
+// ymm = _mm256_hadd_pd(ymm, ymm);
+
+// ymm0 = _mm256_loadu_pd(indata);
+// ymm1 = _mm256_permute_pd(ymm0, 0x05);
+// ymm2 = _mm256_add_pd(ymm0, ymm1);
+// ymm3 = _mm256_permute2f128_pd(ymm2, ymm2, 0x01);
+// ymm4 = _mm256_add_pd(ymm2, ymm3);
+// _mm256_storeu_pd(outdata, ymm4);
+
+                val = a*p[0] + b*p[1] + c*p[2] + d;
                 slave.push_back(val);
             }
 

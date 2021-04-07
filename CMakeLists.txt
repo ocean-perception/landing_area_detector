@@ -140,7 +140,7 @@ add_executable(img.resample   src/img.resample.cpp
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(mad_test PUBLIC -std=c++14)
+target_compile_options(mad_test PUBLIC -std=c++14 )
 target_compile_options(tiff2png PUBLIC -std=c++14)
 target_compile_options(img.resample PUBLIC -std=c++14)
 target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
