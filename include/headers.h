@@ -78,4 +78,9 @@ typedef K::Plane_3                      KPlane;
 typedef K::Point_3                      KPoint;
 typedef K::Triangle_3                   KTriangle;
 
+#define DEFAULT_Z_OPT  0.01  // DEFAULT value for optimal range of distance [m] along sensing axis Z (normal to the seafloor)
+#define DEFAULT_Z_SUB  0.02  // DEFAULT value for suboptimal range of distance [m] along sensing axis Z (normal to the seafloor)
+#define DEFAULT_G_DIAM 0.10  // DEFAULT value for diameter [m] of geotechnical sensor
+
+
 #endif // _PROJECT_HEADERS_H_

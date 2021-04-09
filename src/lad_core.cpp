@@ -11,10 +11,6 @@
 #include "lad_core.hpp"
 #include "helper.cpp"
 
-#define DEFAULT_Z_OPT 0.01  // DEFAULT value for optimal range of distance along sensing axis Z (normal to the seafloor)
-#define DEFAULT_Z_SUB 0.02  // DEFAULT value for suboptimal range of distance along sensing axis Z (normal to the seafloor)
-
-
 namespace lad
 {
     /**
@@ -1669,11 +1665,12 @@ namespace lad
                                 // count = fabs(it);
                                 // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                 double zit = fabs(it);
-                                if (zit < DEFAULT_Z_OPT) count += 1.0;
+                                if (zit < parameters.geotechSensor.z_optimal) count += 1.0;
                                 else
-                                    count += 1/(1 + (zit - DEFAULT_Z_OPT)/DEFAULT_Z_SUB);
-                                    // count += 1/(1 + (zit - Z_OPT)/SENSOR_RANGE);
-                                // count += fabs(it);
+                                    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                // if (zit < DEFAULT_Z_OPT) count += 1.0;
+                                // else
+                                //     count += 1/(1 + (zit - DEFAULT_Z_OPT)/DEFAULT_Z_SUB);
                             }
                             // computes the proportion of points within the range
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();

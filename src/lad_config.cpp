@@ -155,15 +155,22 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["geotechsensor"]["diameter"]){
             p->geotechSensor.diameter = config["geotechsensor"]["diameter"].as<double>();
         }
+        else{
+            p->geotechSensor.diameter = DEFAULT_G_DIAM; // use default diameter for geotech sensor
+        }
         if (config["geotechsensor"]["z_optimal"]){
-            p->geotechSensor.diameter = config["geotechsensor"]["z_optimal"].as<double>();
+            p->geotechSensor.z_optimal = config["geotechsensor"]["z_optimal"].as<double>();
+        }
+        else{
+            p->geotechSensor.z_optimal = DEFAULT_Z_OPT; // use default sensor optimal range
         }
         if (config["geotechsensor"]["z_suboptimal"]){
-            p->geotechSensor.diameter = config["geotechsensor"]["z_suboptimal"].as<double>();
+            p->geotechSensor.z_suboptimal = config["geotechsensor"]["z_suboptimal"].as<double>();
+        }
+        else{
+            p->geotechSensor.z_suboptimal = DEFAULT_Z_SUB; // use default sensor suboptimal range
         }
     }
-
-
 
     return config;
 }
