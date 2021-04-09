@@ -60,6 +60,7 @@ namespace lad
         std::string inputFileTIFF; //< Input TIFF filename containing base bathymetry. It can be used as base name for output products files
         int         verbosity; //!< Verbosity levels (from 0 to 2)
         int         useNodataMask;
+        lad::parameterStruct parameters;
 
         // Methods **************
 

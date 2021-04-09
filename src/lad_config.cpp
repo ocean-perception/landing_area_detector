@@ -115,8 +115,8 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->groundThreshold = config["threshold"]["ground"].as<double>();
         if (config["threshold"]["protrusion"])
             p->protrusionSize  = config["threshold"]["protrusion"].as<double>();
-        if (config["threshold"]["geosensor"])
-            p->geotecThreshold = config["threshold"]["geosensor"].as<double>();
+        // if (config["threshold"]["geosensor"])
+        //     p->geotecThreshold = config["threshold"]["geosensor"].as<double>();
     }
 
     if (config["map"]){
@@ -147,6 +147,24 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["rotation"]["step"])
             p->rotationStep = config["rotation"]["step"].as<double>();
     }
+
+    if (config["geotechsensor"]){   // explicit definition of geotechnical sensor parameters
+        if (verb > 0)
+            cout << "[readConfiguration] geotechSensor section present" << endl;
+
+        if (config["geotechsensor"]["diameter"]){
+            p->geotechSensor.diameter = config["geotechsensor"]["diameter"].as<double>();
+        }
+        if (config["geotechsensor"]["z_optimal"]){
+            p->geotechSensor.diameter = config["geotechsensor"]["z_optimal"].as<double>();
+        }
+        if (config["geotechsensor"]["z_suboptimal"]){
+            p->geotechSensor.diameter = config["geotechsensor"]["z_suboptimal"].as<double>();
+        }
+    }
+
+
+
     return config;
 }
 
@@ -176,7 +194,5 @@ lad::parameterStruct lad::getDefaultParams(){
     params.verbosity        = 0;
     params.exportIntermediate = true;
     params.exportRotated    = false;
-
-    params.geotecThreshold  = 0.2;  // distance range for geotech sensor
     return params;
 }

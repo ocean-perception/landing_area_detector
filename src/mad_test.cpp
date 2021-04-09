@@ -143,6 +143,8 @@ int main(int argc, char *argv[])
     
     cout << "Threshold slope: " << params.slopeThreshold << endl;
     
+    pipeline.parameters = params;   // forward config/user defined parameters to the internal pipeline structure
+
     pipeline.useNodataMask = true;//params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 

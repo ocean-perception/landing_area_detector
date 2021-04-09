@@ -14,12 +14,19 @@
 
 #include "headers.h"
 #include "lad_enum.hpp"
-#include "lad_core.hpp"
+// #include "lad_core.hpp"
 
 #include <yaml-cpp/yaml.h>
 
 namespace lad
 { // landing area detection algorithm namespace
+
+    typedef struct geotechsensorStruct_{
+        double diameter;        // diameter of sensor footprint on the XY plane (parallel to seafloor)
+        double z_optimal;       // optimal range along the sensing axis Z, normal to the seafloor (Z_OPT in the thesis)
+        double z_suboptimal;    // suboptimal range along the sensing axis Z, normal to the seafloor (Z_SUB in the thesis)
+    }geotechStruct;
+
     // structure that holds most of the relevant pipeline parameters
     typedef struct parameterStruct_{
         double robotHeight;     // robot height [m]
@@ -48,8 +55,10 @@ namespace lad
         bool   exportIntermediate; // indicate to export intermediate layers of the pipeline, useful for detailed analysis. Default: true
         bool   exportRotated;   // indicate to export every rotation independent intermediate and final layer. Warning: can take up a lot of disk space. Default: false
         bool   updateThreshold; // recalculate slope and height thresholds based on vehicle dimensions
-        double geotecThreshold; // distance threshold to consider a terrain point as measurable
+        geotechStruct geotechSensor;    // structure that contains the geometrical parameters that describe the geotechnical sensor
     }parameterStruct;
+
+    typedef double a;
 
     void printParams(lad::parameterStruct *p);
 
