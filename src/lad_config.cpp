@@ -48,6 +48,11 @@ void lad::printParams(parameterStruct_ *p){
     cout << "\tgroundThreshold:\t" << p->groundThreshold  << "\t[m]" << endl;
     cout << "\tprotrusionSize: \t" <<  p->protrusionSize  << "\t[m]" << endl;
 
+    cout << "Sensor parameters" << endl;
+    cout << "\tdiameter:\t" << p->geotechSensor.diameter  << "\t[m]" << endl;
+    cout << "\tz_optimal:\t" << p->geotechSensor.z_optimal  << "\t[m]" << endl;
+    cout << "\tz_suboptimal:\t" << p->geotechSensor.z_suboptimal  << "\t[m]" << endl;
+
     cout << "Map options" << endl;
     cout << "\tdefaultNoData:  \t" << p->defaultNoData << endl;
     cout << "\tmaskBorder:     \t" << (p->maskBorder ? "true" : "false") << endl;
@@ -156,18 +161,21 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->geotechSensor.diameter = config["geotechsensor"]["diameter"].as<double>();
         }
         else{
+            cout << "using default diameter for sensor" << endl;
             p->geotechSensor.diameter = DEFAULT_G_DIAM; // use default diameter for geotech sensor
         }
         if (config["geotechsensor"]["z_optimal"]){
             p->geotechSensor.z_optimal = config["geotechsensor"]["z_optimal"].as<double>();
         }
         else{
+            cout << "using default z_opt for sensor" << endl;
             p->geotechSensor.z_optimal = DEFAULT_Z_OPT; // use default sensor optimal range
         }
         if (config["geotechsensor"]["z_suboptimal"]){
             p->geotechSensor.z_suboptimal = config["geotechsensor"]["z_suboptimal"].as<double>();
         }
         else{
+            cout << "using default z_sub for sensor" << endl;
             p->geotechSensor.z_suboptimal = DEFAULT_Z_SUB; // use default sensor suboptimal range
         }
     }

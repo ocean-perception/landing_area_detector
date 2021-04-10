@@ -55,8 +55,9 @@ int main(int argc, char *argv[])
     string outputFileName   = ""; // if none, output filenames will be the same as the standard. If non-null, will be used as prefix
     string outputFilePath   = ""; // same relative folder
 
-    if (argInput) inputFileName   = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
-    if (argOutput) outputFileName = args::get(argOutput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argInput)   inputFileName    = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argOutput)  outputFileName   = args::get(argOutput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argVerbose) params.verbosity = args::get(argVerbose); // retrieve user defined verbosity level
 
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
         if (config["input"]["filename"])
@@ -140,11 +141,11 @@ int main(int argc, char *argv[])
     lad::Pipeline pipeline;    
     tic.start();
     tt.start();
-    
-    cout << "Threshold slope: " << params.slopeThreshold << endl;
+
+    s << "Threshold slope: [" << yellow << params.slopeThreshold << reset << "]" << endl;
+    logc.info("main", s);
     
     pipeline.parameters = params;   // forward config/user defined parameters to the internal pipeline structure
-
     pipeline.useNodataMask = true;//params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 
@@ -198,7 +199,6 @@ int main(int argc, char *argv[])
     //now we proceed with final LoProt/HiProt exclusion calculation
     std::thread threadLaneD (&lad::processLaneD, &pipeline, &params, "");
     threadLaneD.join();
-
 
     if (params.exportIntermediate){
         pipeline.copyMask("C1_ExclusionMap", "D1_LoProtMask");
@@ -302,9 +302,9 @@ int main(int argc, char *argv[])
     apMeasure->copyGeoProperties(apBase);
     apMeasure->setNoDataValue(DEFAULT_NODATA_VALUE);
 
-    apFinal->rasterData = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
+    apFinal->rasterData   = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
     apMeasure->rasterData = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
-    cv::Mat acum        = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
+    cv::Mat acum          = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
 
     // pipeline.showInfo();
     // Step 2: iterate through every  

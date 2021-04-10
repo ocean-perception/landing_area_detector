@@ -1665,9 +1665,8 @@ namespace lad
                                 // count = fabs(it);
                                 // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                 double zit = fabs(it);
-                                if (zit < parameters.geotechSensor.z_optimal) count += 1.0;
-                                else
-                                    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                if      (zit < parameters.geotechSensor.z_optimal) count += 1.0;
+                                else    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
                                 // if (zit < DEFAULT_Z_OPT) count += 1.0;
                                 // else
                                 //     count += 1/(1 + (zit - DEFAULT_Z_OPT)/DEFAULT_Z_SUB);

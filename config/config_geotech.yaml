@@ -1,0 +1,62 @@
+#YAML 2.0
+# Vehicle + simulation configuration file for benchmarking purposes
+# Geotech sensor section added. This configuration file has been tested for debugging purposes with small and large bathymetry patches (20~1000m^2)
+
+version: 2
+
+general:
+  verbosity:        1    # verbosity level 0-3
+  showimages:       true # not implemented yet
+  recomputethresh:  true # recalculate slope and height threshold according to the vehicle geometry and Mehul2019-Eq[9]
+  export:
+    intermediate:   true  # will export each intermadiate map per rotation
+    rotated:        true
+
+
+input:
+  filepath:   /home/cappelletto/Desktop/LAD_Test/
+  filename:   M1_RAW_Bathymetry.tif
+
+output:
+  filepath:   /home/cappelletto/Desktop/LAD_Test/
+  fileprefix: M3_FinalMap.tif
+
+#pipeline
+
+vehicle:        # Landing AUV parameters
+  length: 1.7   # length [m] of AUV footprint
+  width:  0.5   # width [m] of AUV footprint
+  height: 0.4   # height [m] of AUV
+  forces:
+    gravity:  637 # Gravity force (mass * gravity)
+    buoyancy: 608 # Total buoyancy force (volume * density * gravity)
+  cg_ratio:   0.5 # Ratio of Center of Gravity (Cg) divided by the Height (H)
+  meta_ratio: 0.2 # Ratio of distance between Center of buoyancy (Cb) & Gravity (Cg), divided by the Height (H)
+  force_ratio:  0.05  # Ratio between net buoyancy force and gravity force. Used to scale mass & buoyancy with different sizes
+  #  height_cg:  0.25  # center of gravity height [m]  , deprecated when cg_ratio is available
+  #  height_cb:  0.30  # center of buoyancy height [m] , deprecated when meta_ratio is available
+
+rotation:       # LAUV heading angle [deg]
+  # fixed_rotation: 40.0   # if defined, the algorithm will only use one value for the LAUV heading (orientation)
+  range_min:      0.0  # minimum heading value [deg] to be tested 
+  range_max:      180.0  # maximum heading value [deg] to be tested
+  step:           5.0   # angle step size [deg]
+
+threshold:          # Exclusion map calculation parameters
+  slope:  17.7      # Default Slope [deg] threshold. Anything above this is considered as a potential obstacle
+  ground: 0.01      # Minimum height [m] for an obstacle to be considered as such
+  height: 0.085     # Default Critical height [m] employed to classify a Protrusion as HiProt
+  protrusion: 0.04  # Minimum size [m] for a protrusion to be considered. This is used as size of structuring element during D2 maps MORPH_OPEN
+  # geosensor: 0.2    # Geotech distance threshold to consider a point as 'measurable'
+
+geotechsensor:
+  diameter:     0.50   # diameter of the geotechnical sensor projected footprint
+  z_optimal:    0.5   # optimal sensing range, along the sensing axis (Z)
+  z_suboptimal: 1.0   # suboptimal sensing range along sensing axis (Z)
+
+map:
+  maskborder:     false # General map parameters
+  alpharadius:    1.0   # radius for calculation of map alphaShape (boundary polygon) 
+  usenodatamask:  true  # indicates if rasterMask should be used when normalizaing images for exporting/visualization
+  # nodata:         -9999  # redefines default nodata value
+  
