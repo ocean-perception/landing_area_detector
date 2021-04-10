@@ -160,24 +160,24 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
         if (config["geotechsensor"]["diameter"]){
             p->geotechSensor.diameter = config["geotechsensor"]["diameter"].as<double>();
         }
-        else{
-            cout << "using default diameter for sensor" << endl;
-            p->geotechSensor.diameter = DEFAULT_G_DIAM; // use default diameter for geotech sensor
-        }
+        // else{
+        //     cout << "using default diameter for sensor" << endl;
+        //     p->geotechSensor.diameter = DEFAULT_G_DIAM; // use default diameter for geotech sensor
+        // }
         if (config["geotechsensor"]["z_optimal"]){
             p->geotechSensor.z_optimal = config["geotechsensor"]["z_optimal"].as<double>();
         }
-        else{
-            cout << "using default z_opt for sensor" << endl;
-            p->geotechSensor.z_optimal = DEFAULT_Z_OPT; // use default sensor optimal range
-        }
+        // else{
+        //     cout << "using default z_opt for sensor" << endl;
+        //     p->geotechSensor.z_optimal = DEFAULT_Z_OPT; // use default sensor optimal range
+        // }
         if (config["geotechsensor"]["z_suboptimal"]){
             p->geotechSensor.z_suboptimal = config["geotechsensor"]["z_suboptimal"].as<double>();
         }
-        else{
-            cout << "using default z_sub for sensor" << endl;
-            p->geotechSensor.z_suboptimal = DEFAULT_Z_SUB; // use default sensor suboptimal range
-        }
+        // else{
+        //     cout << "using default z_sub for sensor" << endl;
+        //     p->geotechSensor.z_suboptimal = DEFAULT_Z_SUB; // use default sensor suboptimal range
+        // }
     }
 
     return config;
@@ -209,5 +209,9 @@ lad::parameterStruct lad::getDefaultParams(){
     params.verbosity        = 0;
     params.exportIntermediate = true;
     params.exportRotated    = false;
+
+    params.geotechSensor.diameter     = DEFAULT_G_DIAM;
+    params.geotechSensor.z_optimal    = DEFAULT_Z_OPT;
+    params.geotechSensor.z_suboptimal = DEFAULT_Z_SUB;
     return params;
 }
