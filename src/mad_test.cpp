@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
         pipeline.saveImage("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.png");
         pipeline.exportLayer("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
 
-        if (argVerbose)
+        if (params.verbosity>1)
             pipeline.showInfo(); // show detailed information if asked for
 
         tic.lap("***\tBase pipeline completed");
@@ -375,9 +375,10 @@ int main(int argc, char *argv[])
     pipeline.exportLayer("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
 //    pipeline.showImage("M4_FinalMeasurability");
 
-    tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
-    if (params.verbosity > 0)
+    if (params.verbosity > 1)
         pipeline.showInfo();
+
+    tt.lap("+++++++++++++++Complete pipeline +++++++++++++++");
     tt.stop();
     return NO_ERROR;
 }

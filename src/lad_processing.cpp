@@ -90,13 +90,14 @@ namespace lad
             // #pragma omp for nowait
             for (int i=0; i < total_elem; i++)
             {
-                register double px, py, pz;
+                double px, py, pz;
                 //let's calculate the index
-                register int row, col;
+                int row, col;
                 row = i / cols;
                 col = (i % cols);
                 // now, let's retrieve the pixel value and its spatial coordinates            
-                pz = matrix->at<double>(cv::Point(col,row));
+                pz = matrix->at<double>(row,col);
+                // pz = matrix->at<double>(cv::Point(col,row));
                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
                     px = col * sx;
                     py = row * sy;
@@ -112,6 +113,9 @@ namespace lad
             // }
         }
         // *acum = 1;
+
+        CGAL_PROFILER("calls to convertMatrix2Vector");
+
         return master;
     }
 

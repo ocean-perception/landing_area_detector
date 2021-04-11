@@ -1273,7 +1273,8 @@ namespace lad
 
         for (int row=0; row<rows; row++){
             for (int col=0; col<cols; col++){
-                if (roi_image.at<unsigned char>(cv::Point(col, row))){
+                if (roi_image.at<unsigned char>(row, col)){
+                // if (roi_image.at<unsigned char>(cv::Point(col, row))){
                     int rt = row - filterSize.height/2;
                     if (rt < 0) rt = 0;
                     int rb = row + filterSize.height/2;
@@ -1289,10 +1290,12 @@ namespace lad
             // TODO: failing to compute when data is partially available at the edges
                     float acum = cv::sum(subImage)[0];
                     float den  = cv::sum(roi_patch)[0] / 255;
-                    apDst->rasterData.at<double>(cv::Point(col, row)) = acum/den;
+                    apDst->rasterData.at<double>(row, col) = acum/den;
+                    // apDst->rasterData.at<double>(cv::Point(col, row)) = acum/den;
                 }
                 else
-                    apDst->rasterData.at<double>(cv::Point(col, row)) = srcNoData;
+                    apDst->rasterData.at<double>(row, col) = srcNoData;
+                    // apDst->rasterData.at<double>(cv::Point(col, row)) = srcNoData;
             }
         }
         // cv::Mat mask;
@@ -1492,7 +1495,8 @@ namespace lad
             for (int r=0; r<apDst->rasterData.rows; r++){
                 double py = r * sy; // x coordinate of the pixel
                 z = -(planeA*px + planeB*py + planeD) / planeC;
-                apDst->rasterData.at<double>(cv::Point(c,r)) = z; 
+                apDst->rasterData.at<double>(r,c) = z; 
+                // apDst->rasterData.at<double>(cv::Point(c,r)) = z; 
             }        
         }        
         return NO_ERROR;
@@ -1598,9 +1602,13 @@ namespace lad
 
         #pragma omp parallel for
         for (int row=0; row<nRows; row++){
+
+            CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
+
             #pragma omp parallel for
             for (int col=0; col<nCols; col++){
-                if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
+                if (roi_image.at<unsigned char>(row, col)){ // we compute the slope only for those valid points
+                // if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
                     int cl = col - wKernel/2;
                     if (cl < 0) cl = 0;
                     int cr = col + wKernel/2;
@@ -1609,6 +1617,8 @@ namespace lad
                     if (rt < 0) rt = 0;
                     int rb = row + hKernel/2;
                     if (rb > nRows) rb = nRows - 1;
+
+                    CGAL_PROFILER("Effective iter of applyWindowFilter inner for-loop");
 
                     // ROI cropped selected window from the rotated kernel of the filter
                     int xi = wKernel/2 - (col - cl);
@@ -1652,10 +1662,12 @@ namespace lad
                         if (filtertype == FILTER_SLOPE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
-                            apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
+                            apDst->rasterData.at<double>(row, col) = slope;
+                            // apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
                         }
                         else if (filtertype == FILTER_MEAN){
-                            apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
+                            apDst->rasterData.at<double>(row, col) = acum / pointList.size();
+                            // apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
                         else if (filtertype == FILTER_DISTANCE){
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
@@ -1677,7 +1689,8 @@ namespace lad
                             {
                                 try
                                 {
-                                    apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                                    apDst->rasterData.at<double>(row, col) = count / pointList.size();
+                                    // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                                 }
                                 catch(const std::exception& e)
                                 {
@@ -1693,7 +1706,8 @@ namespace lad
                         }
                     }
                     else{ // we do not have enough points to compute a valid plane
-                        apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                        apDst->rasterData.at<double>(row, col) = DEFAULT_NODATA_VALUE;
+                        // apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
                     }//*/
 
                     // stop_map = std::chrono::high_resolution_clock::now();
@@ -1701,7 +1715,8 @@ namespace lad
                     // acum_timer_process = acum_timer_process + duration.count();
                     }
                 else
-                    apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
+                    apDst->rasterData.at<double>(row, col) = DEFAULT_NODATA_VALUE;
+                    // apDst->rasterData.at<double>(cv::Point(col, row)) = DEFAULT_NODATA_VALUE;
             }
         }
 
