@@ -119,6 +119,14 @@ namespace lad
         return master;
     }
 
+    int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter){
+        // iterate through all the points contained in vector
+
+        for (auto it:inpoints){
+            // check if within coordinates (center)
+        }
+        return 0;
+    }
 
 
     int convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum){
@@ -146,8 +154,8 @@ namespace lad
                 pz = matrix.at<double>(row,col);
                 // pz = matrix->at<double>(cv::Point(col,row));
                 if (pz != 0.0f){    //only non-NULL points are included (those are assumed to be invalid data points)
-                    px = col * sx;
-                    py = row * sy;
+                    px = (col - cols/2) * sx;   // Centering the points
+                    py = (row - rows/2) * sy;
                     master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
                     *acum = *acum + pz;
                 }

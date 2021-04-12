@@ -1672,7 +1672,23 @@ namespace lad
                             apDst->rasterData.at<double>(row, col) = acum / pointList.size();
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
-                        else if (filtertype == FILTER_GEOTECH){ // this implementation uses all the points contained inside the landing footprint
+                        else if (filtertype == FILTER_GEOTECH){ // reduce to points contained inside a given diameter (geotech sensor)
+                            std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
+                            
+                            KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)
+                            int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
+
+                            // std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
+                            // double count = 0;
+                            // for (auto it:distances){
+                            //     // count = fabs(it);
+                            //     // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
+                            //     double zit = fabs(it);
+                            //     if      (zit < parameters.geotechSensor.z_optimal) count += 1.0;
+                            //     else    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                            // }
+
+
                         }
                         else if (filtertype == FILTER_DISTANCE){ // this implementation uses all the points contained inside the landing footprint
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds

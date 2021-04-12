@@ -44,6 +44,7 @@ namespace lad
     std::vector<double> computePlaneDistance(KPlane plane, std::vector<KPoint> points);
 
     KPlane computeFittingPlane (std::vector<KPoint> points);
+    int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter);
 
     // std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum);
     // std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
