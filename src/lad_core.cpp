@@ -1799,7 +1799,7 @@ namespace lad
         if (verbosity > VERBOSITY_0){
             logc.debug ("computeMeasurabilityMap", "Calling applyWindowFilter");
         }
-        return applyWindowFilter(raster, kernel, mask, dst, FILTER_GEOTECH);
+        return applyWindowFilter(raster, kernel, mask, dst, FILTER_GEOTECH);    // this could be user-defined for debug
         // return applyWindowFilter(raster, kernel, mask, dst, FILTER_DISTANCE);
     }
 

@@ -122,9 +122,9 @@ namespace lad
     int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter){
         // iterate through all the points contained in vector
         double diam_th = 0.25f * diameter * diameter;   // precompute it once, we do not need to square it every iteration
-        int r=0;
         double _x, _y;
-        for (auto it:inpoints){
+        int r=0;
+        for (auto it:inpoints){ // typ. inpoints value: 200~1000. Maybe using omp w/reductor loop for vector can help
             _x = it.x();
             _y = it.y();
             double _d = _x*_x + _y*_y; 
@@ -138,7 +138,16 @@ namespace lad
         return r;
     }
 
-
+    /**
+     * @brief Convert all non-null elements from the single-channel raster image to CGAL compatible vector of 3D points. Horizontal and vertical coordinates are derived from pixel position and scale 
+     * 
+     * @param matrix Input image containing the height map as a 2.5D representing the height as z = f(x,y) 
+     * @param sx Horizonal pixel scale
+     * @param sy Vertical pixel scale
+     * @param master vector that will contain all the valid KPoints extracted from the input matrix
+     * @param acum  pointer to store the sum(z) of all valid points. This value is used later to compute mean slope/height without re-scanning the vector again 
+     * @return int number of valid points inserted into the vector (list) of points 
+     */
     int convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix.cols;
@@ -165,11 +174,12 @@ namespace lad
                 // pz = matrix->at<double>(cv::Point(col,row));
                 if (pz != 0.0f){    //only non-NULL points are included (those are assumed to be invalid data points)
                     px = (col - cols/2) * sx;   // Centering the points
-                    py = (row - rows/2) * sy;
+                    py = (row - rows/2) * sy;   // This is necessary to speed-up the geotech sensor diameter-based masking
                     master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
                     *acum = *acum + pz;
                 }
             }
+            // reduction section when slave/master omp mode is used
             // #pragma omp critical
             // {
             //     master.insert(master.end(), 
