@@ -1607,7 +1607,7 @@ namespace lad
 
             #pragma omp parallel for
             for (int col=0; col<nCols; col++){
-                if (roi_image.at<unsigned char>(row, col)){ // we compute the slope only for those valid points
+                if (roi_image.at<unsigned char>(row, col)){ // we compute the output only for valid points (we ehck the binary mask as validity mask)
                 // if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
                     int cl = col - wKernel/2;
                     if (cl < 0) cl = 0;
@@ -1672,9 +1672,11 @@ namespace lad
                             apDst->rasterData.at<double>(row, col) = acum / pointList.size();
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
-                        else if (filtertype == FILTER_DISTANCE){
+                        else if (filtertype == FILTER_GEOTECH){ // this implementation uses all the points contained inside the landing footprint
+                        }
+                        else if (filtertype == FILTER_DISTANCE){ // this implementation uses all the points contained inside the landing footprint
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
-                           std::vector<double> distances = computePlaneDistance(plane, pointList);
+                            std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double count = 0;
                             for (auto it:distances){
                                 // count = fabs(it);
