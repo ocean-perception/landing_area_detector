@@ -1727,8 +1727,8 @@ namespace lad
         std::chrono::duration< double > duration_all = stop_ - start_;
         // acum_timer_mp = acum_timer_mp + duration_all.count();
 
-        s << " ----------------------------------------------------------------- Ellapsed: " << yellow << duration_all.count() << reset;
-        logc.debug("\t>> combined loop", s);
+//        s << " ----------------------------------------------------------------- Ellapsed: " << yellow << duration_all.count() << reset;
+//        logc.debug("\t>> combined loop", s);
         // s << " ----------------------------------------------------------------- Ellapsed: " << green << acum_timer_process << reset;
         // logc.debug("\t>> computePxlVal.", s);
         // cout << "Block A - mask:\t" << acumA << endl;

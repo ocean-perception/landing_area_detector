@@ -21,8 +21,10 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     string suffix = "_r" + makeFixedLength((int) currRotation, 3);
     // #pragma omp critical
     // {
-    s << "Creating KernelAUV" << suffix;
-    logc.debug("prW", s);
+    if (ap->verbosity){
+        s << "Creating KernelAUV" << suffix;
+        logc.debug("prW", s);
+    }
     ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
     auto ptrLayer = dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix));
     if (ptrLayer == nullptr){
@@ -34,54 +36,24 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     // logc.info("processRotationWorker", s);
 
     std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
-    s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
-    logc.info("pRW", s);
+
+    if (ap->verbosity > 0){
+        s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+        logc.info("pRW", s);
+    }
 
     std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
-    s << "Lane C dispatched for orientation [" << blue << currRotation << reset << "] degrees";
-    logc.info("pRW", s);
+    if (ap->verbosity > 0){
+        s << "Lane C dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+        logc.info("pRW", s);
+    }
 
     std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
-    s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
-    logc.info("pRW", s);
+    if (ap->verbosity > 0){
+        s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+        logc.info("pRW", s);
+    }
 
-    // #pragma omp sections
-    // {
-    //     #pragma omp section
-    //     {
-    //         ostringstream s;
-    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees";
-    //         logc.info("laneD-worker", s);
-    //         lad::processLaneD(ap, &params, suffix);
-    //         logc.info("laneD-worker", "------------------> done");
-    //     }
-
-    //     #pragma omp section
-    //     {
-    //         ostringstream s;
-    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees";
-    //         logc.info("laneC-worker", s);
-    //         lad::processLaneC(ap, &params, suffix);
-    //         logc.info("laneC-worker", "------------------> done");
-    //     }
-
-    //     #pragma omp section
-    //     {
-    //         ostringstream s;
-    //         s << "Current orientation [" << blue << currRotation << reset << "] degrees" << endl;
-    //         logc.info("laneX-worker", s);
-    //         lad::processLaneX(ap, &params, suffix);
-    //         logc.info("laneX-worker", "------------------> done");
-    //     }
-
-        // TODO: Add validation for copyemask when src is missing
-        // logc.info("processRotationWorker", "Recomputing lanes C & D done");
-        // logc.debug("processRotationWorker", "Computing M3_LandabilityMap");
-        // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
-
-        // logc.debug("processRotationWorker", "Waiting for thread X");
-        // logc.debug("processRotationWorker", "Waiting for thread X... done\ncomputeBlendMeasurability");
-    // }
     threadLaneC.join();
     threadLaneD.join();
     s << "Lane C & D done for orientation [" << green << currRotation << reset << "] degrees";
@@ -211,8 +183,11 @@ int lad::processLaneX(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    s << "processLaneX for suffix: [" << blue << suffix << reset << "]";
-    logc.debug("laneX", s);
+
+    if (ap->verbosity>1){
+        s << "processLaneX for suffix: [" << blue << suffix << reset << "]";
+        logc.debug("laneX", s);
+    }
     tt.lap("\tLane X: X1_Measurability");
     return 0;
 }
@@ -325,8 +300,11 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // ap->copyMask("C1_ExclusionMap", "D3_HiProtMask" + suffix);
     // ap->saveImage("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".png");
     // ap->exportLayer("D3_HiProtMask" + suffix, "D3_HiProtMask" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
-    s << "Lane D for " << blue << suffix << reset << " completed";
-    logc.debug("laneD", s);
+    if (ap->verbosity > 1){
+        s << "Lane D for " << blue << suffix << reset << " completed";
+        logc.debug("laneD", s);
+
+    }
 
     ap->copyMask("C1_ExclusionMap", "D4_HiProtExcl" + suffix);
     if (p->exportRotated){
@@ -366,8 +344,11 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    s << "processLaneC for suffix: [" << blue << suffix << reset << "]";
-    logc.debug("laneC", s);
+
+    if (ap->verbosity > 1){
+        s << "processLaneC for suffix: [" << blue << suffix << reset << "]";
+        logc.debug("laneC", s);
+    }
 
     tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl, X1_Measurability");
     return 0;
