@@ -74,10 +74,10 @@ namespace lad
      * @param sy Vertical pixel scale
      * @return std::vector<KPoint> 
      */
-    std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum){
+    std::vector<KPoint> convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, double *acum){
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
-        int cols = matrix->cols;
-        int rows = matrix->rows;
+        int cols = matrix.cols;
+        int rows = matrix.rows;
         std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
 
         size_t total_elem = cols*rows; // expected input vector size
@@ -96,7 +96,7 @@ namespace lad
                 row = i / cols;
                 col = (i % cols);
                 // now, let's retrieve the pixel value and its spatial coordinates            
-                pz = matrix->at<double>(row,col);
+                pz = matrix.at<double>(row,col);
                 // pz = matrix->at<double>(cv::Point(col,row));
                 if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
                     px = col * sx;
