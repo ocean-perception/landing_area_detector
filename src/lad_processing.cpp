@@ -121,11 +121,21 @@ namespace lad
 
     int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter){
         // iterate through all the points contained in vector
-
+        double diam_th = 0.25f * diameter * diameter;   // precompute it once, we do not need to square it every iteration
+        int r=0;
+        double _x, _y;
         for (auto it:inpoints){
+            _x = it.x();
+            _y = it.y();
+            double _d = _x*_x + _y*_y; 
             // check if within coordinates (center)
+            if (_d < diam_th)  // no need to extract sqrt, just squared both sides
+                {
+                    outpoints.push_back(it);
+                    r++;    //we keep track of total of inserted points, as safe check return value
+                }
         }
-        return 0;
+        return r;
     }
 
 
@@ -264,7 +274,7 @@ namespace lad
             // }
 
         }
-
+        CGAL_PROFILER("computePlaneDistance (all calls)");
         return distances;
     }
 

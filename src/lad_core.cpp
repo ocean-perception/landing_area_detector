@@ -1678,45 +1678,61 @@ namespace lad
                             KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)
                             int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
 
-                            // std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
-                            // double count = 0;
-                            // for (auto it:distances){
-                            //     // count = fabs(it);
-                            //     // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
-                            //     double zit = fabs(it);
-                            //     if      (zit < parameters.geotechSensor.z_optimal) count += 1.0;
-                            //     else    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
-                            // }
+                            double score = 0;
 
+                            if (r){ // if no point was captured, we report "ZERO" as total measurability
+                                std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
+
+                                for (auto it:distances){
+                                    // count = fabs(it);
+                                    // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
+                                    double zit = fabs(it);  // WARNING: single-sided comparion?
+                                    if      (zit < parameters.geotechSensor.z_optimal) score += 1.0;
+                                    else    score += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                }
+                            }
+                            #pragma omp critical
+                            {
+                                try
+                                {
+                                    apDst->rasterData.at<double>(row, col) = score / pointListReduced.size();
+                                }
+                                catch(const std::exception& e)
+                                {
+                                    std::cerr << e.what() << '\n';
+                                    s << "Pixel [" << col << "," << row << "]" << red << "\tpoints: " << pointListReduced.size() << green << "\tAcum: " << score;
+                                    logc.debug("filter-debug", s);
+                                    s << "rasterData cvMat size: " << cyan << apDst->rasterData.size();
+                                    logc.debug("filter-debug", s);
+                                     
+                                }
+                                
+                            }
 
                         }
                         else if (filtertype == FILTER_DISTANCE){ // this implementation uses all the points contained inside the landing footprint
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
                             std::vector<double> distances = computePlaneDistance(plane, pointList);
-                            double count = 0;
+                            double score = 0;
                             for (auto it:distances){
                                 // count = fabs(it);
                                 // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                 double zit = fabs(it);
-                                if      (zit < parameters.geotechSensor.z_optimal) count += 1.0;
-                                else    count += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
-                                // if (zit < DEFAULT_Z_OPT) count += 1.0;
-                                // else
-                                //     count += 1/(1 + (zit - DEFAULT_Z_OPT)/DEFAULT_Z_SUB);
+                                if      (zit < parameters.geotechSensor.z_optimal) score += 1.0;
+                                else    score += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+
                             }
                             // computes the proportion of points within the range
-                            // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
                             #pragma omp critical
                             {
                                 try
                                 {
-                                    apDst->rasterData.at<double>(row, col) = count / pointList.size();
-                                    // apDst->rasterData.at<double>(cv::Point(col, row)) = count / pointList.size();
+                                    apDst->rasterData.at<double>(row, col) = score / pointList.size();
                                 }
                                 catch(const std::exception& e)
                                 {
                                     std::cerr << e.what() << '\n';
-                                    s << "Pixel [" << col << "," << row << "]" << red << "\tpoints: " << pointList.size() << green << "\tAcum: " << count;
+                                    s << "Pixel [" << col << "," << row << "]" << red << "\tpoints: " << pointList.size() << green << "\tAcum: " << score;
                                     logc.debug("filter-debug", s);
                                     s << "rasterData cvMat size: " << cyan << apDst->rasterData.size();
                                     logc.debug("filter-debug", s);
@@ -1783,7 +1799,8 @@ namespace lad
         if (verbosity > VERBOSITY_0){
             logc.debug ("computeMeasurabilityMap", "Calling applyWindowFilter");
         }
-        return applyWindowFilter(raster, kernel, mask, dst, FILTER_DISTANCE);
+        return applyWindowFilter(raster, kernel, mask, dst, FILTER_GEOTECH);
+        // return applyWindowFilter(raster, kernel, mask, dst, FILTER_DISTANCE);
     }
 
     /**
