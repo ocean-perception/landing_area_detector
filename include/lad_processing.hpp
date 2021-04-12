@@ -48,7 +48,8 @@ namespace lad
     // std::vector<pcl::PointXYZ> convertMatrix2Vector2 (cv::Mat *matrix, double sx, double sy, double *acum);
     // std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
     std::vector<KPoint> convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, double *acum);
-  
+    int                 convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum);
+
     float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy);
 
     // Pixel to World coordinates transformation

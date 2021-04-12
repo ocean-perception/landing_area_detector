@@ -1648,7 +1648,10 @@ namespace lad
 
                     // start time 
                     // auto start_map = std::chrono::high_resolution_clock::now();
-                    pointList = convertMatrix2Vector  (temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+
+                    int r = convertMatrix2Vector  (temp, sx, sy, pointList, &acum); // < 34 seconds - BOTTLENECK
+                    // pointList = convertMatrix2Vector  (temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
+
                     // auto stop_map = std::chrono::high_resolution_clock::now();
                     // std::chrono::duration< double > duration = stop_map - start_map;
                     // acum_timer_mp = acum_timer_mp + duration.count();

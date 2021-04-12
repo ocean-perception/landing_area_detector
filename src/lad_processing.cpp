@@ -88,7 +88,7 @@ namespace lad
             // Also, it will remove the i->row,col modulo and division operation
             // std::vector<KPoint> slave; //preallocating space does not improve it
             // #pragma omp for nowait
-            for (int i=0; i < total_elem; i++)
+            for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
             {
                 double px, py, pz;
                 //let's calculate the index
@@ -98,7 +98,7 @@ namespace lad
                 // now, let's retrieve the pixel value and its spatial coordinates            
                 pz = matrix.at<double>(row,col);
                 // pz = matrix->at<double>(cv::Point(col,row));
-                if (pz != 0){    //only non-NULL points are included (those are assumed to be invalida data points)
+                if (pz != 0.0f){    //only non-NULL points are included (those are assumed to be invalid data points)
                     px = col * sx;
                     py = row * sy;
                     master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
@@ -118,6 +118,51 @@ namespace lad
 
         return master;
     }
+
+
+
+    int convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum){
+        //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
+        int cols = matrix.cols;
+        int rows = matrix.rows;
+        // std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
+
+        size_t total_elem = cols*rows; // expected input vector size
+
+        // #pragma omp parallel
+        {
+            // TODO: rollback to for x,y or use contiguous pointer format (row,col) to SIMD px,py calculation
+            // Also, it will remove the i->row,col modulo and division operation
+            // std::vector<KPoint> slave; //preallocating space does not improve it
+            // #pragma omp for nowait
+            for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
+            {
+                double px, py, pz;
+                //let's calculate the index
+                int row, col;
+                row = i / cols;
+                col = (i % cols);
+                // now, let's retrieve the pixel value and its spatial coordinates            
+                pz = matrix.at<double>(row,col);
+                // pz = matrix->at<double>(cv::Point(col,row));
+                if (pz != 0.0f){    //only non-NULL points are included (those are assumed to be invalid data points)
+                    px = col * sx;
+                    py = row * sy;
+                    master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
+                    *acum = *acum + pz;
+                }
+            }
+            // #pragma omp critical
+            // {
+            //     master.insert(master.end(), 
+            //                         std::make_move_iterator(slave.begin()), 
+            //                         std::make_move_iterator(slave.end()));
+            // }
+        }
+        CGAL_PROFILER("calls to convertMatrix2Vector");
+        return 0;
+    }
+
 
     /**
      * @brief Returns the angle (slope) of a plane by measuring the minimium angle between its normal and a reference vector 
