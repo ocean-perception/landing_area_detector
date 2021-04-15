@@ -18,6 +18,8 @@ endif ()
 # Define project name
 project(lad_project)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx")
+# Additional flags for vectorized/multithread profiling and debugging
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O5 -pg")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
