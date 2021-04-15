@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
+    // std::cout << cv::getBuildInformation() << std::endl;
 
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop

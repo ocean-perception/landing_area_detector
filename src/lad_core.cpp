@@ -1645,6 +1645,7 @@ namespace lad
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
+                    pointList.reserve(0.5*nCols*nRows);
 
                     // start time 
                     // auto start_map = std::chrono::high_resolution_clock::now();
