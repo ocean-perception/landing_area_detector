@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
-    // std::cout << cv::getBuildInformation() << std::endl;
+    std::cout << cv::getBuildInformation() << std::endl;
 
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
     // Input file priority: must be defined either by the config.yaml or --input argument
     string inputFileName    = ""; // command arg or config defined
-    // string inputFilePath    = ""; // can be retrieved from the fully qualified inputFileName 
     string outputFileName   = ""; // if none, output filenames will be the same as the standard. If non-null, will be used as prefix
     string outputFilePath   = ""; // same relative folder
 
@@ -126,12 +125,8 @@ int main(int argc, char *argv[])
         /* Summary list parameters */
         cout << yellow << "****** Summary **********************************" << reset << endl;
         cout << "Input file:   \t" << inputFileName << endl;
-        // cout << "Input path:   \t" << inputFilePath << endl;
-        // cout << "Output prefix:\t" << outputFilePrefix << endl;
         cout << "Output name:  \t" << outputFileName << endl;
         cout << "Output path:  \t" << outputFilePath << endl;
-        // cout << "fParam:       \t" << fParam << endl;
-        // cout << "iParam:       \t" << iParam << endl;
         lad::printParams(&params);
         cout << "Verbose level:\t\t" << params.verbosity << endl;    
         cout << "Multithreaded version, max concurrent threads: [" << yellow << nThreads << reset << "]" << endl;
@@ -266,7 +261,7 @@ int main(int argc, char *argv[])
         localParam.rotation = params.rotationMin + nK * params.rotationStep;
 
         if (params.verbosity > VERBOSITY_0){
-            xs << "Dispatched for execution: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+            xs << "Dispatched: [" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
             logc.info("main", xs);
         }
         lad::processRotationWorker (&pipeline, &localParam);
@@ -275,7 +270,7 @@ int main(int argc, char *argv[])
         finished++;
 
         if (params.verbosity > VERBOSITY_0){
-            xs << "Executed: [" << yellow << nK << reset << "] ---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
+            xs << "Executed: [" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
             logc.info("main", xs);
         }
     }

@@ -120,10 +120,6 @@ namespace lad
         int applyWindowFilter  (std::string src, std::string kernel, std::string mask, std::string dst, int filtertype);
         int computeHeight      (std::string src, std::string filt, std::string dst);
 
-
-        int lowpassFilter(std::string src, std::string dst, cv::Size filterSize, int filterType = 0); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
-        int computeHeight(std::string src, std::string dst, cv::Size filterSize, int filterType = 0);
-
         int computeBlendMeasurability(std::string src1, std::string src2, std::string dst);
         int computeLandabilityMap(std::string src1, std::string src2, std::string src3, std::string dst);
 
