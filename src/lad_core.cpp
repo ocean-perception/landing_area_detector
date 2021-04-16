@@ -1589,8 +1589,9 @@ namespace lad
         cv::Mat  roi_image;// = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
         cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
 
-        cv::Mat kernelMask, kernelMaskBin;
-        apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
+        // cv::Mat kernelMask;
+        cv::Mat kernelMaskBin;
+        // apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
         apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
         lad::tictac timer;
@@ -1645,12 +1646,15 @@ namespace lad
                     double acum = 0;
 
                     std::vector<KPoint> pointList;
-                    pointList.reserve(0.5*nCols*nRows);
+                    pointList.reserve(0.5*nCols*nRows); // experimental: we have some good estimation of necessary space
 
                     // start time 
                     // auto start_map = std::chrono::high_resolution_clock::now();
 
                     int r = convertMatrix2Vector  (temp, sx, sy, pointList, &acum); // < 34 seconds - BOTTLENECK
+
+                    // int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
+
                     // pointList = convertMatrix2Vector  (temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
 
                     // auto stop_map = std::chrono::high_resolution_clock::now();
@@ -1675,7 +1679,8 @@ namespace lad
                         }
                         else if (filtertype == FILTER_GEOTECH){ // reduce to points contained inside a given diameter (geotech sensor)
                             std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
-                            
+                            pointListReduced.reserve(2000);
+
                             KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)
                             int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
 

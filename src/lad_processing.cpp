@@ -131,8 +131,8 @@ namespace lad
             // check if within coordinates (center)
             if (_d < diam_th)  // no need to extract sqrt, just squared both sides
                 {
-                    outpoints.push_back(it);
                     r++;    //we keep track of total of inserted points, as safe check return value
+                    [[unlikely]] outpoints.push_back(it);
                 }
         }
         return r;

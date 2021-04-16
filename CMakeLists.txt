@@ -19,7 +19,7 @@ endif ()
 project(lad_project)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O5 -pg")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O5 -pg  -shared-libgcc -g")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -63,10 +63,14 @@ if ( NOT CGAL_FOUND )
   message(STATUS "This project requires the CGAL library, and will not be compiled.")
   return()  
 endif()
+
 message(STATUS "CGAL library status:")
 #message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${CGAL_LIBRARY}")
 message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
+
+find_package( TBB)
+
 
 # include helper file
 include( ${CGAL_USE_FILE} )
@@ -152,10 +156,23 @@ add_executable(img.resample   src/img.resample.cpp
 target_compile_options(mad_test PUBLIC -std=c++14 -mavx)
 target_compile_options(tiff2png PUBLIC -std=c++14 -mavx)
 target_compile_options(img.resample PUBLIC -std=c++14 -mavx)
-target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(img.resample ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+
+find_package(TBB)
+# include(CGAL_TBB_support)
+include(CGAL_target_use_TBB)
+if(TBB_FOUND)
+  target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+  message(
+    STATUS "NOTICE: Intel TBB was found...")
+else()
+  target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+  message(
+    STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
+endif()
+
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)
