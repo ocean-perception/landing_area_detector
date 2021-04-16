@@ -1653,22 +1653,9 @@ namespace lad
                     std::vector<KPoint> pointList;
                     pointList.reserve(0.5*nCols*nRows); // experimental: we have some good estimation of necessary space
 
-                    // start time 
-                    // auto start_map = std::chrono::high_resolution_clock::now();
-
-                    // int r = convertMatrix2Vector  (temp, sx, sy, pointList, &acum); // < 34 seconds - BOTTLENECK
                     std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
                     pointListReduced.reserve(2000);
                     int r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // < 34 seconds - BOTTLENECK
-
-                    // int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
-
-                    // pointList = convertMatrix2Vector  (temp, sx, sy, &acum); // < 34 seconds - BOTTLENECK
-
-                    // auto stop_map = std::chrono::high_resolution_clock::now();
-                    // std::chrono::duration< double > duration = stop_map - start_map;
-                    // acum_timer_mp = acum_timer_mp + duration.count();
-                    // start_map = std::chrono::high_resolution_clock::now();
 
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
@@ -1679,11 +1666,9 @@ namespace lad
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
-                            // apDst->rasterData.at<double>(cv::Point(col, row)) = slope;
                         }
                         else if (filtertype == FILTER_MEAN){
                             apDst->rasterData.at<double>(row, col) = acum / pointList.size();
-                            // apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
                         else if (filtertype == FILTER_GEOTECH){ // reduce to points contained inside a given diameter (geotech sensor)
                             KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)
