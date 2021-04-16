@@ -50,6 +50,7 @@ namespace lad
     // std::vector<KPoint> convertMatrix2Vector (cv::Mat *matrix, double sx, double sy, double *acum);
     std::vector<KPoint> convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, double *acum);
     int                 convertMatrix2Vector (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum);
+    int convertMatrix2Vector_Points (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter);
 
     float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy);
 

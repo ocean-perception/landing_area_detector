@@ -39,6 +39,7 @@ namespace lad
     private:
         std::map <std::string, std::shared_ptr<Layer>> mapLayers;
         int currentAvailableID;
+        cv::Mat roi_image;      // binary mask that will contain the noData validity mask
 
     public:
         Pipeline() //!< Default contructor

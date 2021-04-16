@@ -609,6 +609,11 @@ namespace lad
         // logc.debug("p:readTIFF", maskLayer);
         apMask->copyGeoProperties(apRaster);
         apMask->setNoDataValue(DEFAULT_NODATA_VALUE);
+
+        // create a global (pipeline-wise) 
+        roi_image = cv::Mat(apRaster->rasterData.size(), CV_8UC1); // create global valid_data maskthat won't be updated
+        cv::compare(apRaster->rasterData, apRaster->getNoDataValue(), roi_image, CMP_NE); // ROI at the source data level
+
         return NO_ERROR;
     }
 
@@ -1268,8 +1273,8 @@ namespace lad
         apDst->copyGeoProperties(apSrc);
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, srcNoData); 
         // we create a matrix with NOVALID data
-        cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
-        cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level
+        // cv::Mat  roi_image = cv::Mat(apSrc->rasterData.size(), CV_8UC1); // create global valid_data mask
+        // cv::compare(apSrc->rasterData, srcNoData, roi_image, CMP_NE); // ROI at the source data level (REPEATED!)
 
         for (int row=0; row<rows; row++){
             for (int col=0; col<cols; col++){
@@ -1651,7 +1656,10 @@ namespace lad
                     // start time 
                     // auto start_map = std::chrono::high_resolution_clock::now();
 
-                    int r = convertMatrix2Vector  (temp, sx, sy, pointList, &acum); // < 34 seconds - BOTTLENECK
+                    // int r = convertMatrix2Vector  (temp, sx, sy, pointList, &acum); // < 34 seconds - BOTTLENECK
+                    std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
+                    pointListReduced.reserve(2000);
+                    int r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // < 34 seconds - BOTTLENECK
 
                     // int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
 
@@ -1678,14 +1686,9 @@ namespace lad
                             // apDst->rasterData.at<double>(cv::Point(col, row)) = acum / pointList.size();
                         }
                         else if (filtertype == FILTER_GEOTECH){ // reduce to points contained inside a given diameter (geotech sensor)
-                            std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
-                            pointListReduced.reserve(2000);
-
                             KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)
-                            int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
-
+                            // int r = computePointsInSensor (pointList, pointListReduced, parameters.geotechSensor.diameter);
                             double score = 0;
-
                             if (r){ // if no point was captured, we report "ZERO" as total measurability
                                 std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
 
