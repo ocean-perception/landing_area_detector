@@ -200,6 +200,7 @@ namespace lad
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
         int cols = matrix.cols;
         int rows = matrix.rows;
+        double _a = 0.0f;  // [optim] local copy to avoid aliasing + conversion from *acum (reduce fetch per cycle)
         // std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
 
         size_t total_elem = cols*rows; // expected input vector size
@@ -224,7 +225,7 @@ namespace lad
                     px = (col - cols/2) * sx;   // Centering the points
                     py = (row - rows/2) * sy;   // This is necessary to speed-up the geotech sensor diameter-based masking
                     master.push_back(KPoint(px,py,pz)); // we could ignore the scale and correct it AFTER plane-fitting
-                    *acum = *acum + pz;
+                    _a = _a + pz;
                 }
             }
             // reduction section when slave/master omp mode is used
@@ -236,6 +237,7 @@ namespace lad
             // }
         }
         CGAL_PROFILER("calls to convertMatrix2Vector");
+        *acum = _a;
         return 0;
     }
 

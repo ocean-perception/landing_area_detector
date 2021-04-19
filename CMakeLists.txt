@@ -19,7 +19,7 @@ endif ()
 project(lad_project)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O5 -pg  -shared-libgcc -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3 -pg  -shared-libgcc -g ")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -64,12 +64,14 @@ if ( NOT CGAL_FOUND )
   return()  
 endif()
 
+set(TBB_VERSION "2021.2") # to deal with broken TBBFind.cmake from CGAL
+find_package( TBB)
+
 message(STATUS "CGAL library status:")
 #message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${CGAL_LIBRARY}")
 message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 
-find_package( TBB)
 
 
 # include helper file

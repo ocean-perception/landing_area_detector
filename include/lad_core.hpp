@@ -37,8 +37,8 @@ namespace lad
     class Pipeline
     {
     private:
-        std::map <std::string, std::shared_ptr<Layer>> mapLayers;
         int currentAvailableID;
+        std::map <std::string, std::shared_ptr<Layer>> mapLayers;
         cv::Mat roi_image;      // binary mask that will contain the noData validity mask
 
     public:
@@ -56,12 +56,12 @@ namespace lad
             inputFileTIFF = "";
         }
 
-        std::string geoProjection;
-        double      geoTransform[6]; //!< 6 DOF geotransformation matrix
-        std::string inputFileTIFF; //< Input TIFF filename containing base bathymetry. It can be used as base name for output products files
+        lad::parameterStruct parameters;
         int         verbosity; //!< Verbosity levels (from 0 to 2)
         int         useNodataMask;
-        lad::parameterStruct parameters;
+        double      geoTransform[6]; //!< 6 DOF geotransformation matrix
+        std::string geoProjection;
+        std::string inputFileTIFF; //< Input TIFF filename containing base bathymetry. It can be used as base name for output products files
 
         // Methods **************
 
