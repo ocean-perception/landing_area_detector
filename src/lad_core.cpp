@@ -11,6 +11,9 @@
 #include "lad_core.hpp"
 #include "helper.cpp"
 
+#include <opencv2/cudaarithm.hpp>
+// using namespace cv::cuda;
+
 namespace lad
 {
     /**
@@ -1499,12 +1502,21 @@ namespace lad
                     cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
                     cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
 
+                #ifdef USE_GPU
                     // upload to GPU
-                    
+                    cuda::GpuMat gpuAND, gpu_roi, gpu_mask, gpu_sub;
+                    //upload into GPU memory
+                    gpu_sub.upload(subMask);
+                    gpu_roi.upload(roi_patch);
 
-                    cv::bitwise_and(subMask, roi_patch, mask);
+                    cv::cuda::bitwise_and(subMask, roi_patch, mask);
 
                     // download from GPU
+                    gpuAND.download(mask);
+
+                #else
+                    cv::bitwise_and(subMask, roi_patch, mask);
+                #endif
 
                     subImage.copyTo(temp, mask);
 

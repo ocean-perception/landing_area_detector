@@ -36,12 +36,12 @@
 #include "opencv2/calib3d.hpp"
 #include <opencv2/xfeatures2d.hpp>
 
-/// CUDA specific libraries
-// #if USE_GPU
-//     #include <opencv2/cudafilters.hpp>
-//     #include "opencv2/cudafeatures2d.hpp"
-//     #include "opencv2/xfeatures2d/cuda.hpp"
-// #endif
+// CUDA specific libraries
+#if USE_GPU
+    #include <opencv2/cudafilters.hpp>
+    #include "opencv2/cudafeatures2d.hpp"
+    #include "opencv2/xfeatures2d/cuda.hpp"
+#endif
 #include "geotiff.hpp"
 
 // escape based colour codes for console output

@@ -54,8 +54,22 @@ message(STATUS "    version: ${OpenCV_VERSION}")
 message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
+
 # Cross your fingers
-#find_package(CUDA) #not required yet
+find_package(CUDA)
+
+if(CUDA_FOUND)
+    INCLUDE(FindCUDA)
+  # If the package has been found, several variables will
+  # be set, you can find the full list with descriptions
+  # in the CUDAConfig.cmake file.
+  # Print some message showing some of them
+  message(STATUS "CUDA library status:")
+  message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
+  message(STATUS "    version: ${CUDA_VERSION}")
+  message(STATUS "    libraries: ${CUDA_LIBRARIES}")
+  message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
+endif(CUDA_FOUND)
 
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
 find_package( CGAL QUIET COMPONENTS  )
@@ -162,18 +176,35 @@ target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(img.resample ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
+
 find_package(TBB)
 # include(CGAL_TBB_support)
 include(CGAL_target_use_TBB)
-if(TBB_FOUND)
-  target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-  message(
-    STATUS "NOTICE: Intel TBB was found...")
+
+ # Declare the executable target built from your sources
+ if(CUDA_FOUND)
+ # Add definition to CUDA SUPPORT
+ add_definitions(-D USE_GPU)
+ message(STATUS "Configuring for GPU version.")
+ # Link your application with OpenCV libraries
+target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
 else()
-  target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-  message(
-    STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
-endif()
+ message(STATUS "Configuring for non-GPU version.")
+ message(STATUS "	Expect a slower speed...")
+ # Link your application with OpenCV libraries
+target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+endif(CUDA_FOUND)
+
+
+# if(TBB_FOUND)
+#   target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+#   message(
+#     STATUS "NOTICE: Intel TBB was found...")
+# else()
+#   target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+#   message(
+#     STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
+# endif()
 
 
 install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
