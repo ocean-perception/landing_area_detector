@@ -1456,6 +1456,14 @@ namespace lad
         // apKernel->rotatedData.convertTo(kernelMask, CV_64FC1);
         apKernel->rotatedData.convertTo(kernelMaskBin, CV_8UC1);
 
+    #ifdef USE_CUDA
+        cv::cuda::GpuMat kernelMaskBin_gpu;
+        cv::cuda::GpuMat roi_image_gpu;
+
+        roi_image_gpu.upload(roi_image);
+        kernelMaskBin_gpu.upload(kernelMaskBin);
+    #endif
+
         lad::tictac timer;
         timer.start();
         double acum_timer_mp = 0;
@@ -1490,14 +1498,6 @@ namespace lad
                     int yf = rb - row + hKernel/2;
 
                     cv::Mat temp, mask;
-
-                    // cv::Mat subMask = kernelMask(cv::Range(yi,yf), cv::Range(xi,xf)); //64FC1 subImage contains the raw data patch
-                    // cv::Mat subImage = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 roi_patch contains a binary mask of valid data
-                    // cv::Mat roi_patch = roi_image(cv::Range(rt, rb), cv::Range(cl, cr));    //8UC1 apKernel contains and additional mask
-                    // roi_patch.convertTo(temp, CV_64FC1); //64FC1
-                    // temp = subImage.mul(temp)/255.0f;  //64FC1
-                    // temp = subMask.mul(temp); //64FC1
-
                     cv::Mat subMask   = kernelMaskBin    (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
                     cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
                     cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
