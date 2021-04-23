@@ -182,18 +182,18 @@ find_package(TBB)
 include(CGAL_target_use_TBB)
 
  # Declare the executable target built from your sources
- if(CUDA_FOUND)
- # Add definition to CUDA SUPPORT
- add_definitions(-D USE_GPU)
- message(STATUS "Configuring for GPU version.")
- # Link your application with OpenCV libraries
-target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
+ if(USE_CUDA AND CUDA_FOUND)
+  # Add definition to CUDA SUPPORT
+  add_definitions(-D USE_GPU)
+  message(STATUS "Configuring for GPU version.")
+  # Link your application with OpenCV libraries
+  target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
 else()
- message(STATUS "Configuring for non-GPU version.")
- message(STATUS "	Expect a slower speed...")
- # Link your application with OpenCV libraries
-target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-endif(CUDA_FOUND)
+  message(STATUS "Configuring for non-GPU version.")
+  message(STATUS "	Expect a slower speed...")
+  # Link your application with OpenCV libraries
+  target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+endif()
 
 
 # if(TBB_FOUND)
