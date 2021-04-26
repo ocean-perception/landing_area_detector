@@ -1532,37 +1532,30 @@ namespace lad
                     int xf = cr - col + wKernel/2;
                     int yf = rb - row + hKernel/2;
 
+                    double acum = 0;
+                    int r;
+
                     cv::Mat temp, mask;
                     cv::Mat subMask   = kernelMaskBin    (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
                     cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
                     cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
 
-                #ifdef USE_GPU
-                    // upload to GPU
-                    cuda::GpuMat gpuAND, gpu_roi, gpu_mask, gpu_sub;
-                    //upload into GPU memory
-                    gpu_sub.upload(subMask);
-                    gpu_roi.upload(roi_patch);
+    // rather than performing non-parallel bitwise_and and the filter sequentially
+    // we can reduce the valid roi and convert into the pointListReduced exploiting better branching behaviour
+    // in CPU host, combined with cache memory locality (requested memory fairly contiguous)
 
-                    cv::cuda::bitwise_and(subMask, roi_patch, mask);
-
-                    // download from GPU
-                    gpuAND.download(mask);
-
-                #else
-                    cv::bitwise_and(subMask, roi_patch, mask);
-                #endif
-
-                    subImage.copyTo(temp, mask);
-
-                    double acum = 0;
 
                     std::vector<KPoint> pointList;
                     pointList.reserve(0.5*nCols*nRows); // experimental: we have some good estimation of necessary space
 
                     std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
                     pointListReduced.reserve(2000);
-                    int r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // < 34 seconds - BOTTLENECK
+
+                    // cv::bitwise_and(subMask, roi_patch, mask);
+                    // subImage.copyTo(temp, mask);
+                    // r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+                    r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+ 
 
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points

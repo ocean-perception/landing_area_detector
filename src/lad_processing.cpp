@@ -119,6 +119,67 @@ namespace lad
         return master;
     }
 
+    int convertMatrix2Vector_Masked (const cv::Mat &matrix, const cv::Mat &mask1, const cv::Mat &mask2, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter){
+
+        //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
+        int cols = matrix.cols; // the input image, and the two masks should share the same dimensions
+        int rows = matrix.rows;
+        // std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
+
+        size_t total_elem = cols*rows; // expected input vector size
+        double diam_th = 0.25f * diameter * diameter;   // precompute it once, we do not need to square it every iteration
+        int r=0;
+        #pragma omp parallel
+        {
+            // TODO: rollback to for x,y or use contiguous pointer format (row,col) to SIMD px,py calculation
+            // Also, it will remove the i->row,col modulo and division operation
+            std::vector<KPoint> slave; //preallocating space does not improve it
+            #pragma omp for nowait
+            for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
+            {
+                double px, py, pz;
+
+                //let's calculate the index
+                int row, col;
+                row = i / cols;
+                col = (i % cols);
+
+                //let's check with both masks
+                if (mask2.at<unsigned char>(row, col))
+                    if(mask1.at<unsigned char>(row, col)){
+                    pz = matrix.at<double>(row,col);
+                    // pz = matrix->at<double>(cv::Point(col,row));
+                    if (pz != 0.0f){    //only non-NULL points are included (those are assumed to be invalid data points)
+                        px = (col - cols/2) * sx;   // Centering the points
+                        py = (row - rows/2) * sy;   // This is necessary to speed-up the geotech sensor diameter-based masking
+                        KPoint newPoint(px,py,pz);
+                        slave.push_back(newPoint); // we could ignore the scale and correct it AFTER plane-fitting
+                        *acum = *acum + pz;
+
+                        // snippet from pointsInSensor
+                        double _d = px*px + py*py; 
+                        if (_d < diam_th)  // no need to extract sqrt, just squared both sides
+                            {
+                                r++;    //we keep track of total of inserted points, as safe check return value
+                                [[unlikely]] sensor.push_back(newPoint);
+                            }
+                    }
+                }// end of for
+            }// end of for
+            // ####################################################
+            // reduction section when slave/master omp mode is used
+            #pragma omp critical
+            {
+                master.insert(master.end(), 
+                                    std::make_move_iterator(slave.begin()), 
+                                    std::make_move_iterator(slave.end()));
+            }
+        }
+
+        CGAL_PROFILER("calls to convertMatrix2Vector_Points");
+        return r;
+    }
+
     int convertMatrix2Vector_Points (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter){
 
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
