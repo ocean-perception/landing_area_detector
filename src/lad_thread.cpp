@@ -54,7 +54,20 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
         logc.info("pRW", s);
     }
 
+    // WARNING C+D+X is the right order. Do not try to reorder (as vtun suggested for thread locking improvement).
+    // Data flow imposes this
+    
+    threadLaneC.join();
     threadLaneD.join();
+    s << "Lane C & D done for orientation [" << green << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
+    ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
+    ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
+    threadLaneX.join();
+    s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
+
+/*    threadLaneD.join();
     s << "Lane D done for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
 
@@ -65,7 +78,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     threadLaneX.join();
     s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
-
+*/
     ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
     ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
     ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);

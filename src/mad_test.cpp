@@ -39,29 +39,6 @@ int main(int argc, char *argv[])
     cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
     // std::cout << cv::getBuildInformation() << std::endl;
 
-    int CUDA = 0, nCuda=-1;                                       //Default option (running with CPU)
-
-#ifdef USE_GPU
-    cout << green << "CUDA mode enabled" << reset << std::endl;
-#endif
- #ifdef USE_GPU
-    /* CUDA */
-    // TODO: read about possible failure at runtime when calling CUDA methods in non-CUDA hardware.
-    // CHECK whether it is possible with try-catch pair
-    nCuda = cuda::getCudaEnabledDeviceCount();	// we try to detect any existing CUDA device
-    cuda::DeviceInfo deviceInfo;
-
-    if (nCuda > 0){
-        cout << green << "CUDA enabled devices detected: " << reset << deviceInfo.name() << endl;
-        cuda::setDevice(0);
-    }
-    else {
-#undef USE_GPU
-        cout << red << "No CUDA device detected" << reset << endl;
-        cout << "Exiting... use non-GPU version instead" << endl;
-    }
-#endif
-
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;

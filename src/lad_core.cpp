@@ -1211,10 +1211,12 @@ namespace lad
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
         if (apSrc == nullptr){
-            logc.error("compareLayer", src);
+            s << "Invalid src layer ptr [" << src << "]";
+            logc.error("compareLayer", s);
         }
         if (apDst == nullptr){
-            logc.error("compareLayer", dst);
+            s << "Invalid dst layer ptr [" << dst << "]";
+            logc.error("compareLayer", s);
         }
 
         // logc.debug("p:comExcl", dst);
