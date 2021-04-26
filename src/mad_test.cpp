@@ -296,11 +296,11 @@ int main(int argc, char *argv[])
 
     pipeline.createLayer("M3_LandabilityMap_BLEND", LAYER_RASTER);
     pipeline.copyMask("M1_RAW_Bathymetry", "M3_LandabilityMap_BLEND");
-    pipeline.createLayer("M4_FinalMeasurability", LAYER_RASTER);
-    pipeline.copyMask("M1_RAW_Bathymetry", "M4_FinalMeasurability");
+    pipeline.createLayer("M4_FinalMeasurability_BLEND", LAYER_RASTER);
+    pipeline.copyMask("M1_RAW_Bathymetry", "M4_FinalMeasurability_BLEND");
     auto apBase    = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M1_RAW_Bathymetry"));
     auto apFinal   = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M3_LandabilityMap_BLEND"));
-    auto apMeasure = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M4_FinalMeasurability"));
+    auto apMeasure = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M4_FinalMeasurability_BLEND"));
 
     apFinal->copyGeoProperties(apBase);
     apFinal->setNoDataValue(DEFAULT_NODATA_VALUE);
@@ -376,8 +376,8 @@ int main(int argc, char *argv[])
     // transfer, via mask
     acum.copyTo(apMeasure->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
 
-    pipeline.saveImage("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.png");
-    pipeline.exportLayer("M4_FinalMeasurability", outputFileName + "M4_FinalMeasurability.tif", FMT_TIFF, WORLD_COORDINATE);
+    pipeline.saveImage("M4_FinalMeasurability_BLEND", outputFileName + "M4_FinalMeasurability_BLEND.png");
+    pipeline.exportLayer("M4_FinalMeasurability_BLEND", outputFileName + "M4_FinalMeasurability_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
 //    pipeline.showImage("M4_FinalMeasurability");
 
     if (params.verbosity > 1)
