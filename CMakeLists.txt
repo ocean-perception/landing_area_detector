@@ -38,7 +38,7 @@ message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 # Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release (4.2)
-find_package(OpenCV 4.5 REQUIRED
+find_package(OpenCV 4.4 REQUIRED
                         NO_MODULE
                         PATHS /usr/local
                         NO_DEFAULT_PATH)
