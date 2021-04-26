@@ -1551,10 +1551,11 @@ namespace lad
                     std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
                     pointListReduced.reserve(2000);
 
-                    // cv::bitwise_and(subMask, roi_patch, mask);
-                    // subImage.copyTo(temp, mask);
-                    // r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
-                    r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+                    cv::bitwise_and(subMask, roi_patch, mask);
+                    subImage.copyTo(temp, mask);
+                    r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+
+                    // r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
  
 
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
