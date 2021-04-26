@@ -117,6 +117,15 @@ int main(int argc, char *argv[])
                             params.rotation         = args::get(argRotation);
                             params.fixRotation      = true;
     }   
+    if (argRotationStep){   // this section will override a fixed rotation definition. We could warn the user
+                            params.rotationStep     = args::get(argRotationStep);
+                            params.fixRotation      = false;
+                            if (argRotation){
+                                s << "Fixed rotation and rotation step defined. Fixed rotation option will be ignored" << endl;
+                                logc.warn("main", s);
+                            }
+    }
+
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
     if (argSaveIntermediate)    params.exportIntermediate = args::get(argSaveIntermediate);
     if (params.updateThreshold){

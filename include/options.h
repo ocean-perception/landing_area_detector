@@ -34,6 +34,8 @@ args::ValueFlag	<double>        argMetacenter(argParser,"ratio",    "Recompute m
 
 args::ValueFlag	<double> 		argAlphaRadius(argParser, "alpha",  "Search radius for alpha Shape concave hull algorithm",                     {"alpharadius"});
 args::ValueFlag	<double>        argRotation(argParser,  "rotation", "Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW", {"rotation"});
+args::ValueFlag	<double>        argRotationStep(argParser,  "angle", "Rotation step resolution in degrees.", {"rotstep"});
+
 
 // Free parameters for debugging
 args::ValueFlag	<int> 	argIntParam(argParser,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
