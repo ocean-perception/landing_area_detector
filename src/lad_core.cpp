@@ -635,6 +635,11 @@ namespace lad
         //pull access to rasterMask
         std::shared_ptr<RasterLayer> apRaster;
         apRaster = dynamic_pointer_cast<RasterLayer>(getLayer(rasterName));
+        if (apRaster == nullptr){
+            s << "Error retrieving [" << yellow << rasterName << reset <<"] layer";
+            logc.error ("extractContours", s); 
+            return ERROR_CONTOURS_NOTFOUND;
+        }
 
         cv::findContours(apRaster->rasterData, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE); // obtaining only 1st level contours, no children
         // s << "#contours detected: " << contours.size();
@@ -667,20 +672,6 @@ namespace lad
         // WARNING: contours may provide false shapes when valid data mask reaches any image edge.
         // SOLUTION: expand +1px the image canvas on every direction, or remove small bathymetry section (by area or number of points)
         // See: copyMakeBorder @ https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html UE: BORDER_CONSTANT (set to ZERO)
-        // if (showImg)
-        // {
-        //     Mat boundingLayer = Mat::zeros(apRaster->rasterData.size(), CV_8UC1); // empty mask
-        //     int n = 1;
-        //     for (const auto &contour : good_contours)
-        //     {
-        //         drawContours(boundingLayer, contours, -1, Scalar(255 * n / good_contours.size()), 1); // overlay contours in new mask layer, 1px width line, white
-        //         n++;
-        //     }
-        //     namedWindow(contourName, WINDOW_NORMAL);
-        //     imshow(contourName, boundingLayer);
-        //     resizeWindow(contourName, 800, 800);
-        // }
-
         // COMPLETE: now we export the data to the target vector layer contourName
         // if it already exist, overwrite data?
         //pull access to rasterMask
@@ -688,11 +679,21 @@ namespace lad
         if (getLayerID(contourName) >= 0)
         {   // it already exist!
             apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+            if (apVector == nullptr){
+                s << "Error when retrieving (existing?) layer [" << yellow << contourName << reset << "]";
+                logc.error ("extractContours", s); 
+                return ERROR_CONTOURS_NOTFOUND;                
+            }
         }
         else
         {   // nope, we must create it
             int newid = createLayer(contourName, LAYER_VECTOR);
             apVector = dynamic_pointer_cast<VectorLayer>(getLayer(contourName));
+            if (apVector == nullptr){
+                s << "Error when creating layer [" << yellow << contourName << reset << "]";
+                logc.error ("extractContours", s); 
+                return ERROR_CONTOURS_NOTFOUND;                
+            }
             // cout << "\tCreated new vector layer: [" << contourName << "] with ID [" << newid << "]" << endl;
         }
 
@@ -882,6 +883,25 @@ namespace lad
         shared_ptr<KernelLayer> apLayerK = dynamic_pointer_cast<KernelLayer>(apKernel->second);
         shared_ptr<RasterLayer> apLayerO = dynamic_pointer_cast<RasterLayer>(apOutput->second);
         // output is a binary image
+
+        if (apLayerR ==nullptr){
+            s << "apLayerR [" << raster << "] worng";
+            logc.error ("computeExclusionMap", s);
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+        if (apLayerK ==nullptr){
+            s << "apLayerK [" << kernel << "] worng";
+            logc.error ("computeExclusionMap", s);
+            return ERROR_WRONG_ARGUMENT;
+        }
+
+        if (apLayerO ==nullptr){
+            s << "apLayerO [" << dstLayer << "] worng";
+            logc.error ("computeExclusionMap", s);
+            return ERROR_WRONG_ARGUMENT;
+        }
+
         cv::erode(apLayerR->rasterData, apLayerO->rasterData, apLayerK->rotatedData);
         // we do not need to set nodata field for destination layer if we use it as mask
         // if we use it for other purposes (QGIS related), we can use a negative value to flag it
@@ -1091,6 +1111,19 @@ namespace lad
         auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         // TODO catch if failed cast (worng layer type?)
+        if (apSrc == nullptr){
+            ostringstream s;
+            s << "Source layer not found: [" << src << "]";
+            logc.error("copyMask", s);
+            return ERROR_WRONG_ARGUMENT;
+        }
+        if (apDst == nullptr){
+            ostringstream s;
+            s << "Destination layer: [" << dst << "]";
+            logc.error("copyMask", s);
+            return ERROR_WRONG_ARGUMENT;
+        }
+
         apSrc->rasterMask.copyTo(apDst->rasterMask);
         return NO_ERROR;
     }
@@ -1177,10 +1210,10 @@ namespace lad
         auto apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
-        if (!apSrc){
+        if (apSrc == nullptr){
             logc.error("compareLayer", src);
         }
-        if (!apDst){
+        if (apDst == nullptr){
             logc.error("compareLayer", dst);
         }
 

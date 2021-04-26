@@ -58,12 +58,12 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     s << "Lane D done for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
 
-    threadLaneX.join();
-    s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
-    logc.info("pRW", s);
-
     threadLaneC.join();
     s << "Lane C done for orientation [" << green << currRotation << reset << "] degrees";
+    logc.info("pRW", s);
+
+    threadLaneX.join();
+    s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
 
     ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
@@ -135,8 +135,6 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         logc.info("processRotationWorker", s);
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-        // ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        // dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
         // X1_Measurability map
         lad::processLaneX(ap, &params, suffix);
         // std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
