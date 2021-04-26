@@ -94,6 +94,11 @@ int main(int argc, char *argv[])
                             params.rotation         = args::get(argRotation);
                             params.fixRotation      = true;
     }   
+    if (argRotationStep){
+                            params.rotationStep     = args::get(argRotationStep);
+                            params.fixRotation      = false;
+    }
+
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
     if (argSaveIntermediate)    params.exportIntermediate = args::get(argSaveIntermediate);
     if (params.updateThreshold){
