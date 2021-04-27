@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
             logc.warn("main", s);
         }
     }
+    
     // override defaults or config file with command provided values (DEFAULT < CONFIG < ARGUMENT)
     if (argAlphaRadius)     params.alphaShapeRadius = args::get(argAlphaRadius);
     if (argGroundThreshold) params.groundThreshold  = args::get(argGroundThreshold);
@@ -98,7 +99,7 @@ int main(int argc, char *argv[])
                             params.rotationStep     = args::get(argRotationStep);
                             params.fixRotation      = false;
     }
-
+    
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
     if (argSaveIntermediate)    params.exportIntermediate = args::get(argSaveIntermediate);
     if (params.updateThreshold){
@@ -323,7 +324,8 @@ int main(int argc, char *argv[])
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
         if (apCurrent == nullptr){
-            logc.error("blend", "Failed to retrieve layer");
+            s << "Failed to retrieve layer apCurrent [ " << currentname << "], line: " << __LINE__;
+            logc.error("M3-blend", s);
         }
         // let's convert to a CV64FC1 normalized matrix
         cv::Mat currentmat;
@@ -357,7 +359,10 @@ int main(int argc, char *argv[])
         // cout << "\tName: " << currentname << endl;
         // let's retrieve the rasterData for the current orientation layer
         auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
-        // let's convert to a CV64FC1 normalized matrix
+        if (apCurrent == nullptr){
+            s << "Failed to retrieve layer apCurrent [ " << currentname << "], line: " << __LINE__;
+            logc.error("M4-blend", s);
+        }        // let's convert to a CV64FC1 normalized matrix
         cv::Mat currentmat;
         apCurrent->rasterData.convertTo(currentmat, CV_64FC1);
 

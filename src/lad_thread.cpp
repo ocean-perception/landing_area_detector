@@ -112,7 +112,13 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // s << "creating KernelAUV" << suffix;
         // logc.debug ("forLaneD", s);
         ap->createKernelTemplate("KernelAUV" + suffix, params.robotWidth, params.robotLength, cv::MORPH_RECT);
-        dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix))->setRotation(currRotation);
+
+        auto ptrRot = dynamic_pointer_cast<KernelLayer>(ap->getLayer("KernelAUV" + suffix));
+        if (ptrRot = nullptr){
+            s << "nullptr when retrieving [" << "KernelAUV" << suffix << "] layer, line" << __LINE__;
+            logc.error("pRW",s);
+        }
+        ptrRot->setRotation(currRotation);
         // compute the rotation dependent layers
         // C3_MeanSlopeExcl
         lad::processLaneD(ap, &params, suffix);
@@ -215,6 +221,10 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     ostringstream s;
 
     auto apSrc  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("M2_Protrusions"));
+    if (apSrc == nullptr){
+        s << "Nullptr when getLayer [M2_Protrusions] at line: " << __LINE__;
+        logc.error("laneD", s);
+    }
     //first step is to create the LoProt map (h < hcrit)
     ap->compareLayer("M2_Protrusions", "D3_HiProtMask" + suffix, p->heightThreshold, cv::CMP_GE);
     ap->compareLayer("M2_Protrusions", "D1_tempLO" + suffix, p->heightThreshold, cv::CMP_LT);
@@ -285,6 +295,18 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     auto apLoProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D1_LoProtMask" + suffix));
     auto apHiProt  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D3_HiProtMask" + suffix));
     auto auvKernel = dynamic_pointer_cast<KernelLayer> (ap->getLayer("KernelAUV" + suffix));
+    if (apLoProt == nullptr){
+        s << "nullptr apLoProt getLayer[" << "D1_LoProtMask" << suffix << "], line: " << __LINE__;
+        logc.error("processLaneD", s);
+    }
+    if (apHiProt == nullptr){
+        s << "nullptr apHiProt getLayer[" << "D3_HiProtMask" << suffix << "], line: " << __LINE__;
+        logc.error("processLaneD", s);
+    }
+    if (auvKernel == nullptr){
+        s << "nullptr auvKernel getLayer[" << "KernelAUV" << suffix << "], line: " << __LINE__;
+        logc.error("processLaneD", s);
+    }
     // now, we create the Exclusion map, for the current vehicle heading (stored in KernelAUV)
     cv::Mat excl(apHiProt->rasterData.size(), CV_8UC1); //same size and type as original mask
     cv::dilate(apHiProt->rasterData, excl, auvKernel->rotatedData);
@@ -294,6 +316,10 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // logc.debug("laneD", s);
 
     auto apHiProtExcl  = dynamic_pointer_cast<RasterLayer> (ap->getLayer("D4_HiProtExcl" + suffix));
+if (apHiProtExcl == nullptr){
+        s << "nullptr apHiProtExcl getLayer[" << "D4_HiProtExcl" << suffix << "], line: " << __LINE__;
+        logc.error("processLaneD", s);
+    }  
     // construction time upload method?
     excl.copyTo(apHiProtExcl->rasterData); // transfer the data, now the config & georef
     apHiProtExcl->setNoDataValue(DEFAULT_NODATA_VALUE);

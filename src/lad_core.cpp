@@ -1159,6 +1159,18 @@ namespace lad
         shared_ptr<RasterLayer> apSrc = dynamic_pointer_cast<RasterLayer> (getLayer(src));
         shared_ptr<RasterLayer> apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
+        if (apSrc == nullptr){
+            s << "nullptr when retrieving [" << src << "] as <RasterLayer>";
+            logc.error ("maskLayer", s);
+            return LAYER_INVALID;
+        }
+
+        if (apSrc == nullptr){
+            s << "nullptr when retrieving [" << dst << "] as <RasterLayer>";
+            logc.error ("maskLayer", s);
+            return LAYER_INVALID;
+        }
+
         apDst->rasterData = cv::Mat(apSrc->rasterData.size(), CV_64FC1, apSrc->getNoDataValue());
         apDst->copyGeoProperties (apSrc);
         apDst->setNoDataValue(apSrc->getNoDataValue());
@@ -1293,15 +1305,15 @@ namespace lad
         auto apDst  = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
 
         if (apSrc == nullptr){
-            logc.error("computeHeight", "apSrc error");
+            logc.error("computeHeight", "apSrc nullptr error");
             return -1;
         }
         if (apFilt == nullptr){
-            logc.error("computeHeight", "apFilt error");
+            logc.error("computeHeight", "apFilt nullptr error");
             return -1;
         }
         if (apDst == nullptr){
-            logc.error("computeHeight", "apDst error");
+            logc.error("computeHeight", "apDst nullptr error");
             return -1;
         }
 
@@ -1347,7 +1359,7 @@ namespace lad
             createLayer(dst, LAYER_RASTER);
         }
         
-        auto apDst = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
+        auto apDst  = dynamic_pointer_cast<RasterLayer> (getLayer(dst));
         auto apTemp = dynamic_pointer_cast<RasterLayer> (getLayer(templ));
         if (apDst == nullptr){
             logc.error ("p::generatePlaneMap", "Template layer must be of type: Raster");
@@ -1735,7 +1747,12 @@ namespace lad
             createLayer(dst, LAYER_RASTER);
         }
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
-
+        if (apDst == nullptr){
+            s << "apDst returned nullptr for [" << src3 << "] at line" << __LINE__;
+            logc.error ("computeLandability", s);
+            return LAYER_NOT_FOUND;
+        }
+    
         // logical OR for the three source layers (pixel wise). We assume the input raster data is CV_8UC1. 
         // the destination mask will be retrieved from the first source layer
         cv::Mat tmp;
@@ -1783,6 +1800,13 @@ namespace lad
         auto apDst = dynamic_pointer_cast<RasterLayer>(getLayer(dst));
         // pixelwise arithmetic multiplication
         // the destination mask will be retrieved from the first source layer
+
+        if (apDst == nullptr){
+            s << "Error retrieving pointer to apDst layer [" << dst << "] at line " << __LINE__;
+            logc.error ("computeBlendMeasurability", s);
+            return LAYER_NOT_FOUND;
+        }
+
         cv::Mat tmp;
         apSrc1->rasterData.convertTo(tmp, CV_64FC1, 1/255.0);   // rescale from 0/255 to 0/1
 
