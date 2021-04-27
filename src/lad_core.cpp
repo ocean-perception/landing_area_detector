@@ -29,7 +29,7 @@ namespace lad
         if (id < 0)
             return "INVALID_ID";
         // Check each raster in the array, compare its ID against search index
-        for (auto layer : mapLayers)
+        for (auto &layer : mapLayers)
         {
             if (layer.second->getID() == id)
                 return layer.first;
@@ -739,7 +739,10 @@ namespace lad
  */
     std::shared_ptr<Layer> Pipeline::getLayer(std::string name)
     {
-        auto layer = mapLayers.find(name);
+        // #pragma omp critical
+        std::map<std::string, std::shared_ptr<lad::Layer>>::iterator layer;
+        #pragma omp critical
+        layer = mapLayers.find(name);
         if (layer == mapLayers.end()){
             // ostringstream s;
             // s << "Layer [" << name << "] not found";
@@ -749,7 +752,6 @@ namespace lad
             // Pipeline::showLayers();
             return nullptr;
         }
-
         return (layer->second); //now we search it by ID
     }
 
