@@ -268,7 +268,7 @@ namespace lad
             ret = mapLayers.insert(make_pair(name, newLayer));
         }
 
-        if (ret.second==false) {
+        if (ret.second == false) {
             s << "Failed to insert layer into stack: " << blue << name << endl;
             // s << "Existed ins stack with id" << ret.first->second->layerID;
             logc.error ("createLayer", s);
@@ -456,8 +456,8 @@ namespace lad
         // create the template 
         cv::Mat A = cv::getStructuringElement(morphtype,cv::Size(ncols,nrows));
         // create a new KernelLayer
-        createLayer(name, LAYER_KERNEL);
-        // cout << red << "[createKernelTemplate} created: " << name << endl<< endl;
+        int _i = createLayer(name, LAYER_KERNEL);
+        cout << cyan << "[createKernelTemplate] created: " << name << endl<< endl;
         uploadData(name, (void *) &A);
         // apLayer->setRotation(apLayer->getRotation()); // DIRTY HACK TO FORCE RECOMPUTING THE INTERNAL rotatedData rasterLayer;
         if (verbosity > 0){
@@ -512,7 +512,7 @@ namespace lad
         int retval = NO_ERROR;        
         auto layer = getLayer(name);
         if (layer == nullptr){
-            s << "Error when getting layer: [" << name << "]";
+            s << "Error when getting layer: [" << name << "], line: " << __LINE__;
             logc.error("uploadData", s);
             return LAYER_NOT_FOUND;
         }
@@ -726,6 +726,8 @@ namespace lad
             if (it.second->getID() == id)
                 return it.second;
         }
+        // cout << "getLayer | ************************************** name not found: " << id << endl;
+        // cout << "*************************************************************************" << endl;        Pipeline::showLayers();
         return nullptr; // Curious thing, nothing was found!
     }
 
@@ -742,6 +744,9 @@ namespace lad
             // ostringstream s;
             // s << "Layer [" << name << "] not found";
             // logc.error ("getLayer", s);
+            // cout << "getLayer | ************************************** name not found: " << name << endl;
+            // cout << "*************************************************************************" << endl;
+            // Pipeline::showLayers();
             return nullptr;
         }
 
