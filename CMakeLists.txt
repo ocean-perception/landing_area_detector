@@ -56,20 +56,20 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 
 # Cross your fingers
-find_package(CUDA)
+# find_package(CUDA)
 
-if(CUDA_FOUND)
-    INCLUDE(FindCUDA)
-  # If the package has been found, several variables will
-  # be set, you can find the full list with descriptions
-  # in the CUDAConfig.cmake file.
-  # Print some message showing some of them
-  message(STATUS "CUDA library status:")
-  message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
-  message(STATUS "    version: ${CUDA_VERSION}")
-  message(STATUS "    libraries: ${CUDA_LIBRARIES}")
-  message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
-endif(CUDA_FOUND)
+# if(CUDA_FOUND)
+#     INCLUDE(FindCUDA)
+#   # If the package has been found, several variables will
+#   # be set, you can find the full list with descriptions
+#   # in the CUDAConfig.cmake file.
+#   # Print some message showing some of them
+#   message(STATUS "CUDA library status:")
+#   message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
+#   message(STATUS "    version: ${CUDA_VERSION}")
+#   message(STATUS "    libraries: ${CUDA_LIBRARIES}")
+#   message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
+# endif(CUDA_FOUND)
 
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
 find_package( CGAL QUIET COMPONENTS  )
@@ -169,12 +169,13 @@ add_executable(img.resample   src/img.resample.cpp
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(mad_test PUBLIC -std=c++14 -mavx)
-target_compile_options(tiff2png PUBLIC -std=c++14 -mavx)
+target_compile_options(mad_test     PUBLIC -std=c++14 -mavx)
+target_compile_options(tiff2png     PUBLIC -std=c++14 -mavx)
 target_compile_options(img.resample PUBLIC -std=c++14 -mavx)
-target_link_libraries(tiff2png ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-target_link_libraries(img.resample ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 
 find_package(TBB)
@@ -182,18 +183,18 @@ find_package(TBB)
 include(CGAL_target_use_TBB)
 
  # Declare the executable target built from your sources
- if(USE_CUDA AND CUDA_FOUND)
-  # Add definition to CUDA SUPPORT
-  add_definitions(-D USE_GPU)
-  message(STATUS "Configuring for GPU version.")
-  # Link your application with OpenCV libraries
-  target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
-else()
-  message(STATUS "Configuring for non-GPU version.")
-  message(STATUS "	Expect a slower speed...")
-  # Link your application with OpenCV libraries
-  target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-endif()
+#  if(USE_CUDA AND CUDA_FOUND)
+#   # Add definition to CUDA SUPPORT
+#   add_definitions(-D USE_GPU)
+#   message(STATUS "Configuring for GPU version.")
+#   # Link your application with OpenCV libraries
+#   target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
+# else()
+#   message(STATUS "Configuring for non-GPU version.")
+#   message(STATUS "	Expect a slower speed...")
+#   # Link your application with OpenCV libraries
+#   target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+# endif()
 
 
 # if(TBB_FOUND)
@@ -206,10 +207,9 @@ endif()
 #     STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
 # endif()
 
-
-install (TARGETS mad_test DESTINATION $ENV{HOME}/bin)
-install (TARGETS tiff2png DESTINATION $ENV{HOME}/bin)
-install (TARGETS tiff2rugosity DESTINATION $ENV{HOME}/bin)
-install (TARGETS img.resample DESTINATION $ENV{HOME}/bin)
-configure_file(scripts/tiff.convert2png.sh $ENV{HOME}/bin/scripts)
-configure_file(scripts/collect_maps.sh $ENV{HOME}/bin/scripts)
+install (TARGETS mad_test       DESTINATION $ENV{HOME}/bin)
+install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
+install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)
+install (TARGETS img.resample   DESTINATION $ENV{HOME}/bin)
+configure_file(scripts/tiff.convert2png.sh  $ENV{HOME}/bin/scripts)
+configure_file(scripts/collect_maps.sh      $ENV{HOME}/bin/scripts)
