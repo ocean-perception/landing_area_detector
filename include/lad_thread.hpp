@@ -70,7 +70,7 @@ namespace lad{
     int processLaneX(lad::Pipeline *ap, parameterStruct *param, std::string suffix = "");
 
     /**
-     * @brief Dispatcher for rotation-specific group of workers while wultithreading using dispatcher-worker model
+     * @brief Dispatcher for rotation-specific group of workers while multithreading using dispatcher-worker model
      * 
      * @param ap Pointer to Pipeline object containing a valid stack for processing
      * @param p Pointer to structure containing all the parameters (interested in slope for this lane)
@@ -79,6 +79,13 @@ namespace lad{
      */
     int processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::string suffix);
 
+    /**
+     * @brief Dispatcher for rotation-specific group of workers while multithreading using dispatcher-worker model
+     * 
+     * @param ap Pointer to Pipeline object containing a valid stack for processing
+     * @param p Pointer to structure containing all the parameters (interested in slope for this lane)
+     * @return int Error code, if any
+     */
     int processRotationWorker (lad::Pipeline *ap, parameterStruct *p); //fixed rotation worker
 
 }

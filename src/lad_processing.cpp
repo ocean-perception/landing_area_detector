@@ -23,6 +23,17 @@
 namespace lad
 {
 
+    /**
+     * @brief OpenCV based plane-fitting option. Fits scaled (x,y) points contained in a 2D raster image trated as 2.5D elevation map into a plane.
+     * Returns the plane in its point-normal form
+     * 
+     * @param pts Matrix containing the poin cloud to be treated as 2.5D elevation map
+     * @param p0 computed center of the plane
+     * @param nml computed plane normal
+     * @param sx scaling factor for x-axis
+     * @param sy scaling factor for y-axis
+     * @return float status flag
+     */
     float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy) {
         const int SCALAR_TYPE = CV_64F;
         typedef float ScalarType;
@@ -119,6 +130,20 @@ namespace lad
         return master;
     }
 
+    /**
+     * @brief Converts the 2.5D pcl stored in an OpenCV Mat into a stl::vector container CGAL-compatible. Empty (zero) height points are removed (as invalid)
+     * 
+     * @param matrix    Raster containing the 2.5D elevation model
+     * @param mask1     binary mask, typ from vehicle footprint
+     * @param mask2     binary mask, typ from sensor footprint
+     * @param sx        pixel scale x-axis
+     * @param sy        pixel scale x-axis
+     * @param master    output stl::vector with 3D CGAL compatible point cloud (1D vector)
+     * @param acum      sum of z-value for al valid points
+     * @param sensor    output stl::vector with points that fall within the geotech sensor footprint
+     * @param diameter  input sensor diameter (circular footprint)
+     * @return int 
+     */
     int convertMatrix2Vector_Masked (const cv::Mat &matrix, const cv::Mat &mask1, const cv::Mat &mask2, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter){
 
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
@@ -180,6 +205,18 @@ namespace lad
         return r;
     }
 
+    /**
+     * @brief Converts the 2.5D pcl stored in an OpenCV Mat into a stl::vector container CGAL-compatible. Empty (zero) height points are removed (as invalid)
+     * 
+     * @param matrix    Raster containing the 2.5D elevation model. Invalid points where masked with ZERO
+     * @param sx        pixel scale x-axis
+     * @param sy        pixel scale x-axis
+     * @param master    output stl::vector with 3D CGAL compatible point cloud (1D vector)
+     * @param acum      sum of z-value for al valid points
+     * @param sensor    output stl::vector with points that fall within the geotech sensor footprint
+     * @param diameter  input sensor diameter (circular footprint)
+     * @return int 
+     */
     int convertMatrix2Vector_Points (const cv::Mat &matrix, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter){
 
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
@@ -228,6 +265,14 @@ namespace lad
         return r;
     }
 
+    /**
+     * @brief Determines which point fall within the sensing footprint
+     * 
+     * @param inpoints  list of 3D points to be filtered
+     * @param outpoints list of filtered 3D points that are within the sensor footprint 
+     * @param diameter  diameter of the sensor footprint (circular model)
+     * @return int      number of points inside of the sensor footprint. This should mathc outpoints vector length
+     */
     int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter){
         // iterate through all the points contained in vector
         double diam_th = 0.25f * diameter * diameter;   // precompute it once, we do not need to square it every iteration
@@ -301,7 +346,6 @@ namespace lad
         *acum = _a;
         return 0;
     }
-
 
     /**
      * @brief Returns the angle (slope) of a plane by measuring the minimium angle between its normal and a reference vector 

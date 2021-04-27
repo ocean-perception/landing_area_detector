@@ -117,7 +117,11 @@ namespace lad
         //*/
     };
 
-// TODO: Create copyContructor for Layer derived classes
+    // TODO: Create copyContructor for Layer derived classes
+    /**
+     * @brief Base layer class, no intended to be used alone, except for cast-free id/param retrieval
+     * 
+     */
     class RasterLayer : public Layer
     {
     private:
@@ -154,6 +158,10 @@ namespace lad
         void getStats(double *);
     };
 
+    /**
+     * @brief Derived class for vector type layers
+     * 
+     */
     class VectorLayer : public Layer
     {
     public:

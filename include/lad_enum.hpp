@@ -127,6 +127,10 @@ namespace lad{
         LAYER_INVALID_NAME      =-6, //!< Provided new name for Layer is invalid. It must be a non-NULL std::string
     };
 
+    /**
+     * @brief Stats type codes, used when generating layer specific stats
+     * 
+     */
     enum LayerStats{
         LAYER_MIN = 0,  //!< Minimum value of valid raster data
         LAYER_MAX = 1,  //!< Maximum value of valid raster data
@@ -134,6 +138,10 @@ namespace lad{
         LAYER_STDEV = 3,//!< Stadard deviation valid raster data
     };
 
+    /**
+     * @brief List of available filter options when using applyWindowFilter()
+     * 
+     */
     enum FilterType{
         FILTER_MEAN     = 0, //!< Computes the mean value of the masked points in the sliding window
         FILTER_SLOPE    = 1, //!< Computes the slope of the plane that fits the points in the sliding window

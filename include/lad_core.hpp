@@ -33,7 +33,12 @@ extern logger::ConsoleOutput logc;
  * 
  */
 namespace lad
-{ 
+{
+    /**
+     * @brief Main pipeline class that contains the layer stack as std::map, the geoTIFF object for a single input
+     * Includes low and high level methods to import, transform, export, create and delete layers.
+     * 
+     */
     class Pipeline
     {
     private:

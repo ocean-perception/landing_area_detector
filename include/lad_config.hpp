@@ -21,13 +21,21 @@
 namespace lad
 { // landing area detection algorithm namespace
 
+    /**
+     * @brief Structure that provides minimum description of any geotech sensor w/approx circular footprint
+     * See 18 month report for more technical details
+     * 
+     */
     typedef struct geotechsensorStruct_{
         double diameter;        // diameter of sensor footprint on the XY plane (parallel to seafloor)
         double z_optimal;       // optimal range along the sensing axis Z, normal to the seafloor (Z_OPT in the thesis)
         double z_suboptimal;    // suboptimal range along the sensing axis Z, normal to the seafloor (Z_SUB in the thesis)
     }geotechStruct;
 
-    // structure that holds most of the relevant pipeline parameters
+    /**
+     * @brief Container for most relevant pipeline parameters, including vehicle, environment and simulation parameters
+     * TODO: Create a separate structure, nested inside of this one for clearer access
+     */
     typedef struct parameterStruct_{
         double robotHeight;     // robot height [m]
         double robotWidth;      // robot width [m] 
@@ -58,12 +66,30 @@ namespace lad
         geotechStruct geotechSensor;    // structure that contains the geometrical parameters that describe the geotechnical sensor
     }parameterStruct;
 
+    // FIXME: what kind of sorcery is this?
     typedef double a;
 
+    /**
+     * @brief Dump pretty-formatted pipeline parameters
+     * 
+     * @param p pointer to structure to e printed
+     */
     void printParams(lad::parameterStruct *p);
 
-    YAML::Node readConfiguration(std::string file, lad::parameterStruct *);
+    /**
+     * @brief YAML configuration file parser which populates the given pipeline parameter structure
+     * 
+     * @param file path to the file containing the YAML configuration file
+     * @param p    pointer to pipeline parameter structure. Existing values will be overwritten
+     * @return YAML::Node handle to YAML object
+     */
+    YAML::Node readConfiguration(std::string file, lad::parameterStruct *p);
 
+    /**
+     * @brief Get the Default Params object
+     * 
+     * @return lad::parameterStruct 
+     */
     lad::parameterStruct getDefaultParams();
 
 }

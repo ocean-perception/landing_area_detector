@@ -78,8 +78,14 @@ args::ValueFlag	<double>        argValidThresholdT2P(argParserT2P,"ratio", "Mini
 args::Flag	         	        argGrayscaleT2P(argParserT2P,   "",  "Export single channel 8-bit PNG instead of RGB", {"grayscale"});
 args::Flag	         	        argCsvT2P(argParserT2P,   "",  "Use comma ',' as column separator rather than TAB", {"csv"});
 
+/**
+ * @brief Default initializer for argument parsing object
+ * 
+ * @param argc cli argc (count)
+ * @param argv cli argv (value)
+ * @return int error code if any
+ */
 int initParser(int argc, char *argv[]){
-        //*********************************************************************************
     /* PARSER section */
     std::string descriptionString =
         "lad_test - testing module part of [landing-area-detection] pipeline \
@@ -121,8 +127,15 @@ int initParser(int argc, char *argv[]){
     return 0;
 }
 
+/**
+ * @brief Inititalize argument parser for tiff2png module
+ * 
+ * @param argc cli argc (count)
+ * @param argv cli argv (values)
+ * @param newDescription User-defined module description
+ * @return int error code if any
+ */
 int initParserT2P(int argc, char *argv[], string newDescription = ""){
-        //*********************************************************************************
     /* PARSER section */
     std::string descriptionString =
         "tiff2png - image preprocessing tool for LGA + BNN based seafloor measurability predictor \
