@@ -457,7 +457,7 @@ namespace lad
         cv::Mat A = cv::getStructuringElement(morphtype,cv::Size(ncols,nrows));
         // create a new KernelLayer
         int _i = createLayer(name, LAYER_KERNEL);
-        cout << cyan << "[createKernelTemplate] created: " << name << endl<< endl;
+        // cout << cyan << "[createKernelTemplate] created: " << name << endl<< endl;
         uploadData(name, (void *) &A);
         // apLayer->setRotation(apLayer->getRotation()); // DIRTY HACK TO FORCE RECOMPUTING THE INTERNAL rotatedData rasterLayer;
         if (verbosity > 0){
