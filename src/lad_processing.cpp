@@ -161,38 +161,7 @@ namespace lad
             // TODO: rollback to for x,y or use contiguous pointer format (row,col) to SIMD px,py calculation
             // Also, it will remove the i->row,col modulo and division operation
             std::vector<KPoint> slave; //preallocating space does not improve it
-            // raster data in cvMat matrix is not necessarily cotiguos (1D), so parallel access may create L2-L3 cache collisions
-            #pragma omp parallel for
-            for (int row = 0; row < rows; row++){
-                const uchar* row_ptr_mask2 = mask2.ptr<const uchar>(row); // retrieve index to row
-
-                for (int col = 0; col < cols; col++){
-                    //let's check with both masks
-                    if (row_ptr_mask2[col])
-                    // if (mask2.at<unsigned char>(row, col))
-                        if(mask1.at<unsigned char>(row, col)){
-                        double pz = matrix.at<double>(row,col);
-                        // pz = matrix->at<double>(cv::Point(col,row));
-                        if (pz){    //only non-NULL points are included (those are assumed to be invalid data points)
-                            double px, py;
-                            px = (col - cols_2) * sx;   // Centering the points
-                            py = (row - rows_2) * sy;   // This is necessary to speed-up the geotech sensor diameter-based masking
-                            KPoint newPoint(px,py,pz);
-                            slave.push_back(newPoint); // we could ignore the scale and correct it AFTER plane-fitting
-                            *acum = *acum + pz;
-                            // snippet from pointsInSensor
-                            double _d = px*px + py*py; 
-                            if (_d < diam_th)  // no need to extract sqrt, just squared both sides
-                                {
-                                    r++;    //we keep track of total of inserted points, as sanity check return value
-                                    [[unlikely]] sensor.push_back(newPoint);
-                                }
-                        }
-                    }// end of if
-                }
-            }
-
-/*            #pragma omp for nowait
+            #pragma omp for nowait
             for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
             {
                 double px, py, pz;
@@ -218,12 +187,12 @@ namespace lad
                         double _d = px*px + py*py; 
                         if (_d < diam_th)  // no need to extract sqrt, just squared both sides
                             {
-                                r++;    //we keep track of total of inserted points, as sanity check return value
+                                r++;    //we keep track of total of inserted points, as safe check return value
                                 [[unlikely]] sensor.push_back(newPoint);
                             }
                     }
-                }// end of if
-            }// end of for //*/
+                }// end of for
+            }// end of for
             // ####################################################
             // reduction section when slave/master omp mode is used
             #pragma omp critical
