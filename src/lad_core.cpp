@@ -1525,7 +1525,7 @@ namespace lad
 
         auto start_ = std::chrono::high_resolution_clock::now();
 
-        #pragma omp parallel for schedule(dynamic,20)
+        #pragma omp parallel for
         for (int row=0; row<nRows; row++){
 
             CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
@@ -1570,11 +1570,11 @@ namespace lad
                     std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
                     pointListReduced.reserve(2000);
 
-                    // cv::bitwise_and(subMask, roi_patch, mask);
-                    // subImage.copyTo(temp, mask);
-                    // r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+                    cv::bitwise_and(subMask, roi_patch, mask);
+                    subImage.copyTo(temp, mask);
+                    r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
 
-                    r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
+                    // r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
  
 
                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
@@ -1597,12 +1597,12 @@ namespace lad
                             if (r){ // if no point was captured, we report "ZERO" as total measurability
                                 std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
 
-                                for (auto &it:distances){
+                                for (auto it:distances){
                                     // count = fabs(it);
                                     // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                     double zit = fabs(it);  // WARNING: single-sided comparion?
-                                    if      (zit < parameters.geotechSensor.z_optimal) score += 1.0f;
-                                    else    score += 1.0f/(1.0f + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                    if      (zit < parameters.geotechSensor.z_optimal) score += 1.0;
+                                    else    score += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
                                 }
                             }
                             #pragma omp critical

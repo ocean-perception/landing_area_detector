@@ -159,7 +159,6 @@ namespace lad
             // TODO: rollback to for x,y or use contiguous pointer format (row,col) to SIMD px,py calculation
             // Also, it will remove the i->row,col modulo and division operation
             std::vector<KPoint> slave; //preallocating space does not improve it
-            // raster data in cvMat matrix is not necessarily cotiguos (1D), so parallel access may create L2-L3 cache collisions
             #pragma omp for nowait
             for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
             {
@@ -186,11 +185,11 @@ namespace lad
                         double _d = px*px + py*py; 
                         if (_d < diam_th)  // no need to extract sqrt, just squared both sides
                             {
-                                r++;    //we keep track of total of inserted points, as sanity check return value
+                                r++;    //we keep track of total of inserted points, as safe check return value
                                 [[unlikely]] sensor.push_back(newPoint);
                             }
                     }
-                }// end of if
+                }// end of for
             }// end of for
             // ####################################################
             // reduction section when slave/master omp mode is used

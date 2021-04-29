@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
         localParam.rotation = params.rotationMin + nK * params.rotationStep;
 
         if (params.verbosity > VERBOSITY_0){
-            xs << "Dispatched:\t[" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
+            xs << "Dispatched: [" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]";
             logc.info("main", xs);
         }
         lad::processRotationWorker (&pipeline, &localParam);
@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
         finished++;
 
         if (params.verbosity > VERBOSITY_0){
-            xs << "Executed:\t[" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << 100*(float)(finished / (float)nIter);
+            xs << "Executed: [" << yellow << nK << reset << "]\t---------------------------------> rot: [" << green << localParam.rotation << reset << "]    Done: " << (float)(finished / (float)nIter);
             logc.info("main", xs);
         }
     }
