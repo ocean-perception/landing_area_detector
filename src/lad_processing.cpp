@@ -147,8 +147,10 @@ namespace lad
     int convertMatrix2Vector_Masked (const cv::Mat &matrix, const cv::Mat &mask1, const cv::Mat &mask2, double sx, double sy, std::vector<KPoint> &master, double *acum, std::vector<KPoint> &sensor, double diameter){
 
         //we need to create the i,j indexing variables to compute the Point3D (X,Y) coordinates, so we go for at<T_> access mode of cvMat container        
-        int cols = matrix.cols; // the input image, and the two masks should share the same dimensions
-        int rows = matrix.rows;
+        int     cols = matrix.cols; // the input image, and the two masks should share the same dimensions
+        double  cols_2 = cols/2.0f;
+        int     rows = matrix.rows;
+        double  rows_2 = rows/2.0f;      // constantly used as rows/2 inside of the parallel loop.. No need to recalculate them
         // std::vector<KPoint> master; // preallocating space does not improve it, maybe we are not triggering resize
 
         size_t total_elem = cols*rows; // expected input vector size
@@ -160,7 +162,37 @@ namespace lad
             // Also, it will remove the i->row,col modulo and division operation
             std::vector<KPoint> slave; //preallocating space does not improve it
             // raster data in cvMat matrix is not necessarily cotiguos (1D), so parallel access may create L2-L3 cache collisions
-            #pragma omp for nowait
+            #pragma omp parallel for
+            for (int row = 0; row < rows; row++){
+                const uchar* row_ptr_mask2 = mask2.ptr<const uchar>(row); // retrieve index to row
+
+                for (int col = 0; col < cols; col++){
+                    //let's check with both masks
+                    if (row_ptr_mask2[col])
+                    // if (mask2.at<unsigned char>(row, col))
+                        if(mask1.at<unsigned char>(row, col)){
+                        double pz = matrix.at<double>(row,col);
+                        // pz = matrix->at<double>(cv::Point(col,row));
+                        if (pz){    //only non-NULL points are included (those are assumed to be invalid data points)
+                            double px, py;
+                            px = (col - cols_2) * sx;   // Centering the points
+                            py = (row - rows_2) * sy;   // This is necessary to speed-up the geotech sensor diameter-based masking
+                            KPoint newPoint(px,py,pz);
+                            slave.push_back(newPoint); // we could ignore the scale and correct it AFTER plane-fitting
+                            *acum = *acum + pz;
+                            // snippet from pointsInSensor
+                            double _d = px*px + py*py; 
+                            if (_d < diam_th)  // no need to extract sqrt, just squared both sides
+                                {
+                                    r++;    //we keep track of total of inserted points, as sanity check return value
+                                    [[unlikely]] sensor.push_back(newPoint);
+                                }
+                        }
+                    }// end of if
+                }
+            }
+
+/*            #pragma omp for nowait
             for (int i=0; i < total_elem; i++)  // single index iteration allows using omp parallel
             {
                 double px, py, pz;
@@ -191,7 +223,7 @@ namespace lad
                             }
                     }
                 }// end of if
-            }// end of for
+            }// end of for //*/
             // ####################################################
             // reduction section when slave/master omp mode is used
             #pragma omp critical
@@ -202,7 +234,7 @@ namespace lad
             }
         }
 
-        CGAL_PROFILER("calls to convertMatrix2Vector_Points");
+        // CGAL_PROFILER("calls to convertMatrix2Vector_Points");
         return r;
     }
 

@@ -1478,6 +1478,9 @@ namespace lad
         int nCols = apSrc->rasterData.cols;
         int hKernel = apKernel->rotatedData.rows;   // height of the kernel 
         int wKernel = apKernel->rotatedData.cols;   // width of the kernel
+        int hKernel_2 = hKernel >> 1;
+        int wKernel_2 = wKernel >> 1;
+
         //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
         if (verbosity > VERBOSITY_0){
             logc.debug ("p::applyWindowFilter", "Layers created, now defining container elements");
@@ -1530,26 +1533,29 @@ namespace lad
 
             CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
 
+            uchar* row_ptr = roi_image.ptr<uchar>(row); // retrieve index to row
+
             #pragma omp parallel for
             for (int col=0; col<nCols; col++){
-                if (roi_image.at<unsigned char>(row, col)){ // we compute the output only for valid points (we ehck the binary mask as validity mask)
+                if (row_ptr[col]){
+                // if (roi_image.at<unsigned char>(row, col)){ // we compute the output only for valid points (we ehck the binary mask as validity mask)
                 // if (roi_image.at<unsigned char>(cv::Point(col, row))){ // we compute the slope only for those valid points
-                    int cl = col - wKernel/2;
+                    int cl = col - wKernel_2;
                     if (cl < 0) cl = 0;
-                    int cr = col + wKernel/2;
+                    int cr = col + wKernel_2;
                     if (cr > nCols) cr = nCols - 1;
-                    int rt = row - hKernel/2;
+                    int rt = row - hKernel_2;
                     if (rt < 0) rt = 0;
-                    int rb = row + hKernel/2;
+                    int rb = row + hKernel_2;
                     if (rb > nRows) rb = nRows - 1;
 
                     CGAL_PROFILER("Effective iter of applyWindowFilter inner for-loop");
 
                     // ROI cropped selected window from the rotated kernel of the filter
-                    int xi = wKernel/2 - (col - cl);
-                    int yi = hKernel/2 - (row - rt);
-                    int xf = cr - col + wKernel/2;
-                    int yf = rb - row + hKernel/2;
+                    int xi = wKernel_2 - (col - cl);
+                    int yi = hKernel_2 - (row - rt);
+                    int xf = cr - col + wKernel_2;
+                    int yf = rb - row + hKernel_2;
 
                     double acum = 0;
                     int r;
@@ -1596,13 +1602,20 @@ namespace lad
                             double score = 0;
                             if (r){ // if no point was captured, we report "ZERO" as total measurability
                                 std::vector<double> distances = computePlaneDistance(plane, pointListReduced);
-
+                                #pragma omp parallel for reduction (+:score)
                                 for (auto &it:distances){
                                     // count = fabs(it);
                                     // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                     double zit = fabs(it);  // WARNING: single-sided comparion?
-                                    if      (zit < parameters.geotechSensor.z_optimal) score += 1.0f;
-                                    else    score += 1.0f/(1.0f + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                    if      (zit < parameters.geotechSensor.z_optimal){
+                                        score += 1.0f;
+                                    }
+                                    // else    score += 1.0f/(1.0f + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
+                                    // rewrite the equation to reduce number of DP divisions
+                                    else{
+                                        score += parameters.geotechSensor.z_suboptimal / (parameters.geotechSensor.z_suboptimal + zit - parameters.geotechSensor.z_optimal);
+                                    }
+                                    // else    score += 1.0f/(1.0f + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
                                 }
                             }
                             #pragma omp critical
