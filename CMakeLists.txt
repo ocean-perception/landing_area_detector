@@ -19,6 +19,7 @@ endif ()
 project(lad_project)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3 -shared-libgcc")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3 -pg  -shared-libgcc -g ")
 
 find_package(OpenMP)
