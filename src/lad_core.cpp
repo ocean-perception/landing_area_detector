@@ -1531,7 +1531,7 @@ namespace lad
         #pragma omp parallel for
         for (int row=0; row<nRows; row++){
 
-            CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
+            // CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
 
             uchar* row_ptr = roi_image.ptr<uchar>(row); // retrieve index to row
 
@@ -1549,7 +1549,7 @@ namespace lad
                     int rb = row + hKernel_2;
                     if (rb > nRows) rb = nRows - 1;
 
-                    CGAL_PROFILER("Effective iter of applyWindowFilter inner for-loop");
+                    // CGAL_PROFILER("Effective iter of applyWindowFilter inner for-loop");
 
                     // ROI cropped selected window from the rotated kernel of the filter
                     int xi = wKernel_2 - (col - cl);

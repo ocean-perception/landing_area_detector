@@ -125,7 +125,7 @@ namespace lad
         }
         // *acum = 1;
 
-        CGAL_PROFILER("calls to convertMatrix2Vector");
+        // CGAL_PROFILER("calls to convertMatrix2Vector");
 
         return master;
     }
@@ -263,7 +263,7 @@ namespace lad
                 }
             }
         }
-        CGAL_PROFILER("calls to convertMatrix2Vector_Points");
+        // CGAL_PROFILER("calls to convertMatrix2Vector_Points");
         return r;
     }
 
@@ -344,7 +344,7 @@ namespace lad
             //                         std::make_move_iterator(slave.end()));
             // }
         }
-        CGAL_PROFILER("calls to convertMatrix2Vector");
+        // CGAL_PROFILER("calls to convertMatrix2Vector");
         *acum = _a;
         return 0;
     }
@@ -441,7 +441,7 @@ namespace lad
             // }
 
         }
-        CGAL_PROFILER("computePlaneDistance (all calls)");
+        // CGAL_PROFILER("computePlaneDistance (all calls)");
         return distances;
     }
 

@@ -124,6 +124,6 @@ statiff --hmin 0 --hmax 90 --nbins 100 --input BaseMaps/A1_DetailedSlope.tif --o
 # M3_LandabilityMap_BLEND: 0 , 1
 statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M3_LandabilityMap_BLEND.tif --output $UUID'M3_LandabilityMap_BLEND.csv'
 # M4_FinalMeasurability: 0 , 1
-statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M4_FinalMeasurability.tif --output $UUID'M4_FinalMeasurability.csv'
+statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/M4_FinalMeasurability_BLEND.tif --output $UUID'M4_FinalMeasurability_BLEND.csv'
 # X1_MeasurabilityMap: 0 , 1
 statiff --hmin 0 --hmax 1 --nbins 100 --input BaseMaps/X1_MeasurabilityMap.tif --output $UUID'X1_MeasurabilityMap.csv'
