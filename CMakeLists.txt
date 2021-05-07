@@ -19,7 +19,7 @@ endif ()
 project(lad_project)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3 -pg  -shared-libgcc -g ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -178,9 +178,9 @@ target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
 
-find_package(TBB)
+#find_package(TBB)
 # include(CGAL_TBB_support)
-include(CGAL_target_use_TBB)
+#include(CGAL_target_use_TBB)
 
  # Declare the executable target built from your sources
 #  if(USE_CUDA AND CUDA_FOUND)

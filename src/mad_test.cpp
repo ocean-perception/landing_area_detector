@@ -173,19 +173,26 @@ int main(int argc, char *argv[])
 
     threadLaneA.join();
     threadLaneB.join();
-    if (params.verbosity > 0){
-        if (argTerrainOnly){ 
+
+    if (argTerrainOnly){ 
+        if (params.verbosity > 0){
             // we will only generate terrain-specific maps for their external analysis. Lanes A&B. The other lanes C, D & X depend on geometrical parameters of the AUV
-            logc.debug("main", "Completed terrain specific maps: Lanes A & B. Finishing ...");
-            tt.lap("** Lanes A & B");
-            return NO_ERROR;
-        }
-        else{
-            logc.debug("main", "Lanes A & B completed -> M2_Protrusions map done. Joining queue for Lane C & X");
+            logc.debug("main", "Exporting terrain specifics only: Lanes A & B. Finishing ...");
             tt.lap("** Lanes A & B");
         }
+        pipeline.saveImage("A1_DetailedSlope", outputFileName + "A1_DetailedSlope.png", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.exportLayer("A1_DetailedSlope", outputFileName + "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
+
+        pipeline.saveImage("B1_HEIGHT_Bathymetry", outputFileName + "B1_HEIGHT_Bathymetry.png", COLORMAP_TWILIGHT_SHIFTED);
+        pipeline.exportLayer("B1_HEIGHT_Bathymetry", outputFileName + "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
+
+        return NO_ERROR;
     }
 
+    if (params.verbosity > 0){ 
+        logc.debug("main", "Lanes A & B completed -> M2_Protrusions map done. Joining queue for Lane C & X");
+        tt.lap("** Lanes A & B");
+    }
     std::thread threadLaneC (&lad::processLaneC, &pipeline, &params, "");
     std::thread threadLaneX (&lad::processLaneX, &pipeline, &params, "");
     threadLaneC.join();
