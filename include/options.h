@@ -78,6 +78,32 @@ args::ValueFlag	<double>        argValidThresholdT2P(argParserT2P,"ratio", "Mini
 args::Flag	         	        argGrayscaleT2P(argParserT2P,   "",  "Export single channel 8-bit PNG instead of RGB", {"grayscale"});
 args::Flag	         	        argCsvT2P(argParserT2P,   "",  "Use comma ',' as column separator rather than TAB", {"csv"});
 
+
+//*************************************** img.resample specific parser
+args::ArgumentParser argParserIRS("","");
+args::HelpFlag 	     argHelpIRS(argParserIRS, "help", "Display this help menu", {'h', "help"});
+args::CompletionFlag completionIRS(argParserIRS, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
+
+args::ValueFlag <std::string> 	argInputIRS(argParserIRS, "input", "Input geoTIFF image, typ bathymetry map",   {'i', "input"});
+args::ValueFlag	<std::string> 	argOutputIRS(argParserIRS,    "filename", "Output file",                         {'o', "output"});
+args::ValueFlag	<int> 	        argVerboseIRS(argParserIRS,   "verbose",  "Define verbosity level",              {'v', "verbose"});
+args::ValueFlag	<std::string> 	argExportTiffIRS(argParserIRS,"filename", "GeoTIFF copy of the exported image",  {'e', "export_tiff"});
+
+// Free parameters for debugging
+args::ValueFlag	<int> 	argIntParamIRS(argParserIRS,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
+args::ValueFlag	<float> argFloatParamIRS(argParserIRS,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
+// Sampling parameters
+args::ValueFlag	<double>        argRotationIRS(argParserIRS,"angle",  "Rotation angle of the ROI to be exported [degrees]",{"rotation"});
+args::ValueFlag	<int>           argXOffsetIRS(argParserIRS,"pixels", "ROI horizontal (X) offset from the input image center", {"offset_x"});
+args::ValueFlag	<int>           argYOffsetIRS(argParserIRS,"pixels", "ROI vertical (Y) offset from the input image center",   {"offset_y"});
+args::ValueFlag	<unsigned int>  argXSizeIRS(argParserIRS,"pixels", "ROI width (X) in pixels",                                 {"size_x"});
+args::ValueFlag	<unsigned int>  argYSizeIRS(argParserIRS,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
+args::ValueFlag	<double>        argZMaxIRS(argParserIRS,"meters", "Maximum input value (Z). It wil be mapped to 255",      {"max_z"});
+// Thresholds
+args::ValueFlag	<double>        argValidThresholdIRS(argParserIRS,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
+args::Flag	         	        argGrayscaleIRS(argParserIRS,   "",  "Export single channel 8-bit PNG instead of RGB", {"grayscale"});
+args::Flag	         	        argCsvIRS(argParserIRS,   "",  "Use comma ',' as column separator rather than TAB", {"csv"});
+
 /**
  * @brief Default initializer for argument parsing object
  * 
@@ -182,5 +208,60 @@ int initParserT2P(int argc, char *argv[], string newDescription = ""){
     // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
     return 0;
 }
+
+/**
+ * @brief Inititalize argument parser for img.resample module
+ * 
+ * @param argc cli argc (count)
+ * @param argv cli argv (values)
+ * @param newDescription User-defined module description
+ * @return int error code if any
+ */
+int initParserIRS(int argc, char *argv[], string newDescription = ""){
+    /* PARSER section */
+    std::string descriptionString =
+        "image.resample - Module for image downsamplig/upsampling using an intermediate image size. \
+        Expected input image can be TIFF or PNG. Available interpolation methods are: LINEAR | CUBIC | LANCZOS";
+
+    if (!newDescription.empty())
+        argParserIRS.Description(newDescription);
+    else
+        argParserIRS.Description(descriptionString);
+    
+    argParserIRS.Epilog("Author: J. Cappelletto (GitHub: @cappelletto)\n");
+    argParserIRS.Prog(argv[0]);
+    argParserIRS.helpParams.width = 120;
+
+    try
+    {
+        argParserIRS.ParseCLI(argc, argv);
+    }
+    catch (const args::Completion &e)
+    {
+        cout << e.what();
+        return 0;
+    }
+
+    catch (args::Help)
+    { // if argument asking for help, show this message
+        cout << argParserT2P;
+        return lad::ERROR_MISSING_ARGUMENT;
+    }
+    catch (args::ParseError e)
+    { //if some error ocurr while parsing, show summary
+        std::cerr << e.what() << std::endl;
+        std::cerr << "Use -h, --help command to see usage" << std::endl;
+        return lad::ERROR_WRONG_ARGUMENT;
+    }
+    catch (args::ValidationError e)
+    { // if some error at argument validation, show
+        std::cerr << "Bad input commands" << std::endl;
+        std::cerr << "Use -h, --help command to see usage" << std::endl;
+        return lad::ERROR_WRONG_ARGUMENT;
+    }
+    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
+    return 0;
+}
+
 
 #endif //_PROJECT_OPTIONS_H_
