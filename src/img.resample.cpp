@@ -37,7 +37,7 @@ logger::ConsoleOutput logc;
 int main(int argc, char *argv[])
 {
     string newDescription =
-        "image.resample - Module for image resampling using and intermediate image size. \
+        "image.resample - Module for image downsamplig/upsampling using an intermediate image size. \
         Expected input image can be TIFF or PNG. Cubic interpolation algorithm is employed";
     int retval = initParserT2P(argc, argv, newDescription);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
@@ -75,31 +75,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-/*
-    lad::Pipeline pipeline;    
-    // Step 1: Read input TIFF file
-    pipeline.useNodataMask = true;//params.useNoDataMask;
-    pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
-
-        // Step 2: Determine bathymetry range for the loaded image before rescaling
-    // We know the bathymetry map is stored as 32/64 bit float 
-    String layer = "M1_RAW_Bathymetry";
-    auto apLayer = dynamic_pointer_cast<RasterLayer> (pipeline.getLayer(layer));
-    if (apLayer == nullptr){
-        s << "Unexpected error when downcasting RASTER layer [" << yellow << layer << "]";
-        logc.error("main:getLayer", s);
-        cout << cyan << "at" << __FILE__ << ":" << __LINE__ << reset << endl;
-        return ERROR_WRONG_ARGUMENT;
-    }
-    if (apLayer->rasterData.empty()){
-        s << "rasterData in raster layer [" << yellow << layer << reset << "] is empty. Nothing to save";
-        logc.error("main:getLayer", s);
-        return NO_ERROR;                
-    }
-    cv::Mat original;
-    cv::Mat mask = apLayer->rasterMask.clone();
-    apLayer->rasterData.copyTo(original, mask); //copy only valid pixels, the rest should remain zero
-*/
     // let's open the input image
     cv::Mat input = imread(inputFileName, IMREAD_ANYCOLOR);
     // cv::Mat input = original.clone();

@@ -1516,7 +1516,8 @@ namespace lad
     #ifdef USE_CUDA
         cv::cuda::GpuMat kernelMaskBin_gpu;
         cv::cuda::GpuMat roi_image_gpu;
-
+        // before trying to port to GPU, please check that the image size iw worth it. The bottleneck in our
+        // case is the CPU-GPU memory bandwith, so no speed-up is possible for small sized images
         roi_image_gpu.upload(roi_image);
         kernelMaskBin_gpu.upload(kernelMaskBin);
     #endif
@@ -1569,7 +1570,6 @@ namespace lad
     // we can reduce the valid roi and convert into the pointListReduced exploiting better branching behaviour
     // in CPU host, combined with cache memory locality (requested memory fairly contiguous)
 
-
                     std::vector<KPoint> pointList;
                     pointList.reserve(0.5*nCols*nRows); // experimental: we have some good estimation of necessary space
 
@@ -1582,8 +1582,7 @@ namespace lad
 
                     // r = convertMatrix2Vector_Masked  (subImage, roi_patch, subMask, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
  
-
-                    // WARNING: as we need a minimum set of valid 3D points for the plane fitting
+                     // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
 
