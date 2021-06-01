@@ -85,24 +85,14 @@ args::HelpFlag 	     argHelpIRS(argParserIRS, "help", "Display this help menu", 
 args::CompletionFlag completionIRS(argParserIRS, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
 args::ValueFlag <std::string> 	argInputIRS(argParserIRS, "input", "Input geoTIFF image, typ bathymetry map",   {'i', "input"});
-args::ValueFlag	<std::string> 	argOutputIRS(argParserIRS,    "filename", "Output file",                         {'o', "output"});
-args::ValueFlag	<int> 	        argVerboseIRS(argParserIRS,   "verbose",  "Define verbosity level",              {'v', "verbose"});
-args::ValueFlag	<std::string> 	argExportTiffIRS(argParserIRS,"filename", "GeoTIFF copy of the exported image",  {'e', "export_tiff"});
+args::ValueFlag	<std::string> 	argOutputIRS(argParserIRS,    "filename", "Output file",                        {'o', "output"});
+args::ValueFlag	<int> 	        argVerboseIRS(argParserIRS,   "verbose",  "Define verbosity level",             {'v', "verbose"});
+args::ValueFlag	<std::string> 	argExportTiffIRS(argParserIRS,"filename", "GeoTIFF copy of the exported image", {'e', "export_tiff"});
 
-// Free parameters for debugging
-args::ValueFlag	<int> 	argIntParamIRS(argParserIRS,  "param",    "User defined parameter INTEGER for testing purposes",  {"int"});
-args::ValueFlag	<float> argFloatParamIRS(argParserIRS,"param",    "User defined parameter FLOAT for testing purposes",    {"float"});
-// Sampling parameters
-args::ValueFlag	<double>        argRotationIRS(argParserIRS,"angle",  "Rotation angle of the ROI to be exported [degrees]",{"rotation"});
-args::ValueFlag	<int>           argXOffsetIRS(argParserIRS,"pixels", "ROI horizontal (X) offset from the input image center", {"offset_x"});
-args::ValueFlag	<int>           argYOffsetIRS(argParserIRS,"pixels", "ROI vertical (Y) offset from the input image center",   {"offset_y"});
-args::ValueFlag	<unsigned int>  argXSizeIRS(argParserIRS,"pixels", "ROI width (X) in pixels",                                 {"size_x"});
-args::ValueFlag	<unsigned int>  argYSizeIRS(argParserIRS,"pixels", "ROI height (Y) in pixels",                                {"size_y"});
-args::ValueFlag	<double>        argZMaxIRS(argParserIRS,"meters", "Maximum input value (Z). It wil be mapped to 255",      {"max_z"});
-// Thresholds
-args::ValueFlag	<double>        argValidThresholdIRS(argParserIRS,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
-args::Flag	         	        argGrayscaleIRS(argParserIRS,   "",  "Export single channel 8-bit PNG instead of RGB", {"grayscale"});
-args::Flag	         	        argCsvIRS(argParserIRS,   "",  "Use comma ',' as column separator rather than TAB", {"csv"});
+args::ValueFlag	<std::string> 	argMethodIRS(argParserIRS,"interpolation_method", "Select image interpolation method from: LINEAR | CUBIC | LANCZOS", {'m', "method"});
+
+args::ValueFlag	<unsigned int>  argXSizeIRS(argParserIRS,"pixels", "ROI width (X) in pixels",                   {"size_x"});
+args::ValueFlag	<unsigned int>  argYSizeIRS(argParserIRS,"pixels", "ROI height (Y) in pixels",                  {"size_y"});
 
 /**
  * @brief Default initializer for argument parsing object
