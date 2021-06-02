@@ -81,6 +81,8 @@ typedef K::Line_3                       KLine;
 typedef K::Plane_3                      KPlane;
 typedef K::Point_3                      KPoint;
 typedef K::Triangle_3                   KTriangle;
+typedef CGAL::Polyhedron_3<K>           Polyhedron_3;
+
 
 #define DEFAULT_Z_OPT  0.01  // DEFAULT value for optimal range of distance [m] along sensing axis Z (normal to the seafloor)
 #define DEFAULT_Z_SUB  0.02  // DEFAULT value for suboptimal range of distance [m] along sensing axis Z (normal to the seafloor)

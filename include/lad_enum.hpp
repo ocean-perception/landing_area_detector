@@ -147,6 +147,7 @@ namespace lad{
         FILTER_SLOPE    = 1, //!< Computes the slope of the plane that fits the points in the sliding window
         FILTER_DISTANCE = 2, //!< Computes the normal distance between a point cloud and its fitting plane
         FILTER_GEOTECH  = 3, //!< Computes the normal distance between a pointclod and the true-landing plane within a circular window
+        FILTER_CONVEXH  = 4, //!< Computes the slope from the triangle intersecting the terrain convex-hull and the vertical projection of the vehicle CoG
     };
 };
 

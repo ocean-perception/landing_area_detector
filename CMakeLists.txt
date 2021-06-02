@@ -167,6 +167,10 @@ add_executable(img.resample   src/img.resample.cpp
                           # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
+############################ IMG_RESAMPLE ####################
+add_executable(cgal.test   src/cgal-test.cpp
+                          ${PROJECT_HEADERS})
+                          #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 #message (${yaml-cpp_INCLUDE_DIRS})
 
 target_compile_options(mad_test     PUBLIC -std=c++14 -mavx)
@@ -207,6 +211,7 @@ target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 #     STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
 # endif()
 
+install (TARGETS cgal.test      DESTINATION $ENV{HOME}/bin)
 install (TARGETS mad_test       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)

@@ -15,6 +15,11 @@
 
 
 #include <CGAL/Kernel/global_functions.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/convex_hull_3.h>
+
 // #include <opencv2/core/eigen.hpp>
 /**
  * @brief Extend <lad> namespace with layer processing algorithms. Intended to be called by Pipeline objects 
@@ -443,6 +448,33 @@ namespace lad
         }
         // CGAL_PROFILER("computePlaneDistance (all calls)");
         return distances;
+    }
+
+    /**
+     * @brief 
+     * 
+     * @param points Vector of 3D points to be fitted in a plane
+     * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
+     */
+    KPlane computeConvexHullPlane (std::vector<KPoint> points){
+        KPlane plane(0,0,1,0);
+        if (points.empty()) // early exit
+            return plane;
+        // fit plane to whole triangles
+        //TODO: extract de QCH of the point cloud
+        cout << "STILL TO BE IMPLEMENTED" << endl;
+        //Step 2: extract the triangles that intersect the vertical projection of the vehicles center of gravity (assumed to be at 0,0 in the XY plane)
+
+        // define polyhedron to hold convex hull
+        Polyhedron_3 poly;
+        // compute convex hull of non-collinear points
+        CGAL::convex_hull_3(points.begin(), points.end(), poly);
+        // Step 3: select the uppermost triangle, as it should be he closest to interact with the vehicle landing footprint
+
+        // -> iterate against facets list
+
+        // return the closest triangle, converted into plane format
+        return plane;
     }
 
     /**
