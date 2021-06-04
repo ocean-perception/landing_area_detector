@@ -21,6 +21,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
 
+# WARNING: CGAL / QT5 setup required this preproc
+# set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTORCC ON)
+# set(CMAKE_AUTOUIC ON)
+
 find_package(OpenMP)
 if(OPENMP_FOUND)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -72,11 +77,19 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 # endif(CUDA_FOUND)
 
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
-find_package( CGAL QUIET COMPONENTS  )
+#CGAL_Qt5 is needed for the drawing.
+find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
+
+if(CGAL_Qt5_FOUND)
+  #required to use basic_viewer
+  add_definitions(-DCGAL_USE_BASIC_VIEWER -DQT_NO_KEYWORDS)
+endif()
+
 if ( NOT CGAL_FOUND )
   message(STATUS "This project requires the CGAL library, and will not be compiled.")
   return()  
 endif()
+
 
 set(TBB_VERSION "2021.2") # to deal with broken TBBFind.cmake from CGAL
 find_package( TBB)
@@ -122,6 +135,7 @@ exec_program(
     OUTPUT_VARIABLE GIT_INFO )
 add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
 add_definitions( -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" ) # Forward current git info as a single string
+add_definitions(-DCGAL_USE_BASIC_VIEWER)
 
 ############################ MAD_TEST ####################
 add_executable(mad_test   src/mad_test.cpp
@@ -180,6 +194,11 @@ target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+
+if(CGAL_Qt5_FOUND)
+  #link it with the required CGAL libraries
+  target_link_libraries(cgal.test PUBLIC CGAL::CGAL_Qt5)
+endif()
 
 
 #find_package(TBB)

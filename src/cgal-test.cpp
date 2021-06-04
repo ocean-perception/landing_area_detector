@@ -1,56 +1,114 @@
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Polyhedron_3.h>
+// Computing normal of all facets in CGAL::Polyhedron_3
+// https://saurabhg.com/programming/computing-normal-facets-cgalpolyhedron_3/
+
+// Author(s) : Pierre Alliez
 #include <iostream>
-typedef CGAL::Simple_cartesian<double>     Kernel;
-typedef Kernel::Point_3                    Point_3;
-typedef Kernel::Plane_3                    Plane_3;
-typedef CGAL::Polyhedron_3<Kernel>         Polyhedron;
-typedef Polyhedron::Vertex_iterator        Vertex_iterator;
+#include <fstream>
+#include <boost/optional/optional_io.hpp>
+#include <CGAL/Simple_cartesian.h>
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/draw_surface_mesh.h>
+#include <CGAL/draw_polyhedron.h>
+#include <CGAL/draw_point_set_3.h>
 
-typedef Polyhedron::Facet_iterator         Facet_iterator;
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
+#include <CGAL/Polygon_mesh_processing/orientation.h>
 
-// functor to be called at creation /typecasting time. Will populate the plane containers 
-struct Plane_equation {
-    template <class Facet>
-    typename Facet::Plane_3 operator()( Facet& f) {
-        typename Facet::Halfedge_handle h = f.halfedge();
-        typedef typename Facet::Plane_3  Plane;
-        return Plane( h->vertex()->point(),
-                      h->next()->vertex()->point(),
-                      h->next()->next()->vertex()->point());
-    }
+typedef CGAL::Simple_cartesian<double>  K;
+typedef K::FT                           FT;
+typedef K::Point_3                      Point;
+typedef K::Ray_3                        Ray;
+typedef K::Segment_3                    Segment;
+typedef CGAL::Polyhedron_3<K>           Polyhedron;
+typedef Polyhedron::Vertex_iterator     Vertex_iterator;
+
+typedef CGAL::AABB_face_graph_triangle_primitive<Polyhedron>    Primitive;
+typedef CGAL::AABB_traits<K, Primitive>                         Traits;
+typedef CGAL::AABB_tree<Traits>                                 Tree;
+typedef Tree::Point_and_primitive_id                            Point_and_primitive_id;
+
+typedef CGAL::Surface_mesh<Point>                               Mesh;
+typedef boost::graph_traits<Mesh>::face_descriptor              face_descriptor;
+typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+
+struct Skip { // structure to preprocess face descriptors
+  face_descriptor fd;
+  Skip(const face_descriptor fd)
+    : fd(fd)
+  {}
+  bool operator()(const face_descriptor& t) const
+  { if(t == fd){
+      std::cerr << "ignore " << t  <<std::endl;
+    };
+    return(t == fd);
+  }
 };
 
+int main(int argc, char* argv[])
+{
+    Polyhedron polyhedron;
+    std::ifstream in1((argc>1)?argv[1]:"test.off");
+    in1 >> polyhedron;
 
-int main() {
-    Point_3 p( 1.0, 0.0, 0.0);
-    Point_3 q( 0.0, 1.0, 0.0);
-    Point_3 r( 0.0, 0.0, 1.0);
-    Point_3 s( 0.0, 0.0, 0.0);
-    Polyhedron P;
-    P.make_tetrahedron( p, q, r, s);
+  // OBJECT CONSTRUCTION  *************************************************************************************************
+    Point p(1.0, 0.0, 1.0);
+    Point q(0.0, 1.0, 1.0);
+    Point r(0.0, 0.0, 1.0);
+    Point s(0.0, 0.0, 0.0);
+    // Polyhedron polyhedron;
+    // polyhedron.make_tetrahedron(p, q, r, s);
+
+    // OBJECT INFO DUMP     *************************************************************************************************
     CGAL::set_ascii_mode( std::cout);
-    // force plane-creator functor call
-    std::transform( P.facets_begin(), P.facets_end(), P.planes_begin(),
-                    Plane_equation());
-
-    // dump vertex data, meh
-    for ( Vertex_iterator v = P.vertices_begin(); v != P.vertices_end(); ++v)
+    for ( Vertex_iterator v = polyhedron.vertices_begin(); v != polyhedron.vertices_end(); ++v)
         std::cout << v->point() << std::endl;
 
-    std::cout << "-------- now facets" << std::endl;
+    // OBJECT VISUALIZATION *************************************************************************************************
+    CGAL::draw(polyhedron);
 
-    // print (beauty) plane info, before copy.... meh
-    for ( Facet_iterator f = P.facets_begin(); f != P.facets_end(); ++f){
-        std::cout << f->plane() << std::endl;
-        // f->
-    }
+    // AABB TREE CREATION   *************************************************************************************************
+    // constructs AABB tree and computes internal KD-tree
+    // data structure to accelerate distance queries
+    Tree tree(faces(polyhedron).first, faces(polyhedron).second, polyhedron);
 
-    // print (beauty) plane info, after copy.... yay
-    CGAL::set_pretty_mode( std::cout);
-    std::copy( P.planes_begin(), P.planes_end(),
-               std::ostream_iterator<Plane_3>( std::cout, "\n"));
+    // OBJECT INTERSECTION  *************************************************************************************************
+    // Ray creation
+    // Intersection query
+    // query point
+    Point pointA(0.10, 0.10, 3.0);
+    Point pointB(0.10, 0.10, -3.0);
+    //*****************//
+    Ray ray(pointA, pointB);
 
-    return 0;
+    // INTERSECTED FACET IDENTIFICATION
+    std::cout << tree.number_of_intersected_primitives(ray)
+        << " intersections(s) with ray query" << std::endl;
+    // computes squared distance from query
+    // FT sqd = tree.squared_distance(pointA);
+    // std::cout << "squared distance: " << sqd << std::endl;
 
+    // computes closest point
+    Point closest = tree.closest_point(pointA);
+    std::cout << "closest point [P]: " << closest << std::endl;
+
+    // computes closest point and primitive id
+    Point_and_primitive_id pp = tree.closest_point_and_primitive(pointA);
+    Point closest_point = pp.first;
+    Polyhedron::Face_handle f = pp.second; // closest primitive id >> this should give a pointer to the closest facet
+    std::cout << "closest point [Pp]: " << closest_point << std::endl;
+    std::cout << "closest triangle: ( "
+              << f->halfedge()->vertex()->point() << " , "
+              << f->halfedge()->next()->vertex()->point() << " , "
+              << f->halfedge()->next()->next()->vertex()->point()
+              << " )" << std::endl;
+
+    std::cout << "---------------------------" << std::endl;
+    // We are looking for those facets that are intersected by Ray
+
+    return EXIT_SUCCESS;
 }
