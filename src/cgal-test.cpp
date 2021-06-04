@@ -15,9 +15,10 @@
 #include <CGAL/draw_point_set_3.h>
 
 #include <CGAL/AABB_face_graph_triangle_primitive.h>
-#include <CGAL/AABB_face_graph_triangle_primitive.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/orientation.h>
+#include <CGAL/Polygon_mesh_processing/locate.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 
 typedef CGAL::Simple_cartesian<double>  K;
 typedef K::FT                           FT;
@@ -48,6 +49,9 @@ struct Skip { // structure to preprocess face descriptors
     return(t == fd);
   }
 };
+
+namespace PMP=CGAL::Polygon_mesh_processing;
+typedef   PMP::Face_location<Mesh, FT>      Face_location;
 
 int main(int argc, char* argv[])
 {
@@ -88,6 +92,9 @@ int main(int argc, char* argv[])
     // INTERSECTED FACET IDENTIFICATION
     std::cout << tree.number_of_intersected_primitives(ray)
         << " intersections(s) with ray query" << std::endl;
+
+    Face_location ray_lcoation = PMP::locate_with_AABB_tree(ray, tree, polyhedron);
+
     // computes squared distance from query
     // FT sqd = tree.squared_distance(pointA);
     // std::cout << "squared distance: " << sqd << std::endl;
