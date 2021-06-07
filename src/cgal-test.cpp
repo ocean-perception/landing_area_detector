@@ -54,7 +54,7 @@ struct Skip { // structure to preprocess face descriptors
   }
 };//*/
 
-namespace PMP=CGAL::Polygon_mesh_processing;
+namespace PMP = CGAL::Polygon_mesh_processing;
 typedef   PMP::Face_location<Surface_mesh, FT>      Face_location;
 
 using namespace std;
@@ -93,64 +93,56 @@ int main(int argc, char* argv[])
   // Step 6: Draw CH
   CGAL::draw(convex_mesh);
 
+  // Step 7: Export CH as PLY/OFF
+  CGAL::set_ascii_mode( std::cout);
   std::ofstream ofs;
   ofs.open ("output.off", std::ofstream::out);
   CGAL::write_off(ofs, convex_mesh);
   ofs.close();
 
+  // Step 8: Construct AABB tree from CH
+  // AABB TREE CREATION   *************************************************************************************************
+  // constructs AABB tree and computes internal KD-tree
+  // data structure to accelerate distance queries
+  // Tree tree(faces(polyhedron).first, faces(polyhedron).second, polyhedron);
+  typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>  AABB_face_graph_primitive;
+  typedef CGAL::AABB_traits<K, AABB_face_graph_primitive>         AABB_face_graph_traits;
+  CGAL::AABB_tree<AABB_face_graph_traits> tree;
+
+  PMP::build_AABB_tree(convex_mesh, tree); // build AABB tree from triangulated surface mesh
+
+  // Step 9: Create Ray for interesection
+  Point pointA(0.01, 0.01, 3.0);
+  Point pointB(0.01, 0.01, -3.0);
+  Ray ray(pointA, pointB);
+
+  // Step 10: Locate intersected face (if any) and intersection point
+  // check: https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2locate_example_8cpp-example.html#a11
+  Face_location ray_location = PMP::locate_with_AABB_tree(ray, tree, convex_mesh);
+  std::cout << "Intersection of the 3D ray and the mesh is in face " << ray_location.first
+            << " with barycentric coordinates [" << ray_location.second[0] << " "
+                                                 << ray_location.second[1] << " "
+                                                 << ray_location.second[2] << "]\n";
+  std::cout << "It corresponds to point (" << PMP::construct_point(ray_location, convex_mesh) << ")\n";
+  std::cout << "Is it on the face's border? " << (PMP::is_on_face_border(ray_location, convex_mesh) ? "Yes" : "No") << "\n\n";
+
+
+
+ // INTERSECTED FACET IDENTIFICATION
+  std::cout << tree.number_of_intersected_primitives(ray)
+      << " intersections(s) with ray query" << std::endl;
+
   return 0;
-
-
-  // Step 7: Construct AABB tree from CH
-
-  // Step 8: Construct CoG Ray for intersection
-
-  // Step 9: Locate intersected face (if any) and intersection point
-
   // Step 10: Dump Face information
 
   // Step 11: Draw Face
 
 
+  // OBJECT INTERSECTION  *************************************************************************************************
 
-  // OBJECT CONSTRUCTION  *************************************************************************************************
-    Point p(1.0, 0.0, 1.0);
-    Point q(0.0, 1.0, 1.0);
-    Point r(0.0, 0.0, 1.0);
-    Point s(0.0, 0.0, 0.0);
-    // Polyhedron polyhedron;
-    // polyhedron.make_tetrahedron(p, q, r, s);
-
-    // OBJECT INFO DUMP     *************************************************************************************************
-    CGAL::set_ascii_mode( std::cout);
-    // for ( mVertex_iterator v = tm.vertices_begin(); v != tm.vertices_end(); ++v)
-    //     std::cout << v->point() << std::endl;
-
-    // OBJECT VISUALIZATION *************************************************************************************************
-    // CGAL::draw(po`lyhedron);
-
-    // AABB TREE CREATION   *************************************************************************************************
-    // constructs AABB tree and computes internal KD-tree
-    // data structure to accelerate distance queries
-    // Tree tree(faces(polyhedron).first, faces(polyhedron).second, polyhedron);
-    typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>                AABB_face_graph_primitive;
-    typedef CGAL::AABB_traits<K, AABB_face_graph_primitive>               AABB_face_graph_traits;
-    CGAL::AABB_tree<AABB_face_graph_traits> tree;
-  
-    // PMP::build_AABB_tree(sm, tree);
-
-    // OBJECT INTERSECTION  *************************************************************************************************
-    // Ray creation
-    // Intersection query
-    // query point
-    Point pointA(0.10, 0.10, 3.0);
-    Point pointB(0.10, 0.10, -3.0);
-    //*****************//
-    Ray ray(pointA, pointB);
-
-    // INTERSECTED FACET IDENTIFICATION
-    // std::cout << tree.number_of_intersected_primitives(ray)
-    //     << " intersections(s) with ray query" << std::endl;
+  // INTERSECTED FACET IDENTIFICATION
+  // std::cout << tree.number_of_intersected_primitives(ray)
+  //     << " intersections(s) with ray query" << std::endl;
 
 /*    Face_location ray_location = PMP::locate_with_AABB_tree(ray, tree, tm);
 
