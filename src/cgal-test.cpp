@@ -6,39 +6,42 @@
 #include <fstream>
 #include <boost/optional/optional_io.hpp>
 #include <CGAL/Simple_cartesian.h>
-#include <CGAL/AABB_tree.h>
-#include <CGAL/AABB_traits.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Surface_mesh.h>
+#include <CGAL/convex_hull_3.h>
+#include <CGAL/Polygon_mesh_processing/orientation.h>
+#include <CGAL/Polygon_mesh_processing/locate.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
+
 #include <CGAL/draw_surface_mesh.h>
 #include <CGAL/draw_polyhedron.h>
 #include <CGAL/draw_point_set_3.h>
 
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_face_graph_triangle_primitive.h>
-#include <CGAL/Polygon_mesh_processing/compute_normal.h>
-#include <CGAL/Polygon_mesh_processing/orientation.h>
-#include <CGAL/Polygon_mesh_processing/locate.h>
-#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 
-typedef CGAL::Simple_cartesian<double>  K;
-typedef K::FT                           FT;
-typedef K::Point_3                      Point;
-typedef K::Ray_3                        Ray;
-typedef K::Segment_3                    Segment;
+typedef CGAL::Simple_cartesian<double>  K;        // kernel
+typedef K::FT                           FT;       // ft
+typedef K::Point_3                      Point;    // point
+typedef K::Ray_3                        Ray;      // ray (for vertical intersection)
+typedef K::Segment_3                    Segment;  // alternative to ray
 typedef CGAL::Polyhedron_3<K>           Polyhedron;
-typedef Polyhedron::Vertex_iterator     Vertex_iterator;
+typedef CGAL::Surface_mesh<Point>       Surface_mesh;
 
-typedef CGAL::AABB_face_graph_triangle_primitive<Polyhedron>    Primitive;
-typedef CGAL::AABB_traits<K, Primitive>                         Traits;
-typedef CGAL::AABB_tree<Traits>                                 Tree;
-typedef Tree::Point_and_primitive_id                            Point_and_primitive_id;
+typedef Surface_mesh::Vertex_iterator   Vertex_iterator;
+typedef Surface_mesh::Vertex_index      Vertex_descriptor;
 
-typedef CGAL::Surface_mesh<Point>                               Surface_mesh;
-typedef Surface_mesh::Vertex_iterator                                   mVertex_iterator;
-typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
-typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+// typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>    Primitive;
+// typedef CGAL::AABB_traits<K, Primitive>                         Traits;
+// typedef CGAL::AABB_tree<Traits>                                 Tree;
+// typedef Tree::Point_and_primitive_id                            Point_and_primitive_id;
 
-struct Skip { // structure to preprocess face descriptors
+// typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
+// typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+
+/*struct Skip { // structure to preprocess face descriptors
   face_descriptor fd;
   Skip(const face_descriptor fd)
     : fd(fd)
@@ -49,7 +52,7 @@ struct Skip { // structure to preprocess face descriptors
     };
     return(t == fd);
   }
-};
+};//*/
 
 namespace PMP=CGAL::Polygon_mesh_processing;
 typedef   PMP::Face_location<Surface_mesh, FT>      Face_location;
@@ -75,8 +78,23 @@ int main(int argc, char* argv[])
   // Step 3: Draw raw geometry
   CGAL::draw(sm);
 
-  return 0;
   // Step 4: Extract ConvexHull from geometry
+
+  // Step 4.1:  Pull/convert mesh point to vector<Point> (compatible with LAD pipeline)
+  // vector<Points> is already available from Surface_mesh.points()
+  Surface_mesh convex_mesh;
+
+  CGAL::convex_hull_3(sm.points().begin(), sm.points().end(), convex_mesh);
+
+  cout << "Resulting convex hull: " << endl;
+  cout << "# edges: "     << convex_mesh.num_edges() << endl;
+  cout << "# faces: "     << convex_mesh.num_faces() << endl;
+  cout << "# vertices: "  << convex_mesh.num_vertices() << endl;
+
+  CGAL::draw(convex_mesh);
+
+
+  return 0;
 
   // Step 5: Dump CH information
 
