@@ -79,26 +79,26 @@ int main(int argc, char* argv[])
   CGAL::draw(sm);
 
   // Step 4: Extract ConvexHull from geometry
-
   // Step 4.1:  Pull/convert mesh point to vector<Point> (compatible with LAD pipeline)
   // vector<Points> is already available from Surface_mesh.points()
   Surface_mesh convex_mesh;
-
   CGAL::convex_hull_3(sm.points().begin(), sm.points().end(), convex_mesh);
 
+  // Step 5: Dump CH information
   cout << "Resulting convex hull: " << endl;
   cout << "# edges: "     << convex_mesh.num_edges() << endl;
   cout << "# faces: "     << convex_mesh.num_faces() << endl;
   cout << "# vertices: "  << convex_mesh.num_vertices() << endl;
 
+  // Step 6: Draw CH
   CGAL::draw(convex_mesh);
 
-
+  std::ofstream ofs;
+  ofs.open ("output.off", std::ofstream::out);
+  CGAL::write_off(ofs, convex_mesh);
+  ofs.close();
   return 0;
 
-  // Step 5: Dump CH information
-
-  // Step 6: Draw CH
 
   // Step 7: Construct AABB tree from CH
 
