@@ -33,15 +33,15 @@ typedef CGAL::Surface_mesh<Point>       Surface_mesh;
 typedef Surface_mesh::Vertex_iterator   Vertex_iterator;
 typedef Surface_mesh::Vertex_index      Vertex_descriptor;
 
-// typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>    Primitive;
-// typedef CGAL::AABB_traits<K, Primitive>                         Traits;
-// typedef CGAL::AABB_tree<Traits>                                 Tree;
-// typedef Tree::Point_and_primitive_id                            Point_and_primitive_id;
+typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>    Primitive;
+typedef CGAL::AABB_traits<K, Primitive>                           Traits;
+typedef CGAL::AABB_tree<Traits>                                   Tree;
+typedef Tree::Point_and_primitive_id                              Point_and_primitive_id;
 
-// typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
-// typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
+typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
 
-/*struct Skip { // structure to preprocess face descriptors
+struct Skip { // structure to preprocess face descriptors
   face_descriptor fd;
   Skip(const face_descriptor fd)
     : fd(fd)
@@ -97,6 +97,7 @@ int main(int argc, char* argv[])
   ofs.open ("output.off", std::ofstream::out);
   CGAL::write_off(ofs, convex_mesh);
   ofs.close();
+
   return 0;
 
 
