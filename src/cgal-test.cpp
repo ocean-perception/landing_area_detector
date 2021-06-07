@@ -22,6 +22,9 @@
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_face_graph_triangle_primitive.h>
 
+// #include <CGAL/Path_on_surface.h>
+// #include <CGAL/Curves_on_surface_topology.h>
+
 typedef CGAL::Simple_cartesian<double>  K;        // kernel
 typedef K::FT                           FT;       // ft
 typedef K::Point_3                      Point;    // point
@@ -40,6 +43,8 @@ typedef Tree::Point_and_primitive_id                              Point_and_prim
 
 typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
 typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+
+
 
 struct Skip { // structure to preprocess face descriptors
   face_descriptor fd;
@@ -96,7 +101,7 @@ int main(int argc, char* argv[])
   // Step 7: Export CH as PLY/OFF
   CGAL::set_ascii_mode( std::cout);
   std::ofstream ofs;
-  ofs.open ("output.off", std::ofstream::out);
+  ofs.open ("convex.off", std::ofstream::out);
   CGAL::write_off(ofs, convex_mesh);
   ofs.close();
 
@@ -112,8 +117,8 @@ int main(int argc, char* argv[])
   PMP::build_AABB_tree(convex_mesh, tree); // build AABB tree from triangulated surface mesh
 
   // Step 9: Create Ray for interesection
-  Point pointA(0.1, 0.2, 3.0);
-  Point pointB(0.1, 0.2, -3.0);
+  Point pointA(0.1, 2, 300.0);
+  Point pointB(0.1, 2, -300.0);
   Ray ray(pointA, pointB);
 
   // Step 10: Locate intersected face (if any) and intersection point
@@ -142,6 +147,29 @@ int main(int argc, char* argv[])
     cout << convex_mesh.point(*vcirc) << endl;
   }while (vcirc != done);
 
+  Polyhedron p_ch;
+  p_ch.make_triangle(convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++));
+
+  CGAL::draw(p_ch);
+
+  // Step 7: Export CH as PLY/OFF
+  CGAL::set_ascii_mode( std::cout);
+  // std::ofstream ofs;
+  ofs.open ("incident.off", std::ofstream::out);
+  CGAL::write_off(ofs, p_ch);
+  ofs.close();
+
+  // std::ofstream ofs;
+  Polyhedron xray;
+  // xray.make_triangle(ray.point())
+
+  xray.make_triangle(pointA, pointB, pointA);
+  ofs.open ("ray.off", std::ofstream::out);
+  CGAL::write_off(ofs, xray);
+  ofs.close();
+
+  CGAL::draw(xray);
+
   cout << endl;
 
  // INTERSECTED FACET IDENTIFICATION
@@ -149,30 +177,7 @@ int main(int argc, char* argv[])
       << " intersections(s) with ray query" << std::endl;
 
   return 0;
-  // Step 10: Dump Face information
 
-  // Step 11: Draw Face
-
-
-  // OBJECT INTERSECTION  *************************************************************************************************
-
-  // INTERSECTED FACET IDENTIFICATION
-  // std::cout << tree.number_of_intersected_primitives(ray)
-  //     << " intersections(s) with ray query" << std::endl;
-
-/*    Face_location ray_location = PMP::locate_with_AABB_tree(ray, tree, tm);
-
-    std::cout << "Intersection of the 3D ray and the mesh is in face " << ray_location.first
-              << " with barycentric coordinates ["  << ray_location.second[0] << " "
-                                                    << ray_location.second[1] << " "
-                                                    << ray_location.second[2] << "]\n";
-    std::cout << "It corresponds to point (" << PMP::construct_point(ray_location, tm) << ")\n";
-    std::cout << "Is it on the face's border? " << (PMP::is_on_face_border(ray_location, tm) ? "Yes" : "No") << "\n\n";
-*/
-  //***************************************************************************************//
-  //***************************************************************************************//
-  //***************************************************************************************//
-  //***************************************************************************************//
     // CGAL::draw(ray_location.first);
 
     std::cout << "---------------------------" << std::endl;
