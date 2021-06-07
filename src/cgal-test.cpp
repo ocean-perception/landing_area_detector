@@ -33,8 +33,9 @@ typedef CGAL::AABB_traits<K, Primitive>                         Traits;
 typedef CGAL::AABB_tree<Traits>                                 Tree;
 typedef Tree::Point_and_primitive_id                            Point_and_primitive_id;
 
-typedef CGAL::Surface_mesh<Point>                               Mesh;
-typedef boost::graph_traits<Mesh>::face_descriptor              face_descriptor;
+typedef CGAL::Surface_mesh<Point>                               Surface_mesh;
+typedef Surface_mesh::Vertex_iterator                                   mVertex_iterator;
+typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
 typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
 
 struct Skip { // structure to preprocess face descriptors
@@ -51,13 +52,47 @@ struct Skip { // structure to preprocess face descriptors
 };
 
 namespace PMP=CGAL::Polygon_mesh_processing;
-typedef   PMP::Face_location<Mesh, FT>      Face_location;
+typedef   PMP::Face_location<Surface_mesh, FT>      Face_location;
+
+using namespace std;
 
 int main(int argc, char* argv[])
 {
-    Polyhedron polyhedron;
-    std::ifstream in1((argc>1)?argv[1]:"test.off");
-    in1 >> polyhedron;
+
+  // Step 1: Load geometry from file
+  Polyhedron polyhedron;
+  std::ifstream in1((argc>1)?argv[1]:"test.off");
+  // in1 >> polyhedron;
+  Surface_mesh sm;      // <- Go after MESH
+  in1 >> sm;  // import input file into surface mesh structure
+
+  // Step 2: Dump geometry information 
+  cout << "Input file: " << argv[1] << endl;
+  cout << "# edges: " << sm.num_edges() << endl;
+  cout << "# faces: " << sm.num_faces() << endl;
+  cout << "# vertices: " << sm.num_vertices() << endl;
+
+  // Step 3: Draw raw geometry
+  CGAL::draw(sm);
+
+  return 0;
+  // Step 4: Extract ConvexHull from geometry
+
+  // Step 5: Dump CH information
+
+  // Step 6: Draw CH
+
+  // Step 7: Construct AABB tree from CH
+
+  // Step 8: Construct CoG Ray for intersection
+
+  // Step 9: Locate intersected face (if any) and intersection point
+
+  // Step 10: Dump Face information
+
+  // Step 11: Draw Face
+
+
 
   // OBJECT CONSTRUCTION  *************************************************************************************************
     Point p(1.0, 0.0, 1.0);
@@ -69,16 +104,21 @@ int main(int argc, char* argv[])
 
     // OBJECT INFO DUMP     *************************************************************************************************
     CGAL::set_ascii_mode( std::cout);
-    for ( Vertex_iterator v = polyhedron.vertices_begin(); v != polyhedron.vertices_end(); ++v)
-        std::cout << v->point() << std::endl;
+    // for ( mVertex_iterator v = tm.vertices_begin(); v != tm.vertices_end(); ++v)
+    //     std::cout << v->point() << std::endl;
 
     // OBJECT VISUALIZATION *************************************************************************************************
-    CGAL::draw(polyhedron);
+    // CGAL::draw(po`lyhedron);
 
     // AABB TREE CREATION   *************************************************************************************************
     // constructs AABB tree and computes internal KD-tree
     // data structure to accelerate distance queries
-    Tree tree(faces(polyhedron).first, faces(polyhedron).second, polyhedron);
+    // Tree tree(faces(polyhedron).first, faces(polyhedron).second, polyhedron);
+    typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>                AABB_face_graph_primitive;
+    typedef CGAL::AABB_traits<K, AABB_face_graph_primitive>               AABB_face_graph_traits;
+    CGAL::AABB_tree<AABB_face_graph_traits> tree;
+  
+    // PMP::build_AABB_tree(sm, tree);
 
     // OBJECT INTERSECTION  *************************************************************************************************
     // Ray creation
@@ -90,29 +130,23 @@ int main(int argc, char* argv[])
     Ray ray(pointA, pointB);
 
     // INTERSECTED FACET IDENTIFICATION
-    std::cout << tree.number_of_intersected_primitives(ray)
-        << " intersections(s) with ray query" << std::endl;
+    // std::cout << tree.number_of_intersected_primitives(ray)
+    //     << " intersections(s) with ray query" << std::endl;
 
-    Face_location ray_lcoation = PMP::locate_with_AABB_tree(ray, tree, polyhedron);
+/*    Face_location ray_location = PMP::locate_with_AABB_tree(ray, tree, tm);
 
-    // computes squared distance from query
-    // FT sqd = tree.squared_distance(pointA);
-    // std::cout << "squared distance: " << sqd << std::endl;
-
-    // computes closest point
-    Point closest = tree.closest_point(pointA);
-    std::cout << "closest point [P]: " << closest << std::endl;
-
-    // computes closest point and primitive id
-    Point_and_primitive_id pp = tree.closest_point_and_primitive(pointA);
-    Point closest_point = pp.first;
-    Polyhedron::Face_handle f = pp.second; // closest primitive id >> this should give a pointer to the closest facet
-    std::cout << "closest point [Pp]: " << closest_point << std::endl;
-    std::cout << "closest triangle: ( "
-              << f->halfedge()->vertex()->point() << " , "
-              << f->halfedge()->next()->vertex()->point() << " , "
-              << f->halfedge()->next()->next()->vertex()->point()
-              << " )" << std::endl;
+    std::cout << "Intersection of the 3D ray and the mesh is in face " << ray_location.first
+              << " with barycentric coordinates ["  << ray_location.second[0] << " "
+                                                    << ray_location.second[1] << " "
+                                                    << ray_location.second[2] << "]\n";
+    std::cout << "It corresponds to point (" << PMP::construct_point(ray_location, tm) << ")\n";
+    std::cout << "Is it on the face's border? " << (PMP::is_on_face_border(ray_location, tm) ? "Yes" : "No") << "\n\n";
+*/
+  //***************************************************************************************//
+  //***************************************************************************************//
+  //***************************************************************************************//
+  //***************************************************************************************//
+    // CGAL::draw(ray_location.first);
 
     std::cout << "---------------------------" << std::endl;
     // We are looking for those facets that are intersected by Ray
