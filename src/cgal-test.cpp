@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
   cout << "# vertices: " << sm.num_vertices() << endl;
 
   // Step 3: Draw raw geometry
-  CGAL::draw(sm);
+  // CGAL::draw(sm);
 
   // Step 4: Extract ConvexHull from geometry
   // Step 4.1:  Pull/convert mesh point to vector<Point> (compatible with LAD pipeline)
@@ -112,8 +112,8 @@ int main(int argc, char* argv[])
   PMP::build_AABB_tree(convex_mesh, tree); // build AABB tree from triangulated surface mesh
 
   // Step 9: Create Ray for interesection
-  Point pointA(0.01, 0.01, 3.0);
-  Point pointB(0.01, 0.01, -3.0);
+  Point pointA(0.1, 0.2, 3.0);
+  Point pointB(0.1, 0.2, -3.0);
   Ray ray(pointA, pointB);
 
   // Step 10: Locate intersected face (if any) and intersection point
@@ -123,10 +123,26 @@ int main(int argc, char* argv[])
             << " with barycentric coordinates [" << ray_location.second[0] << " "
                                                  << ray_location.second[1] << " "
                                                  << ray_location.second[2] << "]\n";
-  std::cout << "It corresponds to point (" << PMP::construct_point(ray_location, convex_mesh) << ")\n";
+  Point intersection = PMP::construct_point(ray_location, convex_mesh);
+  std::cout << "It corresponds to point (" << intersection << ")\n";
   std::cout << "Is it on the face's border? " << (PMP::is_on_face_border(ray_location, convex_mesh) ? "Yes" : "No") << "\n\n";
 
+  auto fid = ray_location.first;
 
+  CGAL::SM_Halfedge_index hid;
+  hid = convex_mesh.halfedge(fid); // gets a halfedge of face f
+  cout << "Half edge data: " << hid << endl; 
+
+  int inc = convex_mesh.degree(fid);
+  cout << "Degree of face: " << inc <<endl;
+
+  CGAL::Vertex_around_face_circulator<Surface_mesh> vcirc(convex_mesh.halfedge(fid), convex_mesh), done(vcirc); 
+  do{
+    cout << "Point for " << *vcirc++ << " || ";
+    cout << convex_mesh.point(*vcirc) << endl;
+  }while (vcirc != done);
+
+  cout << endl;
 
  // INTERSECTED FACET IDENTIFICATION
   std::cout << tree.number_of_intersected_primitives(ray)
