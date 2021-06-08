@@ -22,8 +22,6 @@
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_face_graph_triangle_primitive.h>
 
-// #include <CGAL/Path_on_surface.h>
-// #include <CGAL/Curves_on_surface_topology.h>
 
 typedef CGAL::Simple_cartesian<double>  K;        // kernel
 typedef K::FT                           FT;       // ft

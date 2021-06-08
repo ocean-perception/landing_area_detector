@@ -1594,8 +1594,8 @@ namespace lad
                         }
                         else if (filtertype == FILTER_CONVEX_SLOPE){
                             // TODO: switch back to the final implementation CH based
-                            // KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
-                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
+                            KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
+                            // KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
                         }

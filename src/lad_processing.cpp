@@ -13,12 +13,44 @@
 #include "lad_core.hpp"
 #include "lad_layer.hpp"
 
+#include <boost/optional/optional_io.hpp>
 
 #include <CGAL/Kernel/global_functions.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/convex_hull_3.h>
+
+#include <CGAL/Polygon_mesh_processing/orientation.h>
+#include <CGAL/Polygon_mesh_processing/locate.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
+
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
+
+typedef K::Ray_3                        Ray;      // ray (for vertical intersection)
+typedef K::FT                           FT;       // ft
+typedef CGAL::Surface_mesh<KPoint>       Surface_mesh;
+typedef Surface_mesh::Vertex_iterator   Vertex_iterator;
+typedef Surface_mesh::Vertex_index      Vertex_descriptor;
+
+typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>    Primitive;
+typedef CGAL::AABB_traits<K, Primitive>                           Traits;
+typedef CGAL::AABB_tree<Traits>                                   Tree;
+typedef Tree::Point_and_primitive_id                              Point_and_primitive_id;
+
+namespace PMP = CGAL::Polygon_mesh_processing;
+typedef   boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
+typedef   PMP::Face_location<Surface_mesh, FT>      Face_location;
+
+typedef boost::graph_traits<Surface_mesh>::face_descriptor              face_descriptor;
+typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type> Ray_intersection;
+
+typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh>  AABB_face_graph_primitive;
+typedef CGAL::AABB_traits<K, AABB_face_graph_primitive>         AABB_face_graph_traits;
+
 
 // #include <opencv2/core/eigen.hpp>
 /**
@@ -456,24 +488,87 @@ namespace lad
      * @param points Vector of 3D points to be fitted in a plane
      * @return KPlane CGAL plane described as a 4D vector: A.X + B.Y + C.Z + D = 0 
      */
-    KPlane computeConvexHullPlane (std::vector<KPoint> points){
+    KPlane computeConvexHullPlane (const std::vector<KPoint> &points){
+
         KPlane plane(0,0,1,0);
         if (points.empty()) // early exit
             return plane;
-        // fit plane to whole triangles
-        //TODO: extract de QCH of the point cloud
-        cout << "STILL TO BE IMPLEMENTED" << endl;
-        //Step 2: extract the triangles that intersect the vertical projection of the vehicles center of gravity (assumed to be at 0,0 in the XY plane)
+        // store resulting CH into a triagnulated mesh structure
+        Surface_mesh convex_mesh;
+        // return plane;
 
-        // define polyhedron to hold convex hull
-        Polyhedron_3 poly;
-        // compute convex hull of non-collinear points
-        CGAL::convex_hull_3(points.begin(), points.end(), poly);
-        // Step 3: select the uppermost triangle, as it should be he closest to interact with the vehicle landing footprint
+        // TODO: diagnose the problem with ch3 + vector
+        // TODO: debug with pwd: /media/cappelletto/ssd480/experiments/LAD_Test/convex_hull
+        // mad_test --config=../config.yaml --input=../Koyo-18/0181-Clip12x12/input/ky18181_clip_12x12m.tif --rotation=0 --slope_algorithm=1
 
-        // -> iterate against facets list
+        #pragma omp critical 
+        CGAL::convex_hull_3(points.begin(), points.end(), convex_mesh); // compute CH from input pointcloud, stores as mesh
 
+        // Step 5: Dump CH information
+        cout << "Resulting convex hull: " << endl;
+        cout << "# edges: "     << convex_mesh.num_edges() << endl;
+        cout << "# faces: "     << convex_mesh.num_faces() << endl;
+        cout << "# vertices: "  << convex_mesh.num_vertices() << endl;
+        return plane;
+
+        // cout << "Data:" << endl;
+        // for (auto v:convex_mesh.vertices()){
+        //     cout << v << ": " << convex_mesh.point(v) << " || ";
+        // }
+
+        // Step 6: Construct AABB tree from CH
+        // constructs AABB tree and computes internal KD-tree
+        CGAL::AABB_tree<AABB_face_graph_traits> tree;   // data structure to accelerate distance queries
+        PMP::build_AABB_tree(convex_mesh, tree);        // build AABB tree from triangulated surface mesh
+
+        // Step 9: Create Ray for intersection
+        // TODO: user pixel resolution information to enforce numerical stability when interecting with the "center"
+        // TODO: also, min-max distance may affect ray intersection when operating as segment (it shouldn't)
+        KPoint pointA(0.0001, 0.0001, 1000.0);
+        KPoint pointB(0.0001, 0.0001, -1000.0);  
+        Ray ray(pointA, pointB);
+
+        //BP HERE
+
+        // Step 9.1: Optional facet intersection check
+        // TODO: use returned value, we should expect 2 hits, if none, the obtained convexhull is degenerated (raise exception)
+        int n_int = tree.number_of_intersected_primitives(ray);
+        std::cout << n_int << " intersections(s) with ray query" << std::endl;
+
+        // Step 10: Locate intersected face (if any) and intersection point
+        // check: https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2locate_example_8cpp-example.html#a11
+        Face_location ray_location = PMP::locate_with_AABB_tree(ray, tree, convex_mesh);
+        std::cout << "Ray intersection in face <" << ray_location.first
+                  << "> with barycentric coords [" << ray_location.second[0] << " "
+                                                   << ray_location.second[1] << " "
+                                                   << ray_location.second[2] << "]\n";
+        KPoint intersection = PMP::construct_point(ray_location, convex_mesh);
+        std::cout << "Intersection point (" << intersection << ")\n";
+        // std::cout << "Is it on the face's border? " << (PMP::is_on_face_border(ray_location, convex_mesh) ? "Yes" : "No") << "\n\n";
+
+        auto fid = ray_location.first;
+
+        CGAL::SM_Halfedge_index hid;
+        hid = convex_mesh.halfedge(fid); // gets a halfedge of face f
+        // cout << "Half edge data: " << hid << endl; 
+        // int inc = convex_mesh.degree(fid);
+        // cout << "Degree of face: " << inc <<endl;    // it should return 3
+
+        CGAL::Vertex_around_face_circulator<Surface_mesh> vcirc(convex_mesh.halfedge(fid), convex_mesh), done(vcirc); 
+        do{
+            cout << "Point for " << *vcirc++ << " || ";
+            cout << convex_mesh.point(*vcirc) << endl;
+        }while (vcirc != done);
+  
+        // several pointers to the same object. Safer non-copy access of the data
+
+        //TODO: there is a copy constructor missing (hence the free() error)
+
+        // we build a constructed copy of the triangular face as plane
+        // TODO: complete plane construction from extracted incident face vertices
+        // plane = KPlane(convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++));
         // return the closest triangle, converted into plane format
+
         return plane;
     }
 

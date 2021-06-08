@@ -43,7 +43,7 @@ namespace lad
 
     std::vector<double> computePlaneDistance(KPlane plane, std::vector<KPoint> points);
 
-    KPlane computeConvexHullPlane (std::vector<KPoint> points); 
+    KPlane computeConvexHullPlane (const std::vector<KPoint> &points); 
     KPlane computeFittingPlane (std::vector<KPoint> points);
     int computePointsInSensor  (const std::vector<KPoint> &inpoints, std::vector<KPoint> &outpoints, double diameter);
 
