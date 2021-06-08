@@ -1592,6 +1592,11 @@ namespace lad
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
+                        else if (filtertype == FILTER_CONVEX_SLOPE){
+                            KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
+                            double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
+                            apDst->rasterData.at<double>(row, col) = slope;
+                        }
                         else if (filtertype == FILTER_MEAN){
                             apDst->rasterData.at<double>(row, col) = acum / pointList.size();
                         }

@@ -53,6 +53,8 @@ args::ValueFlag	<double> argSlopeThreshold (argParser,"slope",  "Slope threshold
 args::ValueFlag	<double> argGroundThreshold(argParser,"length", "Minimum height [m] to consider an obstacle",          {"ground_th"});
 args::ValueFlag	<double> argValidThreshold(argParser,"ratio", "Minimum ratio of required valid pixels to generate PNG",{"valid_th"});
 
+args::ValueFlag	<std::string> 	argSlopeAlgorithm(argParser,"method", "Select terrain slope calculation algorithm: PLANE | CONVEX ", {"slope_algorithm"});
+
 //*************************************** tiff2png specific parser
 args::ArgumentParser argParserT2P("","");
 args::HelpFlag 	     argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
