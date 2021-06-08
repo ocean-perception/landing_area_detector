@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   cout << "# vertices: "  << convex_mesh.num_vertices() << endl;
 
   // Step 6: Draw CH
-  CGAL::draw(convex_mesh);
+  // CGAL::draw(convex_mesh);
 
   // Step 7: Export CH as PLY/OFF
   CGAL::set_ascii_mode( std::cout);
@@ -117,9 +117,19 @@ int main(int argc, char* argv[])
   PMP::build_AABB_tree(convex_mesh, tree); // build AABB tree from triangulated surface mesh
 
   // Step 9: Create Ray for interesection
-  Point pointA(0.1, 2, 300.0);
-  Point pointB(0.1, 2, -300.0);
+  Point pointA(4.0, 4.0, 300.0);
+  Point pointB(4.0, 4.0, -300.0);
   Ray ray(pointA, pointB);
+
+ // INTERSECTED FACET IDENTIFICATION
+  int n_int = tree.number_of_intersected_primitives(ray);
+  std::cout << n_int << " intersections(s) with ray query" << std::endl;
+
+  if (n_int < 1){
+    // we failed, cancel
+    cout << "No intersection found! Stopping..." << endl;
+    return -1;
+  }
 
   // Step 10: Locate intersected face (if any) and intersection point
   // check: https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2locate_example_8cpp-example.html#a11
@@ -150,7 +160,7 @@ int main(int argc, char* argv[])
   Polyhedron p_ch;
   p_ch.make_triangle(convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++));
 
-  CGAL::draw(p_ch);
+  // CGAL::draw(p_ch);
 
   // Step 7: Export CH as PLY/OFF
   CGAL::set_ascii_mode( std::cout);
@@ -168,13 +178,10 @@ int main(int argc, char* argv[])
   CGAL::write_off(ofs, xray);
   ofs.close();
 
-  CGAL::draw(xray);
+  // CGAL::draw(xray);
 
   cout << endl;
 
- // INTERSECTED FACET IDENTIFICATION
-  std::cout << tree.number_of_intersected_primitives(ray)
-      << " intersections(s) with ray query" << std::endl;
 
   return 0;
 
