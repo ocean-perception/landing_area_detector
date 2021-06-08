@@ -422,7 +422,14 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string affix){
     lad::tictac tt;
     tt.start();
     // we are using affix as prefix 
-    ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
+    // TODO: add witch between the slope calculation method based on parameterStruct content
+    if (p->slopeAlgorithm == lad::FilterType::FILTER_SLOPE)
+        ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
+    else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
+        ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
+        cout << "LANE A: USING THE CONVEX HULL ALGORITHM" << endl;
+    }
+
     // ap->showImage("A1_DetailedSlope",COLORMAP_JET);
     if (p->exportIntermediate){
         ap->saveImage("A1_DetailedSlope", affix + "A1_DetailedSlope.png", COLORMAP_JET);

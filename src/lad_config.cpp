@@ -194,6 +194,7 @@ lad::parameterStruct lad::getDefaultParams(){
     params.groundThreshold  = 0.02; //DEFAULT;
     params.heightThreshold  = 0.10;  //DEFAULT;
     params.slopeThreshold   = 17.7; //DEFAULT;
+    params.slopeAlgorithm   = lad::FilterType::FILTER_SLOPE;    //DEFAULT
     params.robotHeight      = 0.8;  //DEFAULT
     params.robotLength      = 1.4;
     params.robotWidth       = 0.5;

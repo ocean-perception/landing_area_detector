@@ -53,6 +53,7 @@ namespace lad
         double rotationStep;    // heading ange steps [deg] when in range mode
         double heightThreshold; // critical height [m] to separate Low Protrusions from High Protrusions 
         double slopeThreshold;  // critical slope [deg]
+        FilterType slopeAlgorithm; // enum identifying slope calculation algorithm (FILTER_SLOPE | FILTER_CONVEX_SLOPE)
         double groundThreshold; // min. height [m] to consider a protrusion
         double protrusionSize;  // min. planar size [m] to consider a protrusion
         float  alphaShapeRadius;// radius [m] of alphaShape contour detection
@@ -67,7 +68,7 @@ namespace lad
     }parameterStruct;
 
     // FIXME: what kind of sorcery is this?
-    typedef double a;
+    // typedef double a;
 
     /**
      * @brief Dump pretty-formatted pipeline parameters

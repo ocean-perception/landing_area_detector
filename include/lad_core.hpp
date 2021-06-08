@@ -120,6 +120,7 @@ namespace lad
         int extractContours(std::string rasterName, std::string contourName, int showImage = false);
         int computeExclusionMap(std::string src, std::string kernel, std::string dst);
         int computeMeanSlopeMap(std::string src, std::string kernel, std::string mask, std::string dst);
+        int computeConvexSlopeMap(std::string src, std::string kernel, std::string mask, std::string dst);
         int computeMeasurabilityMap(std::string raster, std::string kernel, std::string mask, std::string dst);
         int lowpassFilter      (std::string src, std::string kernel, std::string mask, std::string dst); // apply lowpass filter to input raster Layer and stores the resulting raster in dst Layer
         int applyWindowFilter  (std::string src, std::string kernel, std::string mask, std::string dst, int filtertype);

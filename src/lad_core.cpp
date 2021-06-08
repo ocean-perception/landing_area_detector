@@ -1593,7 +1593,9 @@ namespace lad
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
                         else if (filtertype == FILTER_CONVEX_SLOPE){
-                            KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
+                            // TODO: switch back to the final implementation CH based
+                            // KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
+                            KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
@@ -1709,6 +1711,21 @@ namespace lad
             logc.debug ("computeMeanSlopeMap", "Calling applyWindowFilter");
         }
         return applyWindowFilter(raster, kernel, mask, dst, FILTER_SLOPE);
+    }
+
+    /**
+     * @brief Compute the mean slope map using the convex hull for plane extraction. It uses kernel Layer as a local mask to clip the 3D point cloud used for plan estimation
+     *        The resulting ConvexHull is intersected with a vertical projection of the center of gravity to determing the actual landing plane
+     * @param raster Bathymetry Layer interpreted as a 2.5D map, where depth is defined for every pixel as Z = f(X,Y). Correspond to the union of both (V)alid and (N)on valid pixels from the RAW bathymetry map
+     * @param kernel Binary mask Layer that is used to determine the subset S of points to be used for plane calculation. Such plane is used for local slope calculation
+     * @param dst Resulting raster Layer containing the slope field computed for every point defined in the raster Layer
+     * @return int Error code, if any
+     */
+    int Pipeline::computeConvexSlopeMap(std::string raster, std::string kernel, std::string mask, std::string dst){
+        if (verbosity > VERBOSITY_0){
+            logc.debug ("computeConvexSlopeMap", "Calling applyWindowFilter");
+        }
+        return applyWindowFilter(raster, kernel, mask, dst, FILTER_CONVEX_SLOPE);
     }
 
     /**

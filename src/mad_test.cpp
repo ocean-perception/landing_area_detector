@@ -100,6 +100,15 @@ int main(int argc, char *argv[])
                             params.fixRotation      = false;
     }
     
+    if (argSlopeAlgorithm){ //TODO: actually read the user provided option, otherwise we can just use this as a switch flag
+                            params.slopeAlgorithm   = lad::FilterType::FILTER_CONVEX_SLOPE; 
+                            logc.warn("main-config", "Using CONVEX HULL algorithm for slope estimation");               
+    }
+    else{
+                            params.slopeAlgorithm   = lad::FilterType::FILTER_SLOPE;                
+                            logc.warn("main-config", "Using LMS PLANE algorithm for slope estimation");               
+    }
+
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
     if (argSaveIntermediate)    params.exportIntermediate = args::get(argSaveIntermediate);
     if (params.updateThreshold){
@@ -158,7 +167,7 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("M1_CONTOUR_Mask", outputFileName + "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     }
     pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
-    pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);
+    pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);  // TODO: convert this into a size/resolution aware method
     pipeline.createKernelTemplate("KernelDiag",  params.robotDiagonal, params.robotDiagonal, cv::MORPH_ELLIPSE);
     dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
 
