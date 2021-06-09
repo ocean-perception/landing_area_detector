@@ -365,7 +365,15 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // s << "computeMeanSlopeMap -> C2_MeanSlopeMap for " << blue << suffix;
     // logc.debug("laneC", s);
     // we create an unique name using the rotation angle
-    ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
+
+    // TODO: add witch between the slope calculation method based on parameterStruct content
+    if (p->slopeAlgorithm == lad::FilterType::FILTER_SLOPE)
+        ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
+    else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
+        ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
+        cout << "Lane C: Using CHull algo" << endl;
+    }
+
     // ap->showImage("C2_MeanSlopeMap");
     if (p->exportRotated){
         ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
@@ -427,7 +435,7 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string affix){
         ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
         ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
-        cout << "LANE A: USING THE CONVEX HULL ALGORITHM" << endl;
+        cout << "Lane A: Using CHull algo" << endl;
     }
 
     // ap->showImage("A1_DetailedSlope",COLORMAP_JET);

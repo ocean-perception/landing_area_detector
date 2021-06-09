@@ -11,9 +11,10 @@
 #ifndef _PROJECT_HEADERS_H_
 
 #define _PROJECT_HEADERS_H_
+
 // debug-profiling helpers for CGAL ops (bottleneck)
-#define CGAL_PROFILE
-#include <CGAL/Profile_counter.h>
+// #define CGAL_PROFILE
+// #include <CGAL/Profile_counter.h>
 
 ///Basic C and C++ libraries
 #include <iostream>
