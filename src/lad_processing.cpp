@@ -501,7 +501,7 @@ namespace lad
         // TODO: debug with pwd: /media/cappelletto/ssd480/experiments/LAD_Test/convex_hull
         // mad_test --config=../config.yaml --input=../Koyo-18/0181-Clip12x12/input/ky18181_clip_12x12m.tif --rotation=0 --slope_algorithm=1
 
-        #pragma omp critical 
+        // #pragma omp critical 
         CGAL::convex_hull_3(points.begin(), points.end(), convex_mesh); // compute CH from input pointcloud, stores as mesh
 
         // Step 5: Dump CH information
