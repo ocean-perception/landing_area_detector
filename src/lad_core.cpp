@@ -1585,22 +1585,29 @@ namespace lad
                      // WARNING: as we need a minimum set of valid 3D points for the plane fitting
                     // we filter using the size of pointList. For a 3x3 kernel matrix, the min number of points
                     // is n > K/2, being K = 3x3 = 9 ---> n = 5
+                    double _mean = acum / pointList.size();
 
                     if (pointList.size() > 5){
                         if (filtertype == FILTER_SLOPE){
+
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
                         else if (filtertype == FILTER_CONVEX_SLOPE){
-                            // TODO: switch back to the final implementation CH based
+                            // TODO: numerical stability issue: use *acum 
+                            // shift height/depth by Z-mena value to improve stability
+                            KVector _zmean (0,0,_mean); // 3D vector used to "substract" the mean Z value
+                            for (auto &_p:pointList){
+                                _p = _p - _zmean;
+                            }
                             KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             // KPlane plane = computeFittingPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             double slope = computePlaneSlope(plane, KVector(0,0,1)); // returned value is the angle of the normal to the plane, in radians
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
                         else if (filtertype == FILTER_MEAN){
-                            apDst->rasterData.at<double>(row, col) = acum / pointList.size();
+                            apDst->rasterData.at<double>(row, col) = _mean;
                         }
                         else if (filtertype == FILTER_GEOTECH){ // reduce to points contained inside a given diameter (geotech sensor)
                             KPlane plane = computeFittingPlane(pointList); //< fitting plane (can be quick convex-hull)

@@ -71,11 +71,20 @@ const std::string highlight("\033[30;43m");
 #define WATER_DENSITY 1025 // kg / m3
 #define GRAVITY       9.81 // kg * m / s2
 
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/linear_least_squares_fitting_3.h>
+// #include <CGAL/Simple_cartesian.h>
+// #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Kernel/global_functions.h>
 #include <CGAL/Polyhedron_3.h>
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/convex_hull_3.h>
+#include <CGAL/linear_least_squares_fitting_3.h>
 
-typedef CGAL::Simple_cartesian<double>  K;          // redefinition to avoid name clashing with OpenCV
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+
+// typedef CGAL::Simple_cartesian<double>  K;          // redefinition to avoid name clashing with OpenCV
+typedef K::FT                           FT;       // ft
+typedef K::Ray_3                        Ray;      // ray (for vertical intersection)
 typedef K::Vector_3                     KVector;
 typedef K::Line_3                       KLine;
 typedef K::Plane_3                      KPlane;
