@@ -197,7 +197,6 @@ int initParserT2P(int argc, char *argv[], string newDescription = ""){
         std::cerr << "Use -h, --help command to see usage" << std::endl;
         return lad::ERROR_WRONG_ARGUMENT;
     }
-    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
     return 0;
 }
 
@@ -251,7 +250,6 @@ int initParserIRS(int argc, char *argv[], string newDescription = ""){
         std::cerr << "Use -h, --help command to see usage" << std::endl;
         return lad::ERROR_WRONG_ARGUMENT;
     }
-    // cout << "\tBuilt:\t" << __DATE__ << " - " << __TIME__ << endl;   // TODO: solve, make is complaining about this
     return 0;
 }
 

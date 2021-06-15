@@ -1481,7 +1481,7 @@ namespace lad
         int hKernel_2 = hKernel >> 1;
         int wKernel_2 = wKernel >> 1;
 
-        //on each different position, we apply the kernel as a mask <- TODO: change from RAW_Bathymetry to SparseMatrix representation of VALID Data raster Layer for speed increase
+        //on each different position, we apply the kernel as a mask 
         if (verbosity > VERBOSITY_0){
             logc.debug ("p::applyWindowFilter", "Layers created, now defining container elements");
             s << "[nRows, nCols, hKernel, wKernel] = " << nRows << "/" << nCols << "/" <<  hKernel << "/" <<  wKernel;
@@ -1595,7 +1595,6 @@ namespace lad
                             apDst->rasterData.at<double>(row, col) = slope;
                         }
                         else if (filtertype == FILTER_CONVEX_SLOPE){
-                            // TODO: numerical stability issue: use *acum 
                             // shift height/depth by Z-mena value to improve stability
                             KVector _zmean (0,0,_mean); // 3D vector used to "substract" the mean Z value
                             for (auto &_p:pointList){

@@ -167,7 +167,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // logc.info("processRotationWorker", s);
         // params.rotation = currRotation;
         string suffix = "_r" + makeFixedLength((int) currRotation, 3);
-        // TODO: Add validation for copyemask when src is missing
+        // TODO: Add validation for copymask when src is missing
         logc.info("processRotationWorker", "Recomputing lanes C & D done");
         logc.debug("processRotationWorker", "Computing M3_LandabilityMap");
         // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
@@ -262,7 +262,7 @@ int lad::processLaneD(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         cv::compare(apElev->rasterData, h, D3_layers[i], CMP_GE);
     }
     // we filter (remove) small protrusion clusters
-   // warning: filter size cannot be zero (ceiling to 1)
+   // ISSUE: filter size cannot be zero (ceiling to 1)
     cv::Mat open_disk = cv::getStructuringElement(MORPH_ELLIPSE, cv::Size(ceil(p->protrusionSize/sx), ceil(p->protrusionSize/sy)));
     for (int i=0; i<LO_NPART-1; i++){
         temp = D3_layers[i] - D3_layers[i+1];
@@ -366,7 +366,6 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // logc.debug("laneC", s);
     // we create an unique name using the rotation angle
 
-    // TODO: add witch between the slope calculation method based on parameterStruct content
     if (p->slopeAlgorithm == lad::FilterType::FILTER_SLOPE)
         ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
     else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
@@ -430,7 +429,6 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string affix){
     lad::tictac tt;
     tt.start();
     // we are using affix as prefix 
-    // TODO: add witch between the slope calculation method based on parameterStruct content
     if (p->slopeAlgorithm == lad::FilterType::FILTER_SLOPE)
         ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){

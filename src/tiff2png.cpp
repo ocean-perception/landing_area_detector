@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
     // <ID>,relative_path,altitude [m],roll [deg],pitch [deg],northing [m],easting [m],depth [m],heading [deg],timestamp [s],latitude [deg],longitude [deg]
     // >> filename: [sampled_images.csv] let's create a similar file using the exported data from this file, and merged in the bash caller
 
-    String separator = "\t"; // TODO: user defined separator (for more general compatibility)
+    String separator = "\t"; 
     if (argCsvT2P) separator = ",";
 
     if (verbosity >= 1){

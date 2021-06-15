@@ -558,13 +558,8 @@ namespace lad
         //     cout << convex_mesh.point(*vcirc) << endl;
         // }while (vcirc != done);
   
-        // several pointers to the same object. Safer non-copy access of the data
-
         // we build a constructed copy of the triangular face as plane
-        // TODO: complete plane construction from extracted incident face vertices
         plane = KPlane(convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++), convex_mesh.point(*vcirc++));
-
-        // return the plane defined by the closest intersected triangle
         return plane;
     }
 
