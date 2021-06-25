@@ -236,7 +236,6 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("D3_HiProtMask", outputFileName + "D3_HiProtMask.tif", FMT_TIFF, WORLD_COORDINATE);
     }
   
-    //TODO: use outputfilename as prefix when exporting final layers
     // Final map: M3 = C3_MeanSlope x D2_LoProtExl x D4_HiProtExcl (logical AND)
     if (params.fixRotation == true){
         s << "Calculating maps for fixed rotation [" << blue << params.rotation << reset << "]";
@@ -267,7 +266,6 @@ int main(int argc, char *argv[])
 
     // if fixRotation = false, we iterate from rotationMin to rotationMax
     // TODO: Add verbosity check for intermediate steps (when proc. small files, it's not necessary)
-    // TODO: figure out if we need to export rot-merged lo-slope
     //  hi-slope can be exported directly as it is rot-independent 
     logc.info("main", "Calculating landability maps for every rotation ...");
     s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
