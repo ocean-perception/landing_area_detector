@@ -110,7 +110,7 @@ fn_convert_file (){
 		y_offset=$(($RANDOM%20-10))
 	fi
 	echo -e "$colour_reset Rotation: $local_rotation \tOffset: $x_offset / $y_offset"
-	RESULT=$(tiff2png --csv --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.8 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
+	RESULT=$(tiff2png --int=1 --csv --input=$file --output=$fullname_png --export_tiff=$fullname_tiff --max_z=$SCALE --valid_th=0.2 --rotation=$local_rotation --offset_x=$x_offset --offset_y=$y_offset)
 
 	TOTAL_STRING="${fullname_png}${SEP}${fullname_tiff}${SEP}$RESULT${SEP}6.0${SEP}0.0${SEP}0.0${SEP}0.0${SEP}1"
 	echo -e $TOTAL_STRING | grep -v error >> $2

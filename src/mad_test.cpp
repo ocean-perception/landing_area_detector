@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
 
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
     if (argSaveIntermediate)    params.exportIntermediate = args::get(argSaveIntermediate);
+    // TODO: allow user defined drag coefficient
     if (params.updateThreshold){
         // let's recompute the slope and height thresholds according to the vehicle geometry
         if (params.verbosity > VERBOSITY_0)

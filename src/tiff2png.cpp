@@ -157,12 +157,22 @@ int main(int argc, char *argv[])
     int tly = ny - diag;
     int brx = nx + diag;    // bottom right corner
     int bry = ny + diag;
+
+    if (argIntParamT2P){
+        if (verbosity>=2)
+            logc.warn ("Override", "Using full image canvas for direct image export");
+        tlx = 0;
+        tly = 0;
+        brx = original.cols-1;
+        bry = original.rows-1;
+    }
+
     if (tlx < 0){
-        logc.error("rect", "top left corner X out of range (negative");
+        logc.error("rect", "top left corner X out of range (negative)");
         return -1;
     }
     if (tly < 0){
-        logc.error("rect", "top left corner Y out of range (negative");
+        logc.error("rect", "top left corner Y out of range (negative)");
         return -1;
     }
     if (brx >= original.cols){
@@ -175,24 +185,39 @@ int main(int argc, char *argv[])
         logc.error("rect", s);
         return -1;
     }
-    // 3/crop large extent
-    cv::Mat large_roi (original, cv::Rect2d(tlx, tly, 2*diag, 2*diag)); // the bbox size is twice the diagonal
-    cv::Mat large_crop;
-    large_roi.copyTo (large_crop); 
-    // 4/rotate given angle
-    cv::Mat r = cv::getRotationMatrix2D(cv::Point2f((large_crop.cols-1)/2.0, (large_crop.rows-1)/2.0), rotationAngle, 1.0);
-    // determine bounding rectangle, center not relevant
-    cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), large_crop.size(), rotationAngle).boundingRect2f(); //this was a bit overkill
-    // adjust transformation matrix
-    r.at<double>(0,2) += bbox.width/2.0 - large_crop.cols/2.0;
-    r.at<double>(1,2) += bbox.height/2.0 - large_crop.rows/2.0;
-    cv::Mat rotatedROI;
-    cv::warpAffine(large_crop, rotatedROI, r, bbox.size(), cv::INTER_NEAREST); // using nearest: faster and we avoid interpolation of nodata field
-    // 5/crop small extent (xSize, ySize)
-    tlx = rotatedROI.cols/2 - xSize/2; // center - width 
-    tly = rotatedROI.rows/2 - ySize/2; // center - height
-    bbox = cv::Rect2d(tlx, tly, xSize, ySize);
-    cv::Mat final = rotatedROI(bbox); // crop the final size image, already rotated    
+
+    cv::Mat final;
+
+    if (!argIntParamT2P){
+
+        // 3/crop large extent
+        cv::Mat large_roi (original, cv::Rect2d(tlx, tly, 2*diag, 2*diag)); // the bbox size is twice the diagonal
+        cv::Mat large_crop;
+        large_roi.copyTo (large_crop); 
+        // 4/rotate given angle
+        cv::Mat r = cv::getRotationMatrix2D(cv::Point2f((large_crop.cols-1)/2.0, (large_crop.rows-1)/2.0), rotationAngle, 1.0);
+        // determine bounding rectangle, center not relevant
+        cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), large_crop.size(), rotationAngle).boundingRect2f(); //this was a bit overkill
+        // adjust transformation matrix
+        r.at<double>(0,2) += bbox.width/2.0 - large_crop.cols/2.0;
+        r.at<double>(1,2) += bbox.height/2.0 - large_crop.rows/2.0;
+        cv::Mat rotatedROI;
+        cv::warpAffine(large_crop, rotatedROI, r, bbox.size(), cv::INTER_NEAREST); // using nearest: faster and we avoid interpolation of nodata field
+        // 5/crop small extent (xSize, ySize)
+        tlx = rotatedROI.cols/2 - xSize/2; // center - width 
+        tly = rotatedROI.rows/2 - ySize/2; // center - height
+        bbox = cv::Rect2d(tlx, tly, xSize, ySize);
+
+        cv::Mat final_roi = rotatedROI(bbox); // crop the final size image, already rotated    
+        final_roi.copyTo(final);
+    }
+    else{
+        if (verbosity>=2)
+          logc.warn("main", "Xfering input image to final container");
+        original.copyTo(final);
+    }
+
+    
     // 6/update mask: compare against nodata field
     double nodata = apLayer->getNoDataValue();
         // let's inspect the 'final' matrix and compare against  'nodata'
