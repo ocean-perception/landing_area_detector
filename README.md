@@ -1,12 +1,13 @@
 # landing_area_detector
-Computes seafloor landability map from hi-resolution bathymetry geoTIFF or XYZ non-gridded maps.
+Implementation of underwater landability calculation pipeline. Computes seafloor landability map from vehicle (AUV / ROV) charasteristics and hi-resolution bathymetry geoTIFF or XYZ non-gridded maps, based on the algorithm described in "Autonomous Landing of Underwater Vehicles Using High-Resolution Bathymetry" [https://ieeexplore.ieee.org/document/8897695]
 
-
-C++ based implementation for *Landing Area Detection* pipeline. Current requirements:
-
+# Requirements
 * GDAL for geoTIFF metadata parsing
 * OpenCV for raster image processing (preferred over GDAL specifics)
-* CGAL for improved alphaShape detection
+* CGAL for planet fitting, convex hull (3D) and alpha-shape (2D) extraction
 * OpenMP for multithreading optimization
 
-GIS specific solutions does not provide a seamless connection between different pipeline modules. QGIS plugins for SAGA, GDAL and GRASS fail to provide interoperability. The goal is to provide a low-level C++ modular implementation, and -if necessary- provides an interface with QGIS via Python plugins w/QT.
+# Installation
+
+# Usage
+
