@@ -21,11 +21,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
 
-# WARNING: CGAL / QT5 setup required this preproc
-# set(CMAKE_AUTOMOC ON)
-# set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
-
 find_package(OpenMP)
 if(OPENMP_FOUND)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -33,19 +28,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-# Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
-find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
-message(STATUS "GDAL library status:")
-#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
-message(STATUS "    libraries: ${GDAL_LIBRARY}")
-message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
-
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 # Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release (4.2)
 find_package(OpenCV 4.4 REQUIRED
                         NO_MODULE
-                        PATHS /usr/local
+                        PATHS /local/software/opencv/4.4.0
                         NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will
@@ -78,6 +66,15 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
 #CGAL_Qt5 is needed for the drawing.
+# Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
+find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
+    # On Iridis5- no hinting to /local/software path
+message(STATUS "GDAL library status:")
+#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
+message(STATUS "    libraries: ${GDAL_LIBRARY}")
+message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
+
+
 find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
 
 if(CGAL_Qt5_FOUND)
