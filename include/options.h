@@ -56,9 +56,9 @@ args::ValueFlag	<double> argValidThreshold(argParser,"ratio", "Minimum ratio of 
 args::ValueFlag	<std::string> 	argSlopeAlgorithm(argParser,"method", "Select terrain slope calculation algorithm: PLANE | CONVEX ", {"slope_algorithm"});
 
 //*************************************** tiff2png specific parser
-args::ArgumentParser argParserT2P("","");
-args::HelpFlag 	     argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
-args::CompletionFlag completionT2P(argParserT2P, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
+args::ArgumentParser    argParserT2P("","");
+args::HelpFlag 	        argHelpT2P(argParserT2P, "help", "Display this help menu", {'h', "help"});
+args::CompletionFlag    completionT2P(argParserT2P, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
 args::ValueFlag <std::string> 	argInputT2P(argParserT2P, "input", "Input geoTIFF image, typ bathymetry map",   {'i', "input"});
 args::ValueFlag	<std::string> 	argOutputT2P(argParserT2P,    "filename", "Output file",                         {'o', "output"});
@@ -82,9 +82,9 @@ args::Flag	         	        argCsvT2P(argParserT2P,   "",  "Use comma ',' as co
 
 
 //*************************************** img.resample specific parser
-args::ArgumentParser argParserIRS("","");
-args::HelpFlag 	     argHelpIRS(argParserIRS, "help", "Display this help menu", {'h', "help"});
-args::CompletionFlag completionIRS(argParserIRS, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
+args::ArgumentParser            argParserIRS("","");
+args::HelpFlag 	                argHelpIRS(argParserIRS, "help", "Display this help menu", {'h', "help"});
+args::CompletionFlag            completionIRS(argParserIRS, {"complete"});	//TODO: figure out why is missing in current version of args.hxx
 
 args::ValueFlag <std::string> 	argInputIRS(argParserIRS, "input", "Input geoTIFF image, typ bathymetry map",   {'i', "input"});
 args::ValueFlag	<std::string> 	argOutputIRS(argParserIRS,    "filename", "Output file",                        {'o', "output"});
