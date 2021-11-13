@@ -17,23 +17,25 @@ endif ()
 
 # Define project name
 project(lad_project)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -pthread -mavx2")
+set(CMAKE_CXX_STANDARD 17)          # verify that the compiler supports C++17, as some targets could reversely fallback to c++14
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-find_package(Eigen3 3 REQUIRED)
+find_package(Eigen3 3 REQUIRED) # this used to trigger an issue with the OpenCV 4.X version on Iridis5
 
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
-# Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release (4.2)
-find_package(OpenCV 4.2 REQUIRED
+find_package(OpenCV 4   REQUIRED
                         NO_MODULE
                         PATHS /usr/local
                         NO_DEFAULT_PATH)
@@ -48,7 +50,6 @@ message(STATUS "OpenCV library status:")
 message(STATUS "    version: ${OpenCV_VERSION}")
 message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
-
 
 # Cross your fingers
 # find_package(CUDA)
@@ -77,33 +78,31 @@ message(STATUS "    libraries: ${GDAL_LIBRARY}")
 message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
 
 
-find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
+find_package(CGAL REQUIRED)
+# find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
 
-if(CGAL_Qt5_FOUND)
-  #required to use basic_viewer
-  add_definitions(-DCGAL_USE_BASIC_VIEWER -DQT_NO_KEYWORDS)
-endif()
+# if(CGAL_Qt5_FOUND)
+#   #required to use basic_viewer
+#   add_definitions(-DCGAL_USE_BASIC_VIEWER -DQT_NO_KEYWORDS)
+# endif()
 
 if ( NOT CGAL_FOUND )
   message(STATUS "This project requires the CGAL library, and will not be compiled.")
   return()  
 endif()
 
-
-set(TBB_VERSION "2021.2") # to deal with broken TBBFind.cmake from CGAL
-find_package( TBB)
-
 message(STATUS "CGAL library status:")
 #message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${CGAL_LIBRARY}")
 message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 
-
+set(TBB_VERSION "2021.2") # to deal with broken TBBFind.cmake from CGAL
+find_package( TBB)
 
 # include helper file
 include( ${CGAL_USE_FILE} )
 
-#find_package(PCL REQUIRED COMPONENTS common io)
+#find_package(PCL REQUIRED COMPONENTS common io) #not required yet
 
 # Boost and its components
 find_package( Boost REQUIRED )
@@ -180,29 +179,17 @@ add_executable(img.resample   src/img.resample.cpp
                           # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
                           #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
-############################ IMG_RESAMPLE ####################
-add_executable(cgal.test   src/cgal-test.cpp
-                          ${PROJECT_HEADERS})
-                          #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
+
 #message (${yaml-cpp_INCLUDE_DIRS})
 
-target_compile_options(mad_test     PUBLIC -std=c++14 -mavx)
-target_compile_options(tiff2png     PUBLIC -std=c++14 -mavx)
-target_compile_options(img.resample PUBLIC -std=c++14 -mavx)
+target_compile_options(mad_test     PUBLIC -std=c++17 -mavx)
+target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx)
+target_compile_options(img.resample PUBLIC -std=c++17 -mavx)
 target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 
-if(CGAL_Qt5_FOUND)
-  #link it with the required CGAL libraries
-  target_link_libraries(cgal.test PUBLIC CGAL::CGAL_Qt5)
-endif()
-
-
-#find_package(TBB)
-# include(CGAL_TBB_support)
-#include(CGAL_target_use_TBB)
 
  # Declare the executable target built from your sources
 #  if(USE_CUDA AND CUDA_FOUND)
@@ -229,7 +216,6 @@ endif()
 #     STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
 # endif()
 
-install (TARGETS cgal.test      DESTINATION $ENV{HOME}/bin)
 install (TARGETS mad_test       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)

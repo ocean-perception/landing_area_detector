@@ -33,9 +33,9 @@ double calculateTriArea (vector<Point3d> points){
     Point3d u,v;    // base vectors to be used for triangle area calculation
     u = points[1] - points[0];
     v = points[2] - points[0];
-    register double a = u.y*v.z - u.z*v.y;
-    register double b = u.z*v.x - u.x*v.z;
-    register double c = u.x*v.y - u.y*v.x;
+    double a = u.y*v.z - u.z*v.y;
+    double b = u.z*v.x - u.x*v.z;
+    double c = u.x*v.y - u.y*v.x;
     return sqrt(a*a + b*b + c*c)/2;
 }
 
