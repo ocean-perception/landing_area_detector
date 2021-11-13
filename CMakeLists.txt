@@ -28,12 +28,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
+find_package(Eigen3 3 REQUIRED)
+
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 # Being honest, we could do it with 3.4.X but for future compatibility we should push to the latest LTS release (4.2)
-find_package(OpenCV 4.4 REQUIRED
+find_package(OpenCV 4.2 REQUIRED
                         NO_MODULE
-                        PATHS /local/software/opencv/4.4.0
+                        PATHS /usr/local
                         NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will
