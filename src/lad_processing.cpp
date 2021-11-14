@@ -64,46 +64,51 @@ namespace lad
      * @return float status flag
      */
     float fitPlaneToSetOfPoints(const cv::Mat &pts, cv::Point3f &p0, cv::Vec3f &nml, double sx, double sy) {
-        const int SCALAR_TYPE = CV_64F;
-        typedef float ScalarType;
+        #ifdef IRIDIS_BUILD
+            cout << "Built with TARGET_IRIDS flag enabled. fitPlaneToSetOfPoints not supported in this HPC env" << endl;
+            return -1;
+        #else
+            const int SCALAR_TYPE = CV_64F;
+            typedef float ScalarType;
 
-        // Calculate centroid
-        p0 = cv::Point3f(0,0,0);
-        int nPix = 0;
-        // Calculate centroid
-        for(int r = 0; r < pts.rows; r++) {
-            // We obtain a pointer to the beginning of row r
-            const double* ptr = pts.ptr<double>(r);
-            //compute centroid
-            for(int c = 0; c < pts.cols; c++) {
-                if (ptr[c] !=0){
-                    p0 = p0 + cv::Point3f(c*sx, r*sy, ptr[c]);
-                    ++nPix; //increase the numebr of valid pixels
+            // Calculate centroid
+            p0 = cv::Point3f(0,0,0);
+            int nPix = 0;
+            // Calculate centroid
+            for(int r = 0; r < pts.rows; r++) {
+                // We obtain a pointer to the beginning of row r
+                const double* ptr = pts.ptr<double>(r);
+                //compute centroid
+                for(int c = 0; c < pts.cols; c++) {
+                    if (ptr[c] !=0){
+                        p0 = p0 + cv::Point3f(c*sx, r*sy, ptr[c]);
+                        ++nPix; //increase the numebr of valid pixels
+                    }
                 }
             }
-        }
-        p0 *= 1.0/nPix;
-        // Compose data matrix subtracting the centroid from each point
-        cv::Mat Q(nPix, 3, SCALAR_TYPE);
-        // Calculate centroid
-        int i=0;
-        for(int r = 0; r < pts.rows; r++) {
-            // We obtain a pointer to the beginning of row r
-            const double* ptr = pts.ptr<double>(r);
-            //compute centroid
-            for(int c = 0; c < pts.cols; c++) {
-                if (ptr[c] !=0){
-                    Q.at<ScalarType>(i,0) = c*sx   - p0.x;
-                    Q.at<ScalarType>(i,1) = r*sy   - p0.y;
-                    Q.at<ScalarType>(i,2) = ptr[c] - p0.z;
-                    i++;
+            p0 *= 1.0/nPix;
+            // Compose data matrix subtracting the centroid from each point
+            cv::Mat Q(nPix, 3, SCALAR_TYPE);
+            // Calculate centroid
+            int i=0;
+            for(int r = 0; r < pts.rows; r++) {
+                // We obtain a pointer to the beginning of row r
+                const double* ptr = pts.ptr<double>(r);
+                //compute centroid
+                for(int c = 0; c < pts.cols; c++) {
+                    if (ptr[c] !=0){
+                        Q.at<ScalarType>(i,0) = c*sx   - p0.x;
+                        Q.at<ScalarType>(i,1) = r*sy   - p0.y;
+                        Q.at<ScalarType>(i,2) = ptr[c] - p0.z;
+                        i++;
+                    }
                 }
             }
-        }
-        // Compute SVD decomposition and the Total Least Squares solution, which is the eigenvector corresponding to the least eigenvalue
-        cv::SVD svd(Q, cv::SVD::MODIFY_A|cv::SVD::FULL_UV);
-        nml = svd.vt.row(2);
-        return 0;
+            // Compute SVD decomposition and the Total Least Squares solution, which is the eigenvector corresponding to the least eigenvalue
+            cv::SVD svd(Q, cv::SVD::MODIFY_A|cv::SVD::FULL_UV);
+            nml = svd.vt.row(2);
+            return 0;
+        #endif
     }
 
     /**

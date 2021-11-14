@@ -11,7 +11,7 @@
 #include "lad_core.hpp"
 #include "helper.cpp"
 
-#include <opencv2/cudaarithm.hpp>
+// #include <opencv2/cudaarithm.hpp>
 // using namespace cv::cuda;
 
 namespace lad
@@ -919,11 +919,15 @@ namespace lad
         apLayerR->rasterMask.copyTo(apLayerO->rasterMask);  //transfer mask
 
         //  = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
-        if (verbosity > 1){
-            namedWindow (dstLayer);
-            imshow (dstLayer, apLayerO->rasterData);
-            resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-        }
+        #ifdef IRIDIS_BUILD
+            cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+        #else
+            if (verbosity > 1){
+                namedWindow (dstLayer);
+                imshow (dstLayer, apLayerO->rasterData);
+                resizeWindow(dstLayer, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            }
+        #endif
         // return no error
         return NO_ERROR;
     }
@@ -976,9 +980,13 @@ namespace lad
             }
             // apply colormap for enhanced visualization purposes
             cv::applyColorMap(dst, dst, colormap);
-            namedWindow(apLayer->layerName);
-            imshow(apLayer->layerName, dst);
-            resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #ifdef IRIDIS_BUILD
+                cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+            #else
+                namedWindow(apLayer->layerName);
+                imshow(apLayer->layerName, dst);
+                resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #endif
         }
 
         if (type == LAYER_KERNEL){
@@ -994,14 +1002,19 @@ namespace lad
                 logc.warn("showImage", s);
                 return NO_ERROR;                
             }
-            namedWindow(apLayer->layerName);
-            imshow(apLayer->layerName, apLayer->rasterData);
-            resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-            // resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-            namedWindow(apLayer->layerName + "_rotated");
-            imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
-            resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-            // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #ifdef IRIDIS_BUILD
+                cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+            #else
+                namedWindow(apLayer->layerName);
+                imshow(apLayer->layerName, apLayer->rasterData);
+                resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+                // resizeWindow(apLayer->layerName, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+                namedWindow(apLayer->layerName + "_rotated");
+                imshow(apLayer->layerName + "_rotated", apLayer->rotatedData);
+                resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+                // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #endif
+
         }
 
         return NO_ERROR;
@@ -1055,8 +1068,11 @@ namespace lad
                 cv::normalize(dst, dst, 0, 255, NORM_MINMAX, CV_8UC1); // normalize within the expected range 0-255 for imshow
             }
             // apply colormap for enhanced visualization purposes
-            cv::applyColorMap(dst, dst, colormap);
-            cv::imwrite(filename, dst);
+            #ifdef IRIDIS_BUILD
+                cout << "Built with TARGET_IRIDS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
+            #else
+                cv::imwrite(filename, dst);
+            #endif
         }
 
         if (type == LAYER_KERNEL){
@@ -1072,9 +1088,13 @@ namespace lad
                 logc.warn("saveImage", s);
                 return NO_ERROR;                
             }
-            cv::imwrite(filename, apLayer->rasterData);
-            cv::imwrite(filename + "_rotated", apLayer->rotatedData);
-            // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #ifdef IRIDIS_BUILD
+                cout << "Built with TARGET_IRIDS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
+            #else
+                cv::imwrite(filename, apLayer->rasterData);
+                cv::imwrite(filename + "_rotated", apLayer->rotatedData);
+                // resizeWindow(apLayer->layerName + "_rotated", DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            #endif
         }
 
         return NO_ERROR;

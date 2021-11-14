@@ -120,14 +120,28 @@ set (GEOTIFF_MODULE external/geotiff)
 
 # Greedy include of all headers
 file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
+
+
+set (YAML_DIR $ENV{HOME}/local)
+
 include_directories(BEFORE ../include
                     include
+#                    ${YAML_DIR}/include/yaml-cpp
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIR}
                     ${GEOTIFF_MODULE}/include)
  #                   ${PCL_INCLUDE_DIRS})
+          
+include_directories(AFTER ${YAML_DIR}/include)
 
-# Retrieve git commit information, forward it to compilation time
+if (TARGET_IRIDIS)
+    message (WARNING "Iridis specific build")
+    add_definitions (-DIRIDIS_BUILD)
+endif()
+
+add_definitions(-DTARGE_IRIDIS)
+
+# Retrieve git commit information, forward it as compiler flags so they can be used during building time
 exec_program(
     "git"
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -184,28 +198,24 @@ add_executable(img.resample   src/img.resample.cpp
 # find_path(yaml-cpp INCLUDE_DIRS yaml-cpp/yaml.h )
 # message (STATUS Yaml-cpp: ${yaml-cpp})
 
+find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)
+
+message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
+message (WARNING "    libraries: ${OpenCV_LIBS}")
+
+# message (STATUS "Searching for yaml-cpp in " ${YAML_DIR})
+
+# target_include_directories (mad_test PUBLIC ${YAML_DIR}/include)
+
+
 target_compile_options(mad_test     PUBLIC -std=c++17 -mavx)
 target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx)
 target_compile_options(img.resample PUBLIC -std=c++17 -mavx)
-target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
+target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
+target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
+target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
+target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 
-
- # Declare the executable target built from your sources
-#  if(USE_CUDA AND CUDA_FOUND)
-#   # Add definition to CUDA SUPPORT
-#   add_definitions(-D USE_GPU)
-#   message(STATUS "Configuring for GPU version.")
-#   # Link your application with OpenCV libraries
-#   target_link_libraries(mad_test ${OpenCV_LIBS} ${CUDA_LIBRARIES} ${GDAL_LIBRARY} yaml-cpp)
-# else()
-#   message(STATUS "Configuring for non-GPU version.")
-#   message(STATUS "	Expect a slower speed...")
-#   # Link your application with OpenCV libraries
-#   target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-# endif()
 
 # if(TBB_FOUND)
 #   target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
