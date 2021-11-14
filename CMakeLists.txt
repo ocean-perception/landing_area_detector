@@ -181,8 +181,8 @@ add_executable(img.resample   src/img.resample.cpp
                           # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
 
-find_path(yaml-cpp} INCLUDE_DIRS yaml-cpp/yaml.h )
-message (${yaml-cpp})
+# find_path(yaml-cpp INCLUDE_DIRS yaml-cpp/yaml.h )
+# message (STATUS Yaml-cpp: ${yaml-cpp})
 
 target_compile_options(mad_test     PUBLIC -std=c++17 -mavx)
 target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx)
@@ -206,7 +206,6 @@ target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 #   # Link your application with OpenCV libraries
 #   target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
 # endif()
-
 
 # if(TBB_FOUND)
 #   target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
