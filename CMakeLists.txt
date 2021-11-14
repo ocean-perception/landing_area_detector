@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.10)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release CACHE STRING
@@ -31,13 +31,13 @@ if(OPENMP_FOUND)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-find_package(Eigen3 3 REQUIRED) # this used to trigger an issue with the OpenCV 4.X version on Iridis5
+# find_package(Eigen3 3 REQUIRED) # this used to trigger an issue with the OpenCV 4.X version on Iridis5
 
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 find_package(OpenCV 4   REQUIRED
                         NO_MODULE
-                        PATHS /usr/local
+                        PATHS /usr/local /local/software/opencv/4.4.0
                         NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will
@@ -70,13 +70,25 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 #find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
 #CGAL_Qt5 is needed for the drawing.
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
-find_package(GDAL 2.2 REQUIRED) # Newest releases of GDAL provide VERSION information
+find_package(GDAL     REQUIRED)
+#		      PATHS /local/software/gdal/3.0.1
+#                      NO_DEFAULT_PATH)
+    # Newest releases of GDAL provide VERSION information
     # On Iridis5- no hinting to /local/software path
 message(STATUS "GDAL library status:")
 #message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${GDAL_LIBRARY}")
 message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
 
+#find_package(PCL REQUIRED COMPONENTS common io) #not required yet
+
+# Boost and its components
+find_package( Boost REQUIRED )
+
+if ( NOT Boost_FOUND )
+  message(STATUS "This project requires the Boost library, and will not be compiled.")
+  return()  
+endif()
 
 find_package(CGAL REQUIRED)
 # find_package(CGAL REQUIRED OPTIONAL_COMPONENTS Qt5)
@@ -101,16 +113,6 @@ find_package( TBB)
 
 # include helper file
 include( ${CGAL_USE_FILE} )
-
-#find_package(PCL REQUIRED COMPONENTS common io) #not required yet
-
-# Boost and its components
-find_package( Boost REQUIRED )
-
-if ( NOT Boost_FOUND )
-  message(STATUS "This project requires the Boost library, and will not be compiled.")
-  return()  
-endif()
 
 # Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain, so we just set the path
 #add_subdirectory(external/geotiff)
@@ -178,9 +180,9 @@ add_executable(img.resample   src/img.resample.cpp
                           src/lad_thread.cpp
                           # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
-                          #find_path(yaml-cpp_INCLUDE_DIRS yaml-cpp/yaml.h )
 
-#message (${yaml-cpp_INCLUDE_DIRS})
+find_path(yaml-cpp} INCLUDE_DIRS yaml-cpp/yaml.h )
+message (${yaml-cpp})
 
 target_compile_options(mad_test     PUBLIC -std=c++17 -mavx)
 target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx)
