@@ -31,8 +31,6 @@ if(OPENMP_FOUND)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-# find_package(Eigen3 3 REQUIRED) # this used to trigger an issue with the OpenCV 4.X version on Iridis5
-
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 find_package(OpenCV 4   REQUIRED
@@ -40,35 +38,13 @@ find_package(OpenCV 4   REQUIRED
                         PATHS /usr/local /local/software/opencv/4.4.0
                         NO_DEFAULT_PATH)
 
-# If the package has been found, several variables will
-# be set, you can find the full list with descriptions
+# If the package has been found, several variables will be set, you can find the full list with descriptions
 # in the OpenCVConfig.cmake file.
-# Print some message showing some of them
-# At this level, it should be useful to check minimum required version or exact version
-# So far, there are still some issues with OpenCV installations included in ROS
 message(STATUS "OpenCV library status:")
 message(STATUS "    version: ${OpenCV_VERSION}")
 message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
-# Cross your fingers
-# find_package(CUDA)
-
-# if(CUDA_FOUND)
-#     INCLUDE(FindCUDA)
-#   # If the package has been found, several variables will
-#   # be set, you can find the full list with descriptions
-#   # in the CUDAConfig.cmake file.
-#   # Print some message showing some of them
-#   message(STATUS "CUDA library status:")
-#   message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
-#   message(STATUS "    version: ${CUDA_VERSION}")
-#   message(STATUS "    libraries: ${CUDA_LIBRARIES}")
-#   message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
-# endif(CUDA_FOUND)
-
-#find_package(CGAL REQUIRED COMPONENTS Qt5 Core)
-#CGAL_Qt5 is needed for the drawing.
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
 find_package(GDAL     REQUIRED)
 #		      PATHS /local/software/gdal/3.0.1
@@ -104,7 +80,6 @@ if ( NOT CGAL_FOUND )
 endif()
 
 message(STATUS "CGAL library status:")
-#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${CGAL_LIBRARY}")
 message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 
@@ -126,7 +101,6 @@ set (YAML_DIR $ENV{HOME}/local)
 
 include_directories(BEFORE ../include
                     include
-#                    ${YAML_DIR}/include/yaml-cpp
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIR}
                     ${GEOTIFF_MODULE}/include)
@@ -137,6 +111,7 @@ include_directories(AFTER ${YAML_DIR}/include)
 if (TARGET_IRIDIS)
     message (WARNING "Iridis specific build")
     add_definitions (-DIRIDIS_BUILD)
+    # This invocation flag was added to enable Iridis5 specific patch for broken OpenCV installation. Libs are missing
 endif()
 
 add_definitions(-DTARGE_IRIDIS)
@@ -204,7 +179,6 @@ message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 message (WARNING "    libraries: ${OpenCV_LIBS}")
 
 # message (STATUS "Searching for yaml-cpp in " ${YAML_DIR})
-
 # target_include_directories (mad_test PUBLIC ${YAML_DIR}/include)
 
 
@@ -215,17 +189,6 @@ target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
-
-
-# if(TBB_FOUND)
-#   target_link_libraries(mad_test PUBLIC ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-#   message(
-#     STATUS "NOTICE: Intel TBB was found...")
-# else()
-#   target_link_libraries(mad_test ${OpenCV_LIBS} ${GDAL_LIBRARY} yaml-cpp)
-#   message(
-#     STATUS "NOTICE: Intel TBB was not found. Sequential code will be used.")
-# endif()
 
 install (TARGETS mad_test       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
