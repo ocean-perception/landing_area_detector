@@ -920,7 +920,7 @@ namespace lad
 
         //  = cv::Mat::ones(apLayerO->rasterData.size(), CV_8UC1);
         #ifdef IRIDIS_BUILD
-            cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+            cout << "Built with TARGET_IRIDIS flag enabled. No GUI enabled" << endl;
         #else
             if (verbosity > 1){
                 namedWindow (dstLayer);
@@ -981,7 +981,7 @@ namespace lad
             // apply colormap for enhanced visualization purposes
             cv::applyColorMap(dst, dst, colormap);
             #ifdef IRIDIS_BUILD
-                cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+                cout << "Built with TARGET_IRIDIS flag enabled. No GUI enabled" << endl;
             #else
                 namedWindow(apLayer->layerName);
                 imshow(apLayer->layerName, dst);
@@ -1003,7 +1003,7 @@ namespace lad
                 return NO_ERROR;                
             }
             #ifdef IRIDIS_BUILD
-                cout << "Built with TARGET_IRIDS flag enabled. No GUI enabled" << endl;
+                cout << "Built with TARGET_IRIDIS flag enabled. No GUI enabled" << endl;
             #else
                 namedWindow(apLayer->layerName);
                 imshow(apLayer->layerName, apLayer->rasterData);
@@ -1069,7 +1069,7 @@ namespace lad
             }
             // apply colormap for enhanced visualization purposes
             #ifdef IRIDIS_BUILD
-                cout << "Built with TARGET_IRIDS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
+                cout << "Built with TARGET_IRIDIS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
             #else
                 cv::imwrite(filename, dst);
             #endif
@@ -1089,7 +1089,7 @@ namespace lad
                 return NO_ERROR;                
             }
             #ifdef IRIDIS_BUILD
-                cout << "Built with TARGET_IRIDS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
+                cout << "Built with TARGET_IRIDIS flag enabled. No cv::imwrite support on Iridis (env bug)" << endl;
             #else
                 cv::imwrite(filename, apLayer->rasterData);
                 cv::imwrite(filename + "_rotated", apLayer->rotatedData);

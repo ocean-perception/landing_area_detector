@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release CACHE STRING
@@ -35,7 +35,7 @@ endif()
 # to the absolute path to the directory containing OpenCVConfig.cmake file
 find_package(OpenCV 4   REQUIRED
                         NO_MODULE
-                        PATHS /usr/local /local/software/opencv/4.4.0
+                        PATHS /usr/local /local/software/opencv/4.5.3
                         NO_DEFAULT_PATH)
 
 # If the package has been found, several variables will be set, you can find the full list with descriptions
@@ -46,15 +46,13 @@ message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
-find_package(GDAL     REQUIRED)
-#		      PATHS /local/software/gdal/3.0.1
-#                      NO_DEFAULT_PATH)
-    # Newest releases of GDAL provide VERSION information
-    # On Iridis5- no hinting to /local/software path
+    # export GDAL_DIR=/local/software/gdal/3.0.1/
+    # On Iridis5- hinting to /local/software path using GDAL_DIR ENV
+find_package(GDAL MODULE REQUIRED) # Newest releases of GDAL provide VERSION information
 message(STATUS "GDAL library status:")
-#message(STATUS "    version: ${GDAL_version}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
+message(STATUS "    version: ${GDAL_VERSION}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
 message(STATUS "    libraries: ${GDAL_LIBRARY}")
-message(STATUS "    include path: ${GDAL_INCLUDE_DIR}")
+message(STATUS "    include path: ${GDAL_INCLUDE_DIRS}")
 
 #find_package(PCL REQUIRED COMPONENTS common io) #not required yet
 
@@ -102,7 +100,7 @@ set (YAML_DIR $ENV{HOME}/local)
 include_directories(BEFORE ../include
                     include
                     ${OpenCV_INCLUDE_DIRS}
-                    ${GDAL_INCLUDE_DIR}
+                    ${GDAL_INCLUDE_DIRS}
                     ${GEOTIFF_MODULE}/include)
  #                   ${PCL_INCLUDE_DIRS})
           
@@ -111,10 +109,10 @@ include_directories(AFTER ${YAML_DIR}/include)
 if (TARGET_IRIDIS)
     message (WARNING "Iridis specific build")
     add_definitions (-DIRIDIS_BUILD)
+    add_definitions (-DTARGET_IRIDIS)
     # This invocation flag was added to enable Iridis5 specific patch for broken OpenCV installation. Libs are missing
 endif()
 
-add_definitions(-DTARGE_IRIDIS)
 
 # Retrieve git commit information, forward it as compiler flags so they can be used during building time
 exec_program(
@@ -176,7 +174,7 @@ add_executable(img.resample   src/img.resample.cpp
 find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)
 
 message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
-message (WARNING "    libraries: ${OpenCV_LIBS}")
+# message (WARNING "    libraries: ${OpenCV_LIBS}")
 
 # message (STATUS "Searching for yaml-cpp in " ${YAML_DIR})
 # target_include_directories (mad_test PUBLIC ${YAML_DIR}/include)
