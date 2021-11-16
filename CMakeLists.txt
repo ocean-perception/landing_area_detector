@@ -33,8 +33,8 @@ endif()
 
 # Find OpenCV, you may need to set OpenCV_DIR variable
 # to the absolute path to the directory containing OpenCVConfig.cmake file
-find_package(OpenCV 4   REQUIRED
-                        NO_MODULE
+find_package(OpenCV 4   REQUIRED core imgproc
+                        
                         PATHS /usr/local /local/software/opencv/4.5.3
                         NO_DEFAULT_PATH)
 
