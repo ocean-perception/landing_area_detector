@@ -17,10 +17,10 @@ endif ()
 
 # Define project name
 project(lad_project)
-set(CMAKE_CXX_STANDARD 17)          # verify that the compiler supports C++17, as some targets could reversely fallback to c++14
+set(CMAKE_CXX_STANDARD 11)          # verify that the compiler supports C++11, as some targets could reversely fallback to c++14
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -mavx2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
 
@@ -180,9 +180,9 @@ message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 # target_include_directories (mad_test PUBLIC ${YAML_DIR}/include)
 
 
-target_compile_options(mad_test     PUBLIC -std=c++17 -mavx)
-target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx)
-target_compile_options(img.resample PUBLIC -std=c++17 -mavx)
+target_compile_options(mad_test     PUBLIC -std=c++11 -mavx)
+target_compile_options(tiff2png     PUBLIC -std=c++11 -mavx)
+target_compile_options(img.resample PUBLIC -std=c++11 -mavx)
 target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
