@@ -35,13 +35,12 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
-message ("${Cyan}")
-
 # Define project name
 project(lad_project)
 set(CMAKE_CXX_STANDARD 17)          # verify that the compiler supports C++17, as some targets could reversely fallback to c++14
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+message ("${Cyan} Configuring system")
 # GNU compiler flags. If you are using a different compiler, you may need to change these flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -mavx2")
 # Additional flags for vectorized/multithread profiling and debugging
@@ -54,20 +53,9 @@ if(OPENMP_FOUND)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-# find_package(CUDAToolkit  11.4  REQUIRED)
-#  IF(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17.0") 
-#    find_package(CUDAToolkit) 
-#  ELSE() 
-#    include(${CMAKE_CURRENT_LIST_DIR}/CudaToolkit.cmake) 
-#  ENDIF() 
-
-find_package(CUDA REQUIRED) # FindCUDA is deprecated, future releases will use find_package(CUDAToolkit)
+find_package(CUDA) # FindCUDA is deprecated, future releases will use find_package(CUDAToolkit)
 if(CUDA_FOUND)
   include(FindCUDA)
-  # If the package has been found, several variables will
-  # be set, you can find the full list with descriptions
-  # in the CUDAConfig.cmake file.
-  # Print some message showing some of them
   message("${BoldGreen}" "CUDA library status: ${ColourReset}")
   message(STATUS "    toolkit root dir: ${CUDA_TOOLKIT_ROOT_DIR}")
   message(STATUS "    version: ${CUDA_VERSION}")
@@ -103,6 +91,11 @@ find_package( Boost REQUIRED )
 if ( NOT Boost_FOUND )
   message(WARNING "This project requires the Boost library, and will not be compiled.")
   return()  
+else()
+  message("${BoldGreen}" "Boost library status:" "${ColourReset}")
+  message(STATUS "    version: ${Boost_VERSION}")
+  message(STATUS "    libraries: ${Boost_LIBRARIES}")
+  message(STATUS "    include path: ${Boost_INCLUDE_DIRS}")
 endif()
 
 find_package(CGAL REQUIRED)
@@ -117,20 +110,6 @@ message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
 # include helper file
 include( ${CGAL_USE_FILE} )
 
-# set(TBB_VERSION "2021.2") # to deal with broken TBBFind.cmake from CGAL
-find_package(TBB REQUIRED tbb)  # technically, it is possible not to use TBB
-if ( NOT TBB_FOUND )
-  message(WARNING "This project requires the TBB library, and will not be compiled.")
-  return()
-else()
-  message("${BoldGreen}" "TBB library status:" "${ColourReset}")
-  message(STATUS "    version: ${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR}")
-  message(STATUS "    libraries: ${TBB_LIBRARY}")
-  message(STATUS "    include path: ${TBB_INCLUDE_DIR}")
-endif()
-
-
-
 # Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain, so we just set the path
 #add_subdirectory(external/geotiff)
 set (GEOTIFF_MODULE external/geotiff)
@@ -138,7 +117,7 @@ set (GEOTIFF_MODULE external/geotiff)
 # Greedy include of all headers
 file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
 
-set (YAML_DIR $ENV{HOME}/local)
+set (YAML_DIR $ENV{HOME}/local) # Path hint for YAML package installed from github
 
 include_directories(BEFORE ../include
                     include
@@ -148,14 +127,6 @@ include_directories(BEFORE ../include
  #                   ${PCL_INCLUDE_DIRS})
           
 include_directories(AFTER ${YAML_DIR}/include)
-
-# Iridis5 OpenCV installation (4.5.3) was broken, wrong CXX_ABI signature. Appears to have been solved
-if (TARGET_IRIDIS)
-    message (WARNING "Iridis specific build")
-    add_definitions (-DIRIDIS_BUILD)
-    add_definitions (-DTARGET_IRIDIS)
-    # This invocation flag was added to enable Iridis5 specific patch for broken OpenCV installation. Libs are missing
-endif()
 
 # Retrieve git commit information, forward it as compiler flags so they can be used during building time
 exec_program(
