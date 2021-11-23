@@ -28,8 +28,11 @@ using namespace lad;
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/cudaarithm.hpp>
-#include <opencv2/cudafeatures2d.hpp>
+
+#ifdef USE_CUDA
+  #include <opencv2/cudaarithm.hpp>
+  #include <opencv2/cudafeatures2d.hpp>
+#endif
 
 logger::ConsoleOutput logc;
 

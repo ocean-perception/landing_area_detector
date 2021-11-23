@@ -10,8 +10,11 @@
  */
 #include "lad_core.hpp"
 #include "helper.cpp"
-#include <opencv2/cudaarithm.hpp>
-#include <opencv2/cudaimgproc.hpp>
+
+#ifdef USE_CUDA
+  #include <opencv2/cudaarithm.hpp>
+  #include <opencv2/cudaimgproc.hpp>
+#endif
 // #include <opencv2/cudaarithm.hpp>
 // using namespace cv::cuda;
 
