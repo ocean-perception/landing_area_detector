@@ -10,7 +10,8 @@
  */
 #include "lad_core.hpp"
 #include "helper.cpp"
-
+#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudaimgproc.hpp>
 // #include <opencv2/cudaarithm.hpp>
 // using namespace cv::cuda;
 
@@ -1560,22 +1561,28 @@ namespace lad
                     double acum = 0;
                     int r;
 
-                    cv::Mat temp, mask;
-                    cv::Mat subMask   = kernelMaskBin    (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
-                    cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
-                    cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
-
-    // rather than performing non-parallel bitwise_and and the filter sequentially
-    // we can reduce the valid roi and convert into the pointListReduced exploiting better branching behaviour
-    // in CPU host, combined with cache memory locality (requested memory fairly contiguous)
-
                     std::vector<KPoint> pointList;
                     pointList.reserve(0.5*nCols*nRows); // experimental: we have some good estimation of necessary space
-
                     std::vector<KPoint> pointListReduced;   // vector containing points inside the sensor footprint
                     pointListReduced.reserve(2000);
 
-                    cv::bitwise_and(subMask, roi_patch, mask);
+                    cv::Mat temp, mask;
+                    cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
+
+                    #ifdef USE_CUDA
+                        cv::cuda::GpuMat subMask_gpu = kernelMaskBin_gpu (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
+                        cv::cuda::GpuMat roi_patch_gpu= roi_image_gpu (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
+                        cv::cuda::GpuMat mask_gpu;
+                        cv::cuda::bitwise_and(subMask_gpu, roi_patch_gpu, mask_gpu);
+                        mask_gpu.download(mask);
+
+                    #else
+                        cv::Mat subMask   = kernelMaskBin    (cv::Range(yi, yf), cv::Range(xi, xf)); //8UC1 subImage contains the raw data patch
+                        cv::Mat roi_patch = roi_image        (cv::Range(rt, rb), cv::Range(cl, cr)); //8UC1 apKernel contains and additional mask
+                        // cv::Mat subImage  = apSrc->rasterData(cv::Range(rt, rb), cv::Range(cl, cr)); //64FC1 
+                        cv::bitwise_and(subMask, roi_patch, mask);
+                    #endif
+
                     subImage.copyTo(temp, mask);
                     r = convertMatrix2Vector_Points  (temp, sx, sy, pointList, &acum, pointListReduced, parameters.geotechSensor.diameter); // 
 

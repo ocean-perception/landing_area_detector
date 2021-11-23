@@ -3,17 +3,18 @@
  * @author Jose Cappelletto (cappelletto@gmail.com)
  * @brief Measurability Area Detector, extended version of LAD test
  *        Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL & GDAL
- * @version 0.1
- * @date 2020-10-03
+ *        Part of PhD project on predicting landable areas for autonomous vehicles using remotely sensed data
+ *        Ocean Perception Lab. University of Southampton, UK. oceans.soton.ac.uk
+ * @version 3.5-dirty
+ * @date 2021-11-18
  * 
- * @copyright Copyright (c) 2020
+ * @copyright Copyright (c) 2020-2021
  * 
  */
 #include "headers.h"
 #include "helper.h"
-
 #include "options.h"
-#include "geotiff.hpp" // Geotiff class definitions
+#include "geotiff.hpp"
 #include "lad_core.hpp"
 #include "lad_config.hpp"
 #include "lad_analysis.h"
@@ -25,6 +26,11 @@ using namespace std;
 using namespace cv;
 using namespace lad;
 
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudafeatures2d.hpp>
+
 logger::ConsoleOutput logc;
 
 /*!
@@ -33,18 +39,28 @@ logger::ConsoleOutput logc;
 */
 int main(int argc, char *argv[])
 {
-    cout << cyan << "mad_test" << reset << endl; // CREATE OUTPUT TEMPLATE STRING
+    cout << cyan << "mad_test" << reset << endl;
     cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
     cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
     cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
     // std::cout << cv::getBuildInformation() << std::endl;
 
+    #ifdef USE_CUDA
+        cout << blue << "\tCUDA enabled" << reset << endl;
+        cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
+        int cuda_devices_number = cv::cuda::getCudaEnabledDeviceCount();
+        cout << "CUDA Device(s) Number: "<< cuda_devices_number << endl;
+        cv::cuda::DeviceInfo _deviceInfo;
+        bool _isd_evice_compatible = _deviceInfo.isCompatible();
+        cout << "CUDA Device(s) Compatible: " << _isd_evice_compatible << endl;
+        cv::cuda::setDevice(0);
+    #endif
+
     int retval = initParser(argc, argv);    // initial argument validation, populates arg parsing structure args
     if (retval != 0)                        // some error ocurred, we have been signaled to stop
         return retval;
     std::ostringstream s;
-    // Parameters hierarchy
-    // ARGS > CONFIG > DEFAULT (this)
+    // Parameters hierarchy: ARGS > CONFIG > DEFAULT (this)
     parameterStruct params = getDefaultParams(); // structure to hold configuration (populated with defaults).
     // They will be updated if config file or command line arguments are provided
     YAML::Node config;
@@ -52,11 +68,11 @@ int main(int argc, char *argv[])
         config = lad::readConfiguration(args::get(argConfig), &params); // populates params structure with content of the YAML file
     // Input file priority: must be defined either by the config.yaml or --input argument
     string inputFileName    = ""; // command arg or config defined
-    string outputFileName   = ""; // if none, output filenames will be the same as the standard. If non-null, will be used as prefix
-    string outputFilePath   = ""; // same relative folder
+    string outputFileName   = ""; // if empty, output filenames will be the same as the standard. If non-null, will be used as prefix
+    string outputFilePath   = ""; // absolut/relative folder path were output will be stored
 
-    if (argInput)   inputFileName    = args::get(argInput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
-    if (argOutput)  outputFileName   = args::get(argOutput); //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argInput)   inputFileName    = args::get(argInput);   //input file is mandatory positional argument. Overrides any definition in configuration.yaml
+    if (argOutput)  outputFileName   = args::get(argOutput);  //input file is mandatory positional argument. Overrides any definition in configuration.yaml
     if (argVerbose) params.verbosity = args::get(argVerbose); // retrieve user defined verbosity level
 
     if (inputFileName.empty()){ //not defined as command line argument? let's use config.yaml definition
@@ -158,7 +174,7 @@ int main(int argc, char *argv[])
     logc.info("main", s);
     
     pipeline.parameters = params;   // forward config/user defined parameters to the internal pipeline structure
-    pipeline.useNodataMask = true;//params.useNoDataMask;
+    pipeline.useNodataMask = true;  //params.useNoDataMask;
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 
     pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
@@ -167,7 +183,7 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("M1_RAW_Bathymetry", outputFileName + "M1_RAW_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
         pipeline.exportLayer("M1_CONTOUR_Mask", outputFileName + "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     }
-    pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT);
+    pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT); // vehicle footprint: rectangular
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);  // TODO: convert this into a size/resolution aware method
     pipeline.createKernelTemplate("KernelDiag",  params.robotDiagonal, params.robotDiagonal, cv::MORPH_ELLIPSE);
     dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
@@ -184,18 +200,15 @@ int main(int argc, char *argv[])
     threadLaneA.join();
     threadLaneB.join();
 
-    if (argTerrainOnly){ 
+    if (argTerrainOnly){ // terrain-only maps. No vehicle-specific maps will be calculated, useful for quick diagnostics
         if (params.verbosity > 0){
-            // we will only generate terrain-specific maps for their external analysis. Lanes A&B. The other lanes C, D & X depend on geometrical parameters of the AUV
             logc.debug("main", "Exporting terrain specifics only: Lanes A & B. Finishing ...");
             tt.lap("** Lanes A & B");
         }
         pipeline.saveImage("A1_DetailedSlope", outputFileName + "A1_DetailedSlope.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("A1_DetailedSlope", outputFileName + "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
-
         pipeline.saveImage("B1_HEIGHT_Bathymetry", outputFileName + "B1_HEIGHT_Bathymetry.png", COLORMAP_TWILIGHT_SHIFTED);
         pipeline.exportLayer("B1_HEIGHT_Bathymetry", outputFileName + "B1_HEIGHT_Bathymetry.tif", FMT_TIFF, WORLD_COORDINATE);
-
         return NO_ERROR;
     }
 
@@ -310,17 +323,24 @@ int main(int argc, char *argv[])
     pipeline.copyMask("M1_RAW_Bathymetry", "M3_LandabilityMap_BLEND");
     pipeline.createLayer("M4_FinalMeasurability_BLEND", LAYER_RASTER);
     pipeline.copyMask("M1_RAW_Bathymetry", "M4_FinalMeasurability_BLEND");
+    pipeline.createLayer("C2_MeanSlope_BLEND", LAYER_RASTER);
+    pipeline.copyMask("M1_RAW_Bathymetry", "C2_MeanSlope_BLEND");
+
     auto apBase    = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M1_RAW_Bathymetry"));
     auto apFinal   = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M3_LandabilityMap_BLEND"));
     auto apMeasure = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("M4_FinalMeasurability_BLEND"));
+    auto apSlope   = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer("C2_MeanSlope_BLEND"));
 
     apFinal->copyGeoProperties(apBase);
     apFinal->setNoDataValue(DEFAULT_NODATA_VALUE);
     apMeasure->copyGeoProperties(apBase);
     apMeasure->setNoDataValue(DEFAULT_NODATA_VALUE);
+    apSlope->copyGeoProperties(apBase);
+    apSlope->setNoDataValue(DEFAULT_NODATA_VALUE);
 
     apFinal->rasterData   = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
     apMeasure->rasterData = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
+    apSlope->rasterData   = cv::Mat(apBase->rasterData.size(), CV_64FC1, DEFAULT_NODATA_VALUE); // NODATA raster, then we upload the values
     cv::Mat acum          = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
 
     // pipeline.showInfo();
@@ -356,8 +376,6 @@ int main(int argc, char *argv[])
 
     pipeline.saveImage("M3_LandabilityMap_BLEND", outputFileName + "M3_LandabilityMap_BLEND.png");
     pipeline.exportLayer("M3_LandabilityMap_BLEND", outputFileName + "M3_LandabilityMap_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
-//    pipeline.showImage("M3_LandabilityMap_BLEND");
-
 //*******************************************************//
     acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
     for (int r=0; r<=nIter; r++){
@@ -375,7 +393,7 @@ int main(int argc, char *argv[])
         if (apCurrent == nullptr){
             s << "Failed to retrieve layer apCurrent [ " << currentname << "], line: " << __LINE__;
             logc.error("M4-blend", s);
-        }        // let's convert to a CV64FC1 normalized matrix
+        }        // let's convert to a CV64FC1 normalized matrix. This may not be necessary if layer data already stored as CV64FC1
         cv::Mat currentmat;
         apCurrent->rasterData.convertTo(currentmat, CV_64FC1);
         acum = acum + currentmat; // sum to the acum
@@ -390,8 +408,39 @@ int main(int argc, char *argv[])
 
     pipeline.saveImage("M4_FinalMeasurability_BLEND", outputFileName + "M4_FinalMeasurability_BLEND.png");
     pipeline.exportLayer("M4_FinalMeasurability_BLEND", outputFileName + "M4_FinalMeasurability_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
-//    pipeline.showImage("M4_FinalMeasurability_BLEND");
+//*******************************************************//
+    acum = cv::Mat::zeros(apBase->rasterData.size(), CV_64FC1); // acumulator matrix
+    for (int r=0; r<=nIter; r++){
+        double currRotation = params.rotationMin + r*params.rotationStep;
+        s <<  "Current orientation [" << cyan << currRotation << reset << "] degrees. Blending [" << yellow << r << "/" << nIter << reset << "]";
+        logc.info("main",s);
+        // params.rotation = currRotation;
+        string suffix = "_r" + makeFixedLength((int) currRotation, 3);
+        string currentname = "C2_MeanSlope" + suffix;
+        // if (params.exportRotated)
+        //     pipeline.saveImage(currentname, currentname + ".png");
+        // cout << "\tName: " << currentname << endl;
+        // let's retrieve the rasterData for the current orientation layer
+        auto apCurrent = dynamic_pointer_cast<RasterLayer>(pipeline.getLayer(currentname));
+        if (apCurrent == nullptr){
+            s << "Failed to retrieve layer apCurrent [ " << currentname << "], line: " << __LINE__;
+            logc.error("C2-blend", s);
+        }        // let's convert to a CV64FC1 normalized matrix. This may not be necessary if layer data already stored as CV64FC1
+        cv::Mat currentmat;
+        apCurrent->rasterData.convertTo(currentmat, CV_64FC1);
+        acum = acum + currentmat; // sum to the acum
+    }
 
+    logc.info("main", "Blending all rotation-depending Slope-maps (C2)...");
+    logc.info("main", "Normalizing...");
+    acum = acum / (nIter+1);    //normalizing
+    logc.info("main", "Exporting C2_MeanSlope_BLEND");
+    // transfer, via mask
+    acum.copyTo(apSlope->rasterData, apFinal->rasterMask); // dst.rasterData use non-null values as binary mask ones
+
+    pipeline.saveImage("C2_MeanSlope_BLEND", outputFileName + "C2_MeanSlope_BLEND.png");
+    pipeline.exportLayer("C2_MeanSlope_BLEND", outputFileName + "C2_MeanSlope_BLEND.tif", FMT_TIFF, WORLD_COORDINATE);
+//*******************************************************//
     if (params.verbosity > 1)
         pipeline.showInfo();
 

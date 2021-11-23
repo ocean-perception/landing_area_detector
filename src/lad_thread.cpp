@@ -200,7 +200,7 @@ int lad::processLaneX(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     // s << "computeMeasurability -> X1_MeasurabilityMap for " << blue << suffix; 
     // logc.debug("laneX", s);
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
-    // ap->showImage("C2_MeanSlopeMap");
+    // ap->showImage("C2_MeanSlope");
     if (p->exportRotated){
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
@@ -362,33 +362,33 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
     lad::tictac tt;
     tt.start();
     ostringstream s;
-    // s << "computeMeanSlopeMap -> C2_MeanSlopeMap for " << blue << suffix;
+    // s << "computeMeanSlopeMap -> C2_MeanSlope for " << blue << suffix;
     // logc.debug("laneC", s);
     // we create an unique name using the rotation angle
 
     if (p->slopeAlgorithm == lad::FilterType::FILTER_SLOPE)
-        ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
+        ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlope" + suffix);
     else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
-        ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlopeMap" + suffix);
+        ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "C2_MeanSlope" + suffix);
         cout << "Lane C: Using CHull algo" << endl;
     }
 
-    // ap->showImage("C2_MeanSlopeMap");
+    // ap->showImage("C2_MeanSlope");
     if (p->exportRotated){
-        ap->saveImage("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".png");
-        ap->exportLayer("C2_MeanSlopeMap" + suffix, "C2_MeanSlopeMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+        ap->saveImage("C2_MeanSlope" + suffix, "C2_MeanSlope" + suffix + ".png");
+        ap->exportLayer("C2_MeanSlope" + suffix, "C2_MeanSlope" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    // logc.debug("laneC", "compareLayer -> C2_MeanSlopeMapExcl");
-    ap->compareLayer("C2_MeanSlopeMap" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
+    // logc.debug("laneC", "compareLayer -> C2_MeanSlopeExcl");
+    ap->compareLayer("C2_MeanSlope" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
     if (p->exportRotated){
         ap->saveImage("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".png");
         ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    // tt.lap("Lane C: C2_MeanSlopeMap");
+    // tt.lap("Lane C: C2_MeanSlope");
     // logc.debug("laneC", "computeMeasurability -> X1_MeasurabilityMap");
     ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
-    // ap->showImage("C2_MeanSlopeMap");
+    // ap->showImage("C2_MeanSlope");
     if (p->exportRotated){
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
         ap->exportLayer("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
@@ -433,7 +433,7 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string affix){
         ap->computeMeanSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
     else if (p->slopeAlgorithm == lad::FilterType::FILTER_CONVEX_SLOPE){
         ap->computeConvexSlopeMap("M1_RAW_Bathymetry", "KernelSlope", "M1_VALID_DataMask", "A1_DetailedSlope");
-        cout << "Lane A: Using CHull algo" << endl;
+        cout << "Lane A: Using CHull algorithm (slower)" << endl;
     }
 
     // ap->showImage("A1_DetailedSlope",COLORMAP_JET);
