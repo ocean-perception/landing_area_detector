@@ -1,0 +1,115 @@
+[1;36mmad_test[0m
+	OpenCV version:	[1;33m4.5.2[0m
+	Git commit:	[1;33mv3.5-ReleaseTest-37-g98e3-dirty[0m
+	Mode:		[1;33mRelease[0m
+
+General configuration for OpenCV 4.5.2 =====================================
+  Version control:               unknown
+
+  Extra modules:
+    Location (extra):            /home/cappelletto/install/opencv/opencv_contrib-4.5.2/modules
+    Version control (extra):     unknown
+
+  Platform:
+    Timestamp:                   2021-04-16T19:06:58Z
+    Host:                        Linux 5.4.0-88-generic x86_64
+    CMake:                       3.16.3
+    CMake generator:             Unix Makefiles
+    CMake build tool:            /usr/bin/make
+    Configuration:               Release
+
+  CPU/HW features:
+    Baseline:                    SSE SSE2 SSE3 SSSE3 SSE4_1 POPCNT SSE4_2 FP16 FMA3 AVX AVX2
+      requested:                 AVX2
+    Dispatched code generation:  AVX512_SKX
+      requested:                 SSE4_1 SSE4_2 AVX FP16 AVX2 AVX512_SKX
+      AVX512_SKX (4 files):      + AVX_512F AVX512_COMMON AVX512_SKX
+
+  C/C++:
+    Built as dynamic libs?:      YES
+    C++ standard:                11
+    C++ Compiler:                /usr/bin/c++  (ver 10.3.0)
+    C++ flags (Release):         -fsigned-char -ffast-math -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -mssse3 -msse4.1 -mpopcnt -msse4.2 -mf16c -mfma -mavx -mavx2 -fvisibility=hidden -fvisibility-inlines-hidden -fopenmp -O3 -DNDEBUG  -DNDEBUG
+    C++ flags (Debug):           -fsigned-char -ffast-math -W -Wall -Werror=return-type -Werror=non-virtual-dtor -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wundef -Winit-self -Wpointer-arith -Wshadow -Wsign-promo -Wuninitialized -Wsuggest-override -Wno-delete-non-virtual-dtor -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -mssse3 -msse4.1 -mpopcnt -msse4.2 -mf16c -mfma -mavx -mavx2 -fvisibility=hidden -fvisibility-inlines-hidden -fopenmp -g  -O0 -DDEBUG -D_DEBUG
+    C Compiler:                  /usr/bin/cc
+    C flags (Release):           -fsigned-char -ffast-math -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -mssse3 -msse4.1 -mpopcnt -msse4.2 -mf16c -mfma -mavx -mavx2 -fvisibility=hidden -fopenmp -O3 -DNDEBUG  -DNDEBUG
+    C flags (Debug):             -fsigned-char -ffast-math -W -Wall -Werror=return-type -Werror=address -Werror=sequence-point -Wformat -Werror=format-security -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes -Wundef -Winit-self -Wpointer-arith -Wshadow -Wuninitialized -Wno-comment -Wimplicit-fallthrough=3 -Wno-strict-overflow -fdiagnostics-show-option -Wno-long-long -pthread -fomit-frame-pointer -ffunction-sections -fdata-sections  -msse -msse2 -msse3 -mssse3 -msse4.1 -mpopcnt -msse4.2 -mf16c -mfma -mavx -mavx2 -fvisibility=hidden -fopenmp -g  -O0 -DDEBUG -D_DEBUG
+    Linker flags (Release):      -Wl,--exclude-libs,libippicv.a -Wl,--exclude-libs,libippiw.a   -Wl,--gc-sections -Wl,--as-needed  
+    Linker flags (Debug):        -Wl,--exclude-libs,libippicv.a -Wl,--exclude-libs,libippiw.a   -Wl,--gc-sections -Wl,--as-needed  
+    ccache:                      NO
+    Precompiled headers:         NO
+    Extra dependencies:          m pthread cudart_static -lpthread dl rt nppc nppial nppicc nppidei nppif nppig nppim nppist nppisu nppitc npps cublas cudnn cufft -L/usr/local/cuda/lib64 -L/usr/lib/x86_64-linux-gnu
+    3rdparty dependencies:
+
+  OpenCV modules:
+    To be built:                 alphamat aruco bgsegm bioinspired calib3d ccalib core cudaarithm cudabgsegm cudacodec cudafeatures2d cudafilters cudaimgproc cudalegacy cudaobjdetect cudaoptflow cudastereo cudawarping cudev dnn dnn_objdetect dnn_superres dpm face features2d flann freetype fuzzy hdf hfs highgui img_hash imgcodecs imgproc intensity_transform line_descriptor mcc ml objdetect optflow phase_unwrapping photo plot quality rapid reg rgbd saliency sfm shape stereo stitching structured_light superres surface_matching text tracking ts video videoio videostab viz xfeatures2d ximgproc xobjdetect xphoto
+    Disabled:                    datasets java_bindings_generator objc_bindings_generator python_tests wechat_qrcode world
+    Disabled by dependency:      -
+    Unavailable:                 cnn_3dobj cvv gapi java julia matlab ovis python2 python3
+    Applications:                apps
+    Documentation:               NO
+    Non-free algorithms:         YES
+
+  GUI: 
+    GTK+:                        YES (ver 3.24.20)
+      GThread :                  YES (ver 2.64.6)
+      GtkGlExt:                  NO
+    OpenGL support:              NO
+    VTK support:                 YES (ver 7.1.1)
+
+  Media I/O: 
+    ZLib:                        build (ver 1.2.11)
+    JPEG:                        /usr/lib/x86_64-linux-gnu/libjpeg.so (ver 80)
+    WEBP:                        /usr/lib/x86_64-linux-gnu/libwebp.so (ver encoder: 0x020e)
+    PNG:                         build (ver 1.6.37)
+    TIFF:                        build (ver 42 - 4.2.0)
+    JPEG 2000:                   OpenJPEG (ver 2.3.1)
+    OpenEXR:                     build (ver 2.3.0)
+    GDAL:                        YES (/usr/lib/libgdal.so)
+    HDR:                         YES
+    SUNRASTER:                   YES
+    PXM:                         YES
+    PFM:                         YES
+
+  Video I/O:
+    FFMPEG:                      YES
+      avcodec:                   YES (58.54.100)
+      avformat:                  YES (58.29.100)
+      avutil:                    YES (56.31.100)
+      swscale:                   YES (5.5.100)
+      avresample:                YES (4.0.0)
+    GStreamer:                   YES (1.16.2)
+    v4l/v4l2:                    YES (linux/videodev2.h)
+    gPhoto2:                     YES
+
+  Parallel framework:            OpenMP
+
+  Trace:                         YES (with Intel ITT)
+
+  Other third-party libraries:
+    Intel IPP:                   2020.0.0 Gold [2020.0.0]
+           at:                   /home/cappelletto/install/opencv/opencv-4.5.2/build/3rdparty/ippicv/ippicv_lnx/icv
+    Intel IPP IW:                sources (2020.0.0)
+              at:                /home/cappelletto/install/opencv/opencv-4.5.2/build/3rdparty/ippicv/ippicv_lnx/iw
+    VA:                          NO
+    Lapack:                      YES (/usr/lib/x86_64-linux-gnu/liblapack.so /usr/lib/x86_64-linux-gnu/libcblas.so /usr/lib/x86_64-linux-gnu/libatlas.so)
+    Eigen:                       YES (ver 3.3.7)
+    Custom HAL:                  NO
+    Protobuf:                    build (3.5.1)
+
+  NVIDIA CUDA:                   YES (ver 11.1, CUFFT CUBLAS FAST_MATH)
+    NVIDIA GPU arch:             50 52 60 61 70 75 80 86
+    NVIDIA PTX archs:
+
+  cuDNN:                         YES (ver 8.0.4)
+
+  OpenCL:                        YES (no extra features)
+    Include path:                /home/cappelletto/install/opencv/opencv-4.5.2/3rdparty/include/opencl/1.2
+    Link libraries:              Dynamic load
+
+  Python (for build):            /usr/bin/python2.7
+
+  Install to:                    /usr/local
+-----------------------------------------------------------------
+
+
