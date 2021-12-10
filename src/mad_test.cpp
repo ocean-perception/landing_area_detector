@@ -4,8 +4,9 @@
  * @brief Measurability Area Detector, extended version of LAD test
  *        Sandbox module for testing core and extended functionalities and integration of Geotiff, OpenCV, CGAL & GDAL
  *        Part of PhD project on predicting landable areas for autonomous vehicles using remotely sensed data
- *        Ocean Perception Lab. University of Southampton, UK. oceans.soton.ac.uk
- * @version 3.5-dirty
+ *        Ocean Perception Lab. University of Southampton, UK. 
+ *        Visit: https://oceans.soton.ac.uk
+ * @version 3.6-DualEnv [local + Iridis5]
  * @date 2021-11-18
  * 
  * @copyright Copyright (c) 2020-2021
@@ -111,21 +112,35 @@ int main(int argc, char *argv[])
     if (argRobotWidth)      params.robotWidth       = args::get(argRobotWidth);
     if (argProtrusionSize)  params.protrusionSize   = args::get(argProtrusionSize);
     if (argRotation){
-                            params.rotation         = args::get(argRotation);
-                            params.fixRotation      = true;
+        params.rotation         = args::get(argRotation);
+        params.fixRotation      = true;
     }   
     if (argRotationStep){
-                            params.rotationStep     = args::get(argRotationStep);
-                            params.fixRotation      = false;
+        if (argRotation){
+                logc.warn("main", "Fixed rotation parameter provided with variable rotation. Ignoring fixed rotation parameter");
+            }
+        params.rotationStep     = args::get(argRotationStep);
+        params.fixRotation      = false;
     }
     
     if (argSlopeAlgorithm){ //TODO: actually read the user provided option, otherwise we can just use this as a switch flag
-                            params.slopeAlgorithm   = lad::FilterType::FILTER_CONVEX_SLOPE; 
-                            logc.warn("main-config", "Using CONVEX HULL algorithm for slope estimation");               
+        auto option = args::get(argSlopeAlgorithm);
+        if (option == "CONVEX"){
+            params.slopeAlgorithm   = lad::FilterType::FILTER_CONVEX_SLOPE; 
+            logc.warn("main-config", "Using CONVEX HULL algorithm for slope estimation");
+        }               
+        else if (option == "PLANE"){
+            params.slopeAlgorithm   = lad::FilterType::FILTER_SLOPE;
+            logc.warn("main-config", "Using HOUGH TRANSFORM algorithm for slope estimation");
+        }
+        else{
+            logc.error("main-config", "Unknown slope estimation algorithm");
+            return -1;
+        }
     }
     else{
-                            params.slopeAlgorithm   = lad::FilterType::FILTER_SLOPE;                
-                            logc.warn("main-config", "Using LMS PLANE algorithm for slope estimation");               
+        params.slopeAlgorithm   = lad::FilterType::FILTER_SLOPE;                
+        logc.warn("main-config", "Using LMS PLANE algorithm for slope estimation");               
     }
 
     if (argMetacenter)      params.ratioMeta        = args::get(argMetacenter);
