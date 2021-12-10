@@ -42,9 +42,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message ("${Cyan} Configuring system")
 # GNU compiler flags. If you are using a different compiler, you may need to change these flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -mavx2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3  -shared-libgcc")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -pthread -mavx2 -shared-libgcc")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -72,6 +72,7 @@ if (USE_CUDA)
   # endif()
 endif()
 
+# Dropped Intel TBB requirement
 # find_package(TBB REQUIRED tbb) 
 # # If the package has been found, several variables will be set, you can find the full list with descriptions
 # # in the OpenCVConfig.cmake file.
@@ -101,7 +102,8 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 # Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
     # export GDAL_DIR=/local/software/gdal/3.0.1/
-    # On Iridis5- hinting to /local/software path using GDAL_DIR ENV
+    # On Iridis5- hinting to /local/software path using GDAL_DIR enviroment variable as in:
+    # $ export GDAL_DIR=/local/software/gdal/2.3.1/ 
 find_package(GDAL MODULE REQUIRED) # Newest releases of GDAL provide VERSION information
 message("${BoldGreen}" "GDAL library status:" "${ColourReset}")
 message(STATUS "    version: ${GDAL_VERSION}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
@@ -112,7 +114,7 @@ message(STATUS "    include path: ${GDAL_INCLUDE_DIRS}")
 find_package( Boost REQUIRED )
 
 if ( NOT Boost_FOUND )
-  message(WARNING "This project requires the Boost library, and will not be compiled.")
+  message(WARNING "Boost library not found! Stopping...")
   return()  
 else()
   message("${BoldGreen}" "Boost library status:" "${ColourReset}")
@@ -123,7 +125,7 @@ endif()
 
 find_package(CGAL REQUIRED)
 if ( NOT CGAL_FOUND )
-  message(WARNING "This project requires the CGAL library, and will not be compiled.")
+  message(WARNING "Required CGAL library not found! Stopping...")
   return()  
 endif()
 
