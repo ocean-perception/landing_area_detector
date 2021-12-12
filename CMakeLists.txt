@@ -149,7 +149,6 @@ include_directories(BEFORE ../include
                     ${OpenCV_INCLUDE_DIRS}
                     ${GDAL_INCLUDE_DIRS}
                     ${GEOTIFF_MODULE}/include)
- #                   ${PCL_INCLUDE_DIRS})
           
 include_directories(AFTER ${YAML_DIR}/include)
 
@@ -210,11 +209,11 @@ add_executable(img.resample   src/img.resample.cpp
 # find_path(yaml-cpp INCLUDE_DIRS yaml-cpp/yaml.h )
 # message (STATUS Yaml-cpp: ${yaml-cpp})
 
-find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)
+find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)      # for non-canonical installations of yaml library
 message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 
 target_compile_options(mad_test     PUBLIC -std=c++17 -mavx2) # the global flags may already have been set with std=c++17 
-target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx2)
+target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx2) # directive relies on option de-duplication, so no harm done
 target_compile_options(img.resample PUBLIC -std=c++17 -mavx2)
 target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})

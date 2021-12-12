@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
         params.fixRotation      = false;
     }
     
-    if (argSlopeAlgorithm){ //TODO: actually read the user provided option, otherwise we can just use this as a switch flag
+    if (argSlopeAlgorithm){
         auto option = args::get(argSlopeAlgorithm);
         if (option == "CONVEX"){
             params.slopeAlgorithm   = lad::FilterType::FILTER_CONVEX_SLOPE; 
