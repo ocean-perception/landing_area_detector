@@ -533,8 +533,10 @@ namespace lad
         int n_int = tree.number_of_intersected_primitives(ray);
         // std::cout << n_int << " intersections(s) with ray query" << std::endl;
         if (n_int < 2){
-            std::cout << "WARNING: convex hull is degenerated, no intersection with ray query" << std::endl;
-            std::cout << "Total intersections found: " << n_int << std::endl;
+            // std::cout << "WARNING: convex hull is degenerated, no intersection with ray query" << std::endl;
+            // std::cout << "Total intersections found: " << n_int << std::endl;
+            KPlane error_plane(1,0,0,0);     // a vertical plane as an error flag
+            return error_plane; // WARNING: this should produce a 90 degree angle (slope) estimation
         }
 
         // Step 10: Locate intersected face (if any) and intersection point

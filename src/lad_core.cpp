@@ -1651,19 +1651,20 @@ namespace lad
                             }
 
                         }
+                        // TODO: Measurability filter (FILTER_DISTANCE) should rather use the effective calculated plane, either mean or convex hull one
                         else if (filtertype == FILTER_DISTANCE){ // this implementation uses all the points contained inside the landing footprint
                             KPlane plane = computeFittingPlane(pointList); //< 8 seconds
+                            // TODO: RECYCLE THE PRECOMUTED PLANES! THE POINTlIST INPUT IS THE SAME AS IN LANE A (just once, because it was rotation invariant)
+                            // KPlane plane = computeConvexHullPlane(pointList); //< 8 seconds for sparse, 32 seconds for dense maps
                             std::vector<double> distances = computePlaneDistance(plane, pointList);
                             double score = 0;
                             for (auto it:distances){
-                                // count = fabs(it);
-                                // if (fabs(it) < 0.05) count++;   //TODO : globally defined threshold? arg pass? filter param structure?
                                 double zit = fabs(it);
                                 if      (zit < parameters.geotechSensor.z_optimal) score += 1.0;
                                 else    score += 1/(1 + (zit - parameters.geotechSensor.z_optimal)/parameters.geotechSensor.z_suboptimal);
 
                             }
-                            // computes the proportion of points within the range
+                            // computes aggregated measurability score per pixel
                             #pragma omp critical
                             {
                                 try

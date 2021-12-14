@@ -21,7 +21,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     string suffix = "_r" + makeFixedLength((int) currRotation, 3);
     // #pragma omp critical
     // {
-    if (ap->verbosity){
+    if (p->verbosity>0){
         s << "Creating KernelAUV" << suffix;
         logc.debug("prW", s);
     }
@@ -37,19 +37,19 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
 
     std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
 
-    if (ap->verbosity > 0){
+    if (p->verbosity>0){
         s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
         logc.info("pRW", s);
     }
 
     std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
-    if (ap->verbosity > 0){
+    if (p->verbosity>0){
         s << "Lane C dispatched for orientation [" << blue << currRotation << reset << "] degrees";
         logc.info("pRW", s);
     }
 
     std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
-    if (ap->verbosity > 0){
+    if (p->verbosity>0){
         s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
         logc.info("pRW", s);
     }
@@ -160,6 +160,7 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p, std::stri
         // threadLaneX.join();
     }
 
+    logc.info("processRotationWorker", "PHASE 3: ");
     #pragma omp for nowait 
     for (int r=0; r<=nRot; r++){
         double currRotation = params.rotationMin + r*params.rotationStep;
@@ -436,7 +437,6 @@ int lad::processLaneA(lad::Pipeline *ap, parameterStruct *p, std::string affix){
         cout << "Lane A: Using CHull algorithm (slower)" << endl;
     }
 
-    // ap->showImage("A1_DetailedSlope",COLORMAP_JET);
     if (p->exportIntermediate){
         ap->saveImage("A1_DetailedSlope", affix + "A1_DetailedSlope.png", COLORMAP_JET);
         ap->exportLayer("A1_DetailedSlope", affix + "A1_DetailedSlope.tif", FMT_TIFF, WORLD_COORDINATE);
