@@ -532,6 +532,10 @@ namespace lad
         // TODO: use returned value, we should expect 2 hits, if none, the obtained convexhull is degenerated (raise exception)
         int n_int = tree.number_of_intersected_primitives(ray);
         // std::cout << n_int << " intersections(s) with ray query" << std::endl;
+        if (n_int < 2){
+            std::cout << "WARNING: convex hull is degenerated, no intersection with ray query" << std::endl;
+            std::cout << "Total intersections found: " << n_int << std::endl;
+        }
 
         // Step 10: Locate intersected face (if any) and intersection point
         // check: https://doc.cgal.org/latest/Polygon_mesh_processing/Polygon_mesh_processing_2locate_example_8cpp-example.html#a11
