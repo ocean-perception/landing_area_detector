@@ -35,12 +35,12 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     // }
     // logc.info("processRotationWorker", s);
 
-    std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
+    // std::thread threadLaneD (&lad::processLaneD, ap, &params, suffix);
 
-    if (p->verbosity>0){
-        s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
-        logc.info("pRW", s);
-    }
+    // if (p->verbosity>0){
+    //     s << "Lane D dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+    //     logc.info("pRW", s);
+    // }
 
     std::thread threadLaneC (&lad::processLaneC, ap, &params, suffix);
     if (p->verbosity>0){
@@ -48,24 +48,25 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
         logc.info("pRW", s);
     }
 
-    std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
-    if (p->verbosity>0){
-        s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
-        logc.info("pRW", s);
-    }
+    // std::thread threadLaneX (&lad::processLaneX, ap, &params, suffix);
+    // if (p->verbosity>0){
+    //     s << "Lane X dispatched for orientation [" << blue << currRotation << reset << "] degrees";
+    //     logc.info("pRW", s);
+    // }
 
     // WARNING C+D+X is the right order. Do not try to reorder (as vtun suggested for thread locking improvement).
     // Data flow imposes this
     
     threadLaneC.join();
-    threadLaneD.join();
-    s << "Lane C & D done for orientation [" << green << currRotation << reset << "] degrees";
+    // threadLaneD.join();
+    s << "Lane [C] done for orientation [" << green << currRotation << reset << "] degrees";
+    // s << "Lane C & D done for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
-    ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
-    ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
-    threadLaneX.join();
-    s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
-    logc.info("pRW", s);
+    // ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
+    // ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
+    // threadLaneX.join();
+    // s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
+    // logc.info("pRW", s);
 
 /*    threadLaneD.join();
     s << "Lane D done for orientation [" << green << currRotation << reset << "] degrees";
@@ -79,16 +80,20 @@ int lad::processRotationWorker (lad::Pipeline *ap, parameterStruct *p){
     s << "Lane X blending for orientation [" << green << currRotation << reset << "] degrees";
     logc.info("pRW", s);
 */
-    ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
+
+    // ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "D2_LoProtExcl" + suffix, "D4_HiProtExcl" + suffix, "M3_LandabilityMap" + suffix);
+    ap->computeLandabilityMap ("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix, "M3_LandabilityMap" + suffix);
+    // The new Landability Map is just a copy of the MeanSlopeExcl map
+    
     ap->copyMask("C1_ExclusionMap","M3_LandabilityMap" + suffix);
-    ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);
+    // ap->computeBlendMeasurability("M3_LandabilityMap" + suffix, "X1_MeasurabilityMap" + suffix, "M4_FinalMeasurability" + suffix);
 
     // here we should ask if we need to export every intermediate layer (rotated)
     if (p->exportRotated){
         ap->saveImage("M3_LandabilityMap" + suffix, "M3_LandabilityMap" + suffix + ".png");
         ap->exportLayer("M3_LandabilityMap" + suffix, "M3_LandabilityMap" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
-        ap->saveImage("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".png");
-        ap->exportLayer("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
+        // ap->saveImage("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".png");
+        // ap->exportLayer("M4_FinalMeasurability" + suffix, "M4_FinalMeasurability" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }    
     return NO_ERROR;
 
@@ -379,16 +384,16 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         ap->saveImage("C2_MeanSlope" + suffix, "C2_MeanSlope" + suffix + ".png");
         ap->exportLayer("C2_MeanSlope" + suffix, "C2_MeanSlope" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    // logc.debug("laneC", "compareLayer -> C2_MeanSlopeExcl");
+    logc.debug("laneC", "compareLayer -> C2_MeanSlopeExcl");
     ap->compareLayer("C2_MeanSlope" + suffix, "C3_MeanSlopeExcl" + suffix, p->slopeThreshold, CMP_GT);
     // ap->showImage("C3_MeanSlopeExcl");
     if (p->exportRotated){
         ap->saveImage("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".png");
         ap->exportLayer("C3_MeanSlopeExcl" + suffix, "C3_MeanSlopeExcl" + suffix + ".tif", FMT_TIFF, WORLD_COORDINATE);
     }
-    // tt.lap("Lane C: C2_MeanSlope");
+    tt.lap("Lane C: C2_MeanSlope");
     // logc.debug("laneC", "computeMeasurability -> X1_MeasurabilityMap");
-    ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
+    // ap->computeMeasurabilityMap("M1_RAW_Bathymetry", "KernelAUV" + suffix, "M1_VALID_DataMask", "X1_MeasurabilityMap" + suffix);
     // ap->showImage("C2_MeanSlope");
     if (p->exportRotated){
         ap->saveImage("X1_MeasurabilityMap" + suffix, "X1_MeasurabilityMap" + suffix + ".png");
@@ -400,7 +405,7 @@ int lad::processLaneC(lad::Pipeline *ap, parameterStruct *p, std::string suffix)
         logc.debug("laneC", s);
     }
 
-    tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl, X1_Measurability");
+    tt.lap("\tLane C: C2_MeanSlope, C3_MeanSlopeMapExcl, [X1_Measurability]");
     return 0;
 }
 

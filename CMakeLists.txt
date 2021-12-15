@@ -162,8 +162,20 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a si
 add_definitions( -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" ) # Forward current git info as a single string
 add_definitions(-DCGAL_USE_BASIC_VIEWER)
 
+# TODO: add target/module specify flags to avoid rebuilding unused targets
 ############################ MAD_TEST ####################
-add_executable(mad_test   src/mad_test.cpp
+# add_executable(mad_test   src/mad_test.cpp
+#                           src/lad_analysis.cpp
+#                           ${GEOTIFF_MODULE}/src/geotiff.cpp
+#                           src/lad_core.cpp
+#                           src/lad_layer.cpp
+#                           src/lad_processing.cpp
+#                           src/lad_thread.cpp
+#                           src/lad_config.cpp
+#                           ${PROJECT_HEADERS})
+
+                          ############################ MAD_TEST ####################
+add_executable(land       src/land.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
                           src/lad_core.cpp
@@ -212,15 +224,15 @@ add_executable(img.resample   src/img.resample.cpp
 find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)      # for non-canonical installations of yaml library
 message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 
-target_compile_options(mad_test     PUBLIC -std=c++17 -mavx2) # the global flags may already have been set with std=c++17 
+target_compile_options(land         PUBLIC -std=c++17 -mavx2) # the global flags may already have been set with std=c++17 
 target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx2) # directive relies on option de-duplication, so no harm done
 target_compile_options(img.resample PUBLIC -std=c++17 -mavx2)
 target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
-target_link_libraries(mad_test      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
+target_link_libraries(land      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 
-install (TARGETS mad_test       DESTINATION $ENV{HOME}/bin)
+install (TARGETS land       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)
 install (TARGETS img.resample   DESTINATION $ENV{HOME}/bin)
