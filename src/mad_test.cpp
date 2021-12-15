@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
         params.fixRotation      = false;
     }
     
+    //TODO: drop support to mean slope algorithm. New score must rely only on convex hull calculation for slope
     if (argSlopeAlgorithm){
         auto option = args::get(argSlopeAlgorithm);
         if (option == "CONVEX"){
@@ -193,6 +194,7 @@ int main(int argc, char *argv[])
     
     pipeline.parameters = params;   // forward config/user defined parameters to the internal pipeline structure
     pipeline.useNodataMask = true;  //params.useNoDataMask;
+    // TODO: the input player can be converted into point-cloud representation at load time
     pipeline.readTIFF(inputFileName, "M1_RAW_Bathymetry", "M1_VALID_DataMask");
 
     pipeline.setTemplate("M1_RAW_Bathymetry");  // M1 will be used as internal template for the pipeline
@@ -202,15 +204,18 @@ int main(int argc, char *argv[])
         pipeline.exportLayer("M1_CONTOUR_Mask", outputFileName + "M1_CONTOUR_Mask.shp", FMT_SHP, WORLD_COORDINATE);
     }
     pipeline.createKernelTemplate("KernelAUV",   params.robotWidth, params.robotLength, cv::MORPH_RECT); // vehicle footprint: rectangular
+    // TODO: drop KernelSlope (we will stick to the vehicle's footprint)
     pipeline.createKernelTemplate("KernelSlope", 0.1, 0.1, cv::MORPH_ELLIPSE);  // TODO: convert this into a size/resolution aware method
     pipeline.createKernelTemplate("KernelDiag",  params.robotDiagonal, params.robotDiagonal, cv::MORPH_ELLIPSE);
-    dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation);
+    dynamic_pointer_cast<KernelLayer>(pipeline.getLayer("KernelAUV"))->setRotation(params.rotation); // only useful for starting fixed rotation
 
-    pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap");
+    pipeline.computeExclusionMap("M1_VALID_DataMask", "KernelAUV", "C1_ExclusionMap"); //binary no-data exclusion mask
     if (argSaveIntermediate){
         pipeline.exportLayer("C1_ExclusionMap", outputFileName + "C1_ExclusionMap.tif", FMT_TIFF, WORLD_COORDINATE);
     }
     tt.lap("Load M1, C1");
+
+
 
     std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, ""); //no suffix, nill-rotation sample
     std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
