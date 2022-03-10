@@ -251,7 +251,15 @@ int main(int argc, char *argv[])
         cout << light_yellow << "RAW bathymetry - \t" << reset << "MIN / MEAN / MAX = [" << _min << " / " << _mean << " / " << _max << "]" << endl;
     }
     // 2.2) Shift the whole map to the mean (=0)
-    cv::subtract(final, _mean, final, final_mask); // MEAN centering of only valida data points (use mask)
+    if (argNoMeanT2P){
+        if (verbosity>=2)
+            logc.warn("main", "No mean shift applied");
+    }
+    else{
+        if (verbosity>=2)
+            logc.warn("main", "Applying mean shift to the input bathymetry");
+        cv::subtract(final, _mean, final, final_mask); // MEAN centering of only valida data points (use mask)
+    }
     // show debug
     if (verbosity >= 2){
         // cv::normalize(final, final, 0, 255, NORM_MINMAX, CV_8UC1, final_mask); // normalize within the expected range 0-255 for imshow
