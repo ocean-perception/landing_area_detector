@@ -5,11 +5,17 @@
 # separate module. Optional configuration.yaml can be parsed to generate UUID paths and summary files. 
 function show_usage(){
 	echo -e Usage: \n
-	echo tiff.convert2png.sh -i input [-o output] [-l output_list] [-p prefix] [-u sufix] [-x scale] [-r] 
+	echo tiff.convert2png.sh -i input [-o output] [-l output_list] [-p prefix] [-u suffix] [-x scale] [-r] 
 	echo "************************************************************************************************"
     echo -e "Example: tiff.convert2png -i /directory/with/tiffs -o "
 	echo -e '\t' "Converts all the TIFF images contained in the given directory into grayscale PNG. It uses tiff2png tool" 
 	echo -e '\t' "It also extracts the coordinates for the center of each image using the georef information contained in the TIFF"
+  echo -e "-i [input] \t mandatory input path to folder containing TIF images"
+  echo -e "-o [output] \t optional path to output folder where resulting images will be store. If none is provided current directory will be used"
+  echo -e "-l [filelist] \t optional path to file to store exported image information. Default: t2p_filelist.csv"
+  echo -e "-p [prefix] \t optional definition of output filename prefix"
+  echo -e "-u [suffix] \t optional definition of output filename suffix"
+  echo -e "-x [scale] \t optional normalizing factor. Defaul: 1.0m"
 	echo -e "-r \t Enable uniform randomized sampling (0 to 360 degrees, X/Y shift)"
 }
 export show_usage
