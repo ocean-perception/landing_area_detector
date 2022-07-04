@@ -145,12 +145,24 @@ YAML::Node lad::readConfiguration(std::string file, parameterStruct *p){
             p->fixRotation = true;
         }
         else p->fixRotation = false;
-        if (config["rotation"]["range_min"])
+        // fixed rotation superseeds in priority to variable rotation
+        // both sections can co-exist. Just the fixed one is used
+        if (config["rotation"]["range_min"]){
             p->rotationMin  = config["rotation"]["range_min"].as<double>();
-        if (config["rotation"]["range_max"])
+            if (verb > 0 && p->fixRotation)
+                cout << "[readConfiguration] rotation:rang_min parameter defined but to be ignored. Fixed rotation already defined" << endl;
+        }
+        if (config["rotation"]["range_max"]){
             p->rotationMax  = config["rotation"]["range_max"].as<double>();
-        if (config["rotation"]["step"])
+            if (verb > 0 && p->fixRotation)
+                cout << "[readConfiguration] rotation:rang_max parameter defined but to be ignored. Fixed rotation already defined" << endl;
+        }
+        if (config["rotation"]["step"]){
             p->rotationStep = config["rotation"]["step"].as<double>();
+            if (verb > 0 && p->fixRotation)
+                cout << "[readConfiguration] rotation:step parameter defined but to be ignored. Fixed rotation already defined" << endl;
+        }
+
     }
 
     if (config["geotechsensor"]){   // explicit definition of geotechnical sensor parameters

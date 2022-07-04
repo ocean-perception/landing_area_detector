@@ -215,8 +215,6 @@ int main(int argc, char *argv[])
     }
     tt.lap("Load M1, C1");
 
-
-
     // std::thread threadLaneA (&lad::processLaneA, &pipeline, &params, ""); //no suffix, nill-rotation sample
     // std::thread threadLaneB (&lad::processLaneB, &pipeline, &params, "");
 
@@ -309,11 +307,21 @@ int main(int argc, char *argv[])
 
     // if fixRotation = false, we iterate from rotationMin to rotationMax
     //  hi-slope can be exported directly as it is rot-independent 
-    logc.info("main", "Calculating landability maps for every rotation ...");
-    s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "]\t Steps: " << params.rotationStep;
-    logc.info("main", s);
 
-    int nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
+    int nIter = 0;
+    // Check if using fixed rotation or not
+    if (params.fixRotation){
+        s << "Calculating maps for fixed rotation [" << blue << params.rotation << reset << "] degrees";
+        logc.info("main", s);
+        params.rotationMin = params.rotation; // set rotationMin to rotation, we start and end here
+    }
+    else{
+        logc.info("main", "Calculating landability maps for every rotation ...");
+        s << "\tRange:  [" << params.rotationMin << ", " << params.rotationMax << "] degrees\t Steps: " << params.rotationStep;
+        logc.info("main", s);
+        nIter = (params.rotationMax - params.rotationMin)/params.rotationStep;
+    }
+
     int finished = 0;
 
     #pragma omp parallel for shared(finished) num_threads(nThreads)

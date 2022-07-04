@@ -44,7 +44,8 @@ message ("${Cyan} Configuring system")
 # GNU compiler flags. If you are using a different compiler, you may need to change these flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -parallel-source-info=2 -pthread -mavx2 -shared-libgcc")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -parallel-source-info=2 -pthread -mavx2 -shared-libgcc") # Intel specific flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -pthread -mavx2 -shared-libgcc")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
