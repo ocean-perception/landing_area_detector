@@ -158,6 +158,15 @@ int main(int argc, char *argv[])
     int brx = nx + diag;    // bottom right corner
     int bry = ny + diag;
 
+    // // check for ZERO rotation angle, no need to validate against the diagonal
+    // if (rotationAngle == 0){
+    //     tlx = nx - xSize/2;
+    //     tly = ny - ySize/2;
+    //     brx = nx + xSize/2;
+    //     bry = ny + ySize/2;
+    //     diag = xSize;
+    // }
+
     if (argIntParamT2P){
         if (verbosity>=2)
             logc.warn ("Override", "Using full image canvas for direct image export");

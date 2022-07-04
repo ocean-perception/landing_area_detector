@@ -44,7 +44,7 @@ message ("${Cyan} Configuring system")
 # GNU compiler flags. If you are using a different compiler, you may need to change these flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 # Additional flags for vectorized/multithread profiling and debugging
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -pthread -mavx2 -shared-libgcc")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -parallel-source-info=2 -pthread -mavx2 -shared-libgcc")
 
 find_package(OpenMP)
 if(OPENMP_FOUND)
@@ -236,5 +236,5 @@ install (TARGETS land       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)
 install (TARGETS img.resample   DESTINATION $ENV{HOME}/bin)
-configure_file(scripts/tiff.convert2png.sh  $ENV{HOME}/bin/scripts)
-configure_file(scripts/collect_maps.sh      $ENV{HOME}/bin/scripts)
+file(COPY scripts/tiff.convert2png.sh  DESTINATION $ENV{HOME}/bin/scripts)
+file(COPY scripts/collect_maps.sh  DESTINATION $ENV{HOME}/bin/scripts)

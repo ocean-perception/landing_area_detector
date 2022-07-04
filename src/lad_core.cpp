@@ -1532,14 +1532,14 @@ namespace lad
 
         auto start_ = std::chrono::high_resolution_clock::now();
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
         for (int row=0; row<nRows; row++){
 
             // CGAL_PROFILER("iterations of the applyWindowFilter outer for-loop");
 
             uchar* row_ptr = roi_image.ptr<uchar>(row); // retrieve index to row
 
-            #pragma omp parallel for
+            #pragma omp parallel for  schedule(dynamic)
             for (int col=0; col<nCols; col++){
                 if (row_ptr[col]){
                 // if (roi_image.at<unsigned char>(row, col)){ // we compute the output only for valid points (we ehck the binary mask as validity mask)
