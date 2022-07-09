@@ -186,17 +186,6 @@ add_executable(land       src/land.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-############################ TIFF2PNG ####################
-add_executable(tiff2png   src/tiff2png.cpp
-                          src/lad_analysis.cpp
-                          ${GEOTIFF_MODULE}/src/geotiff.cpp
-                          src/lad_core.cpp
-                          src/lad_layer.cpp
-                          src/lad_processing.cpp
-                          src/lad_thread.cpp
-                          src/lad_config.cpp
-                          ${PROJECT_HEADERS})
-
 ############################ TIFFRUGOSITY#################
 add_executable(tiff2rugosity   src/tiff2rugosity.cpp
                           src/lad_analysis.cpp
@@ -226,16 +215,12 @@ find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)      # for non-canonica
 message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 
 target_compile_options(land         PUBLIC -std=c++17 -mavx2) # the global flags may already have been set with std=c++17 
-target_compile_options(tiff2png     PUBLIC -std=c++17 -mavx2) # directive relies on option de-duplication, so no harm done
 target_compile_options(img.resample PUBLIC -std=c++17 -mavx2)
-target_link_libraries(tiff2png      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(land      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 
 install (TARGETS land       DESTINATION $ENV{HOME}/bin)
-install (TARGETS tiff2png       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)
 install (TARGETS img.resample   DESTINATION $ENV{HOME}/bin)
-#file(COPY scripts/tiff.convert2png.sh  DESTINATION $ENV{HOME}/bin/scripts)
 #file(COPY scripts/collect_maps.sh  DESTINATION $ENV{HOME}/bin/scripts)
