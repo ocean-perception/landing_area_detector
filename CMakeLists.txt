@@ -163,6 +163,17 @@ add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a si
 add_definitions( -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" ) # Forward current git info as a single string
 add_definitions(-DCGAL_USE_BASIC_VIEWER)
 
+# Add logic to extract version information from git tags
+execute_process(
+    COMMAND git describe --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE PROJECT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Define a PROJECT_VERSION variable to store the extracted version information
+add_definitions(-DPROJECT_VERSION="${PROJECT_VERSION}")
+
 # TODO: add target/module specify flags to avoid rebuilding unused targets
 ############################ MAD_TEST ####################
 # add_executable(mad_test   src/mad_test.cpp
