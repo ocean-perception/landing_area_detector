@@ -1,6 +1,6 @@
 [1;36mmad_test[0m
 	OpenCV version:	[1;33m4.5.2[0m
-	Git commit:	[1;33mv3.5-ReleaseTest-37-g98e3-dirty[0m
+	Git commit:	[1;33m<PROJECT_VERSION>[0m
 	Mode:		[1;33mRelease[0m
 
 General configuration for OpenCV 4.5.2 =====================================
