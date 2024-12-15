@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)  # future releases may require 3.20. Improved FindModules for GDAL, CGAL, TBB & CUDA toolkit
+cmake_minimum_required(VERSION 3.23)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release CACHE STRING
@@ -6,7 +6,7 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
       FORCE)
 endif()
 
-set(CMAKE_COLOR_MAKEFILE ON)  # For fancy colouring scheme
+set(CMAKE_COLOR_MAKEFILE ON)
 if (${FORCE_COLORED_OUTPUT})
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         target_compile_options (project_options INTERFACE -fdiagnostics-color=always)
@@ -35,16 +35,12 @@ if(NOT WIN32)
   set(BoldWhite   "${Esc}[1;37m")
 endif()
 
-# Define project name
 project(lad_project)
-set(CMAKE_CXX_STANDARD 17)          # verify that the compiler supports C++17, as some targets could reversely fallback to c++14
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message ("${Cyan} Configuring system")
-# GNU compiler flags. If you are using a different compiler, you may need to change these flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
-# Additional flags for vectorized/multithread profiling and debugging
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -parallel-source-info=2 -pthread -mavx2 -shared-libgcc") # Intel specific flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -g -pthread -mavx2 -shared-libgcc")
 
 find_package(OpenMP)
@@ -56,7 +52,7 @@ endif()
 
 if (USE_CUDA)
   message ("${BoldBlue} Asked for CUDA, searching... ${ColourReset}")
-  find_package(CUDA) # FindCUDA is deprecated, future releases will use find_package(CUDAToolkit)
+  find_package(CUDA)
   if(CUDA_FOUND)
     add_definitions( -DUSE_CUDA=1 )
     include(FindCUDA)
@@ -66,54 +62,21 @@ if (USE_CUDA)
     message(STATUS "    libraries: ${CUDA_LIBRARIES}")
     message(STATUS "    include path: ${CUDA_INCLUDE_DIRS}")
   endif(CUDA_FOUND)
-  # find_package(CUDA)
-  # if(CUDA_FOUND)
-  #   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CUDA_CXX_FLAGS}")
-  #   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CUDA_EXE_LINKER_FLAGS}")
-  # endif()
 endif()
 
-# Dropped Intel TBB requirement
-# find_package(TBB REQUIRED tbb) 
-# # If the package has been found, several variables will be set, you can find the full list with descriptions
-# # in the OpenCVConfig.cmake file.
-# if (NOT TBB_FOUND)
-#   message (WARNING "TBB not found, disabling multithreading")
-# else()
-#   message (STATUS "TBB Found...")
-# endif()
-
-# message("${BoldGreen}" "TBB library status:" "${ColourReset}")
-# message(STATUS "    version: ${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR}")
-# message(STATUS "    libraries: ${TBB_LIBRARIES}")
-# message(STATUS "    include path: ${TBB_INCLUDE_DIRS}")
-
-# Find OpenCV, you may need to set OpenCV_DIR variable
-# to the absolute path to the directory containing OpenCVConfig.cmake file
-find_package(OpenCV 4   REQUIRED 
-                        PATHS /usr/local /local/software/opencv/4.5.3
-                        NO_DEFAULT_PATH)
-
-# If the package has been found, several variables will be set, you can find the full list with descriptions
-# in the OpenCVConfig.cmake file.
+find_package(OpenCV 4.6 REQUIRED)
 message("${BoldGreen}" "OpenCV library status:" "${ColourReset}")
 message(STATUS "    version: ${OpenCV_VERSION}")
 message(STATUS "    libraries: ${OpenCV_LIBS}")
 message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
-# Looking for GDAL;: https://cmake.org/cmake/help/v3.0/module/FindGDAL.html
-    # export GDAL_DIR=/local/software/gdal/3.0.1/
-    # On Iridis5- hinting to /local/software path using GDAL_DIR enviroment variable as in:
-    # $ export GDAL_DIR=/local/software/gdal/2.3.1/ 
-find_package(GDAL MODULE REQUIRED) # Newest releases of GDAL provide VERSION information
+find_package(GDAL REQUIRED)
 message("${BoldGreen}" "GDAL library status:" "${ColourReset}")
-message(STATUS "    version: ${GDAL_VERSION}") # FindGDAL.cmake does not provide VERSION info for cmake < 3.13
+message(STATUS "    version: ${GDAL_VERSION}")
 message(STATUS "    libraries: ${GDAL_LIBRARY}")
 message(STATUS "    include path: ${GDAL_INCLUDE_DIRS}")
 
-# Boost and its components
-find_package( Boost REQUIRED )
-
+find_package(Boost 1.74 REQUIRED)
 if ( NOT Boost_FOUND )
   message(WARNING "Boost library not found! Stopping...")
   return()  
@@ -133,17 +96,11 @@ endif()
 message("${BoldGreen}" "CGAL library status:" "${ColourReset}")
 message(STATUS "    libraries: ${CGAL_LIBRARY}")
 message(STATUS "    include path: ${CGAL_INCLUDE_DIR}")
-# include helper file
 include( ${CGAL_USE_FILE} )
 
-# Add submodule as external/geotiff subdirectory. But we do not want to trigger its own CMake chain, so we just set the path
-#add_subdirectory(external/geotiff)
 set (GEOTIFF_MODULE external/geotiff)
 
-# Greedy include of all headers
 file(GLOB PROJECT_HEADERS include/*.h include/*.hpp)
-
-set (YAML_DIR $ENV{HOME}/local) # Path hint for YAML package installed from github
 
 include_directories(BEFORE ../include
                     include
@@ -153,17 +110,8 @@ include_directories(BEFORE ../include
           
 include_directories(AFTER ${YAML_DIR}/include)
 
-# Retrieve git commit information, forward it as compiler flags so they can be used during building time
-exec_program(
-    "git"
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ARGS "describe --abbrev=4 --dirty --always --tags"
-    OUTPUT_VARIABLE GIT_INFO )
-add_definitions( -DGIT_COMMIT="${GIT_INFO}" ) # Forward current git info as a single string
-add_definitions( -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" ) # Forward current git info as a single string
 add_definitions(-DCGAL_USE_BASIC_VIEWER)
 
-# Add logic to extract version information from git tags
 execute_process(
     COMMAND git describe --tags
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -171,22 +119,8 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# Define a PROJECT_VERSION variable to store the extracted version information
 add_definitions(-DPROJECT_VERSION="${PROJECT_VERSION}")
 
-# TODO: add target/module specify flags to avoid rebuilding unused targets
-############################ MAD_TEST ####################
-# add_executable(mad_test   src/mad_test.cpp
-#                           src/lad_analysis.cpp
-#                           ${GEOTIFF_MODULE}/src/geotiff.cpp
-#                           src/lad_core.cpp
-#                           src/lad_layer.cpp
-#                           src/lad_processing.cpp
-#                           src/lad_thread.cpp
-#                           src/lad_config.cpp
-#                           ${PROJECT_HEADERS})
-
-                          ############################ MAD_TEST ####################
 add_executable(land       src/land.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
@@ -197,7 +131,6 @@ add_executable(land       src/land.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-############################ TIFFRUGOSITY#################
 add_executable(tiff2rugosity   src/tiff2rugosity.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
@@ -208,7 +141,6 @@ add_executable(tiff2rugosity   src/tiff2rugosity.cpp
                           src/lad_config.cpp
                           ${PROJECT_HEADERS})
 
-############################ IMG_RESAMPLE ####################
 add_executable(img.resample   src/img.resample.cpp
                           src/lad_analysis.cpp
                           ${GEOTIFF_MODULE}/src/geotiff.cpp
@@ -216,16 +148,12 @@ add_executable(img.resample   src/img.resample.cpp
                           src/lad_layer.cpp
                           src/lad_processing.cpp
                           src/lad_thread.cpp
-                          # src/helper.cpp      # DO NOT ADD VIA add_executable
                           ${PROJECT_HEADERS})
 
-# find_path(yaml-cpp INCLUDE_DIRS yaml-cpp/yaml.h )
-# message (STATUS Yaml-cpp: ${yaml-cpp})
-
-find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)      # for non-canonical installations of yaml library
+find_library (YAML_LIB yaml-cpp PATHS ${YAML_DIR}/lib64)
 message (STATUS "Using yaml-cpp libraries from:" ${YAML_LIB})
 
-target_compile_options(land         PUBLIC -std=c++17 -mavx2) # the global flags may already have been set with std=c++17 
+target_compile_options(land         PUBLIC -std=c++17 -mavx2)
 target_compile_options(img.resample PUBLIC -std=c++17 -mavx2)
 target_link_libraries(tiff2rugosity ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 target_link_libraries(img.resample  ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
@@ -234,4 +162,3 @@ target_link_libraries(land      ${OpenCV_LIBS} ${GDAL_LIBRARY} ${YAML_LIB})
 install (TARGETS land       DESTINATION $ENV{HOME}/bin)
 install (TARGETS tiff2rugosity  DESTINATION $ENV{HOME}/bin)
 install (TARGETS img.resample   DESTINATION $ENV{HOME}/bin)
-#file(COPY scripts/collect_maps.sh  DESTINATION $ENV{HOME}/bin/scripts)
