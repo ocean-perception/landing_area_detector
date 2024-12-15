@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.23)
 # Project setup
 # ---------------------------------------
 project(lad_project
-    VERSION 4.0.1 # Fallback version if git describe fails
+    VERSION 4.0.2 # Fallback version if git describe fails
     LANGUAGES CXX
     DESCRIPTION "Generalized Landing Area Detection for field robotics application"
 )
