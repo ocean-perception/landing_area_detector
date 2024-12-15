@@ -44,9 +44,10 @@ logger::ConsoleOutput logc;
 int main(int argc, char *argv[])
 {
     cout << cyan << "mad_test" << reset << endl;
-    cout << "\tOpenCV version:\t" << yellow << CV_VERSION << reset << endl;
-    cout << "\tGit commit:\t" << yellow << GIT_COMMIT << reset << endl;
+    cout << "\tVersion:\t" << yellow << PROJECT_VERSION << reset << endl;
+    cout << "\tGit hash:\t" << yellow << PROJECT_GIT_COMMIT << reset << endl;
     cout << "\tMode:\t\t" << yellow << CMAKE_BUILD_TYPE << reset << endl;
+    cout << "\tOpenCV:\t\t" << yellow << CV_VERSION << reset << endl;
     // std::cout << cv::getBuildInformation() << std::endl;
 
 #ifdef USE_CUDA
