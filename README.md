@@ -80,10 +80,49 @@ Each tool integrates versioning information from the git repository (including c
 
 ## Usage
 
-After building and installing, run the executables from `$HOME/bin`. For example:
+Please refer to the specific tool's documentation for detailed usage instructions. Each tool provide a help option (`-h` or `--help`) to display usage information. For example:
 
 ```bash
-$HOME/bin/land --config config.yaml --input bathymetry.tif
-$HOME/bin/tiff2rugosity --input dem.tif --output rugosity_map.tif
-$HOME/bin/img.resample --input large_image.tif --output resized_image.tif
+./land --help
+```
+
+will display the help message for the `land` tool:
+```bash
+mad_test
+	Version:	4.0.1
+	Git hash:	ee4e570
+	Mode:		Release
+	OpenCV:		4.7.0
+  ./land {OPTIONS}
+
+    lad_test - testing module part of [landing-area-detection] pipeline Compatible interface with geoTIFF bathymetry
+    datasets via GDAL + OpenCV
+
+  OPTIONS:
+
+      -h, --help                        Display this help menu
+      --input=[input]                   Input bathymetry map. TIFF file or XYZ point collection
+      -o[output], --output=[output]     Output file basename that will be used as prefix of all exported layers
+      -p[path], --outpath=[path]        (NOT-IMPLEMENTED) Output folder path that will contain files will be exported
+      --verbose=[verbose]               Define verbosity level, 0 - 3
+      --nowait
+      --saveintermediate=[value]        Define if to export intermediate rotation-identependent maps (Lane A & B)
+      --terrainonly                     Run terrain only calculations (maps for Lane A & B which are AUV independent)
+      --nthreads=[number]               Define max number of threads
+      --config=[file.yaml]              Provides path to file with user defied configuration
+      --meta=[ratio]                    Recompute metacenter distance from vehicle height
+      --alpharadius=[alpha]             Search radius for alpha Shape concave hull algorithm
+      --rotation=[rotation]             Vehicle rotation in degrees. Defined as ZERO heading NORTH, positive CCW
+      --rotstep=[angle]                 Rotation step resolution in degrees.
+      --int=[param]                     User defined parameter INTEGER for testing purposes
+      --float=[param]                   User defined parameter FLOAT for testing purposes
+      --robotheight=[height]            User defined robot height in meters
+      --robotwidth=[width]              User defined robot width in meters
+      --robotlength=[length]            User defined robot length in meters
+      --prot_size=[size]                Size threshold [cm] to consider a protrusion an obstacle
+      --height_th=[height]              Height threshold [m] to determine high obstacles
+      --slope_th=[slope]                Slope threshold [deg] to determine high slope areas
+      --ground_th=[length]              Minimum height [m] to consider an obstacle
+      --valid_th=[ratio]                Minimum ratio of required valid pixels to generate PNG
+      --slope_algorithm=[method]        Select terrain slope calculation algorithm: PLANE | CONVEX
 ```
